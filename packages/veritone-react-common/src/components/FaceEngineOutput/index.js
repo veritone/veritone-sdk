@@ -5,15 +5,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import CreateIcon from '@material-ui/icons/Create';
-import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
-import PizzaIcon from '@material-ui/icons/LocalPizza';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tooltip from '@material-ui/core/Tooltip';
 import {
   shape,
   number,
@@ -300,8 +293,7 @@ class FaceEngineOutput extends Component {
       disableEditButton,
       unrecognizedFaces,
       bulkEditActionItems,
-      activeTab,
-      onAddToExistingEntity
+      activeTab
     } = this.props;
 
     const { viewMode, selectedEntityId } = this.state;
@@ -456,7 +448,7 @@ class FaceEngineOutput extends Component {
         </EngineOutputHeader>
         {!editMode && faceTabs}
         {outputNullState}
-        {editMode && (
+        {/*editMode && (
           <div className={styles.multiEditActionBox}>
             <FormControlLabel
               checked={get(bulkEditActionItems, [activeTab, 'length']) > 0}
@@ -467,6 +459,7 @@ class FaceEngineOutput extends Component {
                   indeterminate={
                     !!get(bulkEditActionItems, [activeTab, 'length'])
                   }
+                  classes={{ root: styles.selectAllCheckBox }}
                 />
               }
               label={
@@ -543,7 +536,7 @@ class FaceEngineOutput extends Component {
               </div>
             )}
           </div>
-        )}
+        )*/}
         {!outputNullState &&
           activeTab === 'faceRecognition' && (
             <div

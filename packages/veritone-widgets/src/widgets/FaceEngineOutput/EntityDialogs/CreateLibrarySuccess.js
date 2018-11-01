@@ -20,7 +20,7 @@ const CreateLibrarySuccess = ({
       alignItems="center"
       spacing={24}
       style={{
-        width: width || '100%',
+        width: width,
         height: height || 350
       }}
       data-veritone-component="create-library-success"

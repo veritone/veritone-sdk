@@ -117,31 +117,32 @@ export default class IdentifierSelector extends Component {
             Which images should we use?
           </Grid>
           <Grid item classes={{ item: styles.identifierSelectInfo }}>
-            Select the best images of this person to be used to recognize them
-            next time.
+            Select the best images for the system to use to recognize this
+            person in the future.
           </Grid>
-          {identifiers.length > 1 && (
-            <Grid item>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                    indeterminate={!!selectedIdentifiers.length}
-                    checked={!!selectedIdentifiers.length}
-                  />
-                }
-                label={
-                  selectedIdentifiers.length > 0
-                    ? `${selectedIdentifiers.length} Face${
-                        selectedIdentifiers.length > 1 ? 's' : ''
-                      } Selected`
-                    : 'Select Faces'
-                }
-                onChange={this.handleSelectAll}
-                classes={{ label: styles.selectAllCheckboxLabel }}
-              />
-            </Grid>
-          )}
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  indeterminate={
+                    selectedIdentifiers.length &&
+                    selectedIdentifiers.length !== identifiers.length
+                  }
+                  checked={!!selectedIdentifiers.length}
+                />
+              }
+              label={
+                selectedIdentifiers.length > 0
+                  ? `${selectedIdentifiers.length} Face${
+                      selectedIdentifiers.length > 1 ? 's' : ''
+                    } Selected`
+                  : 'Select Faces'
+              }
+              onChange={this.handleSelectAll}
+              classes={{ label: styles.selectAllCheckboxLabel }}
+            />
+          </Grid>
           <Grid
             item
             container

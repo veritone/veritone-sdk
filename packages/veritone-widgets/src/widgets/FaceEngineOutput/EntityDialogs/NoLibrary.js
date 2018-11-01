@@ -13,7 +13,7 @@ const NoLibrary = ({ width, height, onButtonClick }) => {
       alignItems="center"
       spacing={24}
       style={{
-        width: width || '100%',
+        width: width,
         height: height || 350
       }}
       data-veritone-component="no-library"
@@ -27,7 +27,7 @@ const NoLibrary = ({ width, height, onButtonClick }) => {
       <Grid item>
         <div className={styles.noLibraryText}>No Library Found</div>
         <div className={styles.noLibrarySubText}>
-          Your organization currently has no libraries created
+          Your organization currently has no libraries created.
         </div>
       </Grid>
       <Grid item>

@@ -1,5 +1,50 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
 .faceGrid {
-  display: flex;
-  flex-flow: row wrap;
-  width: 100%;
+  flex: 1 1 auto;
+
+  .imageList {
+    overflow-y: auto;
+  }
+
+  .multiEditActionBoxContainer {
+    width: 100%;
+    position: absolute;
+  }
+
+  .multiEditActionBox {
+    height: 40px;
+    background-color: rgba(33, 150, 243, 0.06);
+    flex: none;
+    padding-left: 17px;
+    display: flex;
+    align-items: center;
+
+    .selectAllFormControl {
+      height: 40px;
+      margin: 0 20px 0 -14px;
+
+      .selectAllCheckBox {
+        width: 40px;
+        height: 40px;
+        margin-left: 2px;
+      }
+    }
+
+    .selectAllLabel {
+      @include mui-text('body1');
+    }
+
+    .bulkFaceEditActions {
+      height: 26px;
+      border-left: 1px solid $grey-4;
+
+      .bulkFaceEditActionButton {
+        width: 40px;
+        height: 40px;
+        margin: -7px -7px 0 10px;
+      }
+    }
+  }
 }

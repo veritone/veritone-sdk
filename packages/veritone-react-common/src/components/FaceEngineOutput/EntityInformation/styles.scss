@@ -7,6 +7,7 @@
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
 
   .entityBackButtonContainer {
     flex: none;
@@ -72,10 +73,14 @@
     overflow-y: hidden;
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
 
     .tabContainer {
       overflow-y: auto;
       padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
     }
   }
 
@@ -97,7 +102,6 @@
   }
 
   .jsondataItem {
-    margin-bottom: 20px;
-    margin-right: 10px;
+    padding-bottom: 20px;
   }
 }

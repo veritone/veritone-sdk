@@ -48,12 +48,12 @@
 
 .faceTabBody {
   padding-top: 20px;
-  overflow-y: auto;
-  flex: auto;
+  overflow-y: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   border-top: 1px solid $grey-4;
+  flex: 1 1 auto;
 }
 
 .editMode {
@@ -126,36 +126,6 @@
 
 .userEditListItemIcon {
   margin-right: 0 !important;
-}
-
-.multiEditActionBox {
-  height: 40px;
-  background-color: rgba(33, 150, 243, 0.06);
-  flex: none;
-  margin-top: 20px;
-  padding-left: 17px;
-  display: flex;
-  align-items: center;
-
-  .selectAllFormControl {
-    height: 40px;
-    margin: 0 20px 0 -14px;
-  }
-
-  .selectAllLabel {
-    @include mui-text('body1');
-  }
-
-  .bulkFaceEditActions {
-    height: 26px;
-    border-left: 1px solid $grey-4;
-
-    .bulkFaceEditActionButton {
-      width: 40px;
-      height: 40px;
-      margin: -7px -7px 0 10px;
-    }
-  }
 }
 
 .cantEditWarning {

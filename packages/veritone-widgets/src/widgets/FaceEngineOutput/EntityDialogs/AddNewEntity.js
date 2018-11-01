@@ -77,10 +77,12 @@ export default class AddNewEntityDialog extends Component {
     createEntityIdentifiers: func,
     initialEntityName: string,
     updateInitialEntityName: func,
-    faceLibraryTypes: shape({
-      id: string.isRequired,
-      label: string.isRequired
-    }).isRequired
+    faceLibraryTypes: arrayOf(
+      shape({
+        id: string.isRequired,
+        label: string.isRequired
+      })
+    ).isRequired
   };
 
   state = {

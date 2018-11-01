@@ -5,7 +5,8 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { startCase } from 'lodash';
+import Grid from '@material-ui/core/Grid';
+import { startCase, get } from 'lodash';
 
 import noAvatar from 'images/no-avatar.png';
 import FaceGrid from '../FaceGrid';
@@ -113,15 +114,18 @@ class EntityInformation extends Component {
               value="faceMatches"
               classes={{ root: styles.infoTab }}
             />
-            <Tab
-              label="Metadata"
-              value="metadata"
-              classes={{ root: styles.infoTab }}
-            />
+            {Object.keys(get(entity, 'jsondata', {})).length && (
+              <Tab
+                label="Metadata"
+                value="metadata"
+                classes={{ root: styles.infoTab }}
+              />
+            )}
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
               <FaceGrid
+                itemsRecognized
                 faces={faces}
                 selectedFaces={selectedFaces}
                 onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
@@ -133,15 +137,26 @@ class EntityInformation extends Component {
             </div>
           )}
           {this.state.activeTab === 'metadata' && (
-            <div className={styles.tabContainer}>
-              <div className={styles.entityJson}>
+            <Grid container className={styles.tabContainer}>
+              <Grid item container direction="row">
                 {entity.jsondata &&
                   !!Object.keys(entity.jsondata).length &&
                   Object.keys(entity.jsondata).map(objKey => {
                     return (
-                      <div
+                      <Grid
                         key={`entity-${entity.entityId}-jsondata-${objKey}`}
                         className={styles.jsondataItem}
+                        item
+                        xs={
+                          get(entity, ['jsondata', objKey, 'length']) > 50
+                            ? 12
+                            : 4
+                        }
+                        md={
+                          get(entity, ['jsondata', objKey, 'length']) > 50
+                            ? 12
+                            : 3
+                        }
                       >
                         <div className={styles.metadataLabel}>
                           {startCase(objKey)}
@@ -149,11 +164,11 @@ class EntityInformation extends Component {
                         <div className={styles.metadataValue}>
                           {entity.jsondata[objKey]}
                         </div>
-                      </div>
+                      </Grid>
                     );
                   })}
-              </div>
-            </div>
+              </Grid>
+            </Grid>
           )}
         </div>
       </div>
