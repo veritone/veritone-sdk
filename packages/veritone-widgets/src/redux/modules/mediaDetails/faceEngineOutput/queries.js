@@ -9,6 +9,7 @@ export const entityFieldsFragment = `
       name
     }
     profileImageUrl
+    description
   }
 `;
 
@@ -96,6 +97,7 @@ export const searchForEntities = `
         entities(name: $name) {
           records {
             ...entityFields
+            jsondata
           }
         }
       }

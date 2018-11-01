@@ -42,6 +42,7 @@ function* fetchEntities(entityIds) {
             name
           }
           profileImageUrl
+          description
           jsondata
         }
       }

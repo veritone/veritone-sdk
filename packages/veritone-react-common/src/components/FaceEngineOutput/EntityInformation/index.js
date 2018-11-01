@@ -120,7 +120,7 @@ class EntityInformation extends Component {
               value="faceMatches"
               classes={{ root: styles.infoTab }}
             />
-            {Object.keys(get(entity, 'jsondata', {})).length && (
+            {(Object.keys(get(entity, 'jsondata', {})).length || get(entity, 'description.length')) && (
               <Tab
                 label="Metadata"
                 value="metadata"
@@ -176,6 +176,19 @@ class EntityInformation extends Component {
                       </Grid>
                     );
                   })}
+                {get(entity, 'description.length') &&
+                  <Grid
+                    className={styles.jsondataItem}
+                    item
+                    xs={12}
+                  >
+                    <div className={styles.metadataLabel}>
+                      Description
+                    </div>
+                    <div className={styles.metadataValue}>
+                      {entity.description}
+                    </div>
+                  </Grid>}
               </Grid>
             </Grid>
           )}
