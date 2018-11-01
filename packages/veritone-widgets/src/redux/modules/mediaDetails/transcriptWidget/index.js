@@ -1,4 +1,4 @@
-import { get, set, isEqual, cloneDeep, forEach } from 'lodash';
+import { get, set, isEqual, cloneDeep, forEach, find } from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -444,6 +444,15 @@ const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
         primaryAsset(assetType: "transcript") {
           id
         }
+        assets(limit: 1000) {
+          records {
+            id
+            assetType
+            sourceData {
+              engineId
+            }
+          }
+        }
       }
     }`;
   return callGraphQLApi({
@@ -587,7 +596,7 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
         });
       }
 
-      let getPrimaryTranscriptAssetResponse, vtnStandardAssetsResponse;
+      let getPrimaryTranscriptAssetResponse;
       try {
         getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
           tdoId,
@@ -606,8 +615,22 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       }
 
       let originalTranscriptAssetId;
+      // use vlf instead of the primary transcript asset if it exists for the current engine
       // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
-      if (
+      const assets = get(getPrimaryTranscriptAssetResponse,
+          'temporalDataObject.assets.records', []);
+
+      const vlfAssets = assets.filter(asset => asset.assetType === 'v-vlf');
+      const vlfAssetToUse = find(vlfAssets, ['sourceData.engineId', selectedEngineId]);
+
+      const vtnStandardAssets = assets.filter(asset => asset.assetType === 'vtn-standard');
+      const vtnStandardAssetToUse = find(vtnStandardAssets, ['sourceData.engineId', selectedEngineId]);
+
+      if (vtnStandardAssetToUse) {
+        originalTranscriptAssetId = vtnStandardAssetToUse.id;
+      } else if (vlfAssetToUse) {
+        originalTranscriptAssetId = vlfAssetToUse.id;
+      } else if (
         get(
           getPrimaryTranscriptAssetResponse,
           'temporalDataObject.primaryAsset.id'
@@ -617,22 +640,6 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
           getPrimaryTranscriptAssetResponse,
           'temporalDataObject.primaryAsset.id'
         );
-      } else {
-        vtnStandardAssetsResponse = await fetchAssets(
-          tdoId,
-          'vtn-standard',
-          dispatch,
-          getState
-        );
-        const transcriptVtnAssets = get(
-          vtnStandardAssetsResponse,
-          'temporalDataObject.assets.records',
-          []
-        );
-        const transcriptVtnAsset = transcriptVtnAssets.find(
-          asset => get(asset, 'sourceData.engineId') === selectedEngineId
-        );
-        originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
       }
 
       if (!originalTranscriptAssetId) {
