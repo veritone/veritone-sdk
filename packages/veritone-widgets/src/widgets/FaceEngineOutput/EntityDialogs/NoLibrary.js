@@ -20,7 +20,7 @@ const NoLibrary = ({ width, height, onButtonClick }) => {
     >
       <Grid item>
         <img
-          src="https://s3.amazonaws.com/static.veritone.com/veritone-ui/no-avatar.png"
+          src="https://s3.amazonaws.com/static.veritone.com/veritone-ui/no-library-null.svg"
           className={styles.noLibraryImage}
         />
       </Grid>
