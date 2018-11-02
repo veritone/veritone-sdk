@@ -1,11 +1,11 @@
 import React from 'react';
 import { func, number, string, bool } from 'prop-types';
+import cx from 'classnames'
 import Checkbox from '@material-ui/core/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Tooltip from '@material-ui/core/Tooltip';
-import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PizzaIcon from '@material-ui/icons/LocalPizza';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import styles from './styles.scss';
 
@@ -58,7 +58,7 @@ const MultiEditActionBar = ({
             }`}
           >
             <Tooltip title="Add to an Existing Entity" placement="bottom-start">
-              <PizzaIcon />
+              <Icon className={cx("icon-existing-entity", styles.entityIcon)}/>
             </Tooltip>
           </IconButton>
           <IconButton
@@ -70,7 +70,7 @@ const MultiEditActionBar = ({
             }`}
           >
             <Tooltip title="Create New Entity" placement="bottom-start">
-              <CreateIcon />
+              <Icon className={cx("icon-new-entity", styles.entityIcon)}/>
             </Tooltip>
           </IconButton>
           <IconButton
