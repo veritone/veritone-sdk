@@ -460,13 +460,15 @@ export default class TranscriptEngineOutputContainer extends Component {
       'estimatedDisplayTimeMs',
       'mediaPlayerTimeMs',
       'mediaPlayerTimeIntervalMs',
-      'bulkEditEnabled',
       'moreMenuItems',
       'disableEditButton',
       'onEngineChange',
       'combineViewTypes',
       'selectedCombineViewTypeId'
     ]);
+
+    const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
+      false : this.props.bulkEditEnabled;
 
     const outputNullState = this.determineSpeakerNullstate();
 
@@ -489,6 +491,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         <TranscriptEngineOutput
           data={this.props.currentData}
           {...transcriptEngineProps}
+          bulkEditEnabled={bulkEditEnabled}
           editMode={this.props.editModeEnabled}
           onChange={this.handleContentChanged}
           onCombineEngineChange={this.handleSpeakerEngineChange}

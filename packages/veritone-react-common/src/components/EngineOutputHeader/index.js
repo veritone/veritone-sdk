@@ -141,6 +141,7 @@ class EngineOutputHeader extends Component {
           {isArray(combineViewTypes) && combineViewTypes.length > 1 && (
             <FormControl
               className={styles.engineFormControl}
+              disabled={disableEngineSelect}
             >
               <Select
                 autoWidth
