@@ -49,7 +49,8 @@ class EntityInformation extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     onAddNewEntity: func,
-    onAddToExistingEntity: func
+    onAddToExistingEntity: func,
+    hasLibraryAccess: bool
   };
 
   state = {
@@ -74,7 +75,8 @@ class EntityInformation extends Component {
       onSelectFaces,
       onUnselectFaces,
       onAddNewEntity,
-      onAddToExistingEntity
+      onAddToExistingEntity,
+      hasLibraryAccess
     } = this.props;
 
     return (
@@ -120,7 +122,8 @@ class EntityInformation extends Component {
               value="faceMatches"
               classes={{ root: styles.infoTab }}
             />
-            {(Object.keys(get(entity, 'jsondata', {})).length || get(entity, 'description.length')) && (
+            {(Object.keys(get(entity, 'jsondata', {})).length ||
+              get(entity, 'description.length')) && (
               <Tab
                 label="Metadata"
                 value="metadata"
@@ -142,6 +145,7 @@ class EntityInformation extends Component {
                 onUnselectFaces={onUnselectFaces}
                 onAddNewEntity={onAddNewEntity}
                 onAddToExistingEntity={onAddToExistingEntity}
+                disableLibraryButtons={!hasLibraryAccess}
               />
             </div>
           )}
@@ -176,19 +180,14 @@ class EntityInformation extends Component {
                       </Grid>
                     );
                   })}
-                {get(entity, 'description.length') &&
-                  <Grid
-                    className={styles.jsondataItem}
-                    item
-                    xs={12}
-                  >
-                    <div className={styles.metadataLabel}>
-                      Description
-                    </div>
+                {get(entity, 'description.length') && (
+                  <Grid className={styles.jsondataItem} item xs={12}>
+                    <div className={styles.metadataLabel}>Description</div>
                     <div className={styles.metadataValue}>
                       {entity.description}
                     </div>
-                  </Grid>}
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           )}

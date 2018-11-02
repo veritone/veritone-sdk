@@ -66,7 +66,8 @@ export default class FaceEntities extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     onAddNewEntity: func,
-    onAddToExistingEntity: func
+    onAddToExistingEntity: func,
+    hasLibraryAccess: bool
   };
 
   state = {
@@ -113,7 +114,8 @@ export default class FaceEntities extends Component {
       onSelectFaces,
       onUnselectFaces,
       onAddNewEntity,
-      onAddToExistingEntity
+      onAddToExistingEntity,
+      hasLibraryAccess
     } = this.props;
     const { faceEntities } = this.state;
 
@@ -134,6 +136,7 @@ export default class FaceEntities extends Component {
           onUnselectFaces={onUnselectFaces}
           onAddNewEntity={onAddNewEntity}
           onAddToExistingEntity={onAddToExistingEntity}
+          hasLibraryAccess={hasLibraryAccess}
         />
       );
     }

@@ -16,7 +16,8 @@ const MultiEditActionBar = ({
   onSelectAllChange,
   onAddToExistingEntityClick,
   onAddNewEntityClick,
-  onDeleteItemClick
+  onDeleteItemClick,
+  disableLibraryButtons
 }) => {
   return (
     <div className={styles.multiEditActionBox}>
@@ -44,40 +45,52 @@ const MultiEditActionBar = ({
         }}
       />
       {selectedItemsCount > 0 && (
-        <div className={styles.bulkFaceEditActions}>
-          <Tooltip title="Add to an Existing Entity" placement="bottom-start">
-            <IconButton
-              classes={{ root: styles.bulkFaceEditActionButton }}
-              onClick={onAddToExistingEntityClick}
-            >
-              <PizzaIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Create New Entity" placement="bottom-start">
-            <IconButton
-              classes={{ root: styles.bulkFaceEditActionButton }}
-              onClick={onAddNewEntityClick}
-            >
-              <CreateIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip
-            title={
-              itemsRecognized
-                ? `Remove Entit${selectedItemsCount > 1 ? 'ies' : 'y'}`
-                : `Delete${itemType ? ' ' + itemType : ''} Detection${
-                    selectedItemsCount > 1 ? 's' : ''
-                  }`
-            }
-            placement="bottom-start"
+        <div
+          className={styles.bulkFaceEditActions}
+          data-veritone-component="multi-edit-action-bar"
+        >
+          <IconButton
+            classes={{ root: styles.bulkFaceEditActionButton }}
+            onClick={onAddToExistingEntityClick}
+            disabled={disableLibraryButtons}
+            data-veritone-element={`on-add-to-existing-entity${
+              disableLibraryButtons ? '-disabled' : ''
+            }`}
           >
-            <IconButton
-              classes={{ root: styles.bulkFaceEditActionButton }}
-              onClick={onDeleteItemClick}
+            <Tooltip title="Add to an Existing Entity" placement="bottom-start">
+              <PizzaIcon />
+            </Tooltip>
+          </IconButton>
+          <IconButton
+            classes={{ root: styles.bulkFaceEditActionButton }}
+            onClick={onAddNewEntityClick}
+            disabled={disableLibraryButtons}
+            data-veritone-element={`add-to-new-entity${
+              disableLibraryButtons ? '-disabled' : ''
+            }`}
+          >
+            <Tooltip title="Create New Entity" placement="bottom-start">
+              <CreateIcon />
+            </Tooltip>
+          </IconButton>
+          <IconButton
+            classes={{ root: styles.bulkFaceEditActionButton }}
+            onClick={onDeleteItemClick}
+            data-veritone-element="delete-button"
+          >
+            <Tooltip
+              title={
+                itemsRecognized
+                  ? `Remove Entit${selectedItemsCount > 1 ? 'ies' : 'y'}`
+                  : `Delete${itemType ? ' ' + itemType : ''} Detection${
+                      selectedItemsCount > 1 ? 's' : ''
+                    }`
+              }
+              placement="bottom-start"
             >
               <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+            </Tooltip>
+          </IconButton>
         </div>
       )}
     </div>
@@ -91,7 +104,8 @@ MultiEditActionBar.propTypes = {
   onSelectAllChange: func,
   onAddToExistingEntityClick: func,
   onAddNewEntityClick: func,
-  onDeleteItemClick: func
+  onDeleteItemClick: func,
+  disableLibraryButtons: bool
 };
 
 export default MultiEditActionBar;

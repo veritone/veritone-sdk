@@ -1,5 +1,5 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, includes } from 'lodash';
 import {
   permissions as perms,
   util as permissionUtil
@@ -353,5 +353,12 @@ export function hasFeature(state, featureName) {
       'features',
       featureName
     ]) === 'enabled'
+  );
+}
+
+export function hasOrgAppAccess(state, applicationId) {
+  return includes(
+    get(local(state), 'user.organization.kvp.applicationIds'),
+    applicationId
   );
 }

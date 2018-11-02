@@ -26,7 +26,7 @@ import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 import AddNewEntityDialog from './EntityDialogs/AddNewEntity';
 import AddToAnExistingEntityDialog from './EntityDialogs/AddToExisting';
 
-const { engineResults: engineResultsModule } = modules;
+const { engineResults: engineResultsModule, user: userModule } = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -56,7 +56,11 @@ const saga = util.reactReduxSaga.saga;
     editModeEnabled: faceEngineOutput.getEditModeEnabled(state),
     bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state),
     activeTab: faceEngineOutput.getActiveTab(state),
-    selectedEntityId: faceEngineOutput.getSelectedEntityId(state)
+    selectedEntityId: faceEngineOutput.getSelectedEntityId(state),
+    hasLibraryAccess: userModule.hasOrgAppAccess(
+      state,
+      'cf05552b-52e0-46fa-8f7f-4c9eee135c51'
+    ) //TODO: find a better way to check for app access other than hard coding the id
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -195,7 +199,8 @@ class FaceEngineOutputContainer extends Component {
     closeAddEntityDialog: func,
     closeAddToExistingEntityDialog: func,
     selectedEntityId: string,
-    setSelectedEntityId: func
+    setSelectedEntityId: func,
+    hasLibraryAccess: bool
   };
 
   state = {
@@ -391,7 +396,8 @@ class FaceEngineOutputContainer extends Component {
       'moreMenuItems',
       'onAddNewEntity',
       'onAddToExistingEntity',
-      'selectedEntityId'
+      'selectedEntityId',
+      'hasLibraryAccess'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {

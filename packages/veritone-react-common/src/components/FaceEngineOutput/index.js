@@ -133,7 +133,8 @@ class FaceEngineOutput extends Component {
     activeTab: string,
     setActiveTab: func,
     selectedEntityId: string,
-    onSelectEntity: func
+    onSelectEntity: func,
+    hasLibraryAccess: bool
   };
 
   state = {
@@ -200,7 +201,8 @@ class FaceEngineOutput extends Component {
       onRemoveFaces,
       onAddToExistingEntity,
       selectedEntityId,
-      onSelectEntity
+      onSelectEntity,
+      hasLibraryAccess
     } = this.props;
 
     const { viewMode } = this.state;
@@ -377,6 +379,7 @@ class FaceEngineOutput extends Component {
                 onRemoveFaceRecognition={onRemoveFaces}
                 onAddNewEntity={onAddNewEntity}
                 onAddToExistingEntity={onAddToExistingEntity}
+                hasLibraryAccess={hasLibraryAccess}
               />
             </div>
           )}
@@ -402,6 +405,7 @@ class FaceEngineOutput extends Component {
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
                 onAddToExistingEntity={onAddToExistingEntity}
+                disableLibraryButtons={!hasLibraryAccess}
               />
             </div>
           )}

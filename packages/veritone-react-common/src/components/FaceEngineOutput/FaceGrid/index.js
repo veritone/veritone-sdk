@@ -47,7 +47,8 @@ class FaceGrid extends Component {
     hideEntityLabels: bool,
     onSelectFaces: func,
     onUnselectFaces: func,
-    onAddToExistingEntity: func
+    onAddToExistingEntity: func,
+    disableLibraryButtons: bool
   };
 
   state = {
@@ -123,7 +124,8 @@ class FaceGrid extends Component {
       hideEntityLabels,
       editMode,
       entitySearchResults,
-      itemsRecognized
+      itemsRecognized,
+      disableLibraryButtons
     } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
@@ -149,6 +151,7 @@ class FaceGrid extends Component {
                   onAddToExistingEntityClick={this.handleAddAllToExistingEntity}
                   onAddNewEntityClick={this.handleAllToNewEntity}
                   onDeleteItemClick={this.handleRemoveFaces(selectedFaces)}
+                  disableLibraryButtons={disableLibraryButtons}
                 />
               </Grid>
             )}
