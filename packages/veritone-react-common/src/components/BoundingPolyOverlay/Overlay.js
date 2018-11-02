@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNumber, isEqual, isString, findIndex } from 'lodash';
+import { isNumber, isEqual, isString, findIndex, get } from 'lodash';
 import memoize from 'memoize-one';
 import {
   arrayOf,
@@ -255,7 +255,7 @@ export default class Overlay extends React.Component {
     const focusedIndex = findIndex(this.state.boundingBoxPositions, {
       id: focusedId
     });
-    if (this.state.boundingBoxPositions[focusedIndex].readOnly) {
+    if (get(this.state.boundingBoxPositions[focusedIndex], 'readOnly')) {
       return;
     }
 
@@ -447,7 +447,9 @@ export default class Overlay extends React.Component {
               onDrag={this.handleDragExistingBox}
               onResize={this.handleResizeExistingBox}
               onResizeStop={this.handleResizeExistingBoxStop}
-              disableDragging={readOnly || this.props.readOnly || this.props.addOnly}
+              disableDragging={
+                readOnly || this.props.readOnly || this.props.addOnly
+              }
               enableResizing={
                 !readOnly &&
                 !this.props.readOnly &&
