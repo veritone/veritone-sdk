@@ -23,10 +23,6 @@ import {
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
-  pendingUserEdits,
-  ADD_DETECTED_FACE,
-  REMOVE_DETECTED_FACE,
-  CANCEL_FACE_EDITS,
   SAVE_FACE_EDITS_SUCCESS
 } from './faceEngineOutput';
 import {
@@ -59,6 +55,7 @@ import {
   REQUEST_SCHEMAS_FAILURE,
   CREATE_FILE_ASSET_SUCCESS,
   RESTORE_ORIGINAL_ENGINE_RESULTS,
+  RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO_SUCCESS,
   REFRESH_ENGINE_RUNS_SUCCESS,
   loadEngineCategoriesSuccess,
@@ -83,8 +80,12 @@ import {
   setEditButtonState,
   getSelectedEngineId,
   restoreOriginalEngineResultsFailure,
-  restoreOriginalEngineResultsSuccess
+  restoreOriginalEngineResultsSuccess,
+  insertIntoIndexFailure,
+  emitEntityUpdatedEventFailure
 } from '.';
+
+import * as gqlQuery from './queries';
 
 const tdoInfoQueryClause = `id
     details
@@ -887,6 +888,41 @@ function* watchRestoreOriginalEngineResults() {
   });
 }
 
+function* emitEntityUpdatedEvent(tdoId) {
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  // TODO: remove hardcoded CMS applicationId when platform starts using orgId from the token
+  const input = {
+    eventName: 'EntityUpdated',
+    eventType: 'entity',
+    application: '8a37c1d0-3f3b-48d0-a84e-2b8e3646fbe5',
+    payload: `{ "recordingId": "${tdoId}" }`
+  };
+
+  try {
+    if (tdoId) {
+      const response = yield call(fetchGraphQLApi, {
+        endpoint: graphQLUrl,
+        query: gqlQuery.emitEvent,
+        variables: { input },
+        token
+      });
+      if (!get(response, 'data.emitEvent.id') || get(response, 'errors.length')) {
+        return yield put(
+          emitEntityUpdatedEventFailure('Failed to emit EntityUpdated event for saved results.')
+        );
+      }
+    }
+  } catch (error) {
+    return yield put(
+      emitEntityUpdatedEventFailure(`Failed to emit EntityUpdated event for saved results.`)
+    );
+  }
+}
+
 function* watchLoadEngineResultsComplete(widgetId) {
   yield takeEvery(engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS, function*(
     action
@@ -1150,20 +1186,6 @@ function* watchTranscriptStatus() {
   });
 }
 
-function* watchFaceEngineEntityUpdate(widgetId) {
-  yield takeEvery(
-    [ADD_DETECTED_FACE, REMOVE_DETECTED_FACE, CANCEL_FACE_EDITS],
-    function*(action) {
-      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-      const hasPendingFaceEdits = yield select(
-        pendingUserEdits,
-        selectedEngineId
-      );
-      yield put(toggleSaveMode(hasPendingFaceEdits));
-    }
-  );
-}
-
 function* watchCreateFileAssetSuccess() {
   yield takeEvery(
     action => action.type === CREATE_FILE_ASSET_SUCCESS,
@@ -1176,23 +1198,6 @@ function* watchCreateFileAssetSuccess() {
 }
 
 function* insertIntoIndexSaga(tdoId) {
-  const createJobQuery = `mutation createJob($tdoId: ID!) {
-    createJob(input: {
-      targetId: $tdoId,
-      tasks: [{
-        engineId: "insert-into-index"
-      }]
-    }) {
-      id
-      tasks {
-        records {
-          id
-          jobId
-        }
-      }
-    }
-  }`;
-
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -1203,22 +1208,18 @@ function* insertIntoIndexSaga(tdoId) {
   try {
     const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
-      query: createJobQuery,
+      query: gqlQuery.createJobInsertIntoIndex,
       variables: { tdoId: tdoId },
       token
     });
 
-    if (!get(response, 'data.createJob.id')) {
-      throw new Error('Failed to create insert-into-index task.');
-    }
-    if (
+    if (!get(response, 'data.createJob.id') ||
       isEmpty(get(response, 'data.createJob.tasks.records')) ||
-      !get(response, 'data.createJob.tasks.records[0].id')
-    ) {
-      throw new Error('Failed to create insert-into-index task.');
+      !get(response, 'data.createJob.tasks.records[0].id')) {
+      return yield put(insertIntoIndexFailure('Failed to create insert-into-index task.'));
     }
   } catch (error) {
-    // return yield put(insertIntoIndexFailure(widgetId, { error }));
+    return yield put(insertIntoIndexFailure('Failed to create insert-into-index task.'));
   }
 }
 
@@ -1321,6 +1322,24 @@ function* watchEditSuccess(widgetId) {
   );
 }
 
+function* watchSaveEntityUpdatesSuccess(widgetId) {
+  yield takeEvery(
+    [SAVE_FACE_EDITS_SUCCESS, RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS],
+    function*() {
+      const selectedEngineCategory = yield select(
+        getSelectedEngineCategory,
+        widgetId
+      );
+      // Emit event for specific engine categories
+      if (selectedEngineCategory.categoryType !== 'face') {
+        return;
+      }
+      const tdo = yield select(getTdo, widgetId);
+      return yield call(emitEntityUpdatedEvent, tdo.id);
+    }
+  );
+}
+
 function* onMount(id, mediaId) {
   yield put(loadTdoRequest(id, mediaId));
   yield put(applicationModule.fetchApplications());
@@ -1336,13 +1355,13 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
-    fork(watchFaceEngineEntityUpdate, id),
     fork(watchCreateFileAssetSuccess),
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
     fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
-    fork(watchEditSuccess, id, mediaId),
+    fork(watchEditSuccess, id),
+    fork(watchSaveEntityUpdatesSuccess, id),
     fork(onMount, id, mediaId)
   ]);
 }
