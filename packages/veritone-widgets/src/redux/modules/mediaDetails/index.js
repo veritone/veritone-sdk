@@ -78,7 +78,11 @@ const defaultMDPState = {
   },
   isEditButtonDisabled: false,
   currentMediaPlayerTime: 0,
-  isRestoringOriginalEngineResult: false
+  isRestoringOriginalEngineResult: false,
+  categoryCombinationMapper: [{
+    combineType: 'speaker',
+    withType: 'transcript'
+  }]
 };
 
 const defaultState = {};
@@ -756,6 +760,8 @@ export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
 export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
+export const categoryCombinationMapper = (state, widgetId) =>
+  get(local(state), [widgetId, 'categoryCombinationMapper']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -990,7 +996,9 @@ export const createQuickExport = (
       formats: formatTypes.map(type => {
         return {
           extension: type,
-          options: {}
+          options: {
+            withSpeakerData: true
+          }
         };
       })
     }

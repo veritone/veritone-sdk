@@ -58,6 +58,10 @@ export const OPEN_CONFIRMATION_DIALOG =
   transcriptNamespace + '_OPEN_CONFIRMATION_DIALOG';
 export const CLOSE_CONFIRMATION_DIALOG =
   transcriptNamespace + '_CLOSE_CONFIRMATION_DIALOG';
+export const STORE_SELECTED_COMBINE_ENGINE_ID =
+  transcriptNamespace + '_SET_SELECTED_COMBINE_ENGINE_ID';
+export const SET_SELECTED_COMBINE_VIEW_TYPE =
+  transcriptNamespace + '_SET_SELECTED_COMBINE_VIEW_TYPE';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -73,7 +77,8 @@ const initialState = {
   savingTranscript: false,
   editModeEnabled: false,
   showConfirmationDialog: false,
-  confirmationType: 'cancelEdits'
+  confirmationType: 'cancelEdits',
+  combineCategory: 'speaker'
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -249,6 +254,28 @@ const transcriptReducer = createReducer(initialState, {
       showConfirmationDialog: false,
       confirmationType: 'cancelEdits'
     };
+  },
+  [STORE_SELECTED_COMBINE_ENGINE_ID](
+    state,
+    {
+      payload: { selectedCombineEngineId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedCombineEngineId
+    };
+  },
+  [SET_SELECTED_COMBINE_VIEW_TYPE](
+    state,
+    {
+      payload: { selectedCombineViewTypeId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedCombineViewTypeId
+    }
   }
 });
 
@@ -436,7 +463,44 @@ export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
 export const getConfirmationType = state =>
   get(local(state), 'confirmationType');
+export const combineCategory = state =>
+  get(local(state), 'combineCategory');
+export const getSelectedCombineEngineId = state =>
+  get(local(state), 'selectedCombineEngineId');
+export const getCombineViewTypes = state => {
+  const viewTypes = [{
+    name: 'Transcript',
+    id: 'transcript-view'
+  }];
+  const selectedCombineEngineId = get(local(state), 'selectedCombineEngineId');
+  if (selectedCombineEngineId) {
+    viewTypes.unshift({
+      name: 'Speaker Separation',
+      id: 'speaker-view'
+    });
+  }
+  return viewTypes;
+};
+export const selectedCombineViewTypeId = state =>
+  get(local(state), 'selectedCombineViewTypeId');
 
+export const setSelectedCombineViewTypeId = viewTypeId => {
+  return {
+    type: SET_SELECTED_COMBINE_VIEW_TYPE,
+    payload: {
+      selectedCombineViewTypeId: viewTypeId
+    }
+  };
+};
+
+export const setSelectedCombineEngineId = engineId => {
+  return {
+    type: STORE_SELECTED_COMBINE_ENGINE_ID,
+    payload: {
+      selectedCombineEngineId: engineId
+    }
+  };
+};
 const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
   const getPrimaryTranscriptAssetQuery = `query temporalDataObject($tdoId: ID!){

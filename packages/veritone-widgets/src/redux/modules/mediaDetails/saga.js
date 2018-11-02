@@ -149,7 +149,8 @@ function processEngineRuns(engineRuns) {
     'translate',
     'sentiment',
     'geolocation',
-    'correlation'
+    'correlation',
+    'speaker'
   ];
   const engineCategories = [];
 

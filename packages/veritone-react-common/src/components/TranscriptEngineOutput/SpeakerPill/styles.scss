@@ -1,0 +1,15 @@
+@import 'src/styles/modules/variables';
+
+.speakerPill {
+  min-width: 50px;
+  height: 24px !important;
+  font-weight: bold;
+  
+  &.highlight {
+    background-color: $blue-1 !important;
+    color: white;
+    &:hover {
+      background-color: $blue-1 !important;
+    }
+  }
+}
