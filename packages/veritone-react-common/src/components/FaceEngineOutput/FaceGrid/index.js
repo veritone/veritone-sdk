@@ -100,12 +100,12 @@ class FaceGrid extends Component {
       } else {
         onSelectFaces([face]);
       }
-      this.setState({
-        lastCheckedFace: { ...face }
-      });
     } else {
       onUnselectFaces([face]);
     }
+    this.setState({
+      lastCheckedFace: { ...face }
+    });
   };
 
   handleRemoveFaces = faces => () => {
