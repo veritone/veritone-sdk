@@ -1,6 +1,6 @@
 import React from 'react';
 import { func, number, string, bool } from 'prop-types';
-import cx from 'classnames'
+import cx from 'classnames';
 import Checkbox from '@material-ui/core/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -58,7 +58,7 @@ const MultiEditActionBar = ({
             }`}
           >
             <Tooltip title="Add to an Existing Entity" placement="bottom-start">
-              <Icon className={cx("icon-existing-entity", styles.entityIcon)}/>
+              <Icon className={cx('icon-existing-entity', styles.entityIcon)} />
             </Tooltip>
           </IconButton>
           <IconButton
@@ -70,7 +70,7 @@ const MultiEditActionBar = ({
             }`}
           >
             <Tooltip title="Create New Entity" placement="bottom-start">
-              <Icon className={cx("icon-new-entity", styles.entityIcon)}/>
+              <Icon className={cx('icon-new-entity', styles.entityIcon)} />
             </Tooltip>
           </IconButton>
           <IconButton
@@ -81,7 +81,9 @@ const MultiEditActionBar = ({
             <Tooltip
               title={
                 itemsRecognized
-                  ? `Remove Entit${selectedItemsCount > 1 ? 'ies' : 'y'}`
+                  ? `Remove Recognized Image${
+                      selectedItemsCount > 1 ? 's' : ''
+                    }`
                   : `Delete${itemType ? ' ' + itemType : ''} Detection${
                       selectedItemsCount > 1 ? 's' : ''
                     }`

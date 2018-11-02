@@ -1,7 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
 import { connect } from 'react-redux';
+import { SubmissionError } from 'redux-form';
 import { find, get } from 'lodash';
+import cx from 'classnames';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
@@ -15,9 +17,7 @@ import CreateLibrarySuccess from './CreateLibrarySuccess';
 import * as faceEngineOutput from '../../../redux/modules/mediaDetails/faceEngineOutput';
 import { removeAwsSignatureParams } from '../../../shared/asset';
 import { LibraryForm } from 'veritone-react-common';
-
 import styles from './styles.scss';
-import cx from 'classnames';
 
 @connect(
   state => ({
@@ -110,18 +110,36 @@ export default class AddNewEntityDialog extends Component {
   }
 
   handleCreateNewEntity = formData => {
-    const { currentlyEditedFaces } = this.props;
+    const { currentlyEditedFaces, createEntity } = this.props;
     if (currentlyEditedFaces) {
-      this.setState({
-        configuringNewLibrary: false,
-        selectingIdentifiers: true,
-        cachedEntity: {
-          ...formData,
-          profileImageUrl: removeAwsSignatureParams(
-            get(currentlyEditedFaces, '[0].object.uri')
-          )
-        }
-      });
+      return createEntity({
+        ...formData,
+        profileImageUrl: removeAwsSignatureParams(
+          get(currentlyEditedFaces, '[0].object.uri')
+        )
+      })
+        .then(res => {
+          this.setState({
+            configuringNewLibrary: false,
+            selectingIdentifiers: true,
+            cachedEntity: {
+              ...res
+            }
+          });
+          return res;
+        })
+        .catch(error => {
+          if (get(error, 'errors[0].name') === 'resource_conflict') {
+            throw new SubmissionError({
+              name: 'An entity with that name already exists in that library.',
+              _error: 'An entity with that name already exists in that library.'
+            });
+          } else {
+            throw new SubmissionError({
+              _error: 'Unable to create entity. Please try again later.'
+            });
+          }
+        });
     }
   };
 
@@ -132,41 +150,39 @@ export default class AddNewEntityDialog extends Component {
     });
   };
 
-  handleCreateIdentifiers = async selectedIdentifiers => {
+  handleCreateIdentifiers = selectedIdentifiers => {
     const {
       createEntityIdentifiers,
       currentlyEditedFaces,
-      createEntity,
       onSubmit
     } = this.props;
     const { cachedEntity } = this.state;
-    let entityRes;
-    if (cachedEntity) {
-      entityRes = await createEntity(cachedEntity);
-
-      if (get(entityRes, 'entity.id')) {
-        await createEntityIdentifiers(
+    if (get(cachedEntity, 'id')) {
+      if (cachedEntity.id) {
+        createEntityIdentifiers(
           currentlyEditedFaces.map(face => {
             return {
-              entityId: get(entityRes, 'entity.id'),
+              entityId: get(cachedEntity, 'id'),
               identifierTypeId: 'face',
               contentType: 'image',
               url: get(face, 'object.uri'),
               isPriority: !!find(selectedIdentifiers, { guid: face.guid })
             };
           })
-        );
-
-        this.setState(
-          {
-            selectedLibraryId: null,
-            configuringNewLibrary: false,
-            selectingIdentifiers: false
-          },
-          () => {
-            onSubmit(currentlyEditedFaces, get(entityRes, 'entity'));
-          }
-        );
+        ).then(res => {
+          this.setState(
+            {
+              selectedLibraryId: null,
+              configuringNewLibrary: false,
+              selectingIdentifiers: false,
+              cachedEntity: null
+            },
+            () => {
+              onSubmit(currentlyEditedFaces, cachedEntity);
+            }
+          );
+          return res;
+        });
       }
     }
   };
@@ -178,7 +194,8 @@ export default class AddNewEntityDialog extends Component {
   };
 
   handleCreateLibrary = library => {
-    this.props.createNewLibrary(library).then(res => {
+    const { createNewLibrary } = this.props;
+    return createNewLibrary(library).then(res => {
       this.setState(prevState => {
         return {
           configuringNewLibrary: false,

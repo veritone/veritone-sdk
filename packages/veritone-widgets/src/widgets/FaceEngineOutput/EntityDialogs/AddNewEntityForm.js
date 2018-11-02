@@ -8,15 +8,16 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import styles from './styles.scss';
 
 export const validate = values => {
   const errors = {};
   if (!values.name) {
-    errors.name = 'Name is Required';
+    errors.name = 'Name is Required.';
   }
   if (!values.libraryId) {
-    errors.libraryId = 'Library is Required';
+    errors.libraryId = 'Library is Required.';
   }
   return errors;
 };
@@ -37,7 +38,8 @@ const AddNewEntityForm = reduxForm({
     disableSubmit,
     showCreateLibraryButton,
     onCreateNewLibrary,
-    onNameChange
+    onNameChange,
+    error
   }) => (
     <form onSubmit={handleSubmit} data-veritone-component="add-new-entity-form">
       <Grid container direction="column" spacing={32}>
@@ -131,6 +133,11 @@ const AddNewEntityForm = reduxForm({
               </Field>
             </FormControl>
           </Grid>
+          {error && (
+            <FormHelperText className={styles.createEntityError} error>
+              {error}
+            </FormHelperText>
+          )}
         </Grid>
         <Grid
           item
