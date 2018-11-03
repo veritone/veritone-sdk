@@ -776,13 +776,30 @@ class MediaDetailsWidget extends React.Component {
       tdo,
       selectedEngineId,
       selectedEngineCategory,
-      createQuickExport
+      createQuickExport,
+      categoryCombinationMapper,
+      engineCategories
     } = this.props;
+    let selectedCombineEngineId, selectedCombineCategoryId;
+    const hasCombineEngineOutput = find(
+      categoryCombinationMapper, 
+      ['withType', selectedEngineCategory.categoryType]
+    );
+    if (hasCombineEngineOutput) {
+      const combineCategory = find(
+        engineCategories,
+        ['categoryType', hasCombineEngineOutput.combineType]
+      );
+      selectedCombineCategoryId = combineCategory.id;
+      selectedCombineEngineId = get(combineCategory, 'engines[0].id');
+    }
     createQuickExport(
       tdo.id,
       selectedFormats,
       selectedEngineId,
-      selectedEngineCategory.id
+      selectedEngineCategory.id,
+      selectedCombineEngineId,
+      selectedCombineCategoryId
     ).then(response => {
       this.props.onExport(get(response, 'createExportRequest'), tdo);
       return get(response, 'createExportRequest');

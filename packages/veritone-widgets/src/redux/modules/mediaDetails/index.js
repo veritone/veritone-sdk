@@ -1001,7 +1001,9 @@ export const createQuickExport = (
   tdoId,
   formatTypes,
   engineId,
-  categoryId
+  categoryId,
+  selectedCombineEngineId,
+  selectedCombineCategoryId
 ) => async (dispatch, getState) => {
   const query = `
     mutation createExportRequest(
@@ -1039,6 +1041,14 @@ export const createQuickExport = (
       })
     }
   ];
+
+  if (selectedCombineEngineId) {
+    outputConfigurations.push({
+      categoryId: selectedCombineCategoryId,
+      engineId: selectedCombineEngineId,
+      formats: []
+    });
+  }
 
   return await callGraphQLApi({
     actionTypes: [
