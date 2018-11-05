@@ -201,8 +201,6 @@ export default class SpeakerTranscriptContent extends Component {
             if (overviewStatus && overviewStatus !== 'success') {
               saveOverviewData();
             }
-            snippetStatus = 'success';
-            overviewStatus = 'success';
 
             //---Get Correct Word---
             let selectedWord = '';
@@ -211,6 +209,17 @@ export default class SpeakerTranscriptContent extends Component {
             if (words.length > 0) {
               selectedWord = words[0].word;
             }
+
+            // ignore special words / states
+            if (selectedWord === '!silence' ||
+              selectedWord === '[noise]' ||
+              selectedWord === '<noise>'
+            ) {
+              return;
+            }
+
+            snippetStatus = 'success';
+            overviewStatus = 'success';
 
             // escape special characters to show in UI
             if (selectedWord) {
