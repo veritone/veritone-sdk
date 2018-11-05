@@ -225,9 +225,7 @@ class FaceInfoBox extends Component {
                       <div ref={this.inputRef}>
                         <Input
                           {...getInputProps({
-                            placeholder: face.object.label
-                              ? face.object.label
-                              : 'Unknown',
+                            placeholder: 'Unknown',
                             className: styles.entitySearchInput
                           })}
                         />

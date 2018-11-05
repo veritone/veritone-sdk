@@ -76,13 +76,13 @@ class FaceGrid extends Component {
   };
 
   handleAllToNewEntity = () => {
-    const { faces } = this.props;
-    this.props.onAddNewEntity(faces);
+    const { selectedFaces } = this.props;
+    this.props.onAddNewEntity(selectedFaces);
   };
 
   handleAddAllToExistingEntity = () => {
-    const { faces } = this.props;
-    this.props.onAddToExistingEntity(faces);
+    const { selectedFaces } = this.props;
+    this.props.onAddToExistingEntity(selectedFaces);
   };
 
   handleSingleFaceSelect = (face, evt) => {

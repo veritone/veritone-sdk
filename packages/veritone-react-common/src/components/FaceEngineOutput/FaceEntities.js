@@ -270,8 +270,7 @@ function buildFaceDataPayload(faces, entities) {
                 {
                   ...faceObj,
                   object: {
-                    ...faceObj.object,
-                    label: entity.name || get(faceObj, 'object.label')
+                    ...faceObj.object
                   }
                 }
               ],
