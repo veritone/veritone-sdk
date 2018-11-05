@@ -53,6 +53,10 @@ $cover-image-height: 200px;
     background-color: $grey-4;
   }
 
+  .hiddenFileInput {
+    display: none !important;
+  }
+
   .uploadIcon {
     font-size: 45px;
     color: $semi-black;
