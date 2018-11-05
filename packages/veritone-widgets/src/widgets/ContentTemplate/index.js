@@ -1,6 +1,6 @@
 import React from 'react';
 import { reject } from 'lodash';
-import { objectOf, arrayOf, any, func, bool } from 'prop-types';
+import { objectOf, arrayOf, any, func, bool, number } from 'prop-types';
 import { ContentTemplate } from 'veritone-react-common';
 import { guid } from '../../shared/util';
 
@@ -12,7 +12,8 @@ class ContentTemplateWidget extends React.Component {
     initialTemplates: arrayOf(any),
     handleUpdateContentTemplates: func.isRequired,
     getFieldOptions: func,
-    isReadOnly: bool
+    isReadOnly: bool,
+    textInputMaxRows: number
   };
 
   static defaultProps = {
@@ -109,6 +110,7 @@ class ContentTemplateWidget extends React.Component {
         onInputChange={this.onInputChange}
         getFieldOptions={this.props.getFieldOptions}
         isReadOnly={this.props.isReadOnly}
+        textInputMaxRows={this.props.textInputMaxRows}
       />
     );
   }

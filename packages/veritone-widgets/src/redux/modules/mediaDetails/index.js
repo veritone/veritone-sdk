@@ -51,6 +51,8 @@ export const CREATE_QUICK_EXPORT = `${namespace}_CREATE_QUICK_EXPORT`;
 export const CREATE_QUICK_EXPORT_SUCCESS = `${namespace}_CREATE_QUICK_EXPORT_SUCCESS`;
 export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAILURE`;
 export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
+export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE`;
+export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -61,7 +63,7 @@ const defaultMDPState = {
   isEditModeEnabled: false,
   isExpandedMode: false,
   entities: [],
-  fetchingEntities: false,
+  isFetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: [],
   schemasById: {},
@@ -78,7 +80,11 @@ const defaultMDPState = {
   },
   isEditButtonDisabled: false,
   currentMediaPlayerTime: 0,
-  isRestoringOriginalEngineResult: false
+  isRestoringOriginalEngineResult: false,
+  categoryCombinationMapper: [{
+    combineType: 'speaker',
+    withType: 'transcript'
+  }]
 };
 
 const defaultState = {};
@@ -472,55 +478,41 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_ENTITIES](
-    state,
-    {
-      meta: { widgetId }
-    }
+    state
   ) {
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingEntities: true
-      }
+      isFetchingEntities: true
     };
   },
   [REQUEST_ENTITIES_SUCCESS](
     state,
     {
-      payload,
-      meta: { widgetId }
+      payload
     }
   ) {
     const allEntities = uniqBy(
-      values(payload).concat(state[widgetId].entities),
+      values(payload).concat(get(state, 'entities', [])),
       'id'
     );
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingEntities: false,
-        error: null,
-        entities: allEntities
-      }
+      isFetchingEntities: false,
+      error: null,
+      entities: allEntities
     };
   },
   [REQUEST_ENTITIES_FAILURE](
     state,
     {
-      error,
-      meta: { widgetId }
+      error
     }
   ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: errorMessage || 'unknown error',
-        fetchingEntities: false
-      }
+      error: errorMessage || 'unknown error',
+      isFetchingEntities: false
     };
   },
   [REQUEST_SCHEMAS](state) {
@@ -724,7 +716,31 @@ export default createReducer(defaultState, {
     return {
       ...state
     };
-  }
+  },
+  [INSERT_INTO_INDEX_FAILURE](
+    state,
+    {
+      meta: { error }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      error: errorMessage || 'unknown error'
+    };
+  },
+  [EMIT_ENTITY_UPDATED_EVENT_FAILURE](
+    state,
+    {
+      meta: { error }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      error: errorMessage || 'unknown error'
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -746,8 +762,10 @@ export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getEntities = (state, widgetId) =>
-  get(local(state), [widgetId, 'entities']);
+export const getEntities = (state) =>
+  get(local(state), 'entities');
+export const isFetchingEntities = (state) =>
+  get(local(state), 'isFetchingEntities');
 export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const getTdoContentTemplates = (state, widgetId) =>
@@ -755,7 +773,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
 export const getSchemasById = state => get(local(state), 'schemasById');
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
-  get(local(state), [widgetId, 'error']);
+  get(local(state), [widgetId, 'error']) || get(local(state), 'error');
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const isEditButtonDisabled = (state, widgetId) =>
@@ -768,6 +786,8 @@ export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
 export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
+export const categoryCombinationMapper = (state, widgetId) =>
+  get(local(state), [widgetId, 'categoryCombinationMapper']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -967,11 +987,23 @@ export const cancelEdit = (widgetId, selectedEngineId) => ({
   meta: { widgetId, selectedEngineId }
 });
 
+export const insertIntoIndexFailure = error => ({
+  type: INSERT_INTO_INDEX_FAILURE,
+  meta: { error }
+});
+
+export const emitEntityUpdatedEventFailure = error => ({
+  type: EMIT_ENTITY_UPDATED_EVENT_FAILURE,
+  meta: { error }
+});
+
 export const createQuickExport = (
   tdoId,
   formatTypes,
   engineId,
-  categoryId
+  categoryId,
+  selectedCombineEngineId,
+  selectedCombineCategoryId
 ) => async (dispatch, getState) => {
   const query = `
     mutation createExportRequest(
@@ -1002,11 +1034,21 @@ export const createQuickExport = (
       formats: formatTypes.map(type => {
         return {
           extension: type,
-          options: {}
+          options: {
+            withSpeakerData: true
+          }
         };
       })
     }
   ];
+
+  if (selectedCombineEngineId) {
+    outputConfigurations.push({
+      categoryId: selectedCombineCategoryId,
+      engineId: selectedCombineEngineId,
+      formats: []
+    });
+  }
 
   return await callGraphQLApi({
     actionTypes: [

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bool, number, string, func, shape, arrayOf } from 'prop-types';
 
 import classNames from 'classnames';
+import { get } from 'lodash';
 
 import GoogleMapComponent from './GoogleMapComponent';
 import GoogleMapHelpers from './GoogleMapComponent/GoogleMapHelpers';
@@ -24,8 +25,20 @@ export default class GeoMapView extends Component {
             direction: number,
             velocity: number,
             altitude: number
-          })
-        ).isRequired
+          }).isRequired
+        ),
+        object: shape({
+          gps: arrayOf(
+            shape({
+              latitude: number,
+              longitude: number,
+              precision: number,
+              direction: number,
+              velocity: number,
+              altitude: number
+            }).isRequired
+          )
+        })
       })
     ),
     className: string,
@@ -44,6 +57,13 @@ export default class GeoMapView extends Component {
     travelMode: GoogleMapHelpers.travelModes.FLYING
   };
 
+  getGeoLocation = seriesItem => {
+    if (get(seriesItem, 'gps.length')) {
+      return get(seriesItem, 'gps');
+    }
+    return get(seriesItem, 'object.gps');
+  };
+
   handleRouteClick = value => {
     const { data, onClick } = this.props;
 
@@ -52,20 +72,25 @@ export default class GeoMapView extends Component {
       let closestEntry = undefined;
       const selectedLat = value.lat();
       const selectedLng = value.lng();
-      data.forEach(entry => {
-        const entryPos = entry.gps[0];
-        const entryLat = entryPos.latitude;
-        const entryLng = entryPos.longitude;
-        const distance = GoogleMapHelpers.findDistanceRatio(
-          selectedLat,
-          selectedLng,
-          entryLat,
-          entryLng
-        );
-        if (minDistance < 0 || minDistance > distance) {
-          minDistance = distance;
-          closestEntry = entry;
-        }
+      data
+        .filter(seriesItem =>
+          get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+        )
+        .forEach(entry => {
+          const gps = this.getGeoLocation(entry);
+          const entryPos = gps[0];
+          const entryLat = entryPos.latitude;
+          const entryLng = entryPos.longitude;
+          const distance = GoogleMapHelpers.findDistanceRatio(
+            selectedLat,
+            selectedLng,
+            entryLat,
+            entryLng
+          );
+          if (minDistance < 0 || minDistance > distance) {
+            minDistance = distance;
+            closestEntry = entry;
+          }
       });
 
       onClick(closestEntry.startTimeMs, closestEntry.stopTimeMs);
@@ -73,7 +98,11 @@ export default class GeoMapView extends Component {
   };
 
   handlePlayerTimeChange = () => {
-    const { data, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const { mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const data = this.props.data
+      .filter(seriesItem =>
+        get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+      );
 
     if (mediaPlayerTimeMs < 0) {
       return;
@@ -89,10 +118,11 @@ export default class GeoMapView extends Component {
       }
 
       if (nearestEntry) {
+        const gps = this.getGeoLocation(nearestEntry);
         this.setState({
           currentPos: {
-            latitude: nearestEntry.gps[0].latitude,
-            longitude: nearestEntry.gps[0].longitude
+            latitude: gps[0].latitude,
+            longitude: gps[0].longitude
           }
         });
       }
@@ -111,7 +141,10 @@ export default class GeoMapView extends Component {
   };
 
   estimatePosition(timeMs) {
-    const data = this.props.data;
+    const data = this.props.data
+      .filter(seriesItem =>
+        get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+      );
 
     if (timeMs < 0) {
       return null;
@@ -124,15 +157,16 @@ export default class GeoMapView extends Component {
 
     for (const entry of data) {
       const entryMidPoint = (entry.stopTimeMs + entry.startTimeMs) / 2;
+      const gps = this.getGeoLocation(entry);
       if (entryMidPoint === timeMs) {
-        return entry.gps[0];
+        return gps[0];
       } else if (entryMidPoint < timeMs) {
         const prevTimeDiff = timeMs - entryMidPoint;
         if (prevMinDiff < 0 || prevMinDiff > prevTimeDiff) {
           prevMinDiff = prevTimeDiff;
           prevEntryPos = {
-            lat: entry.gps[0].latitude,
-            lng: entry.gps[0].longitude
+            lat: gps[0].latitude,
+            lng: gps[0].longitude
           };
         }
       } else {
@@ -140,8 +174,8 @@ export default class GeoMapView extends Component {
         if (nextMinDiff < 0 || nextMinDiff > nextTimeDiff) {
           nextMinDiff = nextTimeDiff;
           nextEntryPos = {
-            lat: entry.gps[0].latitude,
-            lng: entry.gps[0].longitude
+            lat: gps[0].latitude,
+            lng: gps[0].longitude
           };
         }
       }

@@ -1,5 +1,13 @@
 import React from 'react';
-import { string, shape, objectOf, any, func, arrayOf } from 'prop-types';
+import {
+  string,
+  shape,
+  objectOf,
+  any,
+  func,
+  arrayOf,
+  number
+} from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { reject, cloneDeep } from 'lodash';
 import ContentTemplates from 'components/ContentTemplates';
@@ -27,7 +35,8 @@ export default class ContentTemplateForm extends React.Component {
       })
     ),
     getFieldOptions: func,
-    onSubmit: func.isRequired
+    onSubmit: func.isRequired,
+    textInputMaxRows: number
   };
 
   static defaultProps = {
@@ -123,6 +132,7 @@ export default class ContentTemplateForm extends React.Component {
           onRemoveTemplate={this.removeFromTemplateList}
           onInputChange={this.updateTemplateDetails}
           getFieldOptions={this.props.getFieldOptions}
+          textInputMaxRows={this.props.textInputMaxRows}
         />
         <div className={styles['btn-container']}>
           <Button variant="raised" color="primary" type="submit">

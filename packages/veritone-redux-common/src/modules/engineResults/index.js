@@ -79,6 +79,7 @@ export default createReducer(defaultState, {
               delete result.tdoId;
             }));
       tdoEngineResultsMappedByEngineId[tdoId] = {
+        ...state.tdoEngineResultsMappedByEngineId[tdoId],
         ...resultsGroupedByRequestEngineId
       };
     });

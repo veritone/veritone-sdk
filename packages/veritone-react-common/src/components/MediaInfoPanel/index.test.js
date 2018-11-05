@@ -53,6 +53,7 @@ const TDO = {
   },
   startDateTime: '2018-01-20T00:44:21.402Z',
   stopDateTime: '2018-01-20T00:44:41.403Z',
+  createdDateTime: '2018-01-20T00:44:21.402Z',
   applicationId: 'ed075985-bc94-406b-8639-44d1da42c3fb',
   security: {
     global: true

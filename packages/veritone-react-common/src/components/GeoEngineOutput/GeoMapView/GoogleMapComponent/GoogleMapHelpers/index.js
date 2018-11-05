@@ -56,6 +56,20 @@ export function genLatLngBounds(includedPoints) {
     bounds = bounds.extend(point);
   });
 
+  if (includedPoints.length === 1) {
+    // extend bounds 0.005% right and left to zoom out and keep view centered
+    const lngLeft = {
+      lng: includedPoints[0].lng * 0.99995,
+      lat: includedPoints[0].lat
+    };
+    const lngRight = {
+      lng: includedPoints[0].lng * 1.00005,
+      lat: includedPoints[0].lat
+    };
+    bounds = bounds.extend(lngLeft);
+    bounds = bounds.extend(lngRight);
+  }
+
   return bounds;
 }
 

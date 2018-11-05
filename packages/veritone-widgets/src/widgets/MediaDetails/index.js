@@ -29,7 +29,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual, isUndefined } from 'lodash';
+import { find, get, some, includes, isEqual, isUndefined, isArray } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -96,7 +96,8 @@ const programLiveImageNullState =
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
-    entities: mediaDetailsModule.getEntities(state, id),
+    entities: mediaDetailsModule.getEntities(state),
+    isFetchingEntities: mediaDetailsModule.isFetchingEntities(state),
     schemasById: mediaDetailsModule.getSchemasById(state),
     currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
       state,
@@ -119,6 +120,7 @@ const programLiveImageNullState =
       state,
       id
     ),
+    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(state, id),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
     betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
@@ -287,6 +289,7 @@ class MediaDetailsWidget extends React.Component {
         })
       })
     ),
+    isFetchingEntities: bool,
     loadContentTemplates: func,
     updateTdoContentTemplates: func,
     contentTemplates: objectOf(
@@ -348,6 +351,12 @@ class MediaDetailsWidget extends React.Component {
         format: string.isRequired,
         label: string.isRequired,
         types: arrayOf(string).isRequired
+      })
+    ),
+    categoryCombinationMapper: arrayOf(
+      shape({
+        combineType: string,
+        withType: string
       })
     ),
     createQuickExport: func.isRequired,
@@ -578,7 +587,8 @@ class MediaDetailsWidget extends React.Component {
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
       this.props.isFetchingEngineResults ||
-      this.props.isRestoringOriginalEngineResult
+      this.props.isRestoringOriginalEngineResult ||
+      this.props.isFetchingEntities
     ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
@@ -766,13 +776,30 @@ class MediaDetailsWidget extends React.Component {
       tdo,
       selectedEngineId,
       selectedEngineCategory,
-      createQuickExport
+      createQuickExport,
+      categoryCombinationMapper,
+      engineCategories
     } = this.props;
+    let selectedCombineEngineId, selectedCombineCategoryId;
+    const hasCombineEngineOutput = find(
+      categoryCombinationMapper, 
+      ['withType', selectedEngineCategory.categoryType]
+    );
+    if (hasCombineEngineOutput) {
+      const combineCategory = find(
+        engineCategories,
+        ['categoryType', hasCombineEngineOutput.combineType]
+      );
+      selectedCombineCategoryId = combineCategory.id;
+      selectedCombineEngineId = get(combineCategory, 'engines[0].id');
+    }
     createQuickExport(
       tdo.id,
       selectedFormats,
       selectedEngineId,
-      selectedEngineCategory.id
+      selectedEngineCategory.id,
+      selectedCombineEngineId,
+      selectedCombineCategoryId
     ).then(response => {
       this.props.onExport(get(response, 'createExportRequest'), tdo);
       return get(response, 'createExportRequest');
@@ -795,6 +822,49 @@ class MediaDetailsWidget extends React.Component {
     this.props.onExport(response, this.props.tdo);
     this.closeEngineOutputExport();
   };
+
+  getCombineAggregations = () => {
+    const {
+      engineCategories,
+      categoryCombinationMapper,
+      selectedEngineCategory
+    } = this.props;
+    // secondaryEngineCombiner will be loaded with the following format:
+    // {
+    //   [withType]: {
+    //     [combineType]: ARRAY_OF_combineType_ENGINES
+    //   }
+    // }
+    const secondaryEngineCombiner = {};
+    const engineCategorySelectorItems = isArray(engineCategories) ? 
+      engineCategories.filter(category => {
+        // If the current category is to be combined with another
+        // then load it's engines into the combiner using withId as the key
+        const isCombineCategory = !find(categoryCombinationMapper, map => {
+          const isCombineMatch = map.combineType === category.categoryType;
+          if (isCombineMatch) {
+            if (!secondaryEngineCombiner[map.withType]) {
+              secondaryEngineCombiner[map.withType] = {};
+            }
+            const combineCategory = find(engineCategories, ['categoryType', map.combineType]);
+            if (combineCategory) {
+              secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
+            }
+          }
+          return isCombineMatch;
+        });
+
+        return isCombineCategory;
+      }) : [];
+
+    const combineEngines = selectedEngineCategory ? 
+      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
+      [];
+    return {
+      combineEngines,
+      engineCategorySelectorItems
+    };
+  }
 
   render() {
     let {
@@ -824,6 +894,12 @@ class MediaDetailsWidget extends React.Component {
     } = this.props;
 
     const { isMenuOpen } = this.state;
+
+    // Filter out any categories that should be combined with another category
+    const {
+      combineEngines,
+      engineCategorySelectorItems
+    } = this.getCombineAggregations();
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
@@ -1162,7 +1238,7 @@ class MediaDetailsWidget extends React.Component {
                     <div className={styles.engineActionHeader}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
-                          engineCategories={this.props.engineCategories}
+                          engineCategories={engineCategorySelectorItems}
                           selectedEngineCategoryId={selectedEngineCategory.id}
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
@@ -1257,6 +1333,7 @@ class MediaDetailsWidget extends React.Component {
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
+                        combineEngines={combineEngines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         onClick={this.handleUpdateMediaPlayerTime}
