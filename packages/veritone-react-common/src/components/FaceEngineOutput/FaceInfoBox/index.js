@@ -279,10 +279,6 @@ class FaceInfoBox extends Component {
                     </div>
                   )}
                 </Downshift>
-              ) : face.object.label && face.object.label.length ? (
-                <div className={styles.unknownEntityText}>
-                  {face.object.label}
-                </div>
               ) : (
                 <div className={styles.unknownEntityText}>Unknown</div>
               )}
