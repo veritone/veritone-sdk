@@ -383,7 +383,8 @@ export default class Overlay extends React.Component {
     const showingActionsMenu =
       isString(this.state.focusedBoundingBoxId) &&
       !this.state.userActingOnBoundingBox &&
-      !this.state.userMinimizedConfirmMenu;
+      !this.state.userMinimizedConfirmMenu &&
+      this.state.boundingBoxPositions.some(el => el.id === this.state.focusedBoundingBoxId);
 
     const boundingBoxCommonStyles = {
       // this seems to fix some rendering jank
