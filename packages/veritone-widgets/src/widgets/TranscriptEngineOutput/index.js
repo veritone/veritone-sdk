@@ -255,6 +255,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       isFetchingCombineData
     } = this.state;
     const speakerEngines = get(combineEngines, combineCategory);
+    
     if (
       !selectedCombineEngineId &&
       speakerEngines &&
@@ -291,17 +292,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       combineViewTypes.length
     ) {
       setSelectedCombineViewTypeId(combineViewTypes[0].id);
-    } else if (
-      speakerEngines &&
-      speakerEngines.length
-    ) {
-      const combineEngine = speakerEngines.find(sEngine => sEngine.id === selectedCombineEngineId);
-      switch (combineEngine.status) {
-        case 'failed':
-          break;
-        case 'running':
-          break;
-      }
     }
   }
 
