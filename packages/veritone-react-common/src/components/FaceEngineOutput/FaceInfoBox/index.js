@@ -166,16 +166,17 @@ class FaceInfoBox extends Component {
         onMouseLeave={this.handleMouseOut}
       >
         <div className={styles.entityImageContainer}>
-          {get(face, 'object.imageBlob') === 'fetching' ?
+          {get(face, 'object.imageBlob') === 'fetching' ? (
             <div className={styles.imageProgressLoad}>
               <CircularProgress size={35} />
-            </div> :
+            </div>
+          ) : (
             <img
               className={styles.entityImage}
               src={get(face, 'object.imageBlob') || face.object.uri}
               onClick={onClick}
             />
-          }
+          )}
           {enableEdit &&
             !face.editAction && (
               <span className={styles.selectFaceCheckboxBackground} />

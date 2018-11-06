@@ -161,7 +161,10 @@ export default class IdentifierSelector extends Component {
                   classes={{ item: styles.imageGridItem }}
                 >
                   <img
-                    src={get(identifier, 'object.imageBlob') || get(identifier, 'object.uri')}
+                    src={
+                      get(identifier, 'object.imageBlob') ||
+                      get(identifier, 'object.uri')
+                    }
                     className={styles.identifierImage}
                   />
                   <span className={styles.selectFaceCheckboxBackground} />

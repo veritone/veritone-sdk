@@ -138,13 +138,13 @@ function* watchFetchEngineResultsSuccess() {
               if (entityId) {
                 entityIds.add(entityId);
               }
-              if(get(s, 'object.uri')) {
+              if (get(s, 'object.uri')) {
                 imagesToFetch.push(s);
               }
             });
           });
 
-          if(!isEmpty(imagesToFetch)) {
+          if (!isEmpty(imagesToFetch)) {
             yield put(faceEngineOutput.fetchFaceImages(imagesToFetch));
           }
 

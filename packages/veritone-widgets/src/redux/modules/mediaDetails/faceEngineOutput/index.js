@@ -65,7 +65,7 @@ export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
 
 export const SET_SELECTED_ENTITY_ID = `vtn/${namespace}/SET_SELECTED_ENTITY_ID`;
 
-const IMAGE_REQUEST_COUNT = 25;
+const IMAGE_REQUEST_COUNT = 30;
 
 import {
   get,
@@ -644,7 +644,12 @@ const reducer = createReducer(defaultState, {
       }
     };
   },
-  [FETCH_FACE_IMAGES](state, { payload: { faceObjects }}) {
+  [FETCH_FACE_IMAGES](
+    state,
+    {
+      payload: { faceObjects }
+    }
+  ) {
     const newImages = faceObjects.reduce((acc, face) => {
       return {
         ...acc,
@@ -657,16 +662,21 @@ const reducer = createReducer(defaultState, {
         ...state.fetchedImagesByGuid,
         ...newImages
       }
-    }
+    };
   },
-  [FETCH_FACE_IMAGES_SUCCESS](state, { payload: { imageData }}) {
+  [FETCH_FACE_IMAGES_SUCCESS](
+    state,
+    {
+      payload: { imageData }
+    }
+  ) {
     return {
       ...state,
       fetchedImagesByGuid: {
         ...state.fetchedImagesByGuid,
         ...imageData
       }
-    }
+    };
   }
 });
 export default reducer;
@@ -1101,33 +1111,53 @@ export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
 
 /* FACE IMAGE REQUESTS */
-const getFetchedImagesByGuid = state => get(local(state), 'fetchedImagesByGuid');
+const getFetchedImagesByGuid = state =>
+  get(local(state), 'fetchedImagesByGuid');
 
 const fetchFaceImageData = face => {
   return fetch(get(face, 'object.uri'));
 };
 
-const fetchFaceChunk = (faces) => {
-  return Promise.all(faces.map(face => {
-    return fetchFaceImageData(face).then(res => {
-      return res.blob();
-    }).then(blob => {
-      return {
-        guid: face.guid,
-        blob: URL.createObjectURL(blob)
-      }
-    });
-  })).then(responses => {
+const fetchFaceChunk = faces => {
+  return Promise.all(
+    faces.map(face => {
+      return fetchFaceImageData(face)
+        .then(res => {
+          if (res.status >= 200 && res.status < 300) {
+            return res.blob();
+          }
+          throw new Error(
+            `Error fetching face image with status ${res.status}`
+          );
+        })
+        .then(blob => {
+          return {
+            guid: face.guid,
+            blob: URL.createObjectURL(blob)
+          };
+        })
+        .catch(e => {
+          console.error(e);
+          return {
+            guid: face.guid,
+            blob: ''
+          };
+        });
+    })
+  ).then(responses => {
     return responses.reduce((acc, res) => {
+      if (!res) {
+        return acc;
+      }
       return {
         ...acc,
         [res.guid]: res.blob
-      }
+      };
     }, {});
   });
 };
 
-export const fetchFaceImages = (faces) => async (dispatch, getState) => {
+export const fetchFaceImages = faces => async (dispatch, getState) => {
   const faceChunks = chunk(faces, IMAGE_REQUEST_COUNT);
 
   dispatch({
@@ -1215,13 +1245,15 @@ export const getFaces = createSelector(
           }
         });
       } else {
-        faceEntities.recognizedFaces[faceObj.object.entityId] = [{
-          ...faceObj,
-          object: {
-            ...faceObj.object,
-            imageBlob: fetchedFaceImages[faceObj.guid]
+        faceEntities.recognizedFaces[faceObj.object.entityId] = [
+          {
+            ...faceObj,
+            object: {
+              ...faceObj.object,
+              imageBlob: fetchedFaceImages[faceObj.guid]
+            }
           }
-        }];
+        ];
       }
     });
 
