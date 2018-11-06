@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, arrayOf, objectOf, any, func, bool } from 'prop-types';
+import { string, shape, arrayOf, objectOf, any, func, bool, number } from 'prop-types';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
@@ -31,7 +31,8 @@ export default class ContentTemplates extends React.Component {
     onRemoveTemplate: func.isRequired,
     onInputChange: func.isRequired,
     getFieldOptions: func,
-    isReadOnly: bool
+    isReadOnly: bool,
+    textInputMaxRows: number
   };
   static defaultProps = {
     selectedTemplateSchemas: []
@@ -60,6 +61,7 @@ export default class ContentTemplates extends React.Component {
               onTemplateDetailsChange={this.props.onInputChange}
               getFieldOptions={this.props.getFieldOptions}
               isReadOnly={this.props.isReadOnly}
+              textInputMaxRows={this.props.textInputMaxRows}
             />
           )}
         </div>

@@ -231,9 +231,7 @@ class FaceInfoBox extends Component {
                       <div ref={this.inputRef}>
                         <Input
                           {...getInputProps({
-                            placeholder: face.object.label
-                              ? face.object.label
-                              : 'Unknown',
+                            placeholder: 'Unknown',
                             className: styles.entitySearchInput
                           })}
                         />
@@ -287,10 +285,6 @@ class FaceInfoBox extends Component {
                     </div>
                   )}
                 </Downshift>
-              ) : face.object.label && face.object.label.length ? (
-                <div className={styles.unknownEntityText}>
-                  {face.object.label}
-                </div>
               ) : (
                 <div className={styles.unknownEntityText}>Unknown</div>
               )}

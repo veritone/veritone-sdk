@@ -1,5 +1,14 @@
 import React from 'react';
-import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
+import {
+  string,
+  shape,
+  any,
+  arrayOf,
+  objectOf,
+  func,
+  bool,
+  number
+} from 'prop-types';
 import {
   isObject,
   compact,
@@ -7,7 +16,9 @@ import {
   isArray,
   includes,
   isUndefined,
-  get
+  get,
+  isNumber,
+  toSafeInteger
 } from 'lodash';
 
 import SourceTypeField from 'components/SourceTypeField';
@@ -29,7 +40,8 @@ export default class TemplateForms extends React.Component {
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired,
     getFieldOptions: func,
-    isReadOnly: bool
+    isReadOnly: bool,
+    textInputMaxRows: number
   };
   static defaultProps = {};
 
@@ -175,19 +187,29 @@ export default class TemplateForms extends React.Component {
                 : schemaProps[schemaProp].enum;
             isArray(enums) && enums.sort((a, b) => (a.name < b.name ? -1 : 1));
 
+            const fieldProps = {
+              id: `${schemaProp}-${template.guid || template.id}`,
+              key: `${template.id}${schemaProp}`,
+              type: type.toLowerCase(),
+              required,
+              title: schemaProps[schemaProp].title || schemaProp,
+              value: template.data[schemaProp] || '',
+              onChange: this.handleSchemaFieldChange(template, schemaProp, type)
+            }
+
+            if (type === 'string' && !enums) {
+              fieldProps.multiline = true,
+              fieldProps.rowsMax = (
+                this.props.textInputMaxRows
+                && isNumber(this.props.textInputMaxRows)
+                && this.props.textInputMaxRows >= 1
+              ) ? toSafeInteger(this.props.textInputMaxRows) : 15
+            }
+
             return (
               type && (
                 <SourceTypeField
-                  id={`${schemaProp}-${template.guid || template.id}`}
-                  type={type.toLowerCase()}
-                  required={required}
-                  value={template.data[schemaProp]}
-                  onChange={this.handleSchemaFieldChange(
-                    template,
-                    schemaProp,
-                    type
-                  )}
-                  title={schemaProps[schemaProp].title || schemaProp}
+                  {...fieldProps}
                   options={enums}
                   peerSelection={
                     schemaProps[schemaProp].peerEnumKey
@@ -203,7 +225,6 @@ export default class TemplateForms extends React.Component {
                     get(schemaProps[schemaProp], 'items.query')
                   }
                   getFieldOptions={this.props.getFieldOptions}
-                  key={template.id + schemaProp}
                   isDirty={get(template, ['dirtyState', schemaProp])}
                   isReadOnly={this.props.isReadOnly}
                 />

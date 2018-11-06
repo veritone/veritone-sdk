@@ -22,12 +22,14 @@ const sampleData = [
       {
         startTimeMs: 2501,
         stopTimeMs: 5000,
-        gps: [
-          {
-            latitude: 1050,
-            longitude: 1250
-          }
-        ]
+        object: {
+          gps: [
+            {
+              latitude: 1050,
+              longitude: 1250
+            }
+          ]
+        }
       }
     ]
   },
@@ -48,12 +50,14 @@ const sampleData = [
       {
         startTimeMs: 7501,
         stopTimeMs: 12000,
-        gps: [
-          {
-            latitude: 1500,
-            longitude: 1500
-          }
-        ]
+        object: {
+          gps: [
+            {
+              latitude: 1500,
+              longitude: 1500
+            }
+          ]
+        }
       }
     ]
   }
