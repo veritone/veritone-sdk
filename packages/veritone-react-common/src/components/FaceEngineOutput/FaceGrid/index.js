@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
 import { pick, find, get, findIndex, isArray, isObject } from 'lodash';
 import Grid from '@material-ui/core/Grid';
+import { AutoSizer, Grid as VirtualizedGrid } from 'react-virtualized';
 import NoFacesFound from '../NoFacesFound';
 import FaceInfoBox from '../FaceInfoBox';
 import MultiEditActionBar from './MultiEditActionBar';
@@ -48,7 +49,12 @@ class FaceGrid extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     onAddToExistingEntity: func,
-    disableLibraryButtons: bool
+    disableLibraryButtons: bool,
+    columnWidth: number
+  };
+
+  static defaultProps = {
+    columnWidth: 100
   };
 
   state = {
@@ -117,21 +123,62 @@ class FaceGrid extends Component {
     }
   };
 
-  render() {
+  renderCell = columnCount => ({
+    columnIndex,
+    isScrolling,
+    isVisible,
+    key,
+    parent,
+    rowIndex,
+    style
+  }) => {
     const {
       faces,
       selectedFaces,
       hideEntityLabels,
       editMode,
       entitySearchResults,
-      itemsRecognized,
-      disableLibraryButtons
+      columnWidth
     } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
       'onSearchForEntities',
       'isSearchingEntities'
     ]);
+    const face = faces[rowIndex * columnCount + columnIndex];
+    if (!face) {
+      return null;
+    }
+    const selectedFace = find(selectedFaces, { guid: face.guid });
+    return (
+      <div style={style} key={key}>
+        <FaceInfoBox
+          isSelected={!!selectedFace}
+          onCheckboxClicked={this.handleSingleFaceSelect}
+          face={face}
+          enableEdit={editMode}
+          addNewEntity={this.handleAddNewEntity}
+          searchResults={entitySearchResults}
+          onClick={this.handleFaceClick(face)}
+          hideEntityLabel={hideEntityLabels}
+          onRemoveFace={this.handleRemoveFaces(face)}
+          width={columnWidth}
+          {...detectionBoxProps}
+        />
+      </div>
+    );
+  };
+
+  render() {
+    const {
+      faces,
+      selectedFaces,
+      editMode,
+      itemsRecognized,
+      disableLibraryButtons,
+      hideEntityLabels,
+      columnWidth
+    } = this.props;
 
     return (
       <Grid item container direction="column" className={styles.faceGrid}>
@@ -155,34 +202,29 @@ class FaceGrid extends Component {
                 />
               </Grid>
             )}
-            <Grid
-              item
-              xs
-              container
-              direction="row"
-              className={styles.imageList}
-            >
-              {faces.map(face => {
-                const selectedFace = find(selectedFaces, { guid: face.guid });
-                return (
-                  <FaceInfoBox
-                    key={`face-${face.guid}-${face.startTimeMs}-${
-                      face.stopTimeMs
-                    }-${face.object.uri}`}
-                    isSelected={!!selectedFace}
-                    onCheckboxClicked={this.handleSingleFaceSelect}
-                    face={face}
-                    enableEdit={editMode}
-                    addNewEntity={this.handleAddNewEntity}
-                    searchResults={entitySearchResults}
-                    onClick={this.handleFaceClick(face)}
-                    hideEntityLabel={hideEntityLabels}
-                    onRemoveFace={this.handleRemoveFaces(face)}
-                    {...detectionBoxProps}
-                  />
-                );
-              })}
-            </Grid>
+            <div style={{ flex: '1 1 auto' }}>
+              <AutoSizer>
+                {({ width, height }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <VirtualizedGrid
+                      cellRenderer={this.renderCell(columnCount)}
+                      width={width}
+                      height={height}
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      rowCount={Math.ceil(faces.length / columnCount)}
+                      rowHeight={
+                        hideEntityLabels ? columnWidth + 22 : columnWidth + 42
+                      }
+                      style={{
+                        overflowX: 'hidden'
+                      }}
+                    />
+                  );
+                }}
+              </AutoSizer>
+            </div>
           </Fragment>
         )}
       </Grid>

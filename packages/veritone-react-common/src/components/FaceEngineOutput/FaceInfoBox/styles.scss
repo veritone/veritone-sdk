@@ -3,8 +3,6 @@
 .faceContainer {
   display: flex;
   flex-direction: column;
-  width: 100px;
-  height: 152px;
   padding: 10px;
   border-radius: 4px;
 }
@@ -14,13 +12,7 @@
   cursor: pointer;
 }
 
-.withoutEntityLabel {
-  height: 122px;
-}
-
 .entityImageContainer {
-  width: 80px;
-  height: 80px;
   position: relative;
 }
 

@@ -88,7 +88,8 @@ class FaceInfoBox extends Component {
     isSearchingEntities: bool,
     isSelected: bool,
     onCheckboxClicked: func,
-    hideEntityLabel: bool
+    hideEntityLabel: bool,
+    width: number
   };
 
   state = {
@@ -152,19 +153,26 @@ class FaceInfoBox extends Component {
       isSearchingEntities,
       isSelected,
       onRemoveFace,
-      hideEntityLabel
+      hideEntityLabel,
+      width
     } = this.props;
 
     return (
       <div
         className={cx(styles.faceContainer, {
-          [styles.faceContainerHover]: this.state.hovered,
-          [styles.withoutEntityLabel]: hideEntityLabel
+          [styles.faceContainerHover]: this.state.hovered
         })}
+        style={{ width: width }}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}
       >
-        <div className={styles.entityImageContainer}>
+        <div
+          className={styles.entityImageContainer}
+          style={{
+            width: width - 20,
+            height: width - 20
+          }}
+        >
           <img
             className={styles.entityImage}
             src={face.object.uri}
