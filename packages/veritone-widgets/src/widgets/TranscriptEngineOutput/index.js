@@ -43,7 +43,7 @@ const saga = util.reactReduxSaga.saga;
     selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       tdo.id,
-      state.veritoneTranscriptWidget.selectedCombineEngineId
+      TranscriptRedux.getSelectedCombineEngineId(state)
     ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
@@ -238,22 +238,16 @@ export default class TranscriptEngineOutputContainer extends Component {
     return { ...prevState, props: nextProps };
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
     const {
       tdo,
       combineEngines,
       combineCategory,
       selectedCombineEngineId,
       setSelectedCombineEngineId,
-      selectedCombineEngineResults,
       fetchEngineResults,
-      selectedCombineViewTypeId,
-      combineViewTypes,
       setSelectedCombineViewTypeId
     } = this.props;
-    const {
-      isFetchingCombineData
-    } = this.state;
     const speakerEngines = get(combineEngines, combineCategory);
     
     if (
@@ -262,36 +256,17 @@ export default class TranscriptEngineOutputContainer extends Component {
       speakerEngines.length
     ) {
       const speakerEngineId = speakerEngines[0].id;
-      setSelectedCombineEngineId(speakerEngineId);
-    } else if (
-      !selectedCombineEngineResults.length &&
-      selectedCombineEngineId &&
-      !isFetchingCombineData
-    ) {
-      this.setState({
-        isFetchingCombineData: true
-      }, () => {
-        fetchEngineResults({
-          engineId: selectedCombineEngineId,
-          tdo: tdo,
-          startOffsetMs: 0,
-          stopOffsetMs:
-            Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-        });
+      fetchEngineResults({
+        engineId: speakerEngineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+      }).then(response => {
+        setSelectedCombineEngineId(speakerEngineId);
+        setSelectedCombineViewTypeId('speaker-view');
+        return response;
       });
-    } else if (
-      selectedCombineEngineResults.length &&
-      isFetchingCombineData
-    ) {
-      this.setState({
-        isFetchingCombineData: false
-      });
-    } else if (
-      !selectedCombineViewTypeId &&
-      selectedCombineEngineResults.length &&
-      combineViewTypes.length
-    ) {
-      setSelectedCombineViewTypeId(combineViewTypes[0].id);
     }
   }
 
@@ -302,7 +277,19 @@ export default class TranscriptEngineOutputContainer extends Component {
   }
 
   handleSpeakerEngineChange = engineId => {
-    this.props.setSelectedCombineEngineId(engineId);
+    const tdo = this.props.tdo;
+    if (engineId !== this.props.selectedCombineEngineId) {
+      this.props.fetchEngineResults({
+        engineId: engineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+      }).then(response => {
+        this.props.setSelectedCombineEngineId(engineId); 
+        return response;
+      });
+    }
   }
 
   handleContentChanged = value => {
@@ -406,18 +393,13 @@ export default class TranscriptEngineOutputContainer extends Component {
       combineEngines,
       outputNullState
     } = this.props;
-    const {
-      isFetchingCombineData
-    } = this.state;
     const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
       .find(engine => engine.id === selectedCombineEngineId);
 
     if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
       let combineStatus = combineEngineTask.status;
-      if (isFetchingCombineData) {
-        combineStatus = 'fetching';
-      } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
+      if (!selectedCombineEngineResults && combineStatus === 'complete') {
         combineStatus = 'no_data';
       } else if (selectedCombineEngineResults && combineStatus === 'complete') {
         return outputNullState;
