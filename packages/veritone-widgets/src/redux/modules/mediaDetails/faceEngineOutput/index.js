@@ -36,6 +36,9 @@ export const OPEN_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_TO_
 export const CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG`;
 export const UPDATE_INITIAL_ENTITY_NAME = `vtn/${namespace}/UPDATE_INITIAL_ENTITY_NAME`;
 
+export const FETCH_FACE_IMAGES = `vtn/${namespace}/FETCH_FACE_IMAGES`;
+export const FETCH_FACE_IMAGES_SUCCESS = `vtn/${namespace}/FETCH_FACE_IMAGES_SUCCESS`;
+
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
@@ -62,6 +65,8 @@ export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
 
 export const SET_SELECTED_ENTITY_ID = `vtn/${namespace}/SET_SELECTED_ENTITY_ID`;
 
+const IMAGE_REQUEST_COUNT = 25;
+
 import {
   get,
   map,
@@ -76,7 +81,8 @@ import {
   uniqBy,
   differenceBy,
   orderBy,
-  filter
+  filter,
+  chunk
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -117,7 +123,8 @@ const defaultState = {
   initialEntityName: '',
   addToExistingEntityDialogOpen: false,
   currentlyEditedFaces: [], // selected unrecognized face objects from which to create a new 'entity'
-  selectedEntityId: null
+  selectedEntityId: null,
+  fetchedImagesByGuid: {}
 };
 
 const reducer = createReducer(defaultState, {
@@ -636,6 +643,30 @@ const reducer = createReducer(defaultState, {
           : state.bulkEditActionItems[state.activeTab]
       }
     };
+  },
+  [FETCH_FACE_IMAGES](state, { payload: { faceObjects }}) {
+    const newImages = faceObjects.reduce((acc, face) => {
+      return {
+        ...acc,
+        [face.guid]: 'fetching'
+      };
+    }, {});
+    return {
+      ...state,
+      fetchedImagesByGuid: {
+        ...state.fetchedImagesByGuid,
+        ...newImages
+      }
+    }
+  },
+  [FETCH_FACE_IMAGES_SUCCESS](state, { payload: { imageData }}) {
+    return {
+      ...state,
+      fetchedImagesByGuid: {
+        ...state.fetchedImagesByGuid,
+        ...imageData
+      }
+    }
   }
 });
 export default reducer;
@@ -1069,6 +1100,57 @@ export const editFaceButtonClick = () => {
 export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
 
+/* FACE IMAGE REQUESTS */
+const getFetchedImagesByGuid = state => get(local(state), 'fetchedImagesByGuid');
+
+const fetchFaceImageData = face => {
+  return fetch(get(face, 'object.uri'));
+};
+
+const fetchFaceChunk = (faces) => {
+  return Promise.all(faces.map(face => {
+    return fetchFaceImageData(face).then(res => {
+      return res.blob();
+    }).then(blob => {
+      return {
+        guid: face.guid,
+        blob: URL.createObjectURL(blob)
+      }
+    });
+  })).then(responses => {
+    return responses.reduce((acc, res) => {
+      return {
+        ...acc,
+        [res.guid]: res.blob
+      }
+    }, {});
+  });
+};
+
+export const fetchFaceImages = (faces) => async (dispatch, getState) => {
+  const faceChunks = chunk(faces, IMAGE_REQUEST_COUNT);
+
+  dispatch({
+    type: FETCH_FACE_IMAGES,
+    payload: {
+      faceObjects: faces
+    }
+  });
+  for (const chunk of faceChunks) {
+    try {
+      const chunkResponse = await fetchFaceChunk(chunk);
+      dispatch({
+        type: FETCH_FACE_IMAGES_SUCCESS,
+        payload: {
+          imageData: chunkResponse
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+};
+
 /* SELECTORS */
 export const getFaces = createSelector(
   [
@@ -1076,14 +1158,16 @@ export const getFaces = createSelector(
     getUserEditedFaces,
     getUserRemovedFaces,
     getEntities,
-    getPendingFaceEdits
+    getPendingFaceEdits,
+    getFetchedImagesByGuid
   ],
   (
     faceData,
     userDetectedFaces,
     userRemovedFaces,
     entities,
-    pendingFaceEdits
+    pendingFaceEdits,
+    fetchedFaceImages
   ) => {
     const faceEntities = {
       unrecognizedFaces: [],
@@ -1115,11 +1199,29 @@ export const getFaces = createSelector(
         !entity.name
       ) {
         // face not recognized
-        faceEntities.unrecognizedFaces.push(faceObj);
+        faceEntities.unrecognizedFaces.push({
+          ...faceObj,
+          object: {
+            ...faceObj.object,
+            imageBlob: fetchedFaceImages[faceObj.guid]
+          }
+        });
       } else if (faceEntities.recognizedFaces[faceObj.object.entityId]) {
-        faceEntities.recognizedFaces[faceObj.object.entityId].push(faceObj);
+        faceEntities.recognizedFaces[faceObj.object.entityId].push({
+          ...faceObj,
+          object: {
+            ...faceObj.object,
+            imageBlob: fetchedFaceImages[faceObj.guid]
+          }
+        });
       } else {
-        faceEntities.recognizedFaces[faceObj.object.entityId] = [faceObj];
+        faceEntities.recognizedFaces[faceObj.object.entityId] = [{
+          ...faceObj,
+          object: {
+            ...faceObj.object,
+            imageBlob: fetchedFaceImages[faceObj.guid]
+          }
+        }];
       }
     });
 

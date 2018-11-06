@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
+import { get } from 'lodash';
 import cx from 'classnames';
 import Downshift from 'downshift';
 import Input from '@material-ui/core/Input';
@@ -165,11 +166,16 @@ class FaceInfoBox extends Component {
         onMouseLeave={this.handleMouseOut}
       >
         <div className={styles.entityImageContainer}>
-          <img
-            className={styles.entityImage}
-            src={face.object.uri}
-            onClick={onClick}
-          />
+          {get(face, 'object.imageBlob') === 'fetching' ?
+            <div className={styles.imageProgressLoad}>
+              <CircularProgress size={35} />
+            </div> :
+            <img
+              className={styles.entityImage}
+              src={get(face, 'object.imageBlob') || face.object.uri}
+              onClick={onClick}
+            />
+          }
           {enableEdit &&
             !face.editAction && (
               <span className={styles.selectFaceCheckboxBackground} />

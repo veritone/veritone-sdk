@@ -129,20 +129,27 @@ function* watchFetchEngineResultsSuccess() {
         const engineResults = get(action.payload, 'engineResults.records');
 
         if (engineResults && engineResults.length) {
-          const entityIds = engineResults.reduce((result, engineResult) => {
+          const imagesToFetch = [];
+          const entityIds = new Set();
+          engineResults.forEach(engineResult => {
             engineResult.jsondata.series.forEach(s => {
               const entityId = get(s, 'object.entityId');
 
               if (entityId) {
-                result[entityId] = true;
+                entityIds.add(entityId);
+              }
+              if(get(s, 'object.uri')) {
+                imagesToFetch.push(s);
               }
             });
+          });
 
-            return result;
-          }, {});
+          if(!isEmpty(imagesToFetch)) {
+            yield put(faceEngineOutput.fetchFaceImages(imagesToFetch));
+          }
 
-          if (!isEmpty(entityIds)) {
-            yield call(fetchEntities, Object.keys(entityIds));
+          if (!isEmpty(Array.from(entityIds.values()))) {
+            yield call(fetchEntities, Array.from(entityIds.values()));
           }
         }
       }
