@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
-import { get, find } from 'lodash';
+import { get } from 'lodash';
 import cx from 'classnames';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
@@ -177,13 +177,13 @@ export default class AddToExistingEntityDialog extends Component {
     } = this.props;
     const { selectedEntity } = this.state;
     createEntityIdentifiers(
-      currentlyEditedFaces.map(face => {
+      selectedIdentifiers.map(face => {
         return {
           entityId: selectedEntity.id,
           identifierTypeId: 'face',
           contentType: 'image',
           url: get(face, 'object.uri'),
-          isPriority: !!find(selectedIdentifiers, { guid: face.guid })
+          isPriority: true
         };
       })
     ).then(res => {
