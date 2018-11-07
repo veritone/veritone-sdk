@@ -12,7 +12,7 @@ class FaceGrid extends Component {
     faces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string
@@ -22,7 +22,7 @@ class FaceGrid extends Component {
     selectedFaces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string

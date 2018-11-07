@@ -64,7 +64,7 @@ class FaceInfoBox extends Component {
   static propTypes = {
     face: shape({
       startTimeMs: number,
-      endTimeMs: number,
+      stopTimeMs: number,
       object: shape({
         label: string,
         uri: string
