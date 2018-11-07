@@ -92,16 +92,16 @@ class FaceInfoBox extends Component {
   };
 
   state = {
-    hovered: false,
+    isHovered: false,
     searchEntityText: ''
   };
 
   handleMouseOver = () => {
-    this.setState({ hovered: true });
+    this.setState({ isHovered: true });
   };
 
   handleMouseOut = () => {
-    this.setState({ hovered: false });
+    this.setState({ isHovered: false });
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -158,7 +158,7 @@ class FaceInfoBox extends Component {
     return (
       <div
         className={cx(styles.faceContainer, {
-          [styles.faceContainerHover]: this.state.hovered,
+          [styles.faceContainerHover]: this.state.isHovered,
           [styles.withoutEntityLabel]: hideEntityLabel
         })}
         onMouseOver={this.handleMouseOver}
@@ -185,7 +185,7 @@ class FaceInfoBox extends Component {
               />
             )}
           {enableEdit &&
-            this.state.hovered && (
+            this.state.isHovered && (
               <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
                 <div className={styles.faceActionIcon}>
                   <i className="icon-trashcan" />
