@@ -12,7 +12,7 @@ import styles from './styles.scss';
 const MultiEditActionBar = ({
   selectedItemsCount,
   itemType,
-  itemsRecognized,
+  hasRecognizedItems,
   onSelectAllChange,
   onAddToExistingEntityClick,
   onAddNewEntityClick,
@@ -33,7 +33,7 @@ const MultiEditActionBar = ({
         }
         label={
           selectedItemsCount > 0
-            ? `${selectedItemsCount} ${itemsRecognized ? 'Known' : 'Unknown'} ${
+            ? `${selectedItemsCount} ${hasRecognizedItems ? 'Known' : 'Unknown'} ${
                 itemType ? itemType : 'Item'
               }${selectedItemsCount > 1 ? 's' : ''} Selected`
             : 'Select All'
@@ -80,7 +80,7 @@ const MultiEditActionBar = ({
           >
             <Tooltip
               title={
-                itemsRecognized
+                hasRecognizedItems
                   ? `Remove Recognized Image${
                       selectedItemsCount > 1 ? 's' : ''
                     }`
@@ -102,7 +102,7 @@ const MultiEditActionBar = ({
 MultiEditActionBar.propTypes = {
   selectedItemsCount: number,
   itemType: string,
-  itemsRecognized: bool,
+  hasRecognizedItems: bool,
   onSelectAllChange: func,
   onAddToExistingEntityClick: func,
   onAddNewEntityClick: func,

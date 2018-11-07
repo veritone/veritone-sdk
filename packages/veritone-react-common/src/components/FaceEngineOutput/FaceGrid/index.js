@@ -37,7 +37,7 @@ class FaceGrid extends Component {
       })
     ),
     editMode: bool,
-    itemsRecognized: bool,
+    hasRecognizedItems: bool,
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
@@ -124,7 +124,7 @@ class FaceGrid extends Component {
       hideEntityLabels,
       editMode,
       entitySearchResults,
-      itemsRecognized,
+      hasRecognizedItems,
       disableLibraryButtons
     } = this.props;
     const detectionBoxProps = pick(this.props, [
@@ -146,7 +146,7 @@ class FaceGrid extends Component {
                 <MultiEditActionBar
                   selectedItemsCount={selectedFaces.length}
                   itemType="Face"
-                  itemsRecognized={itemsRecognized}
+                  hasRecognizedItems={hasRecognizedItems}
                   onSelectAllChange={this.handleSelectAll}
                   onAddToExistingEntityClick={this.handleAddAllToExistingEntity}
                   onAddNewEntityClick={this.handleAllToNewEntity}
