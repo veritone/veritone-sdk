@@ -373,7 +373,6 @@ export default class AddToExistingEntityDialog extends Component {
           {this.state.selectingIdentifiers && (
             <IdentifierSelector
               identifiers={currentlyEditedFaces}
-              classes={{ imageContainer: styles.imageContainer }}
               defaultSelectAll
               onConfirm={this.handleCreateIdentifiers}
               onCancel={this.handleBackClick}

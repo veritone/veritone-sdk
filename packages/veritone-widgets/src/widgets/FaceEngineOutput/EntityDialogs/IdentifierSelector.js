@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, number, shape, string, bool, func } from 'prop-types';
 import { get, find, uniqBy, findIndex } from 'lodash';
-import cx from 'classnames';
+import { Grid as VirtualizedGrid } from 'react-virtualized';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -24,9 +24,6 @@ export default class IdentifierSelector extends Component {
     ).isRequired,
     onConfirm: func.isRequired,
     onCancel: func.isRequired,
-    classes: shape({
-      imageContainer: string
-    }),
     defaultSelectAll: bool,
     creatingIdentifiers: bool
   };
@@ -101,9 +98,47 @@ export default class IdentifierSelector extends Component {
     this.props.onConfirm(this.state.selectedIdentifiers);
   };
 
-  render() {
-    const { identifiers, classes, onCancel, creatingIdentifiers } = this.props;
+  renderCell = columnCount => ({
+    columnIndex,
+    isScrolling,
+    isVisible,
+    key,
+    parent,
+    rowIndex,
+    style
+  }) => {
+    const { identifiers } = this.props;
     const { selectedIdentifiers } = this.state;
+
+    const identifier = identifiers[rowIndex * columnCount + columnIndex];
+    if (!identifier) {
+      return null;
+    }
+    return (
+      <div style={style} className={styles.imageGridItem} key={key}>
+        <img
+          src={get(identifier, 'object.uri')}
+          className={styles.identifierImage}
+        />
+        <span className={styles.selectFaceCheckboxBackground} />
+        <Checkbox
+          checked={!!find(selectedIdentifiers, { guid: identifier.guid })}
+          color="primary"
+          disableRipple
+          classes={{ root: styles.selectFaceCheckbox }}
+          onChange={this.handleSingleIdentifierSelect(identifier)}
+        />
+      </div>
+    );
+  };
+
+  render() {
+    const { identifiers, onCancel, creatingIdentifiers } = this.props;
+    const { selectedIdentifiers } = this.state;
+    const columnWidth = 98,
+      rowHeight = 90,
+      columnCount = 6;
+    const rowCount = Math.ceil(identifiers.length / columnCount);
     return (
       <Grid container direction="column" spacing={0}>
         <Grid
@@ -111,7 +146,7 @@ export default class IdentifierSelector extends Component {
           container
           direction="column"
           wrap="nowrap"
-          className={cx(styles.identifierSelector, classes.imageContainer)}
+          className={styles.identifierSelector}
         >
           <Grid item classes={{ item: styles.identifierSelectTitle }}>
             Which images should we use?
@@ -143,40 +178,21 @@ export default class IdentifierSelector extends Component {
               classes={{ label: styles.selectAllCheckboxLabel }}
             />
           </Grid>
-          <Grid
-            item
-            container
-            spacing={16}
-            classes={{
-              container: cx(styles.identifierImages, {
-                [styles.marginTop]: identifiers.length <= 1
-              })
-            }}
-          >
-            {identifiers.map(identifier => {
-              return (
-                <Grid
-                  item
-                  key={`identifier-image-${identifier.guid}`}
-                  classes={{ item: styles.imageGridItem }}
-                >
-                  <img
-                    src={get(identifier, 'object.uri')}
-                    className={styles.identifierImage}
-                  />
-                  <span className={styles.selectFaceCheckboxBackground} />
-                  <Checkbox
-                    checked={
-                      !!find(selectedIdentifiers, { guid: identifier.guid })
-                    }
-                    color="primary"
-                    disableRipple
-                    classes={{ root: styles.selectFaceCheckbox }}
-                    onChange={this.handleSingleIdentifierSelect(identifier)}
-                  />
-                </Grid>
-              );
-            })}
+          <Grid item>
+            <VirtualizedGrid
+              cellRenderer={this.renderCell(columnCount)}
+              width={columnCount * columnWidth}
+              height={rowCount > 2 ? rowHeight * 2.2 : rowHeight * rowCount}
+              columnCount={columnCount}
+              columnWidth={columnWidth}
+              rowCount={rowCount}
+              rowHeight={rowHeight}
+              overscanRowCount={3}
+              className={styles.identifierImages}
+              style={{
+                overflowX: 'hidden'
+              }}
+            />
           </Grid>
         </Grid>
         <Grid
