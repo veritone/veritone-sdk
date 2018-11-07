@@ -59,7 +59,7 @@ const saga = util.reactReduxSaga.saga;
     selectedEntityId: faceEngineOutput.getSelectedEntityId(state),
     hasLibraryAccess: userModule.hasOrgAppAccess(
       state,
-      'cf05552b-52e0-46fa-8f7f-4c9eee135c51'
+      'cf05552b-52e0-46fa-8f7f-4c9eee135c51' // library-app app id
     ) //TODO: find a better way to check for app access other than hard coding the id
   }),
   {
