@@ -25,7 +25,7 @@ export default class IdentifierSelector extends Component {
     onConfirm: func.isRequired,
     onCancel: func.isRequired,
     defaultSelectAll: bool,
-    creatingIdentifiers: bool
+    isCreatingIdentifiers: bool
   };
 
   state = {
@@ -133,7 +133,7 @@ export default class IdentifierSelector extends Component {
   };
 
   render() {
-    const { identifiers, onCancel, creatingIdentifiers } = this.props;
+    const { identifiers, onCancel, isCreatingIdentifiers } = this.props;
     const { selectedIdentifiers } = this.state;
     const columnWidth = 98,
       rowHeight = 90,
@@ -214,7 +214,7 @@ export default class IdentifierSelector extends Component {
             data-veritone-element="finish-button"
             classes={{ root: styles.entityDialogButton }}
             onClick={this.handleFinishClick}
-            disabled={creatingIdentifiers}
+            disabled={isCreatingIdentifiers}
           >
             Finish
           </Button>

@@ -65,7 +65,7 @@ class FaceInfoBox extends Component {
   static propTypes = {
     face: shape({
       startTimeMs: number,
-      endTimeMs: number,
+      stopTimeMs: number,
       object: shape({
         label: string,
         uri: string
@@ -94,17 +94,17 @@ class FaceInfoBox extends Component {
   };
 
   state = {
-    hovered: false,
+    isHovered: false,
     searchEntityText: '',
     imageIsLoading: true
   };
 
   handleMouseOver = () => {
-    this.setState({ hovered: true });
+    this.setState({ isHovered: true });
   };
 
   handleMouseOut = () => {
-    this.setState({ hovered: false });
+    this.setState({ isHovered: false });
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -174,7 +174,7 @@ class FaceInfoBox extends Component {
     return (
       <div
         className={cx(styles.faceContainer, {
-          [styles.faceContainerHover]: this.state.hovered
+          [styles.faceContainerHover]: this.state.isHovered
         })}
         style={{ width: width }}
         onMouseOver={this.handleMouseOver}
@@ -214,7 +214,7 @@ class FaceInfoBox extends Component {
               />
             )}
           {enableEdit &&
-            this.state.hovered && (
+            this.state.isHovered && (
               <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
                 <DeleteIcon classes={{root: styles.faceActionIcon}}/>
               </div>

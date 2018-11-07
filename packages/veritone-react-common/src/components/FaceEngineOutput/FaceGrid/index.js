@@ -13,7 +13,7 @@ class FaceGrid extends Component {
     faces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string
@@ -23,7 +23,7 @@ class FaceGrid extends Component {
     selectedFaces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string
@@ -38,7 +38,7 @@ class FaceGrid extends Component {
       })
     ),
     editMode: bool,
-    itemsRecognized: bool,
+    hasRecognizedItems: bool,
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
@@ -174,7 +174,7 @@ class FaceGrid extends Component {
       faces,
       selectedFaces,
       editMode,
-      itemsRecognized,
+      hasRecognizedItems,
       disableLibraryButtons,
       hideEntityLabels,
       columnWidth
@@ -193,7 +193,7 @@ class FaceGrid extends Component {
                 <MultiEditActionBar
                   selectedItemsCount={selectedFaces.length}
                   itemType="Face"
-                  itemsRecognized={itemsRecognized}
+                  hasRecognizedItems={hasRecognizedItems}
                   onSelectAllChange={this.handleSelectAll}
                   onAddToExistingEntityClick={this.handleAddAllToExistingEntity}
                   onAddNewEntityClick={this.handleAllToNewEntity}

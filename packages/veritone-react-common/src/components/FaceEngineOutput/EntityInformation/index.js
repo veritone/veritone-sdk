@@ -25,7 +25,7 @@ class EntityInformation extends Component {
     faces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string
@@ -35,7 +35,7 @@ class EntityInformation extends Component {
     selectedFaces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string

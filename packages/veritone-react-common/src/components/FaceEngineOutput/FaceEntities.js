@@ -38,7 +38,7 @@ export default class FaceEntities extends Component {
     selectedFaces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string

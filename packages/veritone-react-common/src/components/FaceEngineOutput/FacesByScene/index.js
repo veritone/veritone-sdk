@@ -23,7 +23,7 @@ class FacesByScene extends Component {
         faces: arrayOf(
           shape({
             startTimeMs: number,
-            endTimeMs: number,
+            stopTimeMs: number,
             object: shape({
               label: string,
               originalImage: string
@@ -43,7 +43,7 @@ class FacesByScene extends Component {
       const entityCurrentlyInFrame = entityObject.faces.find(time => {
         return (
           currentMediaPlayerTime >= time.startTimeMs &&
-          currentMediaPlayerTime <= time.endTimeMs
+          currentMediaPlayerTime <= time.stopTimeMs
         );
       });
       if (entityCurrentlyInFrame) {
@@ -68,7 +68,7 @@ class FacesByScene extends Component {
         const entityCurrentlyInFrame = entityObject.faces.find(time => {
           return (
             currentMediaPlayerTime >= time.startTimeMs &&
-            currentMediaPlayerTime <= time.endTimeMs
+            currentMediaPlayerTime <= time.stopTimeMs
           );
         });
 
