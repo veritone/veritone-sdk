@@ -83,7 +83,10 @@ const defaultMDPState = {
   isRestoringOriginalEngineResult: false,
   categoryCombinationMapper: [{
     combineType: 'speaker',
-    withType: 'transcript'
+    withType: 'transcript',
+    quickExportOptions: {
+      withSpeakerData: true
+    }
   }]
 };
 
@@ -1003,7 +1006,8 @@ export const createQuickExport = (
   engineId,
   categoryId,
   selectedCombineEngineId,
-  selectedCombineCategoryId
+  selectedCombineCategoryId,
+  formatOptions = {}
 ) => async (dispatch, getState) => {
   const query = `
     mutation createExportRequest(
@@ -1034,9 +1038,7 @@ export const createQuickExport = (
       formats: formatTypes.map(type => {
         return {
           extension: type,
-          options: {
-            withSpeakerData: true
-          }
+          options: formatOptions
         };
       })
     }
@@ -1046,7 +1048,12 @@ export const createQuickExport = (
     outputConfigurations.push({
       categoryId: selectedCombineCategoryId,
       engineId: selectedCombineEngineId,
-      formats: []
+      formats: formatTypes.map(type => {
+        return {
+          extension: type,
+          options: formatOptions
+        };
+      })
     });
   }
 

@@ -780,6 +780,7 @@ class MediaDetailsWidget extends React.Component {
       categoryCombinationMapper,
       engineCategories
     } = this.props;
+    let formatOptions = {};
     let selectedCombineEngineId, selectedCombineCategoryId;
     const hasCombineEngineOutput = find(
       categoryCombinationMapper, 
@@ -790,16 +791,27 @@ class MediaDetailsWidget extends React.Component {
         engineCategories,
         ['categoryType', hasCombineEngineOutput.combineType]
       );
-      selectedCombineCategoryId = combineCategory.id;
-      selectedCombineEngineId = get(combineCategory, 'engines[0].id');
+      if (combineCategory) {
+        selectedCombineCategoryId = combineCategory.id;
+        selectedCombineEngineId = get(combineCategory, 'engines[0].id');
+        
+        if (hasCombineEngineOutput.quickExportOptions) {
+          formatOptions = {
+            ...formatOptions,
+            ...hasCombineEngineOutput.quickExportOptions
+          };
+        }
+      }
     }
+
     createQuickExport(
       tdo.id,
       selectedFormats,
       selectedEngineId,
       selectedEngineCategory.id,
       selectedCombineEngineId,
-      selectedCombineCategoryId
+      selectedCombineCategoryId,
+      formatOptions
     ).then(response => {
       this.props.onExport(get(response, 'createExportRequest'), tdo);
       return get(response, 'createExportRequest');

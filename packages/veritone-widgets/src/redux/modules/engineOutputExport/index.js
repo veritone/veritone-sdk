@@ -176,10 +176,14 @@ export default createReducer(defaultState, {
             'subtitleConfigCache',
             categoryId
           ]);
-          const storedSpeakerToggle = get(state, [
-            'speakerToggleCache',
-            categoryId
-          ]) || get(state, 'speakerToggleCache');
+          const storedSpeakerToggle = state.hasSpeakerData
+            ? (
+                get(state, [
+                  'speakerToggleCache',
+                  categoryId
+                ]) || get(state, 'speakerToggleCache')
+              )
+            : {};
           return {
             ...config,
             formats: selectedFileTypes.map(type => {
