@@ -94,7 +94,8 @@ class FaceInfoBox extends Component {
 
   state = {
     hovered: false,
-    searchEntityText: ''
+    searchEntityText: '',
+    imageIsLoading: true
   };
 
   handleMouseOver = () => {
@@ -144,6 +145,18 @@ class FaceInfoBox extends Component {
     this.props.onCheckboxClicked(face, evt);
   };
 
+  handleImageLoad = () => {
+    this.setState({
+      imageIsLoading: false
+    });
+  };
+
+  handleImageLoadError = () => {
+    this.setState({
+      imageIsLoading: false
+    });
+  };
+
   render() {
     const {
       face,
@@ -177,7 +190,14 @@ class FaceInfoBox extends Component {
             className={styles.entityImage}
             src={face.object.uri}
             onClick={onClick}
+            onLoad={this.handleImageLoad}
+            onError={this.handleImageLoadError}
           />
+          {this.state.imageIsLoading && (
+            <div className={styles.loadingContainer}>
+              <CircularProgress />
+            </div>
+          )}
           {enableEdit &&
             !face.editAction && (
               <span className={styles.selectFaceCheckboxBackground} />

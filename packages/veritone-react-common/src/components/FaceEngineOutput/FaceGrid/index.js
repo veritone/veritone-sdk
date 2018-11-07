@@ -217,6 +217,7 @@ class FaceGrid extends Component {
                       rowHeight={
                         hideEntityLabels ? columnWidth + 22 : columnWidth + 42
                       }
+                      overscanRowCount={3}
                       style={{
                         overflowX: 'hidden'
                       }}
