@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Checkbox from '@material-ui/core/Checkbox';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -215,9 +216,7 @@ class FaceInfoBox extends Component {
           {enableEdit &&
             this.state.hovered && (
               <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
-                <div className={styles.faceActionIcon}>
-                  <i className="icon-trashcan" />
-                </div>
+                <DeleteIcon classes={{root: styles.faceActionIcon}}/>
               </div>
             )}
           {!!face.editAction && (
