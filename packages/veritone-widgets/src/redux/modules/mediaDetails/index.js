@@ -1048,12 +1048,7 @@ export const createQuickExport = (
     outputConfigurations.push({
       categoryId: selectedCombineCategoryId,
       engineId: selectedCombineEngineId,
-      formats: formatTypes.map(type => {
-        return {
-          extension: type,
-          options: formatOptions
-        };
-      })
+      formats: []
     });
   }
 
