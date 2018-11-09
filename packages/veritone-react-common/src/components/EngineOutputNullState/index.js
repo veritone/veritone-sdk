@@ -24,18 +24,11 @@ export default class EngineOutputNullState extends Component {
   }
 
   isProcessing(engineStatus) {
-    return includes(
-      [
-        'pending',
-        'running',
-        'queued',
-        'accepted',
-        'standby_pending',
-        'waiting',
-        'resuming'
-      ],
-      engineStatus
-    );
+    return
+      !this.isError(engineStatus) &&
+      !this.isFetching(engineStatus) &&
+      !this.isNoData(engineStatus) &&
+      engineStatus !== 'complete';
   }
 
   isFetching(engineStatus) {
