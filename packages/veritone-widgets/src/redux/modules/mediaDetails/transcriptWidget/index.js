@@ -654,64 +654,81 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       let originalTranscriptAssetId;
       // order of original transcript preference:
       // vtn-standard => v-vlf => primary transcript
-      const vtnStandardAssetsResponse = await fetchAssets( 
-        tdoId,  
-        'vtn-standard', 
-        dispatch, 
-        getState  
-      );
+      let vtnStandardAssetsResponse;
+      try {
+        vtnStandardAssetsResponse = await fetchAssets(
+          tdoId,
+          'vtn-standard',
+          dispatch,
+          getState
+        );
+      } catch (e) {
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+          payload: {
+            error: 'Failed to get vtn-standard transcript asset.'
+          }
+        });
+        return;
+      }
       const vtnStandardAssets = get(
         vtnStandardAssetsResponse,
         'temporalDataObject.assets.records',
         []
       );
       const vtnStandardAssetToUse = find(vtnStandardAssets, ['sourceData.engineId', selectedEngineId]);
+      originalTranscriptAssetId = get(vtnStandardAssetToUse, 'id');
 
-      if (vtnStandardAssetToUse) {
-        originalTranscriptAssetId = vtnStandardAssetToUse.id;
-      } else {
+      if (!originalTranscriptAssetId) {
         // vtn-standard doesn't exist, try for v-vlf
-        const vlfAssetsResponse = await fetchAssets( 
-          tdoId,  
-          'v-vlf', 
-          dispatch, 
-          getState  
-        );
+        let vlfAssetsResponse;
+        try {
+          vlfAssetsResponse = await fetchAssets(
+            tdoId,
+            'v-vlf',
+            dispatch,
+            getState
+          );
+        } catch(e) {
+          dispatch({
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error: 'Failed to get vlf transcript asset.'
+            }
+          });
+          return;
+        }
         const vlfAssets = get(
           vlfAssetsResponse,
           'temporalDataObject.assets.records',
           []
         );
         const vlfAssetToUse = find(vlfAssets, ['sourceData.engineId', selectedEngineId]);
-        if (vlfAssetToUse) {
-          originalTranscriptAssetId = vlfAssetToUse.id;  
-        } else {
-          // vlf doens't exist, try for primary transcript (ttml)
-          let getPrimaryTranscriptAssetResponse;
-          try {
-            getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
-              tdoId,
-              dispatch,
-              getState
-            );
-          } catch (e) {
-            console.error(e);
-            dispatch({
-              type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-              payload: {
-                error: 'Failed to get primary transcript asset.'
-              }
-            });
-            return;
-          }
-          const primaryAssetId = get(
-            getPrimaryTranscriptAssetResponse,
-            'temporalDataObject.primaryAsset.id'
+        originalTranscriptAssetId = get(vlfAssetToUse, 'id');
+      }
+
+      if (!originalTranscriptAssetId) {
+        // vlf doesn't exist, try for primary transcript (ttml)
+        let getPrimaryTranscriptAssetResponse;
+        try {
+          getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
+            tdoId,
+            dispatch,
+            getState
           );
-          if (primaryAssetId) {
-            originalTranscriptAssetId = primaryAssetId;
-          }
+        } catch (e) {
+          dispatch({
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error: 'Failed to get primary ttml transcript asset.'
+            }
+          });
+          return;
         }
+        originalTranscriptAssetId = get(
+          getPrimaryTranscriptAssetResponse,
+          'temporalDataObject.primaryAsset.id'
+        );
       }
 
       if (!originalTranscriptAssetId) {
