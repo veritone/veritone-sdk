@@ -20,12 +20,20 @@ export default class EngineOutputNullState extends Component {
   };
 
   isError(engineStatus) {
-    return includes(['failed', 'cancelled'], engineStatus);
+    return includes(['failed', 'cancelled', 'aborted'], engineStatus);
   }
 
   isProcessing(engineStatus) {
     return includes(
-      ['pending', 'running', 'queued', 'accepted', 'standby_pending'],
+      [
+        'pending',
+        'running',
+        'queued',
+        'accepted',
+        'standby_pending',
+        'waiting',
+        'resuming'
+      ],
       engineStatus
     );
   }
