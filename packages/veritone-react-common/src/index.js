@@ -51,3 +51,4 @@ export { Interval, defaultIntervals } from 'helpers/date';
 export Scheduler from './components/Scheduler';
 export Image from './components/Image';
 export IngestionAdapters from './components/IngestionAdapters';
+export LibraryForm from './components/LibraryForm';

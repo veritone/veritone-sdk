@@ -20,6 +20,10 @@ import engineOutputExportReducer, {
   namespace as engineOutputExportNamespace
 } from './modules/engineOutputExport';
 
+import datasetLibraryReducer, {
+  namespace as datasetLibraryNamespace
+} from './modules/datasetLibrary';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -40,6 +44,7 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
+    [datasetLibraryNamespace]:datasetLibraryReducer,
     player: playerReducer,
     operation: operationReducer,
     form: formReducer,
