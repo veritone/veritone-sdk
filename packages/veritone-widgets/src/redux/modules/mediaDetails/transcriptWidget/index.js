@@ -1,4 +1,4 @@
-import { get, set, isEqual, cloneDeep, forEach } from 'lodash';
+import { get, set, isEqual, cloneDeep, forEach, find } from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -570,7 +570,7 @@ const runBulkEditJob = (
           originalTranscriptAssetId: "${originalTranscriptAssetId}",
           temporaryBulkEditAssetId: "${bulkTextAssetId}",
           originalEngineId: "${engineId}",
-          saveTtmlToVtnStandard: true
+          saveToVtnStandard: true
         }
       },
       {
@@ -651,52 +651,84 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
         });
       }
 
-      let getPrimaryTranscriptAssetResponse, vtnStandardAssetsResponse;
-      try {
-        getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
-          tdoId,
-          dispatch,
-          getState
-        );
-      } catch (e) {
-        console.error(e);
-        dispatch({
-          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-          payload: {
-            error: 'Failed to get primary transcript asset.'
-          }
-        });
-        return;
-      }
-
       let originalTranscriptAssetId;
-      // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
-      if (
-        get(
-          getPrimaryTranscriptAssetResponse,
-          'temporalDataObject.primaryAsset.id'
-        )
-      ) {
-        originalTranscriptAssetId = get(
-          getPrimaryTranscriptAssetResponse,
-          'temporalDataObject.primaryAsset.id'
-        );
-      } else {
+      // order of original transcript preference:
+      // vtn-standard => v-vlf => primary transcript
+      let vtnStandardAssetsResponse;
+      try {
         vtnStandardAssetsResponse = await fetchAssets(
           tdoId,
           'vtn-standard',
           dispatch,
           getState
         );
-        const transcriptVtnAssets = get(
-          vtnStandardAssetsResponse,
+      } catch (e) {
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+          payload: {
+            error: 'Failed to get vtn-standard transcript asset.'
+          }
+        });
+        return;
+      }
+      const vtnStandardAssets = get(
+        vtnStandardAssetsResponse,
+        'temporalDataObject.assets.records',
+        []
+      );
+      const vtnStandardAssetToUse = find(vtnStandardAssets, ['sourceData.engineId', selectedEngineId]);
+      originalTranscriptAssetId = get(vtnStandardAssetToUse, 'id');
+
+      if (!originalTranscriptAssetId) {
+        // vtn-standard doesn't exist, try for v-vlf
+        let vlfAssetsResponse;
+        try {
+          vlfAssetsResponse = await fetchAssets(
+            tdoId,
+            'v-vlf',
+            dispatch,
+            getState
+          );
+        } catch(e) {
+          dispatch({
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error: 'Failed to get vlf transcript asset.'
+            }
+          });
+          return;
+        }
+        const vlfAssets = get(
+          vlfAssetsResponse,
           'temporalDataObject.assets.records',
           []
         );
-        const transcriptVtnAsset = transcriptVtnAssets.find(
-          asset => get(asset, 'sourceData.engineId') === selectedEngineId
+        const vlfAssetToUse = find(vlfAssets, ['sourceData.engineId', selectedEngineId]);
+        originalTranscriptAssetId = get(vlfAssetToUse, 'id');
+      }
+
+      if (!originalTranscriptAssetId) {
+        // vlf doesn't exist, try for primary transcript (ttml)
+        let getPrimaryTranscriptAssetResponse;
+        try {
+          getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
+            tdoId,
+            dispatch,
+            getState
+          );
+        } catch (e) {
+          dispatch({
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error: 'Failed to get primary ttml transcript asset.'
+            }
+          });
+          return;
+        }
+        originalTranscriptAssetId = get(
+          getPrimaryTranscriptAssetResponse,
+          'temporalDataObject.primaryAsset.id'
         );
-        originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
       }
 
       if (!originalTranscriptAssetId) {
