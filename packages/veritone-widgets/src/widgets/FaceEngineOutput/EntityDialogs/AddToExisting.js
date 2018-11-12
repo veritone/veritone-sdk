@@ -183,7 +183,7 @@ export default class AddToExistingEntityDialog extends Component {
           identifierTypeId: 'face',
           contentType: 'image',
           url: get(face, 'object.uri'),
-          isPriority: true
+          isPriority: false
         };
       })
     ).then(res => {
