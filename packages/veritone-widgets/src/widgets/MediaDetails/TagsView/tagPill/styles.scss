@@ -1,0 +1,54 @@
+@import 'src/styles/modules/variables';
+
+.tagPillContainer {
+  display: inline-block;
+  border-radius: 100px;
+  height: 32px;
+  background-color: $grey-4;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 13px;
+  align-items: center;
+  margin: 5px 10px 5px 0;
+  white-space: nowrap;
+  line-height: 16px;
+}
+
+.tagPillContainerReadonly {
+  display: inline-block;
+  border-radius: 100px;
+  height: 32px;
+  background-color: $grey-4;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 13px;
+  align-items: center;
+  margin: 5px 10px 5px 0;
+  white-space: nowrap;
+  line-height: 22px;
+  padding-right: 15px;
+}
+
+.tagText {
+  display: inline-block;
+  vertical-align: middle;
+  height: 16px;
+  color: $dark-black;
+  margin-left: 15px;
+}
+
+.removeButton {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  height: 16px !important;
+  width: 16px !important;
+  margin: 8px !important;
+  border-radius: 16px !important;
+  background-color: $grey-5 !important;
+
+  .removeButtonIcon {
+    font-size: 14px;
+    font-weight: bold;
+    color: $grey-4;
+  }
+}

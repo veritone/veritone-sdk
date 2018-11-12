@@ -20,6 +20,11 @@ const editHeader = ({
     face: {
       name: 'Faces',
       subhead: 'Use the edit screen below to edit detected faces.'
+    },
+    tags: {
+      name: 'Tags',
+      subhead:
+        'Tags provide a useful way to group related media together and make it easier for people to find content.'
     }
   };
   return (

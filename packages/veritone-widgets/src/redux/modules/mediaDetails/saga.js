@@ -22,9 +22,7 @@ import {
   includes
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
-import {
-  SAVE_FACE_EDITS_SUCCESS
-} from './faceEngineOutput';
+import { SAVE_FACE_EDITS_SUCCESS } from './faceEngineOutput';
 import {
   UPDATE_EDIT_STATUS,
   SAVE_TRANSCRIPT_EDITS_SUCCESS
@@ -910,15 +908,22 @@ function* emitEntityUpdatedEvent(tdoId) {
         variables: { input },
         token
       });
-      if (!get(response, 'data.emitEvent.id') || get(response, 'errors.length')) {
+      if (
+        !get(response, 'data.emitEvent.id') ||
+        get(response, 'errors.length')
+      ) {
         return yield put(
-          emitEntityUpdatedEventFailure('Failed to emit EntityUpdated event for saved results.')
+          emitEntityUpdatedEventFailure(
+            'Failed to emit EntityUpdated event for saved results.'
+          )
         );
       }
     }
   } catch (error) {
     return yield put(
-      emitEntityUpdatedEventFailure(`Failed to emit EntityUpdated event for saved results.`)
+      emitEntityUpdatedEventFailure(
+        `Failed to emit EntityUpdated event for saved results.`
+      )
     );
   }
 }
@@ -1213,13 +1218,19 @@ function* insertIntoIndexSaga(tdoId) {
       token
     });
 
-    if (!get(response, 'data.createJob.id') ||
+    if (
+      !get(response, 'data.createJob.id') ||
       isEmpty(get(response, 'data.createJob.tasks.records')) ||
-      !get(response, 'data.createJob.tasks.records[0].id')) {
-      return yield put(insertIntoIndexFailure('Failed to create insert-into-index task.'));
+      !get(response, 'data.createJob.tasks.records[0].id')
+    ) {
+      return yield put(
+        insertIntoIndexFailure('Failed to create insert-into-index task.')
+      );
     }
   } catch (error) {
-    return yield put(insertIntoIndexFailure('Failed to create insert-into-index task.'));
+    return yield put(
+      insertIntoIndexFailure('Failed to create insert-into-index task.')
+    );
   }
 }
 

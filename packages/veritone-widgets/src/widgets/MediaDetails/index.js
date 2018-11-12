@@ -6,6 +6,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
 import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
+import TabIndicator from '@material-ui/core/Tabs/TabIndicator';
 import Tabs from '@material-ui/core/Tabs';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -29,7 +30,15 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual, isUndefined, isArray } from 'lodash';
+import {
+  find,
+  get,
+  some,
+  includes,
+  isEqual,
+  isUndefined,
+  isArray
+} from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -51,6 +60,7 @@ import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './MoreMenuItems';
+import TagsView from './TagsView';
 import EditHeader from './Headers/EditHeader';
 import { modules, util } from 'veritone-redux-common';
 const {
@@ -120,7 +130,10 @@ const programLiveImageNullState =
       state,
       id
     ),
-    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(state, id),
+    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(
+      state,
+      id
+    ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
     betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
@@ -132,7 +145,8 @@ const programLiveImageNullState =
       state,
       'downloadPublicMedia'
     ),
-    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia')
+    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia'),
+    isShowingTagsView: mediaDetailsModule.isShowingTagsView(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -150,7 +164,9 @@ const programLiveImageNullState =
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
     createQuickExport: mediaDetailsModule.createQuickExport,
-    cancelEdit: mediaDetailsModule.cancelEdit
+    cancelEdit: mediaDetailsModule.cancelEdit,
+    enableTagsView: mediaDetailsModule.enableTagsView,
+    setEditTagsMode: mediaDetailsModule.setEditTagsMode
   },
   null,
   { withRef: true }
@@ -365,7 +381,10 @@ class MediaDetailsWidget extends React.Component {
     bulkEditEnabled: bool,
     publicMediaDownloadEnabled: bool,
     downloadMediaEnabled: bool,
-    cancelEdit: func
+    cancelEdit: func,
+    setEditTagsMode: func,
+    isShowingTagsView: bool,
+    enableTagsView: func
   };
 
   static contextTypes = {
@@ -782,19 +801,19 @@ class MediaDetailsWidget extends React.Component {
     } = this.props;
     let formatOptions = {};
     let selectedCombineEngineId, selectedCombineCategoryId;
-    const hasCombineEngineOutput = find(
-      categoryCombinationMapper, 
-      ['withType', selectedEngineCategory.categoryType]
-    );
+    const hasCombineEngineOutput = find(categoryCombinationMapper, [
+      'withType',
+      selectedEngineCategory.categoryType
+    ]);
     if (hasCombineEngineOutput) {
-      const combineCategory = find(
-        engineCategories,
-        ['categoryType', hasCombineEngineOutput.combineType]
-      );
+      const combineCategory = find(engineCategories, [
+        'categoryType',
+        hasCombineEngineOutput.combineType
+      ]);
       if (combineCategory) {
         selectedCombineCategoryId = combineCategory.id;
         selectedCombineEngineId = get(combineCategory, 'engines[0].id');
-        
+
         if (hasCombineEngineOutput.quickExportOptions) {
           formatOptions = {
             ...formatOptions,
@@ -848,35 +867,40 @@ class MediaDetailsWidget extends React.Component {
     //   }
     // }
     const secondaryEngineCombiner = {};
-    const engineCategorySelectorItems = isArray(engineCategories) ? 
-      engineCategories.filter(category => {
-        // If the current category is to be combined with another
-        // then load it's engines into the combiner using withId as the key
-        const isCombineCategory = !find(categoryCombinationMapper, map => {
-          const isCombineMatch = map.combineType === category.categoryType;
-          if (isCombineMatch) {
-            if (!secondaryEngineCombiner[map.withType]) {
-              secondaryEngineCombiner[map.withType] = {};
+    const engineCategorySelectorItems = isArray(engineCategories)
+      ? engineCategories.filter(category => {
+          // If the current category is to be combined with another
+          // then load it's engines into the combiner using withId as the key
+          const isCombineCategory = !find(categoryCombinationMapper, map => {
+            const isCombineMatch = map.combineType === category.categoryType;
+            if (isCombineMatch) {
+              if (!secondaryEngineCombiner[map.withType]) {
+                secondaryEngineCombiner[map.withType] = {};
+              }
+              const combineCategory = find(engineCategories, [
+                'categoryType',
+                map.combineType
+              ]);
+              if (combineCategory) {
+                secondaryEngineCombiner[map.withType][map.combineType] =
+                  combineCategory.engines;
+              }
             }
-            const combineCategory = find(engineCategories, ['categoryType', map.combineType]);
-            if (combineCategory) {
-              secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
-            }
-          }
-          return isCombineMatch;
-        });
+            return isCombineMatch;
+          });
 
-        return isCombineCategory;
-      }) : [];
+          return isCombineCategory;
+        })
+      : [];
 
-    const combineEngines = selectedEngineCategory ? 
-      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
-      [];
+    const combineEngines = selectedEngineCategory
+      ? get(secondaryEngineCombiner, selectedEngineCategory.categoryType)
+      : [];
     return {
       combineEngines,
       engineCategorySelectorItems
     };
-  }
+  };
 
   render() {
     let {
@@ -902,7 +926,9 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit
+      cancelEdit,
+      setEditTagsMode,
+      isShowingTagsView
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1245,16 +1271,54 @@ class MediaDetailsWidget extends React.Component {
                     />
                   </Tabs>
                 )}
-                {selectedEngineCategory &&
+                {!!get(engineCategorySelectorItems, 'length') &&
                   this.state.selectedTabValue === 'mediaDetails' && (
                     <div className={styles.engineActionHeader}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={engineCategorySelectorItems}
-                          selectedEngineCategoryId={selectedEngineCategory.id}
+                          selectedEngineCategoryId={
+                            this.props.isShowingTagsView
+                              ? null
+                              : get(selectedEngineCategory, 'id')
+                          }
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
                           }
+                        />
+                        <span className={styles.categoryIconDivider} />
+                        <Tab
+                          // eslint-disable-next-line
+                          onClick={() =>
+                            this.props.enableTagsView(this.props.id)
+                          }
+                          selected={this.props.isShowingTagsView}
+                          icon={
+                            <Tooltip
+                              id="tags-tab"
+                              title="Tags Tab"
+                              classes={{
+                                tooltip: styles.categoryTabTooltip
+                              }}
+                            >
+                              <Icon
+                                className="icon-tag"
+                                classes={{ root: styles.categoryIcon }}
+                              />
+                            </Tooltip>
+                          }
+                          indicator={
+                            this.props.isShowingTagsView ? (
+                              <TabIndicator
+                                style={{ transition: 'none' }}
+                                color="primary"
+                              />
+                            ) : null
+                          }
+                          classes={{
+                            root: styles.accessoryTab,
+                            selected: styles.accessoryTabSelectedColor
+                          }}
                         />
                       </div>
                     </div>
@@ -1289,14 +1353,16 @@ class MediaDetailsWidget extends React.Component {
           {selectedEngineCategory &&
             isEditModeEnabled && (
               <EditHeader
-                engineCategoryIconClass={get(
-                  selectedEngineCategory,
-                  'iconClass'
-                )}
-                engineCategoryType={get(
-                  selectedEngineCategory,
-                  'categoryType'
-                )}
+                engineCategoryIconClass={
+                  isShowingTagsView
+                    ? 'icon-tag'
+                    : get(selectedEngineCategory, 'iconClass')
+                }
+                engineCategoryType={
+                  isShowingTagsView
+                    ? 'tags'
+                    : get(selectedEngineCategory, 'categoryType')
+                }
                 // eslint-disable-next-line
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
@@ -1337,164 +1403,176 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   </div>
                 )}
-              {selectedEngineId && (
-                <div className={styles.engineCategoryView}>
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutput
-                        tdo={tdo}
-                        showEditButton={this.showEditButton()}
-                        disableEditButton={this.isEditModeButtonDisabled()}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
-                        engines={selectedEngineCategory.engines}
-                        combineEngines={combineEngines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        neglectableTimeMs={100}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                        bulkEditEnabled={bulkEditEnabled}
-                        moreMenuItems={moreMenuItems}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'face' && (
-                      <FaceEngineOutput
-                        tdo={tdo}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        showEditButton={this.showEditButton()}
-                        disableEditButton={this.isEditModeButtonDisabled()}
-                        disableEdit={this.handleDisableEditBtn}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
-                        outputNullState={this.buildEngineNullStateComponent()}
-                        moreMenuItems={moreMenuItems}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'object' && (
-                      <ObjectDetectionEngineOutput
-                        data={selectedEngineResults}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectOccurrenceClick={
-                          this.handleUpdateMediaPlayerTime
-                        }
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'logo' && (
-                      <LogoDetectionEngineOutput
-                        data={selectedEngineResults}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        onEntrySelected={this.handleUpdateMediaPlayerTime}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'ocr' && (
-                      <OCREngineOutputView
-                        data={selectedEngineResults}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        onOcrClicked={this.handleUpdateMediaPlayerTime}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <FingerprintEngineOutput
-                        data={selectedEngineResults}
-                        entities={entities}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'translate' && (
-                      <TranslationEngineOutput
-                        contents={selectedEngineResults}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        onRerunProcess={this.handleRunProcess}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'sentiment' && (
-                      <SentimentEngineOutput
-                        data={selectedEngineResults}
-                        className={cx(
-                          styles.engineOuputContainer,
-                          styles.sentimentChartViewRoot
-                        )}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'geolocation' && (
-                      <GeoEngineOutput
-                        data={selectedEngineResults}
-                        startTimeStamp={
-                          tdo && tdo.startDateTime ? tdo.startDateTime : null
-                        }
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        className={styles.engineOuputContainer}
-                        apiKey={googleMapsApiKey}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'correlation' && (
-                      <StructuredDataEngineOutput
-                        data={selectedEngineResults}
-                        schemasById={schemasById}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        onExpandClick={this.toggleExpandedMode}
-                        isExpandedMode={isExpandedMode}
-                        onSdoClick={this.handleUpdateMediaPlayerTime}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                </div>
+              {this.props.isShowingTagsView && (
+                <TagsView
+                  tags={get(tdo, 'details.tags')}
+                  editModeEnabled={isEditModeEnabled}
+                  showEditButton={this.showEditButton()}
+                  // eslint-disable-next-line
+                  onEditButtonClick={() =>
+                    setEditTagsMode(!isEditModeEnabled, this.props.id)
+                  }
+                />
               )}
+              {selectedEngineId &&
+                !this.props.isShowingTagsView && (
+                  <div className={styles.engineCategoryView}>
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'transcript' && (
+                        <TranscriptEngineOutput
+                          tdo={tdo}
+                          showEditButton={this.showEditButton()}
+                          disableEditButton={this.isEditModeButtonDisabled()}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          mediaPlayerTimeIntervalMs={500}
+                          engines={selectedEngineCategory.engines}
+                          combineEngines={combineEngines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          neglectableTimeMs={100}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                          bulkEditEnabled={bulkEditEnabled}
+                          moreMenuItems={moreMenuItems}
+                          onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'face' && (
+                        <FaceEngineOutput
+                          tdo={tdo}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          showEditButton={this.showEditButton()}
+                          disableEditButton={this.isEditModeButtonDisabled()}
+                          disableEdit={this.handleDisableEditBtn}
+                          onFaceOccurrenceClicked={
+                            this.handleUpdateMediaPlayerTime
+                          }
+                          outputNullState={this.buildEngineNullStateComponent()}
+                          moreMenuItems={moreMenuItems}
+                          onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'object' && (
+                        <ObjectDetectionEngineOutput
+                          data={selectedEngineResults}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          onObjectOccurrenceClick={
+                            this.handleUpdateMediaPlayerTime
+                          }
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'logo' && (
+                        <LogoDetectionEngineOutput
+                          data={selectedEngineResults}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          mediaPlayerTimeIntervalMs={500}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          onEntrySelected={this.handleUpdateMediaPlayerTime}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'ocr' && (
+                        <OCREngineOutputView
+                          data={selectedEngineResults}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          onOcrClicked={this.handleUpdateMediaPlayerTime}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'fingerprint' && (
+                        <FingerprintEngineOutput
+                          data={selectedEngineResults}
+                          entities={entities}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'translate' && (
+                        <TranslationEngineOutput
+                          contents={selectedEngineResults}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          onRerunProcess={this.handleRunProcess}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          mediaPlayerTimeIntervalMs={500}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'sentiment' && (
+                        <SentimentEngineOutput
+                          data={selectedEngineResults}
+                          className={cx(
+                            styles.engineOuputContainer,
+                            styles.sentimentChartViewRoot
+                          )}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'geolocation' && (
+                        <GeoEngineOutput
+                          data={selectedEngineResults}
+                          startTimeStamp={
+                            tdo && tdo.startDateTime ? tdo.startDateTime : null
+                          }
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          className={styles.engineOuputContainer}
+                          apiKey={googleMapsApiKey}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'correlation' && (
+                        <StructuredDataEngineOutput
+                          data={selectedEngineResults}
+                          schemasById={schemasById}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          onExpandClick={this.toggleExpandedMode}
+                          isExpandedMode={isExpandedMode}
+                          onSdoClick={this.handleUpdateMediaPlayerTime}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                  </div>
+                )}
             </div>
           )}
 

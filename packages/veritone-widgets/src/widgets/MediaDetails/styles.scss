@@ -1,4 +1,4 @@
-@import '../veritone-react-common/src/styles/modules/variables';
+@import '../../styles/modules/variables';
 
 .popperContent {
   z-index: 1;
@@ -7,6 +7,7 @@
 .mediaDetailsPageContent {
   width: 100% !important;
   height: 100% !important;
+  overflow-y: auto;
   min-height: 400px;
   position: relative;
   font-family: Roboto;
@@ -117,6 +118,40 @@
     .engineCategorySelector {
       margin-left: 20px;
       align-self: flex-end;
+      display: flex;
+      flex-direction: row;
+
+      .categoryIconDivider {
+        width: 1px;
+        margin: 12px 0;
+        background-color: $grey-4;
+      }
+
+      .accessoryTab {
+        min-width: 58px;
+        width: 58px;
+        color: $light-black;
+        overflow: visible;
+        opacity: 1;
+
+        .categoryTabTooltip {
+          text-transform: capitalize;
+          width: 54px;
+        }
+
+        .categoryIcon {
+          font-size: 20px;
+          width: 54px;
+        }
+      }
+
+      .firstAccessoryTab {
+        border-left: 1px solid $grey-4;
+      }
+
+      .accessoryTabSelectedColor {
+        color: $full-black;
+      }
     }
 
     .toEditModeButton {

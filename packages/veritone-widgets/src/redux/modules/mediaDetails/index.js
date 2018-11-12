@@ -53,6 +53,8 @@ export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAI
 export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
 export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE`;
 export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
+export const ENABLE_TAGS_VIEW = `${namespace}_ENABLE_TAGS_VIEW`;
+export const SET_EDIT_TAGS_MODE = `${namespace}_SET_EDIT_TAGS_MODE`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -81,13 +83,17 @@ const defaultMDPState = {
   isEditButtonDisabled: false,
   currentMediaPlayerTime: 0,
   isRestoringOriginalEngineResult: false,
-  categoryCombinationMapper: [{
-    combineType: 'speaker',
-    withType: 'transcript',
-    quickExportOptions: {
-      withSpeakerData: true
+  categoryCombinationMapper: [
+    {
+      combineType: 'speaker',
+      withType: 'transcript',
+      quickExportOptions: {
+        withSpeakerData: true
+      }
     }
-  }]
+  ],
+  showTagsView: false,
+  editingTags: false
 };
 
 const defaultState = {};
@@ -418,7 +424,8 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         selectedEngineCategory: {
           ...payload
-        }
+        },
+        showTagsView: false
       }
     };
   },
@@ -480,20 +487,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES](
-    state
-  ) {
+  [REQUEST_ENTITIES](state) {
     return {
       ...state,
       isFetchingEntities: true
     };
   },
-  [REQUEST_ENTITIES_SUCCESS](
-    state,
-    {
-      payload
-    }
-  ) {
+  [REQUEST_ENTITIES_SUCCESS](state, { payload }) {
     const allEntities = uniqBy(
       values(payload).concat(get(state, 'entities', [])),
       'id'
@@ -505,12 +505,7 @@ export default createReducer(defaultState, {
       entities: allEntities
     };
   },
-  [REQUEST_ENTITIES_FAILURE](
-    state,
-    {
-      error
-    }
-  ) {
+  [REQUEST_ENTITIES_FAILURE](state, { error }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -715,9 +710,18 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [CANCEL_EDIT](state) {
+  [CANCEL_EDIT](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
-      ...state
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editingTags: false
+      }
     };
   },
   [INSERT_INTO_INDEX_FAILURE](
@@ -744,6 +748,35 @@ export default createReducer(defaultState, {
       error: errorMessage || 'unknown error'
     };
   },
+  [ENABLE_TAGS_VIEW](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        showTagsView: true
+      }
+    };
+  },
+  [SET_EDIT_TAGS_MODE](
+    state,
+    {
+      payload: { editingTags },
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editingTags
+      }
+    };
+  }
 });
 
 const local = state => state[namespace];
@@ -759,15 +792,18 @@ export const getSelectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const getSelectedEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineId']);
+export const isEditingTags = (state, widgetId) =>
+  get(local(state), [widgetId, 'editingTags']);
 export const isEditModeEnabled = (state, widgetId) =>
-  isTranscriptEditEnabled(state) || isFaceEditEnabled(state);
+  isTranscriptEditEnabled(state) ||
+  isFaceEditEnabled(state) ||
+  isEditingTags(state, widgetId);
 export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getEntities = (state) =>
-  get(local(state), 'entities');
-export const isFetchingEntities = (state) =>
+export const getEntities = state => get(local(state), 'entities');
+export const isFetchingEntities = state =>
   get(local(state), 'isFetchingEntities');
 export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
@@ -791,6 +827,8 @@ export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 export const categoryCombinationMapper = (state, widgetId) =>
   get(local(state), [widgetId, 'categoryCombinationMapper']);
+export const isShowingTagsView = (state, widgetId) =>
+  get(local(state), [widgetId, 'showTagsView']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -998,6 +1036,17 @@ export const insertIntoIndexFailure = error => ({
 export const emitEntityUpdatedEventFailure = error => ({
   type: EMIT_ENTITY_UPDATED_EVENT_FAILURE,
   meta: { error }
+});
+
+export const enableTagsView = widgetId => ({
+  type: ENABLE_TAGS_VIEW,
+  meta: { widgetId }
+});
+
+export const setEditTagsMode = (editingTags, widgetId) => ({
+  type: SET_EDIT_TAGS_MODE,
+  payload: { editingTags },
+  meta: { widgetId }
 });
 
 export const createQuickExport = (
