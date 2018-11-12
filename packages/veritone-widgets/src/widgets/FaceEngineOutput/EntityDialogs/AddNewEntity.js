@@ -165,7 +165,7 @@ export default class AddNewEntityDialog extends Component {
             identifierTypeId: 'face',
             contentType: 'image',
             url: get(face, 'object.uri'),
-            isPriority: true
+            isPriority: false
           };
         })
       ).then(res => {
