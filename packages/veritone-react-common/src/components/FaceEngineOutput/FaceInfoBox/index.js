@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Checkbox from '@material-ui/core/Checkbox';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -88,12 +89,14 @@ class FaceInfoBox extends Component {
     isSearchingEntities: bool,
     isSelected: bool,
     onCheckboxClicked: func,
-    hideEntityLabel: bool
+    hideEntityLabel: bool,
+    width: number
   };
 
   state = {
     isHovered: false,
-    searchEntityText: ''
+    searchEntityText: '',
+    imageIsLoading: true
   };
 
   handleMouseOver = () => {
@@ -143,6 +146,18 @@ class FaceInfoBox extends Component {
     this.props.onCheckboxClicked(face, evt);
   };
 
+  handleImageLoad = () => {
+    this.setState({
+      imageIsLoading: false
+    });
+  };
+
+  handleImageLoadError = () => {
+    this.setState({
+      imageIsLoading: false
+    });
+  };
+
   render() {
     const {
       face,
@@ -152,24 +167,38 @@ class FaceInfoBox extends Component {
       isSearchingEntities,
       isSelected,
       onRemoveFace,
-      hideEntityLabel
+      hideEntityLabel,
+      width
     } = this.props;
 
     return (
       <div
         className={cx(styles.faceContainer, {
-          [styles.faceContainerHover]: this.state.isHovered,
-          [styles.withoutEntityLabel]: hideEntityLabel
+          [styles.faceContainerHover]: this.state.isHovered
         })}
+        style={{ width: width }}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}
       >
-        <div className={styles.entityImageContainer}>
+        <div
+          className={styles.entityImageContainer}
+          style={{
+            width: width - 20,
+            height: width - 20
+          }}
+        >
           <img
             className={styles.entityImage}
             src={face.object.uri}
             onClick={onClick}
+            onLoad={this.handleImageLoad}
+            onError={this.handleImageLoadError}
           />
+          {this.state.imageIsLoading && (
+            <div className={styles.loadingContainer}>
+              <CircularProgress />
+            </div>
+          )}
           {enableEdit &&
             !face.editAction && (
               <span className={styles.selectFaceCheckboxBackground} />
@@ -187,9 +216,7 @@ class FaceInfoBox extends Component {
           {enableEdit &&
             this.state.isHovered && (
               <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
-                <div className={styles.faceActionIcon}>
-                  <i className="icon-trashcan" />
-                </div>
+                <DeleteIcon classes={{root: styles.faceActionIcon}}/>
               </div>
             )}
           {!!face.editAction && (

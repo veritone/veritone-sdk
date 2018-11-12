@@ -251,6 +251,7 @@ describe('Recording', function() {
 
   describe('getRecordingMedia', function() {
     it('validates recordingId', function() {
+      this.timeout(5000);
       expect(() =>
         recordingHandlers.getRecordingMedia(
           nonStandardHandlerOptions,

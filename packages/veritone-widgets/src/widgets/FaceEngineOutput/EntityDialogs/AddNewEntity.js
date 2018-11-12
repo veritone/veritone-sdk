@@ -123,10 +123,10 @@ export default class AddNewEntityDialog extends Component {
             configuringNewLibrary: false,
             selectingIdentifiers: true,
             cachedEntity: {
-              ...res
+              ...get(res, 'entity')
             }
           });
-          return res;
+          return get(res, 'entity');
         })
         .catch(error => {
           if (get(error, 'errors[0].name') === 'resource_conflict') {
@@ -158,32 +158,30 @@ export default class AddNewEntityDialog extends Component {
     } = this.props;
     const { cachedEntity } = this.state;
     if (get(cachedEntity, 'id')) {
-      if (cachedEntity.id) {
-        createEntityIdentifiers(
-          currentlyEditedFaces.map(face => {
-            return {
-              entityId: get(cachedEntity, 'id'),
-              identifierTypeId: 'face',
-              contentType: 'image',
-              url: get(face, 'object.uri'),
-              isPriority: !!find(selectedIdentifiers, { guid: face.guid })
-            };
-          })
-        ).then(res => {
-          this.setState(
-            {
-              selectedLibraryId: null,
-              configuringNewLibrary: false,
-              selectingIdentifiers: false,
-              cachedEntity: null
-            },
-            () => {
-              onSubmit(currentlyEditedFaces, cachedEntity);
-            }
-          );
-          return res;
-        });
-      }
+      createEntityIdentifiers(
+        selectedIdentifiers.map(face => {
+          return {
+            entityId: get(cachedEntity, 'id'),
+            identifierTypeId: 'face',
+            contentType: 'image',
+            url: get(face, 'object.uri'),
+            isPriority: false
+          };
+        })
+      ).then(res => {
+        this.setState(
+          {
+            selectedLibraryId: null,
+            configuringNewLibrary: false,
+            selectingIdentifiers: false,
+            cachedEntity: null
+          },
+          () => {
+            onSubmit(currentlyEditedFaces, cachedEntity);
+          }
+        );
+        return res;
+      });
     }
   };
 
@@ -333,7 +331,6 @@ export default class AddNewEntityDialog extends Component {
                 {this.state.selectingIdentifiers && (
                   <IdentifierSelector
                     identifiers={currentlyEditedFaces}
-                    classes={{ imageContainer: styles.imageContainer }}
                     defaultSelectAll
                     onConfirm={this.handleCreateIdentifiers}
                     onCancel={this.handleBackClick}

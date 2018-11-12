@@ -171,13 +171,9 @@
   font-weight: bold;
 }
 
-.imageContainer {
-  max-height: 330px;
-}
-
 .identifierSelector {
   background-color: #f5f5f5;
-  padding: 25px;
+  padding: 20px 25px;
   overflow: hidden;
 
   .identifierSelectTitle {
@@ -198,16 +194,11 @@
   }
 
   .identifierImages {
-    overflow-y: auto;
-
-    &.marginTop {
-      margin-top: 10px;
-    }
-
     .imageGridItem {
       width: 98px;
       height: 98px;
       position: relative;
+      padding-bottom: 10px;
 
       .identifierImage {
         width: 80px;
@@ -234,7 +225,7 @@
 }
 
 .identifierSelectActions {
-  padding-top: 25px;
+  padding: 25px 20px 0;
 }
 
 .noLibraryImage {
