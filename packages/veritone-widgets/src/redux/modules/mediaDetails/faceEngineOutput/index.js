@@ -25,6 +25,10 @@ export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
 export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
 export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
 
+export const GET_ENTITY = `vtn/${namespace}/GET_ENTITY`;
+export const GET_ENTITY_SUCCESS = `vtn/${namespace}/GET_ENTITY_SUCCESS`;
+export const GET_ENTITY_FAILURE = `vtn/${namespace}/GET_ENTITY_FAILURE`;
+
 export const SEARCH_ENTITIES = `vtn/${namespace}/SEARCH_ENTITIES`;
 export const SEARCHING_ENTITIES = `vtn/${namespace}/SEARCHING_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
@@ -245,6 +249,24 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       creatingEntity: false
+    };
+  },
+  [GET_ENTITY](state) {
+    return {
+      ...state,
+      gettingEntity: true
+    };
+  },
+  [GET_ENTITY_SUCCESS](state) {
+    return {
+      ...state,
+      gettingEntity: false
+    };
+  },
+  [GET_ENTITY_FAILURE](state) {
+    return {
+      ...state,
+      gettingEntity: false
     };
   },
   [SEARCHING_ENTITIES](state, action) {
@@ -859,6 +881,16 @@ export const createEntity = input => async (dispatch, getState) => {
     actionTypes: [CREATE_ENTITY, CREATE_ENTITY_SUCCESS, CREATE_ENTITY_FAILURE],
     query: gqlQuery.createEntity,
     variables: { input },
+    dispatch,
+    getState
+  });
+};
+
+export const getEntityInLibrary = (input) => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [GET_ENTITY, GET_ENTITY_SUCCESS, GET_ENTITY_FAILURE],
+    query: gqlQuery.getEntityInLibrary,
+    variables: { ...input },
     dispatch,
     getState
   });

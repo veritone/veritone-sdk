@@ -216,7 +216,7 @@ class FaceInfoBox extends Component {
           {enableEdit &&
             this.state.isHovered && (
               <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
-                <DeleteIcon classes={{root: styles.faceActionIcon}}/>
+                <DeleteIcon classes={{ root: styles.faceActionIcon }} />
               </div>
             )}
           {!!face.editAction && (

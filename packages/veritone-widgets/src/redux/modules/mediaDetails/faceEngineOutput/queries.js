@@ -89,6 +89,18 @@ export const createEntity = `
   }
 `;
 
+export const getEntityInLibrary = `
+  ${entityFieldsFragment}
+  query GetEntity($libraryIds: [ID!], $name: String!) {
+    entities(name: $name, libraryIds: $libraryIds) {
+      records {
+        ...entityFields
+        jsondata
+      }
+    }
+  }
+`;
+
 export const searchForEntities = `
   ${entityFieldsFragment}
   query SearchForEntities($type: String, $name: String) {

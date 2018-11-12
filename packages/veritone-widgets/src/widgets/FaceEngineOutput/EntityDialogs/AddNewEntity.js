@@ -39,7 +39,8 @@ import styles from './styles.scss';
     createEntity: faceEngineOutput.createEntity,
     createNewLibrary: faceEngineOutput.createNewLibrary,
     createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers,
-    updateInitialEntityName: faceEngineOutput.updateInitialEntityName
+    updateInitialEntityName: faceEngineOutput.updateInitialEntityName,
+    searchEntityInLibrary: faceEngineOutput.getEntityInLibrary
   },
   null,
   { withRef: true }
@@ -82,7 +83,8 @@ export default class AddNewEntityDialog extends Component {
         id: string.isRequired,
         label: string.isRequired
       })
-    ).isRequired
+    ).isRequired,
+    searchEntityInLibrary: func
   };
 
   state = {
@@ -91,7 +93,8 @@ export default class AddNewEntityDialog extends Component {
     selectingIdentifiers: false,
     cachedEntity: null,
     firstLibraryCreation: get(this.props, 'libraries.length') === 0,
-    showLibraryCreationSuccess: false
+    showLibraryCreationSuccess: false,
+    identifierError: null
   };
 
   componentDidMount() {
@@ -110,36 +113,31 @@ export default class AddNewEntityDialog extends Component {
   }
 
   handleCreateNewEntity = formData => {
-    const { currentlyEditedFaces, createEntity } = this.props;
+    const { currentlyEditedFaces, searchEntityInLibrary } = this.props;
     if (currentlyEditedFaces) {
-      return createEntity({
-        ...formData,
-        profileImageUrl: removeAwsSignatureParams(
-          get(currentlyEditedFaces, '[0].object.uri')
-        )
-      })
-        .then(res => {
+      return searchEntityInLibrary({
+        name: formData.name,
+        libraryIds: [formData.libraryId]
+      }).then(res => {
+        if (get(res, 'entities.records.length')) {
+          throw new SubmissionError({
+            _error: 'An entity with that name already exists in that library.'
+          });
+        } else {
           this.setState({
             configuringNewLibrary: false,
             selectingIdentifiers: true,
-            cachedEntity: {
-              ...get(res, 'entity')
+            cachedEntityInfo: {
+              ...formData
             }
           });
-          return get(res, 'entity');
+        }
+        return res;
+      }, () => {
+        throw new SubmissionError({
+          _error: 'An error occurred please try again later.'
         })
-        .catch(error => {
-          if (get(error, 'errors[0].name') === 'resource_conflict') {
-            throw new SubmissionError({
-              name: 'An entity with that name already exists in that library.',
-              _error: 'An entity with that name already exists in that library.'
-            });
-          } else {
-            throw new SubmissionError({
-              _error: 'Unable to create entity. Please try again later.'
-            });
-          }
-        });
+      });
     }
   };
 
@@ -150,38 +148,62 @@ export default class AddNewEntityDialog extends Component {
     });
   };
 
-  handleCreateIdentifiers = selectedIdentifiers => {
+  handleCreateIdentifiers = async selectedIdentifiers => {
     const {
       createEntityIdentifiers,
       currentlyEditedFaces,
-      onSubmit
+      onSubmit,
+      createEntity
     } = this.props;
-    const { cachedEntity } = this.state;
-    if (get(cachedEntity, 'id')) {
-      createEntityIdentifiers(
-        selectedIdentifiers.map(face => {
-          return {
-            entityId: get(cachedEntity, 'id'),
+    const { cachedEntityInfo } = this.state;
+    let newEntityResponse;
+    try {
+      newEntityResponse = await createEntity({
+        ...cachedEntityInfo,
+        profileImageUrl: removeAwsSignatureParams(
+          get(selectedIdentifiers, '[0].object.uri')
+        )
+      });
+    } catch (e) {
+      this.setState({
+        configuringNewLibrary: false,
+        selectingIdentifiers: false,
+        cachedEntityInfo: null,
+        identifierError: 'Unable to create entity. Please try again later.'
+      });
+    }
+    const newEntity = get(newEntityResponse, 'entity');
+    if (newEntity.id) {
+      try {
+        await createEntityIdentifiers(
+          selectedIdentifiers.map(face => ({
+            entityId: newEntity.id,
             identifierTypeId: 'face',
             contentType: 'image',
             url: get(face, 'object.uri'),
             isPriority: false
-          };
-        })
-      ).then(res => {
+          }))
+        );
         this.setState(
           {
             selectedLibraryId: null,
             configuringNewLibrary: false,
             selectingIdentifiers: false,
-            cachedEntity: null
+            cachedEntityInfo: null,
+            identifierError: null
           },
           () => {
-            onSubmit(currentlyEditedFaces, cachedEntity);
+            onSubmit(currentlyEditedFaces, newEntity);
           }
         );
-        return res;
-      });
+      } catch (e) {
+        console.error(e);
+        this.setState(
+          {
+            identifierError: 'An error occurred while creating identifiers. Please try again later.'
+          }
+        );
+      }
     }
   };
 
@@ -272,6 +294,7 @@ export default class AddNewEntityDialog extends Component {
               root: styles.closeButton
             }}
             data-veritone-element="close-button"
+            disabled={isCreatingIdentifiers}
           >
             <Icon className="icon-close-exit" />
           </IconButton>
@@ -331,10 +354,12 @@ export default class AddNewEntityDialog extends Component {
                 {this.state.selectingIdentifiers && (
                   <IdentifierSelector
                     identifiers={currentlyEditedFaces}
+                    classes={{ imageContainer: styles.imageContainer }}
                     defaultSelectAll
                     onConfirm={this.handleCreateIdentifiers}
                     onCancel={this.handleBackClick}
                     isCreatingIdentifiers={isCreatingIdentifiers}
+                    error={this.state.identifierError}
                   />
                 )}
               </Fragment>

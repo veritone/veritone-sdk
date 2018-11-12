@@ -4,6 +4,7 @@ import { get, find, uniqBy, findIndex } from 'lodash';
 import { Grid as VirtualizedGrid } from 'react-virtualized';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import styles from './styles.scss';
@@ -25,7 +26,8 @@ export default class IdentifierSelector extends Component {
     onConfirm: func.isRequired,
     onCancel: func.isRequired,
     defaultSelectAll: bool,
-    isCreatingIdentifiers: bool
+    isCreatingIdentifiers: bool,
+    error: string
   };
 
   state = {
@@ -133,7 +135,7 @@ export default class IdentifierSelector extends Component {
   };
 
   render() {
-    const { identifiers, onCancel, isCreatingIdentifiers } = this.props;
+    const { identifiers, onCancel, isCreatingIdentifiers, error } = this.props;
     const { selectedIdentifiers } = this.state;
     const columnWidth = 98,
       rowHeight = 90,
@@ -161,7 +163,7 @@ export default class IdentifierSelector extends Component {
                 <Checkbox
                   color="primary"
                   indeterminate={
-                    selectedIdentifiers.length &&
+                    !!selectedIdentifiers.length &&
                     selectedIdentifiers.length !== identifiers.length
                   }
                   checked={!!selectedIdentifiers.length}
@@ -195,6 +197,13 @@ export default class IdentifierSelector extends Component {
             />
           </Grid>
         </Grid>
+        <Grid item>
+          {error && (
+            <FormHelperText className={styles.requestError} error>
+              {error}
+            </FormHelperText>
+          )}
+        </Grid>
         <Grid
           item
           container
@@ -206,6 +215,7 @@ export default class IdentifierSelector extends Component {
             data-veritone-element="back-button"
             classes={{ root: styles.entityDialogButton }}
             onClick={onCancel}
+            disabled={isCreatingIdentifiers}
           >
             Back
           </Button>

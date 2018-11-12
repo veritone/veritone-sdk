@@ -134,7 +134,7 @@ const AddNewEntityForm = reduxForm({
             </FormControl>
           </Grid>
           {error && (
-            <FormHelperText className={styles.createEntityError} error>
+            <FormHelperText className={styles.requestError} error>
               {error}
             </FormHelperText>
           )}

@@ -90,7 +90,8 @@ export default class AddToExistingEntityDialog extends Component {
   state = {
     searchText: '',
     selectedEntity: null,
-    selectingIdentifiers: false
+    selectingIdentifiers: false,
+    identifierError: null
   };
 
   handleSearchEntities = evt => {
@@ -191,13 +192,21 @@ export default class AddToExistingEntityDialog extends Component {
         {
           searchText: '',
           selectedEntity: null,
-          selectingIdentifiers: false
+          selectingIdentifiers: false,
+          identifierError: null
         },
         () => {
           onSubmit(currentlyEditedFaces, selectedEntity);
         }
       );
       return res;
+    }, e => {
+      console.error(e);
+      this.setState(
+        {
+          identifierError: 'An error occurred while creating identifiers. Please try again later.'
+        }
+      );
     });
   };
 
@@ -377,6 +386,7 @@ export default class AddToExistingEntityDialog extends Component {
               onConfirm={this.handleCreateIdentifiers}
               onCancel={this.handleBackClick}
               isCreatingIdentifiers={isCreatingIdentifiers}
+              error={this.state.identifierError}
             />
           )}
         </DialogContent>

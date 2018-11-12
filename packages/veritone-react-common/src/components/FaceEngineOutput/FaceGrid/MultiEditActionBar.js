@@ -33,9 +33,11 @@ const MultiEditActionBar = ({
         }
         label={
           selectedItemsCount > 0
-            ? `${selectedItemsCount} ${hasRecognizedItems ? 'Known' : 'Unknown'} ${
-                itemType ? itemType : 'Item'
-              }${selectedItemsCount > 1 ? 's' : ''} Selected`
+            ? `${selectedItemsCount} ${
+                hasRecognizedItems ? 'Known' : 'Unknown'
+              } ${itemType ? itemType : 'Item'}${
+                selectedItemsCount > 1 ? 's' : ''
+              } Selected`
             : 'Select All'
         }
         onChange={onSelectAllChange}
