@@ -914,6 +914,7 @@ class MediaDetailsWidget extends React.Component {
     } = this.getCombineAggregations();
 
     const isImage = /^image\/.*/.test(
+      get(tdo, 'primaryAsset.contentType') ||
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -1312,14 +1313,23 @@ class MediaDetailsWidget extends React.Component {
                     'correlation' && isExpandedMode
                 ) && (
                   <div className={styles.mediaView}>
-                    {isImage ? (
+                    {!this.getPrimaryAssetUri() &&
+                      <Image
+                        src={programLiveImageNullState}
+                        width="450px"
+                        height="250px"
+                        type="contain"
+                      />
+                    }
+                    {isImage && !!this.getPrimaryAssetUri() &&
                       <Image
                         src={this.getPrimaryAssetUri()}
                         width="450px"
                         height="250px"
                         type="contain"
                       />
-                    ) : (
+                    }
+                    {!isImage && !!this.getPrimaryAssetUri() &&
                       <MediaPlayer
                         fluid={false}
                         width={450}
@@ -1329,7 +1339,7 @@ class MediaDetailsWidget extends React.Component {
                         streams={get(this.props, 'tdo.streams')}
                         poster={tdo.thumbnailUrl || programLiveImageNullState}
                       />
-                    )}
+                    }
                     {this.getMediaSource() && (
                       <div className={styles.sourceLabel}>
                         Source: {this.getMediaSource()}
