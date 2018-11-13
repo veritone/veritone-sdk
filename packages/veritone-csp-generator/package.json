@@ -1,6 +1,6 @@
 {
   "name": "veritone-csp-generator",
-  "version": "3.3.3",
+  "version": "3.3.6",
   "description": "converts CSP -> V3 Query",
   "main": "index.js",
   "directories": {
