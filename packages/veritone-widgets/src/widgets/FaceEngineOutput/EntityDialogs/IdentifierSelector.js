@@ -7,6 +7,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import styles from './styles.scss';
 
 export default class IdentifierSelector extends Component {
@@ -150,6 +151,21 @@ export default class IdentifierSelector extends Component {
           wrap="nowrap"
           className={styles.identifierSelector}
         >
+          {isCreatingIdentifiers && (
+            <Grid
+              item
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              className={styles.requestProgress}
+            >
+              <Grid item>
+                <CircularProgress size={60} />
+              </Grid>
+              <Grid item>Processing Request</Grid>
+            </Grid>
+          )}
           <Grid item classes={{ item: styles.identifierSelectTitle }}>
             Which images should we use?
           </Grid>

@@ -118,26 +118,29 @@ export default class AddNewEntityDialog extends Component {
       return searchEntityInLibrary({
         name: formData.name,
         libraryIds: [formData.libraryId]
-      }).then(res => {
-        if (get(res, 'entities.records.length')) {
+      }).then(
+        res => {
+          if (get(res, 'entities.records.length')) {
+            throw new SubmissionError({
+              _error: 'An entity with that name already exists in that library.'
+            });
+          } else {
+            this.setState({
+              configuringNewLibrary: false,
+              selectingIdentifiers: true,
+              cachedEntityInfo: {
+                ...formData
+              }
+            });
+          }
+          return res;
+        },
+        () => {
           throw new SubmissionError({
-            _error: 'An entity with that name already exists in that library.'
-          });
-        } else {
-          this.setState({
-            configuringNewLibrary: false,
-            selectingIdentifiers: true,
-            cachedEntityInfo: {
-              ...formData
-            }
+            _error: 'An error occurred please try again later.'
           });
         }
-        return res;
-      }, () => {
-        throw new SubmissionError({
-          _error: 'An error occurred please try again later.'
-        })
-      });
+      );
     }
   };
 
@@ -198,11 +201,10 @@ export default class AddNewEntityDialog extends Component {
         );
       } catch (e) {
         console.error(e);
-        this.setState(
-          {
-            identifierError: 'An error occurred while creating identifiers. Please try again later.'
-          }
-        );
+        this.setState({
+          identifierError:
+            'An error occurred while creating identifiers. Please try again later.'
+        });
       }
     }
   };
@@ -354,7 +356,6 @@ export default class AddNewEntityDialog extends Component {
                 {this.state.selectingIdentifiers && (
                   <IdentifierSelector
                     identifiers={currentlyEditedFaces}
-                    classes={{ imageContainer: styles.imageContainer }}
                     defaultSelectAll
                     onConfirm={this.handleCreateIdentifiers}
                     onCancel={this.handleBackClick}

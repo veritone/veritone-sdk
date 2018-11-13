@@ -187,27 +187,29 @@ export default class AddToExistingEntityDialog extends Component {
           isPriority: false
         };
       })
-    ).then(res => {
-      this.setState(
-        {
-          searchText: '',
-          selectedEntity: null,
-          selectingIdentifiers: false,
-          identifierError: null
-        },
-        () => {
-          onSubmit(currentlyEditedFaces, selectedEntity);
-        }
-      );
-      return res;
-    }, e => {
-      console.error(e);
-      this.setState(
-        {
-          identifierError: 'An error occurred while creating identifiers. Please try again later.'
-        }
-      );
-    });
+    ).then(
+      res => {
+        this.setState(
+          {
+            searchText: '',
+            selectedEntity: null,
+            selectingIdentifiers: false,
+            identifierError: null
+          },
+          () => {
+            onSubmit(currentlyEditedFaces, selectedEntity);
+          }
+        );
+        return res;
+      },
+      e => {
+        console.error(e);
+        this.setState({
+          identifierError:
+            'An error occurred while creating identifiers. Please try again later.'
+        });
+      }
+    );
   };
 
   inputRef = React.createRef();
@@ -245,6 +247,7 @@ export default class AddToExistingEntityDialog extends Component {
               root: styles.closeButton
             }}
             data-veritone-element="close-button"
+            disabled={isCreatingIdentifiers}
           >
             <Icon className="icon-close-exit" />
           </IconButton>
