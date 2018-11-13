@@ -178,7 +178,11 @@ const SearchAutocompleteDownshift = ({
                                   {...getItemProps({
                                     item: item,
                                     index: indexAcc,
-                                    selected: highlightedIndex === indexAcc
+                                    selected: highlightedIndex === indexAcc,
+                                    style: {
+                                      backgroundColor:
+                                        highlightedIndex === indexAcc ? '#eeeeee' : null,
+                                    }
                                   })}
                                 >
                                   { item.image

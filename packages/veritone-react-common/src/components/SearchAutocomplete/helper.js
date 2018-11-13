@@ -56,7 +56,17 @@ export default function attachAutocomplete(url, config) {
                 })
               }
             });
+          } else if (searchType === 'custom') {
+            items = results.map(result => {
+              return (
+                {
+                  id: result.key,
+                  label: result.key
+                }
+              )
+            });
           }
+
           return {
             header: sectionHeader,
             items: items
