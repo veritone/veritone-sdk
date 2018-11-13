@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { bool, func, object } from 'prop-types';
+import { bool, func, object, number, string } from 'prop-types';
 
 import {
   CardActions,
@@ -50,6 +50,23 @@ class StructuredDataModal extends React.Component {
       this.setState(
         state
       );
+    } else if (this.props.presetSDOSchema) {
+      const schemaLookup = await getAttribute({
+        api: this.props.api,
+        auth: this.props.auth,
+        schemaId: this.props.presetSDOSchema
+      });
+
+      const selectedSchema = {
+        id: get(schemaLookup, 'data.schema.dataRegistry.id'),
+        name: get(schemaLookup, 'data.schema.dataRegistry.name'),
+        organization: get(schemaLookup, 'data.schema.dataRegistry.organization.name'),
+        majorVersion: get(schemaLookup, 'data.schema.dataRegistry.publishedSchema.majorVersion')
+      }
+
+      this.setState({
+        selectedSchema
+      }, () => this._schemaPicker.onSelect(selectedSchema));
     }
   }
 
@@ -67,8 +84,11 @@ class StructuredDataModal extends React.Component {
   static propTypes = {
     open: bool,
     modalState: object,
-    cancel: func
+    cancel: func,
+    majorVersion: number,
+    schemaId: string
   };
+
   static defaultProps = {
     modalState: {},
     cancel: () => console.log('You clicked cancel')
@@ -447,7 +467,7 @@ class StructuredDataModal extends React.Component {
       let field = this.state.selectedAttribute.field;
       let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue.trim().toLowerCase(), field);
       let autocompleteValues = values && values.fields ? values.fields[field] : [];
-      autocompleteValues = autocompleteValues.map( value => get(value, 'key').toLowerCase() );
+      autocompleteValues = autocompleteValues.map( value => get(value, 'key'));
       this.setState({
         loadingAutocomplete: false,
         showStringAutoComplete: true,
