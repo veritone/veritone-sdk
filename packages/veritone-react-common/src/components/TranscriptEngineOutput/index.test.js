@@ -50,10 +50,12 @@ const sampleData = [
 ];
 
 describe('Transcript Engine Output - View Mode', () => {
+  const onRestoreOriginalClick = jest.fn();
   const transcriptEngineOutput = mount(
     <TranscriptEngineOutput
       data={sampleData}
       selectedEngineId="1"
+      onRestoreOriginalClick={onRestoreOriginalClick}
       engines={[{ id: '1', name: 'Engine-X' }, { id: '2', name: 'Engine-Y' }]}
     />
   );
