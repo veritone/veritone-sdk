@@ -97,16 +97,15 @@ export default class SpeakerTranscriptContent extends Component {
       const currentSnippet = totalTranscriptSegments[0];
       // Allocate to current speaker if:
       if (
-        (
-          // the snippet starts within speaker interval
-          (
-            speakerStartTime <= currentSnippet.startTimeMs &&
-            currentSnippet.startTimeMs < speakerStopTime
-          ) || (
-            // Snippet startTimeMs did not fall into the previous AND current speakers aperture
-            // Gotta do something with this snippet, so add it to the current speaker
-            currentSnippet.startTimeMs < speakerStartTime
-          ) || !nextSpeaker // there are no more speakers then shove it into the current speaker
+        // the snippet starts within speaker interval
+        ( speakerStartTime <= currentSnippet.startTimeMs
+          && currentSnippet.startTimeMs < speakerStopTime
+        ) || 
+        // Snippet startTimeMs did not fall into the previous AND current speakers aperture
+        // Gotta do something with this snippet, so add it to the current speaker
+        currentSnippet.startTimeMs < speakerStartTime ||
+        // there are no more speakers then shove it into the current speaker
+        !nextSpeaker
       ) {
         fragments.push(totalTranscriptSegments.shift());
       } else {

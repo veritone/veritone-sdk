@@ -119,6 +119,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         )
       })
     ),
+    isFetchingEngineResults: bool,
     selectedCombineEngineResults: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
