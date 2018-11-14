@@ -2,17 +2,20 @@
 
 **Table of Contents**
 
-- [Summary](#summary)
-- [Getting Started](#getting-started)
-    - [Depedencies](#depedencies)
-- [Usage](#usage)
-    - [Has Permision](#has-permission)
-    - [Has Any Permission](#has-any-permission)
-    - [Has All Permissions](#has-all-permissions)
-    - [Get Mask From Permissions](#get-mask-from-permissions)
-- [Go package](#go-package)
+* [Summary](#summary)
+* [Getting Started](#getting-started)
+  * [Depedencies](#depedencies)
+* [Usage](#usage)
+  * [Has Permision](#has-permission)
+  * [Has Any Permission](#has-any-permission)
+  * [Has All Permissions](#has-all-permissions)
+  * [Get Mask From Permissions](#get-mask-from-permissions)
+  * [Get Permissions From Mask](#get-permissions-from-mask)
+  * [Combine Permissions](#combine-permissions)
+* [Go package](#go-package)
 
 ## Summary
+
 Functional permissions library to perform permission checking.
 Permissions are checked against the user permissions (an array of integers), that can be retrieved from core-admin-server.
 This library may be used on either servers or in the browser, anywhere where it can be `require()`ed.
@@ -20,71 +23,109 @@ This library may be used on either servers or in the browser, anywhere where it 
 ## Getting Started
 
 ### Depedencies
+
 * Something that can `require()` (e.g. Node 6, RequireJS, webpack)
 
 ## Usage
 
 ### Has Permission
+
 This checks if the user's permissions satisfies the the requested permission check.
 
-```
+```js
 const perm = require('functional-permissions-lib');
 const adminPerms = perm.permissions.admin;
 const userInfo = {
-    permissions: [-8125, 31]
-}
+  permissions: [-8125, 31]
+};
 
 if (perm.util.hasAccessTo(adminPerms.org.create, userInfo.permissions)) {
-    //allow user to perform action
+  //allow user to perform action
 } else {
-    //deny the user
+  //deny the user
 }
 ```
 
 ### Has Any Permission
+
 This checks if the user's permissions satisfies any of the requested permission checks.
 
-```
+```js
 const perm = require('functional-permissions-lib');
 const adminPerms = perm.permissions.admin;
 const userInfo = {
-    permissions: [-8125, 31]
-}
+  permissions: [-8125, 31]
+};
 
-if (perm.util.hasAccessToAny([adminPerms.org.create, adminPerms.group.create, adminPerms.role.create], userInfo.permissions)) {
-    //allow user to perform action
+if (
+  perm.util.hasAccessToAny(
+    [adminPerms.org.create, adminPerms.group.create, adminPerms.role.create],
+    userInfo.permissions
+  )
+) {
+  //allow user to perform action
 } else {
-    //deny the user
+  //deny the user
 }
 ```
 
 ### Has All Permissions
+
 This checks if the user's permissions satisfies all of the requested permission checks.
 
-```
+```js
 const perm = require('functional-permissions-lib');
 const adminPerms = perm.permissions.admin;
 const userInfo = {
-    permissions: [-8125, 31]
-}
+  permissions: [-8125, 31]
+};
 
-if (perm.util.hasAccessToAll([adminPerms.org.create, adminPerms.group.create, adminPerms.role.create], userInfo.permissions)) {
-    //allow user to perform action
+if (
+  perm.util.hasAccessToAll(
+    [adminPerms.org.create, adminPerms.group.create, adminPerms.role.create],
+    userInfo.permissions
+  )
+) {
+  //allow user to perform action
 } else {
-    //deny the user
+  //deny the user
 }
 ```
 
 ### Get Mask From Permissions
+
 This converts permission ids to a mask.
 Optionally, the caller can pass in a mask that will be used to add the permissions to.
 
-```
+```js
 const mask = getMaskFromPermissionIds([perm.permissions.admin]);
 
-OR
+// OR;
 
 const mask = getMaskFromPermissionIds([perm.permissions.admin], [-1526]);
+```
+
+### Get Permissions From Mask
+
+This converts a mask to permissions IDs.
+
+```js
+const permissionIds = getPermissionIdsFromMask([-1526]);
+```
+
+### Combine Permissions
+
+This combines permissions.
+
+```js
+const perm = require('functional-permissions-lib');
+const adminPerms = perm.permissions.admin;
+const cmsPerms = perm.permissions.csm;
+
+const permissions = coombinePermissions(
+  [adminPerms.org.create, adminPerms.group.create, adminPerms.role.create],
+  [cmsPerms.media.create, cmsPerms.wrklows.create]
+);
 ```
 
 ## Go package
@@ -121,8 +162,8 @@ func SomethingUseful(...) {
 }
 ```
 
-
 # License
+
 Copyright 2017, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
