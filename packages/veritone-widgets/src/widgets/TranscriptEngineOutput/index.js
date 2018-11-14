@@ -54,7 +54,8 @@ const saga = util.reactReduxSaga.saga;
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
     combineCategory: TranscriptRedux.combineCategory(state),
-    combineViewTypes: TranscriptRedux.getCombineViewTypes(state)
+    combineViewTypes: TranscriptRedux.getCombineViewTypes(state),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -271,8 +272,23 @@ export default class TranscriptEngineOutputContainer extends Component {
   }
 
   componentWillUnmount() {
-    if (this.props.editModeEnabled) {
-      this.props.toggleEditMode();
+    const {
+      editModeEnabled,
+      toggleEditMode,
+      selectedCombineEngineId,
+      setSelectedCombineEngineId,
+      selectedCombineViewTypeId,
+      setSelectedCombineViewTypeId
+    } = this.props;
+
+    if (editModeEnabled) {
+      toggleEditMode();
+    }
+    if (selectedCombineEngineId) {
+      setSelectedCombineEngineId(null);
+    }
+    if (selectedCombineViewTypeId) {
+      setSelectedCombineViewTypeId('transcript');
     }
   }
 
@@ -391,7 +407,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       selectedCombineViewTypeId,
       combineCategory,
       combineEngines,
-      outputNullState
+      outputNullState,
+      isFetchingEngineResults
     } = this.props;
     const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
@@ -399,7 +416,9 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
       let combineStatus = combineEngineTask.status;
-      if (!selectedCombineEngineResults && combineStatus === 'complete') {
+      if (isFetchingEngineResults) {
+        combineStatus = 'fetching';
+      } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
         combineStatus = 'no_data';
       } else if (selectedCombineEngineResults && combineStatus === 'complete') {
         return outputNullState;

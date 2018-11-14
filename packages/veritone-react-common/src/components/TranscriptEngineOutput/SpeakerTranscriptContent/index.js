@@ -99,9 +99,14 @@ export default class SpeakerTranscriptContent extends Component {
       if (
         (
           // the snippet starts within speaker interval
-          speakerStartTime <= currentSnippet.startTimeMs &&
-          currentSnippet.startTimeMs < speakerStopTime
-        ) || !nextSpeaker // there are no more speakers then shove it into the current speaker
+          (
+            speakerStartTime <= currentSnippet.startTimeMs &&
+            currentSnippet.startTimeMs < speakerStopTime
+          ) || (
+            // Snippet startTimeMs did not fall into the previous AND current speakers aperture
+            // Gotta do something with this snippet, so add it to the current speaker
+            currentSnippet.startTimeMs < speakerStartTime
+          ) || !nextSpeaker // there are no more speakers then shove it into the current speaker
       ) {
         fragments.push(totalTranscriptSegments.shift());
       } else {
