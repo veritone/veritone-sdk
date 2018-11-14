@@ -33,7 +33,7 @@ const StructuredDataGenerator = modalState => {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
-        value: `${modalState.value1.toLowerCase()}`,
+        value: `\"${modalState.value1.toLowerCase()}\"`,
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
     } else {
