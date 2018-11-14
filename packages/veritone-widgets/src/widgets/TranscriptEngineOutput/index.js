@@ -43,7 +43,7 @@ const saga = util.reactReduxSaga.saga;
     selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       tdo.id,
-      state.veritoneTranscriptWidget.selectedCombineEngineId
+      TranscriptRedux.getSelectedCombineEngineId(state)
     ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
@@ -54,7 +54,8 @@ const saga = util.reactReduxSaga.saga;
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
     combineCategory: TranscriptRedux.combineCategory(state),
-    combineViewTypes: TranscriptRedux.getCombineViewTypes(state)
+    combineViewTypes: TranscriptRedux.getCombineViewTypes(state),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -118,6 +119,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         )
       })
     ),
+    isFetchingEngineResults: bool,
     selectedCombineEngineResults: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
@@ -238,85 +240,73 @@ export default class TranscriptEngineOutputContainer extends Component {
     return { ...prevState, props: nextProps };
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
     const {
       tdo,
       combineEngines,
       combineCategory,
       selectedCombineEngineId,
       setSelectedCombineEngineId,
-      selectedCombineEngineResults,
       fetchEngineResults,
-      selectedCombineViewTypeId,
-      combineViewTypes,
       setSelectedCombineViewTypeId
     } = this.props;
-    const {
-      isFetchingCombineData
-    } = this.state;
     const speakerEngines = get(combineEngines, combineCategory);
+
     if (
       !selectedCombineEngineId &&
       speakerEngines &&
       speakerEngines.length
     ) {
       const speakerEngineId = speakerEngines[0].id;
-      setSelectedCombineEngineId(speakerEngineId);
-    } else if (
-      !selectedCombineEngineResults.length &&
-      selectedCombineEngineId &&
-      !isFetchingCombineData
-    ) {
-      //TODO: fix this so that it doesn't cause a lint error
-      // eslint-disable-next-line
-      this.setState({
-        isFetchingCombineData: true
-      }, () => {
-        fetchEngineResults({
-          engineId: selectedCombineEngineId,
-          tdo: tdo,
-          startOffsetMs: 0,
-          stopOffsetMs:
-            Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-        });
+      fetchEngineResults({
+        engineId: speakerEngineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+      }).then(response => {
+        setSelectedCombineEngineId(speakerEngineId);
+        setSelectedCombineViewTypeId('speaker-view');
+        return response;
       });
-    } else if (
-      selectedCombineEngineResults.length &&
-      isFetchingCombineData
-    ) {
-      //TODO: fix this so that it doesn't cause a lint error
-      // eslint-disable-next-line
-      this.setState({
-        isFetchingCombineData: false
-      });
-    } else if (
-      !selectedCombineViewTypeId &&
-      selectedCombineEngineResults.length &&
-      combineViewTypes.length
-    ) {
-      setSelectedCombineViewTypeId(combineViewTypes[0].id);
-    } else if (
-      speakerEngines &&
-      speakerEngines.length
-    ) {
-      const combineEngine = speakerEngines.find(sEngine => sEngine.id === selectedCombineEngineId);
-      switch (combineEngine.status) {
-        case 'failed':
-          break;
-        case 'running':
-          break;
-      }
     }
   }
 
   componentWillUnmount() {
-    if (this.props.editModeEnabled) {
-      this.props.toggleEditMode();
+    const {
+      editModeEnabled,
+      toggleEditMode,
+      selectedCombineEngineId,
+      setSelectedCombineEngineId,
+      selectedCombineViewTypeId,
+      setSelectedCombineViewTypeId
+    } = this.props;
+
+    if (editModeEnabled) {
+      toggleEditMode();
+    }
+    if (selectedCombineEngineId) {
+      setSelectedCombineEngineId(null);
+    }
+    if (selectedCombineViewTypeId) {
+      setSelectedCombineViewTypeId('transcript');
     }
   }
 
   handleSpeakerEngineChange = engineId => {
-    this.props.setSelectedCombineEngineId(engineId);
+    const tdo = this.props.tdo;
+    if (engineId !== this.props.selectedCombineEngineId) {
+      this.props.fetchEngineResults({
+        engineId: engineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+      }).then(response => {
+        this.props.setSelectedCombineEngineId(engineId);
+        return response;
+      });
+    }
   }
 
   handleContentChanged = value => {
@@ -421,18 +411,16 @@ export default class TranscriptEngineOutputContainer extends Component {
       selectedCombineViewTypeId,
       combineCategory,
       combineEngines,
-      outputNullState
+      outputNullState,
+      isFetchingEngineResults
     } = this.props;
-    const {
-      isFetchingCombineData
-    } = this.state;
     const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
       .find(engine => engine.id === selectedCombineEngineId);
 
     if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
       let combineStatus = combineEngineTask.status;
-      if (isFetchingCombineData) {
+      if (isFetchingEngineResults) {
         combineStatus = 'fetching';
       } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
         combineStatus = 'no_data';

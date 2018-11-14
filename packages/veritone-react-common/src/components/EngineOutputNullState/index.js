@@ -20,14 +20,14 @@ export default class EngineOutputNullState extends Component {
   };
 
   isError(engineStatus) {
-    return includes(['failed', 'cancelled'], engineStatus);
+    return includes(['failed', 'cancelled', 'aborted'], engineStatus);
   }
 
   isProcessing(engineStatus) {
-    return includes(
-      ['pending', 'running', 'queued', 'accepted', 'standby_pending'],
-      engineStatus
-    );
+    return !this.isError(engineStatus) &&
+      !this.isFetching(engineStatus) &&
+      !this.isNoData(engineStatus) &&
+      engineStatus !== 'complete';
   }
 
   isFetching(engineStatus) {

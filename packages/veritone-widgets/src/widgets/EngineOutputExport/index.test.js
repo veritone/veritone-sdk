@@ -113,7 +113,7 @@ const defaultSpeakerStore = {
 describe('EngineCategoryConfigList', () => {
   let wrapper, store;
 
-  //TODO: fix this test
+  //TODO: fix this test. It is throwing an error when trying to mount the component.
   xdescribe('when speaker data is available', () => {
     beforeEach(() => {
       store = mockStore(defaultSpeakerStore);
