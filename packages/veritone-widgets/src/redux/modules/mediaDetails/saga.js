@@ -129,6 +129,11 @@ const engineRunsQueryClause = `engineRuns(limit: 1000) {
         }
         status
         hasUserEdits
+        task {
+          id
+          modifiedDateTime
+          status
+        }
       }
     }
   `;
@@ -181,7 +186,7 @@ function processEngineRuns(engineRuns) {
         engineCategory.engines = [];
         engineCategories.push(engineCategory);
       }
-      engineRun.engine.status = engineRun.status;
+      engineRun.engine.status = getEngineStatus(engineRun);
       engineRun.engine.hasUserEdits = engineRun.hasUserEdits;
       engineCategory.engines.push(engineRun.engine);
     });
@@ -210,6 +215,23 @@ function processEngineRuns(engineRuns) {
   });
 
   return engineCategories;
+}
+
+function getEngineStatus(engineRun) {
+  if (engineRun.task) {
+    const sinceLastModifiedMs =
+      new Date().getTime() -
+      new Date(engineRun.task.modifiedDateTime).getTime();
+    const oneDayMs = 86400000;
+    const finalStatuses = ['complete', 'failed', 'cancelled', 'aborted'];
+    if (
+      sinceLastModifiedMs > oneDayMs &&
+      !includes(finalStatuses, engineRun.task.status)
+    ) {
+      engineRun.status = 'failed';
+    }
+  }
+  return engineRun.status;
 }
 
 function* loadTdoSaga(widgetId, tdoId) {
