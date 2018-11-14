@@ -338,7 +338,7 @@ class StructuredDataModal extends React.Component {
 
       return new Date(
         date.getUTCFullYear(),
-        date.getUTCMonth(),
+        date.getUTCMonth(), 
         date.getUTCDate(),
         date.getUTCHours(),
         date.getUTCMinutes(),
