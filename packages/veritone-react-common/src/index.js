@@ -7,7 +7,6 @@ export AppFooter, {
 } from './components/AppFooter';
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
-export Image from './components/Image';
 export Chip from './components/Chip';
 export Lozenge from './components/Lozenge';
 export Truncate from './components/Truncate';
@@ -60,7 +59,6 @@ export TranslationEngineOutput from './components/TranslationEngineOutput';
 export FingerprintEngineOutput from './components/FingerprintEngineOutput';
 export GeoEngineOutput from './components/GeoEngineOutput';
 
-export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 export ProgramInfo from './components/ProgramInfo';
 
