@@ -1269,8 +1269,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    // eslint-disable-next-line
-                    onClick={() => cancelEdit(this.props.id, selectedEngineId)}
+                    onClick={this.toggleExpandedMode}
                     aria-label="Back"
                   >
                     <Icon
@@ -1278,6 +1277,10 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
+                  <Icon className={cx(selectedEngineCategory.iconClass, styles.engineCategoryIcon)}/>
+                  <div className={styles.pageHeaderTitleLabelEditMode}>
+                    {selectedEngineCategory.name}
+                  </div>
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
