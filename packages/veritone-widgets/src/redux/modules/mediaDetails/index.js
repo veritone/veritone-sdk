@@ -3,6 +3,7 @@ import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
 import { getEditModeEnabled as isFaceEditEnabled } from './faceEngineOutput';
 import { getEditModeEnabled as isTranscriptEditEnabled } from './transcriptWidget';
+import { tdoInfoQueryClause } from './saga';
 
 export const namespace = 'mediaDetails';
 
@@ -55,6 +56,9 @@ export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE
 export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
 export const ENABLE_TAGS_VIEW = `${namespace}_ENABLE_TAGS_VIEW`;
 export const SET_EDIT_TAGS_MODE = `${namespace}_SET_EDIT_TAGS_MODE`;
+export const UPDATE_TDO_TAGS = `${namespace}_UPDATE_TDO_TAGS`;
+export const UPDATE_TDO_TAGS_SUCCESS = `${namespace}_UPDATE_TDO_TAGS_SUCCESS`;
+export const UPDATE_TDO_TAGS_FAILURE = `${namespace}_UPDATE_TDO_TAGS_FAILURE`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -776,6 +780,60 @@ export default createReducer(defaultState, {
         editingTags
       }
     };
+  },
+  [UPDATE_TDO_TAGS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: null
+      }
+    };
+  },
+  [UPDATE_TDO_TAGS_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { variables }
+    }
+  ) {
+    const tdo = get(payload, 'updateTDO');
+    const widgetId = get(variables, 'widgetId');
+
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        tdo: {
+          ...state[widgetId].tdo,
+          ...tdo,
+          details: {
+            ...tdo.details
+          }
+        },
+        editingTags: false
+      }
+    };
+  },
+  [UPDATE_TDO_TAGS_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'unknown error'
+      }
+    };
   }
 });
 
@@ -1112,6 +1170,39 @@ export const createQuickExport = (
       includeMedia: false,
       outputConfigurations,
       tdoData: { tdoId }
+    },
+    dispatch,
+    getState
+  });
+};
+
+export const updateTdo = ({ tags }, widgetId) => async (dispatch, getState) => {
+  const metaData = getTdoMetadata(getState(), widgetId);
+  const tdoId = getTdo(getState(), widgetId).id;
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
+    updateTDO( input: {
+      id: $tdoId
+      details: $details
+    })
+    {
+      ${tdoInfoQueryClause}
+    }
+  }`;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      UPDATE_TDO_TAGS,
+      UPDATE_TDO_TAGS_SUCCESS,
+      UPDATE_TDO_TAGS_FAILURE
+    ],
+    query: updateTdoQuery,
+    variables: {
+      tdoId,
+      details: {
+        ...metaData,
+        tags
+      },
+      widgetId
     },
     dispatch,
     getState

@@ -89,7 +89,14 @@ export default class TagsView extends React.Component {
                     </Grid>
                   ) : null;
                 })}
-            {editModeEnabled && <TagEditForm initialValues={{ tags }} onSubmit={onSubmit} onCancel={onEditButtonClick}/>}
+            {editModeEnabled && (
+              <TagEditForm
+                form="tagEditFormMDP"
+                initialValues={{ tags }}
+                onSubmit={onSubmit}
+                onCancel={onEditButtonClick}
+              />
+            )}
           </Grid>
         </Grid>
       </Grid>

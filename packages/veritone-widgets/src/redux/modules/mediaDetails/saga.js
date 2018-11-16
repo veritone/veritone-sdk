@@ -85,7 +85,7 @@ import {
 
 import * as gqlQuery from './queries';
 
-const tdoInfoQueryClause = `id
+export const tdoInfoQueryClause = `id
     details
     startDateTime
     stopDateTime
@@ -364,7 +364,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
     );
   }
 
-  yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
+  yield put(updateTdoSuccess(widgetId, response.data));
   yield call(insertIntoIndexSaga, tdoId);
 }
 

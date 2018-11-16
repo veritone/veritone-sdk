@@ -166,7 +166,8 @@ const programLiveImageNullState =
     createQuickExport: mediaDetailsModule.createQuickExport,
     cancelEdit: mediaDetailsModule.cancelEdit,
     enableTagsView: mediaDetailsModule.enableTagsView,
-    setEditTagsMode: mediaDetailsModule.setEditTagsMode
+    setEditTagsMode: mediaDetailsModule.setEditTagsMode,
+    saveTags: mediaDetailsModule.updateTdo
   },
   null,
   { withRef: true }
@@ -384,7 +385,8 @@ class MediaDetailsWidget extends React.Component {
     cancelEdit: func,
     setEditTagsMode: func,
     isShowingTagsView: bool,
-    enableTagsView: func
+    enableTagsView: func,
+    saveTags: func
   };
 
   static contextTypes = {
@@ -928,7 +930,8 @@ class MediaDetailsWidget extends React.Component {
       bulkEditEnabled,
       cancelEdit,
       setEditTagsMode,
-      isShowingTagsView
+      isShowingTagsView,
+      saveTags
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1412,6 +1415,8 @@ class MediaDetailsWidget extends React.Component {
                   onEditButtonClick={() =>
                     setEditTagsMode(!isEditModeEnabled, this.props.id)
                   }
+                  // eslint-disable-next-line
+                  onSubmit={formData => saveTags(formData, this.props.id)}
                 />
               )}
               {selectedEngineId &&

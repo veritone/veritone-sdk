@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { shape, func, arrayOf, string } from 'prop-types';
-import { get, find, uniq } from 'lodash';
+import { get, uniq, trim, compact, uniqBy } from 'lodash';
 import TextField from '@material-ui/core/TextField';
 import TagPill from './tagPill';
 import styles from './styles.scss';
@@ -44,16 +44,22 @@ export default class TagsField extends Component {
     const {
       input: { value, onChange }
     } = this.props;
-    const commaSeparated = get(evt, 'target.value', '').split(',');
-    onChange(
+    const commaSeparated = compact(
       uniq(
-        value.concat(
-          commaSeparated.filter(v => {
-              return v.trim().length && !find(value, { value: v });
-            })
-            .map(v => ({ value: v.trim() }))
-        )
+        get(evt, 'target.value', '')
+          .split(',')
+          .map(v => trim(v))
       )
+    );
+    onChange(
+      uniqBy(value.concat(commaSeparated.map(v => ({ value: v }))), item => {
+        if (item.hasOwnProperty('value')) {
+          return item.value;
+        } else if (Object.keys(item).length) {
+          const tagKey = Object.keys(item)[0];
+          return `${tagKey}:${item[tagKey]}`;
+        }
+      })
     );
     this.setState({
       inputValue: ''
@@ -87,6 +93,7 @@ export default class TagsField extends Component {
         onKeyPress={this.handleKeyPress}
         value={this.state.inputValue}
         onChange={this.handleInputChange}
+        fullWidth
         InputProps={{
           autoFocus: true,
           style: {
