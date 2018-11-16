@@ -155,6 +155,7 @@ export default class IdentifierSelector extends Component {
             <Grid
               item
               container
+              spacing={24}
               direction="column"
               justify="center"
               alignItems="center"
