@@ -1,9 +1,12 @@
 import React from 'react';
 import { bool, func, arrayOf, shape } from 'prop-types';
+import { get } from 'lodash';
+import { Image } from 'veritone-react-common';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Icon from '@material-ui/core/Icon/Icon';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import TagEditForm from './TagEditForm';
 import styles from './styles.scss';
 
@@ -34,7 +37,8 @@ export default class TagsView extends React.Component {
           )}
           <Grid item>
             {showEditButton &&
-              !editModeEnabled && (
+              !editModeEnabled &&
+              !!tags.length && (
                 <IconButton
                   aria-label="Edit Mode"
                   onClick={onEditButtonClick}
@@ -64,6 +68,7 @@ export default class TagsView extends React.Component {
             alignItems="flex-start"
           >
             {!editModeEnabled &&
+              !!get(tags, 'length') &&
               tags
                 .filter(item => !item.hasOwnProperty('redactionStatus'))
                 .map(tag => {
@@ -89,6 +94,51 @@ export default class TagsView extends React.Component {
                     </Grid>
                   ) : null;
                 })}
+            {!editModeEnabled &&
+              !get(tags, 'length') && (
+                <Grid
+                  className={styles.noTags}
+                  item
+                  container
+                  spacing={24}
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <Image
+                      src="//static.veritone.com/veritone-ui/tags-null.svg"
+                      width={80}
+                      height={80}
+                      type="contain"
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    container
+                    spacing={8}
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                  >
+                    <Grid item className={styles.noTagsText}>
+                      No Tags
+                    </Grid>
+                    <Grid item className={styles.noTagsSubText}>
+                      Add tags to group related media together
+                    </Grid>
+                    <Grid item className={styles.tagsButtonContainer}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={onEditButtonClick}
+                      >
+                        Add Tags
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
             {editModeEnabled && (
               <TagEditForm
                 form="tagEditFormMDP"

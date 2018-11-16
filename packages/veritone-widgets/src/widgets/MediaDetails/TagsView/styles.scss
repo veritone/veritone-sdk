@@ -47,6 +47,27 @@
         font-size: 14px;
         line-height: 16px;
       }
+
+      .noTags {
+        padding: 28px;
+
+        .noTagsText {
+          font-size: 20px !important;
+          font-weight: 300 !important;
+          line-height: 24px !important;
+        }
+
+        .noTagsSubText {
+          font-size: 14px !important;
+          font-weight: 300 !important;
+          line-height: 18px !important;
+          color: $light-black;
+        }
+
+        .tagsButtonContainer {
+          padding-top: 15px;
+        }
+      }
     }
   }
 

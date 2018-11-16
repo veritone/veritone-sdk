@@ -1299,7 +1299,7 @@ class MediaDetailsWidget extends React.Component {
                           icon={
                             <Tooltip
                               id="tags-tab"
-                              title="Tags Tab"
+                              title="Tags"
                               classes={{
                                 tooltip: styles.categoryTabTooltip
                               }}
