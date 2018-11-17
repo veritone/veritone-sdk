@@ -46,6 +46,7 @@ import {
   UPDATE_TDO_CONTENT_TEMPLATES,
   UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
   SET_SELECTED_ENGINE_ID,
+  SET_SELECTED_COMBINE_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
   REQUEST_ENTITIES,
   REQUEST_ENTITIES_SUCCESS,
@@ -71,6 +72,7 @@ import {
   loadTdoContentTemplatesFailure,
   selectEngineCategory,
   setEngineId,
+  setCombineEngineId,
   getTdoMetadata,
   getTdo,
   toggleSaveMode,
@@ -82,7 +84,11 @@ import {
   restoreOriginalEngineResultsFailure,
   restoreOriginalEngineResultsSuccess,
   insertIntoIndexFailure,
-  emitEntityUpdatedEventFailure
+  emitEntityUpdatedEventFailure,
+  getEngineCategories,
+  setSelectedCombineViewTypeId,
+  categoryCombinationMapper,
+  getCombineViewTypes
 } from '.';
 
 import * as gqlQuery from './queries';
@@ -1171,6 +1177,42 @@ function* watchSetEngineId() {
   });
 }
 
+function* watchSetCombineEngineId() {
+  yield takeEvery(SET_SELECTED_COMBINE_ENGINE_ID, function* (action) {
+    const selectedCombineEngineId = action.payload;
+    const { widgetId } = action.meta;
+
+    if (!selectedCombineEngineId) {
+      return;
+    }
+
+    const currentTdo = yield select(getTdo, widgetId);
+    const startOfTdo = new Date(currentTdo.startDateTime).getTime();
+    const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
+    let startOffsetMs, stopOffsetMs;
+    if (!startOffsetMs) {
+      startOffsetMs = 0;
+    }
+    if (!stopOffsetMs) {
+      stopOffsetMs = endOfTdo - startOfTdo;
+    }
+
+    if (startOffsetMs > stopOffsetMs) {
+      return;
+    }
+
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo: currentTdo,
+        engineId: selectedCombineEngineId,
+        startOffsetMs,
+        stopOffsetMs,
+        ignoreUserEdited: false
+      })
+    );
+  })
+}
+
 function* watchSelectEngineCategory() {
   yield takeEvery(SELECT_ENGINE_CATEGORY, function*(action) {
     const { engines } = action.payload;
@@ -1178,6 +1220,33 @@ function* watchSelectEngineCategory() {
     const engineId = engines.length ? engines[0].id : undefined;
 
     yield put(setEngineId(widgetId, engineId));
+
+    // If the selected category has a combineMap entry, then we need to fetch that data too
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
+    const combineMapper = yield select(categoryCombinationMapper, widgetId);
+    const engineCategories = yield select(getEngineCategories, widgetId);
+    const categoryObj = find(combineMapper, [
+      'withType',
+      selectedEngineCategory.categoryType
+    ]);
+    if (categoryObj) {
+      const combineCategory = find(engineCategories, [
+        'categoryType',
+        categoryObj.combineType
+      ]);
+      const combineEngines = get(combineCategory, 'engines');
+      if (combineEngines && combineEngines.length) {
+        const combineEngineId = combineEngines[0].id;
+        yield put(setCombineEngineId(widgetId, combineEngineId));
+        const viewTypes = yield select(getCombineViewTypes, widgetId);
+        if (viewTypes.length) {
+          yield put(setSelectedCombineViewTypeId(widgetId, viewTypes[0].id)); 
+        }
+      }
+    }
   });
 }
 
@@ -1352,6 +1421,7 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),
+    fork(watchSetCombineEngineId),
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),

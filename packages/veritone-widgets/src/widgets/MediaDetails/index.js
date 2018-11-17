@@ -86,11 +86,19 @@ const programLiveImageNullState =
       mediaId,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
+    selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
+      state,
+      mediaId,
+      mediaDetailsModule.getSelectedCombineEngineId(state, id)
+    ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
       id
     ),
     selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, id),
+    selectedCombineEngineId: mediaDetailsModule.getSelectedCombineEngineId(state, id),
+    selectedCombineViewTypeId: mediaDetailsModule.getSelectedCombineViewTypeId(state, id),
+    combineViewTypes: mediaDetailsModule.getCombineViewTypes(state, id),
     contentTemplates: mediaDetailsModule.getContentTemplates(state, id),
     tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(state, id),
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
@@ -139,6 +147,8 @@ const programLiveImageNullState =
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
+    setCombineEngineId: mediaDetailsModule.setCombineEngineId,
+    setSelectedCombineViewTypeId: mediaDetailsModule.setSelectedCombineViewTypeId,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
@@ -510,6 +520,14 @@ class MediaDetailsWidget extends React.Component {
     this.props.setEngineId(this.props.id, engineId);
   };
 
+  handleSelectCombineEngine = engineId => {
+    this.props.setCombineEngineId(this.props.id, engineId);
+  }
+
+  handleSelectCombineViewType = viewTypeId => {
+    this.props.setSelectedCombineViewTypeId(this.props.id, viewTypeId);
+  }
+
   handleTabChange = (evt, selectedTabValue) => {
     if (selectedTabValue === 'contentTemplates') {
       this.props.loadContentTemplates(this.props.id);
@@ -775,13 +793,14 @@ class MediaDetailsWidget extends React.Component {
     const {
       tdo,
       selectedEngineId,
+      selectedCombineEngineId,
       selectedEngineCategory,
       createQuickExport,
       categoryCombinationMapper,
       engineCategories
     } = this.props;
     let formatOptions = {};
-    let selectedCombineEngineId, selectedCombineCategoryId;
+    let selectedCombineCategoryId;
     const hasCombineEngineOutput = find(
       categoryCombinationMapper, 
       ['withType', selectedEngineCategory.categoryType]
@@ -792,9 +811,7 @@ class MediaDetailsWidget extends React.Component {
         ['categoryType', hasCombineEngineOutput.combineType]
       );
       if (combineCategory) {
-        selectedCombineCategoryId = combineCategory.id;
-        selectedCombineEngineId = get(combineCategory, 'engines[0].id');
-        
+        selectedCombineCategoryId = combineCategory.id;        
         if (hasCombineEngineOutput.quickExportOptions) {
           formatOptions = {
             ...formatOptions,
@@ -883,7 +900,10 @@ class MediaDetailsWidget extends React.Component {
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
+      selectedCombineEngineId,
+      selectedCombineViewTypeId,
       selectedEngineResults,
+      selectedCombineEngineResults,
       className,
       isInfoPanelOpen,
       isExpandedMode,
@@ -1360,13 +1380,19 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         combineEngines={combineEngines}
                         onEngineChange={this.handleSelectEngine}
+                        onCombineEngineChange={this.handleSelectCombineEngine}
+                        setSelectedCombineViewTypeId={this.handleSelectCombineViewType}
                         selectedEngineId={selectedEngineId}
+                        selectedCombineEngineId={selectedCombineEngineId}
+                        selectedCombineViewTypeId={selectedCombineViewTypeId}
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
                         bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
+                        combineViewTypes={this.props.combineViewTypes}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        speakerData={selectedCombineEngineResults}
                       />
                     )}
                   {selectedEngineCategory &&

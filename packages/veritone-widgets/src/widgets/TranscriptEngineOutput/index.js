@@ -26,8 +26,6 @@ const saga = util.reactReduxSaga.saga;
 @saga(transcriptSaga)
 @connect(
   (state, { tdo, selectedEngineId }) => ({
-    selectedCombineEngineId: TranscriptRedux.getSelectedCombineEngineId(state),
-    selectedCombineViewTypeId: TranscriptRedux.selectedCombineViewTypeId(state),
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -40,11 +38,6 @@ const saga = util.reactReduxSaga.saga;
       tdo.id,
       selectedEngineId
     ),
-    selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
-      state,
-      tdo.id,
-      TranscriptRedux.getSelectedCombineEngineId(state)
-    ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
     ),
@@ -54,7 +47,6 @@ const saga = util.reactReduxSaga.saga;
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
     combineCategory: TranscriptRedux.combineCategory(state),
-    combineViewTypes: TranscriptRedux.getCombineViewTypes(state),
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
   }),
   {
@@ -73,9 +65,7 @@ const saga = util.reactReduxSaga.saga;
     closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar,
     toggleEditMode: TranscriptRedux.toggleEditMode,
     openConfirmationDialog: TranscriptRedux.openConfirmationDialog,
-    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog,
-    setSelectedCombineEngineId: TranscriptRedux.setSelectedCombineEngineId,
-    setSelectedCombineViewTypeId: TranscriptRedux.setSelectedCombineViewTypeId
+    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog
   },
   null,
   { withRef: true }
@@ -120,18 +110,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       })
     ),
     isFetchingEngineResults: bool,
-    selectedCombineEngineResults: arrayOf(
-      shape({
-        sourceEngineId: string.isRequired,
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            speakerId: string
-          })
-        )
-      })
-    ),
     currentData: arrayOf(
       shape({
         startTimeMs: number,
@@ -163,7 +141,6 @@ export default class TranscriptEngineOutputContainer extends Component {
     ),
     combineCategory: string,
     selectedCombineEngineId: string,
-    setSelectedCombineEngineId: func,
     selectedCombineViewTypeId: string,
     setSelectedCombineViewTypeId: func,
     title: string,
@@ -177,6 +154,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     onClick: func,
     onScroll: func,
     onEngineChange: func,
+    onCombineEngineChange: func,
     onExpandClick: func,
     onRestoreOriginalClick: func,
 
@@ -240,72 +218,14 @@ export default class TranscriptEngineOutputContainer extends Component {
     return { ...prevState, props: nextProps };
   }
 
-  componentDidMount() {
-    const {
-      tdo,
-      combineEngines,
-      combineCategory,
-      selectedCombineEngineId,
-      setSelectedCombineEngineId,
-      fetchEngineResults,
-      setSelectedCombineViewTypeId
-    } = this.props;
-    const speakerEngines = get(combineEngines, combineCategory);
-    
-    if (
-      !selectedCombineEngineId &&
-      speakerEngines &&
-      speakerEngines.length
-    ) {
-      const speakerEngineId = speakerEngines[0].id;
-      fetchEngineResults({
-        engineId: speakerEngineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      }).then(response => {
-        setSelectedCombineEngineId(speakerEngineId);
-        setSelectedCombineViewTypeId('speaker-view');
-        return response;
-      });
-    }
-  }
-
   componentWillUnmount() {
     const {
       editModeEnabled,
-      toggleEditMode,
-      selectedCombineEngineId,
-      setSelectedCombineEngineId,
-      selectedCombineViewTypeId,
-      setSelectedCombineViewTypeId
+      toggleEditMode
     } = this.props;
 
     if (editModeEnabled) {
       toggleEditMode();
-    }
-    if (selectedCombineEngineId) {
-      setSelectedCombineEngineId(null);
-    }
-    if (selectedCombineViewTypeId) {
-      setSelectedCombineViewTypeId('transcript');
-    }
-  }
-
-  handleSpeakerEngineChange = engineId => {
-    const tdo = this.props.tdo;
-    if (engineId !== this.props.selectedCombineEngineId) {
-      this.props.fetchEngineResults({
-        engineId: engineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      }).then(response => {
-        this.props.setSelectedCombineEngineId(engineId); 
-        return response;
-      });
     }
   }
 
@@ -404,7 +324,7 @@ export default class TranscriptEngineOutputContainer extends Component {
   determineSpeakerNullstate = () => {
     const {
       selectedCombineEngineId,
-      selectedCombineEngineResults,
+      speakerData,
       selectedCombineViewTypeId,
       combineCategory,
       combineEngines,
@@ -419,9 +339,9 @@ export default class TranscriptEngineOutputContainer extends Component {
       let combineStatus = combineEngineTask.status;
       if (isFetchingEngineResults) {
         combineStatus = 'fetching';
-      } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
+      } else if (!speakerData && combineStatus === 'complete') {
         combineStatus = 'no_data';
-      } else if (selectedCombineEngineResults && combineStatus === 'complete') {
+      } else if (speakerData && combineStatus === 'complete') {
         return outputNullState;
       }
       return outputNullState || (
@@ -455,8 +375,10 @@ export default class TranscriptEngineOutputContainer extends Component {
       'moreMenuItems',
       'disableEditButton',
       'onEngineChange',
+      'onCombineEngineChange',
       'combineViewTypes',
-      'selectedCombineViewTypeId'
+      'selectedCombineViewTypeId',
+      'speakerData'
     ]);
 
     const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
@@ -486,7 +408,6 @@ export default class TranscriptEngineOutputContainer extends Component {
           bulkEditEnabled={bulkEditEnabled}
           editMode={this.props.editModeEnabled}
           onChange={this.handleContentChanged}
-          onCombineEngineChange={this.handleSpeakerEngineChange}
           editType={this.state.editType}
           showEditButton={
             this.props.showEditButton && !this.props.editModeEnabled
@@ -496,7 +417,6 @@ export default class TranscriptEngineOutputContainer extends Component {
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           speakerEngines={speakerEngines}
-          speakerData={this.props.selectedCombineEngineResults}
           selectedSpeakerEngineId={this.props.selectedCombineEngineId}
           handleCombineViewTypeChange={this.props.setSelectedCombineViewTypeId}
           outputNullState={outputNullState}
