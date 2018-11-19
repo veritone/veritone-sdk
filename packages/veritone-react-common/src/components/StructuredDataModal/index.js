@@ -37,7 +37,23 @@ import styles from './styles.scss';
 class StructuredDataModal extends React.Component {
   async componentDidMount() {
     if(this.props.modalState.field) {
-      let state = await this.rehydrateProps();
+      let state = await this.rehydrateProps(this.props.modalState);
+
+      if(this._schemaPicker) {
+        this._schemaPicker.onSelect(state.selectedSchema);
+      }
+
+      if(this._attributePicker) {
+        this._attributePicker.onSelect(state.selectedAttribute);
+      }
+
+      this.setState(
+        state
+      );
+    } else if (this.props.presetSDOAttribute) {
+      let state = await this.rehydrateProps(this.props.presetSDOAttribute);
+      state.value1 = undefined;
+      state.value2 = undefined;
 
       if(this._schemaPicker) {
         this._schemaPicker.onSelect(state.selectedSchema);
@@ -136,14 +152,14 @@ class StructuredDataModal extends React.Component {
 
 
   // converts CSP data structure back to modal's internal types
-  rehydrateProps = async () => {
+  rehydrateProps = async (props) => {
 
-    const type = get(this.props.modalState, 'type');
-    const schemaId = get(this.props.modalState, 'schemaId');
-    let majorVersion = get(this.props.modalState, 'majorVersion');
-    let dataRegistryId = get(this.props.modalState, 'dataRegistryId');
-    let convertedValue1 = get(this.props.modalState, 'value1');
-    let convertedValue2 = get(this.props.modalState, 'value2');
+    const type = get(props, 'type');
+    const schemaId = get(props, 'schemaId');
+    let majorVersion = get(props, 'majorVersion');
+    let dataRegistryId = get(props, 'dataRegistryId');
+    let convertedValue1 = get(props, 'value1');
+    let convertedValue2 = get(props, 'value2');
 
     if (type === 'dateTime') {
       convertedValue1 = convertedValue1 ? format(parse(convertedValue1), 'YYYY-MM-DDTHH:mm') : undefined;
@@ -179,20 +195,21 @@ class StructuredDataModal extends React.Component {
         id: schemaId,
         majorVersion: majorVersion,
         organization: orgName,
-        name: get(this.props.modalState, 'field').split(".").pop(),
-        field: get(this.props.modalState, 'field'),
+        name: get(props, 'name'),
+        field: get(props, 'field'),
         schemaName: schemaName,
         type: type
       },
-      selectedOperator: get(this.props.modalState, 'operator'),
+      selectedOperator: get(props, 'operator'),
       selectedDataRegistryId: dataRegistryId,
       selectedSchemaMajorVersion: majorVersion,
       value1: convertedValue1,
       value2: convertedValue2,
-      select: get(this.props.modalState, 'select'),
-      schemaId: get(this.props.modalState, 'schemaId'),
+      name: get(props, 'name'),
+      select: get(props, 'select'),
+      schemaId: get(props, 'schemaId'),
       majorVersion: majorVersion,
-      field: get(this.props.modalState, 'field')
+      field: get(props, 'field')
     };
     return state;
   }
@@ -243,12 +260,13 @@ class StructuredDataModal extends React.Component {
         defaultOperator = 'contains';
       }
     }
+
     this.setState(
       {
         selectedAttribute: {
           id: selectedAttribute.id,
           type: selectedAttribute.type,
-          name: selectedAttribute.field.split('.').slice(-1)[0],
+          name: selectedAttribute.name,
           field:  selectedAttribute.field,
           schemaName: selectedAttribute.schemaName,
           type: selectedAttribute.type
@@ -338,7 +356,7 @@ class StructuredDataModal extends React.Component {
 
       return new Date(
         date.getUTCFullYear(),
-        date.getUTCMonth(), 
+        date.getUTCMonth(),
         date.getUTCDate(),
         date.getUTCHours(),
         date.getUTCMinutes(),
@@ -365,6 +383,7 @@ class StructuredDataModal extends React.Component {
           select: get(this.state.selectedAttribute, 'field').split(".")[0],
           schemaId: this.state.schemaId,
           dataRegistryId: this.state.selectedDataRegistryId,
+          name: get(this.state.selectedAttribute, 'name'),
           majorVersion: this.state.selectedSchemaMajorVersion,
           field: get(this.state.selectedAttribute, 'field')
         }
@@ -615,13 +634,14 @@ StructuredDataModal.defaultProps = {
 
 const StructuredDataDisplay = modalState => {
   const getAbbreviation = (modalState) => {
+    const fieldName = modalState.name || modalState.field.split('.').slice(-1)[0];
 
     if (modalState.operator === 'range') {
-      return `${modalState.field.split('.').slice(-1)[0]} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} (${modalState.value1},${modalState.value2})`
+      return `${fieldName} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} (${modalState.value1},${modalState.value2})`
     } else if (modalState.operator === 'within') {
       return `${Number((modalState.value1.distance).toFixed(0))} meters of ${Number((modalState.value1.latitude).toFixed(2))}, ${Number((modalState.value1.longitude).toFixed(2))}`
     } else {
-      return `${modalState.field.split('.').slice(-1)[0]} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} ${modalState.value1}`
+      return `${fieldName} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} ${modalState.value1}`
     }
   }
   return {

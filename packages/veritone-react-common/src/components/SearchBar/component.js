@@ -764,6 +764,7 @@ export class SampleSearchBar extends React.Component {
               showLoadSavedSearch={ this.showLoadSavedSearch }
               showSavedSearch={ this.showSavedSearch }
               presetSDOSchema={ this.props.presetSDOSchema }
+              presetSDOAttribute={ this.props.presetSDOAttribute }
             />
           </MuiThemeProvider>
         </JssProvider>

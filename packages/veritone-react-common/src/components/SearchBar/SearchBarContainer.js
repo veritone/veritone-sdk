@@ -726,6 +726,7 @@ class SearchBarContainer extends React.Component {
                   cancel={this.cancelModal}
                   applyFilter={this.addOrEditModal}
                   presetSDOSchema={ this.state.openModal.modalId === 'sdo-search-id' ? this.props.presetSDOSchema : undefined }
+                  presetSDOAttribute={ this.state.openModal.modalId === 'sdo-search-id' ? this.props.presetSDOAttribute : undefined  }
                 />
               ) : null }
             </CardContent>
