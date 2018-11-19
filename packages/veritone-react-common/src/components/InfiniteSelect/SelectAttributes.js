@@ -71,9 +71,7 @@ export default class SelectAttributes extends React.Component {
       if (includes(StructuredDataModal.SUPPORTED_TYPES, get(result, 'type'))) {
         data.push({
           id: get(result, 'schema.id'),
-          name: get(result, 'searchPath')
-            .split('.')
-            .slice(-1)[0],
+          name: get(result, 'title') || get(result, 'searchPath').split(".").pop() ,
           field: get(result, 'searchPath'),
           schemaName: get(result, 'schema.dataRegistry.name'),
           organization: get(result, 'schema.dataRegistry.organization.name'),

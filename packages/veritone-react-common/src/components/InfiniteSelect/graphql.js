@@ -82,6 +82,7 @@ const fetchProperties = function fetchProperties({api, auth, name="", dataRegist
                 type,
                 path,
                 searchPath,
+                title,
                 schema {
                   id,
                   dataRegistry {
