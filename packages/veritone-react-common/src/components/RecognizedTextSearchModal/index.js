@@ -1,9 +1,13 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControl from'@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Switch from '@material-ui/core/Switch';
 
-import ModalSubtitle from '../ModalSubtitle';
+import ToolTip from '@material-ui/core/Tooltip';
+import Info from '@material-ui/icons/Info';
 
 import Dialog, {
   DialogActions,
@@ -26,7 +30,8 @@ export default class RecognizedTextSearchModal extends React.Component {
   };
 
   state = {
-    filterValue: null || this.props.modalState.search
+    filterValue: null || this.props.modalState.search,
+    includeSpecialCharacters: this.props.modalState.includeSpecialCharacters || false
   };
 
   onChange = event => {
@@ -40,7 +45,7 @@ export default class RecognizedTextSearchModal extends React.Component {
       this.props.applyFilter();
     } else {
       this.props.applyFilter(
-        { search: this.state.filterValue ? this.state.filterValue.trim() : null }
+        { search: this.state.filterValue ? this.state.filterValue.trim() : null, includeSpecialCharacters: this.state.includeSpecialCharacters }
       );
     }
   };
@@ -49,8 +54,14 @@ export default class RecognizedTextSearchModal extends React.Component {
     if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       return;
     } else {
-      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null } );
+      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null, includeSpecialCharacters: this.state.includeSpecialCharacters } );
     }
+  }
+
+  toggleSpecialCharacters = (evt) => {
+    this.setState({
+      includeSpecialCharacters: evt.target.checked
+    });
   }
 
   render() {
@@ -61,13 +72,24 @@ export default class RecognizedTextSearchModal extends React.Component {
         onSubmit={ this.applyFilterIfValue }
         onChange={ this.onChange }
         inputValue={ this.state.filterValue }
+        includeSpecialCharacters={ this.state.includeSpecialCharacters }
+        toggleSpecialCharacters={ this.toggleSpecialCharacters }
       />
     );
   }
 }
 
-export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
-  return (
+export const SpecialCharactersLabel = () => [
+  <FormGroup row>
+    <span>Include Special Characters</span>
+    <ToolTip title="Results will include special characters and punctuation: !, *, +, %, $, etc.">
+      <Info style={ { marginLeft: "0.25em", color: "#aaa" } } />
+    </ToolTip>
+  </FormGroup>
+];
+
+export const RecognizedTextSearchForm = ( { includeSpecialCharacters, toggleSpecialCharacters, defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
+  return [
     <TextField
       id="text_search_field"
       autoFocus
@@ -77,8 +99,21 @@ export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onCh
       onKeyPress={ onKeyPress }
       placeholder="Text to search"
       fullWidth
-    />
-  )};
+    />,
+    <FormControl component="fieldset">
+    <FormGroup row>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={includeSpecialCharacters}
+            onChange={toggleSpecialCharacters}
+          />
+        }
+        label={<SpecialCharactersLabel />}
+      />
+    </FormGroup>
+    </FormControl>
+  ]};
 
 RecognizedTextSearchModal.defaultProps = {
   modalState: { search: '' }
