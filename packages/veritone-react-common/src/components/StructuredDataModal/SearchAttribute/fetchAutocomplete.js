@@ -24,7 +24,7 @@ const fetchSDOSchema = function fetchSDOSchema(api, auth, schemaId) {
             }
           }
         `
-    })
+      })
   }).then(
     response => {
       if (response.status === 200) {
@@ -46,10 +46,10 @@ const fetchAutocomplete = function fetchAutocomplete(api, auth, value) {
     body: JSON.stringify(
       {
         "index": ["schema"],
-      "fields": ['schemaFields.name'],
+        "fields": ['schemaFields.name'],
         "text": value,
         "returnContext": true
-    })
+      })
   }).then(
     response => {
       if (response.status === 200) {
@@ -61,20 +61,34 @@ const fetchAutocomplete = function fetchAutocomplete(api, auth, value) {
   );
 }
 
-const fetchAutocompleteValues = function fetchAutocomplete(api, auth, value, field) {
+const fetchAutocompleteValues = function fetchAutocomplete(api, auth, value, field, sourceFilters = []) {
+  const query = {
+    "index": ["mine", "global"],
+    "fields": [field],
+    "text": value,
+    "returnContext": true
+  };
+
+  if (sourceFilters && sourceFilters.length > 0) {
+    query.query = {
+      "operator": "or",
+      "conditions": sourceFilters.map(source => (
+        {
+          "operator": "term",
+          "field": "mediaSourceId",
+          "value": source
+        }
+      ))
+    }
+  };
+
   return fetch(`${api}v1/search/search/autocomplete`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + auth
     },
-    body: JSON.stringify(
-      {
-        "index": ["mine", "global"],
-      "fields": [field],
-        "text": value,
-        "returnContext": true
-    })
+    body: JSON.stringify(query)
   }).then(
     response => {
       if (response.status === 200) {
@@ -85,7 +99,6 @@ const fetchAutocompleteValues = function fetchAutocomplete(api, auth, value, fie
     }
   );
 }
-
 
 export {
   fetchAutocomplete,

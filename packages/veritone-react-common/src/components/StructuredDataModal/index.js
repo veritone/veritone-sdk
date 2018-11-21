@@ -484,7 +484,7 @@ class StructuredDataModal extends React.Component {
       });
 
       let field = this.state.selectedAttribute.field;
-      let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue.trim().toLowerCase(), field);
+      let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue.trim().toLowerCase(), field, this.props.sourceFilters);
       let autocompleteValues = values && values.fields ? values.fields[field] : [];
       autocompleteValues = autocompleteValues.map( value => get(value, 'key'));
       this.setState({
