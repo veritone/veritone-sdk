@@ -72,7 +72,6 @@ export default class AddTDOsPanel extends React.Component {
           <Select value={matchSelectedId} onChange={this.handleChange}>
             {
               datasetLibraries.map((value) => {
-                console.log(value);
                 return <MenuItem key={value.id} value={value.id}>{value.name}</MenuItem>
               })
             }

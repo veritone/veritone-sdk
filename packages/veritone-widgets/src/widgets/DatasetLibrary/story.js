@@ -8,7 +8,7 @@ storiesOf('DatasetLibrary', module)
   .add('Base', () => {
     const props = {
       label: 'this is a test',
-      tdoIds: []
+      tdoIds: ['1111', '2222']
     };
 
     return (

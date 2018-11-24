@@ -114,7 +114,6 @@ class DatasetLibrary extends React.Component {
         if (libraryStatus === Status.INITIAL) {
           loadLibraries();
         } else if (libraryStatus === Status.ERROR && state.libraryStatus !== Status.ERROR) {
-          console.log('library status error');
           return {...newState, alert: true}
         } else if (libraryStatus === Status.LOADED) {
           return {...newState, createLibView: true}
@@ -127,7 +126,6 @@ class DatasetLibrary extends React.Component {
         if (libraryTypeStatus === Status.INITIAL) {
           loadLibraryTypes();
         } else if (libraryTypeStatus === Status.ERROR && state.libraryTypeStatus !== Status.ERROR) {
-          console.log('library type status error');
           return {...newState, alert: true}
         }
       }
@@ -136,7 +134,6 @@ class DatasetLibrary extends React.Component {
     if (tdoStatus === Status.ADDED) {
       return { ...newState, open: false };
     } else if (tdoStatus === Status.ERROR && state.tdoStatus !== Status.ERROR) {
-      console.log('tdos status error');
       return {...newState, alert: true}
     }
 
