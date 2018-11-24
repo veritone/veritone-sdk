@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, find } from 'lodash';
 
 import * as Actions from './actionCreator';
 import { helpers } from 'veritone-redux-common';
@@ -36,10 +36,21 @@ export default createReducer(initialState, {
   [Actions.LOAD_LIBRARY_TYPES_COMPLETE] (state, action) {
     const records = get(action, 'payload.libraryTypes.records');
     if (records) {
-      const libraryTypes = records.map((value) => {
-        return {...value, name: value.label};
-      });
-      return {...state, libraryTypes: libraryTypes, libraryTypeStatus: Status.LOADED, alertMessage: ''};
+      const datasetType = find(records, {id: 'dataset'});
+      if (datasetType) {
+        const libraryTypes = [{...datasetType, name: datasetType.label}];
+        return {
+          ...state,
+          libraryTypes: libraryTypes,
+          libraryTypeStatus: Status.LOADED,
+          alertMessage: ''
+        };
+      } else {
+        return {
+          ...state,
+          libraryTypeStatus:Status.ERROR,
+          alertMessage: 'Dataset library is not enabled'}; 
+      }
     } else {
       return {...state, libraryTypeStatus: Status.ERROR, alertMessage: 'Fail to load library types'};
     }

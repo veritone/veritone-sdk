@@ -42,13 +42,10 @@ export const resetTdos = () => ({
 
 export const addTdos = (tdoIds, libraryId) => async(dispatch, getState) => {
   const query = `
-  mutation ($tdoIds: [ID]!, $libraryId: ID!){
-    addTdosToLibrary(
-      tdoIds: $tdoIds
-      libraryId: $libraryId
-    ) {
-      libraryId,
+  mutation ($dataset: AddLibraryDataset!){
+    addLibraryDataset(input: $dataset) {
       tdoIds
+      libraryId
     }
   }`;
 
@@ -60,8 +57,10 @@ export const addTdos = (tdoIds, libraryId) => async(dispatch, getState) => {
     ],
     query,
     variables: {
-      tdoIds: tdoIds,
-      libraryId: libraryId
+      dataset: {
+        tdoIds: tdoIds,
+        libraryId: libraryId
+      }
     },
     dispatch,
     getState
@@ -121,48 +120,53 @@ export const loadLibraries = () => async (dispatch, getState) => {
 };
 
 export const createLibrary = (name, libraryTypeId, description, coverImage) => async (dispatch, getState) => {
+  let coverImageUrl = '';
   //----Get Upload URL----
-  const getUploadUrlQuery = `query urls($name: String!){
-    getSignedWritableUrl(key: $name) {
-      url
-      getUrl
+  if (coverImage) {
+    const getUploadUrlQuery = `query urls($name: String!){
+      getSignedWritableUrl(key: $name) {
+        url
+        getUrl
+      }
+    }`;
+
+    const signedUrlResponse = await callGraphQLApi({
+      actionTypes: [
+        GET_UPLOAD_URL,
+        GET_UPLOAD_URL_COMPLETE,
+        GET_UPLOAD_URL_FAILURE
+      ],
+      query: getUploadUrlQuery,
+      variables: {
+        name: coverImage.name
+      },
+      dispatch,
+      getState
+    });
+
+    const { url, getUrl } = get(signedUrlResponse, 'getSignedWritableUrl');
+    if (!url || !getUrl) {
+      return {
+        type: CREATE_LIBRARY_FAILURE,
+        payload: 'fail to retrieve signed writable URL'
+      } 
+    } else {
+      coverImageUrl = getUrl;
     }
-  }`;
 
-  const signedUrlResponse = await callGraphQLApi({
-    actionTypes: [
-      GET_UPLOAD_URL,
-      GET_UPLOAD_URL_COMPLETE,
-      GET_UPLOAD_URL_FAILURE
-    ],
-    query: getUploadUrlQuery,
-    variables: {
-      name: coverImage.name
-    },
-    dispatch,
-    getState
-  });
+    //----Upload Cover Image to S3----
+    const uploadStatus = await fetch(url, {
+      method: 'PUT',
+      body: coverImage
+    });
 
-  const { url, getUrl } = get(signedUrlResponse, 'getSignedWritableUrl');
-  if (!url || !getUrl) {
-    return {
-      type: CREATE_LIBRARY_FAILURE,
-      payload: 'fail to retrieve signed writable URL'
-    } 
-  }
-
-  //----Upload Cover Image to S3----
-  const uploadStatus = await fetch(url, {
-    method: 'PUT',
-    body: coverImage
-  });
-
-  const { ok, status } = uploadStatus;
-  if (!ok || status !== 200) {
-    return {
-      type: CREATE_LIBRARY_FAILURE,
-      payload: 'Fail to upload cover image'
-    } 
+    const { ok, status } = uploadStatus;
+    if (!ok || status !== 200) {
+      return {
+        type: CREATE_LIBRARY_FAILURE,
+        payload: 'Fail to upload cover image'
+      } 
+    }
   }
 
   //----Create New Library----
@@ -185,7 +189,7 @@ export const createLibrary = (name, libraryTypeId, description, coverImage) => a
         name: name,
         libraryTypeId: libraryTypeId,
         description: description,
-        coverImageUrl: getUrl
+        coverImageUrl: coverImageUrl
       }
     },
     dispatch,
