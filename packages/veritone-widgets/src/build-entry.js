@@ -28,3 +28,4 @@ export engineOutputExportReducer, * as engineOutputExportModule from './redux/mo
 // export IngestionJobsList from './widgets/IngestionJobsList';
 export { SchedulerWidget } from './widgets/Scheduler';
 // export IngestionAdapters from './widgets/IngestionAdapters';
+export { DatasetAdderWidget } from './widgets/DatasetAdder';
