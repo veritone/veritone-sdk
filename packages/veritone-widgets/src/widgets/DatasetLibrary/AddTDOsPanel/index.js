@@ -80,7 +80,14 @@ export default class AddTDOsPanel extends React.Component {
         <div className={styles.controllers}>
           <Button onClick={onCancel}>{cancelLabel}</Button>
           <Button onClick={onCreateNewDataset}>{createNewDatasetLabel}</Button>
-          <Button variant="contained" color="primary" onClick={this.handleAddTdos}>{addToDatasetLabel}</Button>
+          <Button 
+            color="primary"
+            variant="contained"
+            onClick={this.handleAddTdos}
+            disabled={!datasetLibraries || datasetLibraries.length === 0}
+          >
+            {addToDatasetLabel}
+          </Button>
         </div>
       </form>
     );
