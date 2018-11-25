@@ -11,6 +11,7 @@ export default class ProfileMenu extends React.Component {
   static propTypes = {
     className: string,
     onLogout: func.isRequired,
+    onEditProfile: func,
     user: shape({
       userName: string,
       kvp: shape({
@@ -44,12 +45,6 @@ export default class ProfileMenu extends React.Component {
     this.props.onLogout();
   };
 
-  handleEditProfile = () => {
-    // fixme: show edit profile modal
-    window.location =
-      'https://enterprise.veritone.com/switch-app/default/edit-profile';
-  };
-
   render() {
     const userProfileImage =
       this.props.user.signedImageUrl ||
@@ -73,7 +68,7 @@ export default class ProfileMenu extends React.Component {
           <InnerProfileMenu
             user={this.props.user}
             onLogout={this.handleLogout}
-            onEditProfile={this.handleEditProfile}
+            onEditProfile={this.props.onEditProfile}
           />
         </Menu>
       </div>

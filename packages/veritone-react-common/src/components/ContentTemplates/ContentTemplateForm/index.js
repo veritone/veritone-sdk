@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, objectOf, any, func } from 'prop-types';
+import { string, shape, objectOf, any, func, number } from 'prop-types';
 import Button from '@material-ui/core/Button';
 import { get } from 'lodash';
 import ContentTemplates from 'components/ContentTemplates';
@@ -25,7 +25,8 @@ export default class ContentTemplateForm extends React.Component {
         data: objectOf(any)
       })
     ),
-    onSubmit: func.isRequired
+    onSubmit: func.isRequired,
+    textInputMaxRows: number
   };
 
   static defaultProps = {
@@ -116,6 +117,7 @@ export default class ContentTemplateForm extends React.Component {
           onAddTemplate={this.addToTemplateList}
           onRemoveTemplate={this.removeFromTemplateList}
           onInputChange={this.updateTemplateDetails}
+          textInputMaxRows={this.props.textInputMaxRows}
         />
         <div className={styles['btn-container']}>
           <Button variant="raised" color="primary" type="submit">
