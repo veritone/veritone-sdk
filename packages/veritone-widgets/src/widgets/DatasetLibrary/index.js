@@ -226,6 +226,9 @@ class DatasetLibrary extends React.Component {
         >
           {createLibView ? createLibraryTitle : addDatasetTitle}
         </DialogTitle>
+        <IconButton aria-label="Close" className={styles.closeWidgetButton} onClick={this.handleCancel}>
+          <CloseIcon />
+        </IconButton>
         <DialogContent className={styles.content}>
           {
             createLibView ?

@@ -3,6 +3,12 @@
 
 
 .datasetLibraryWidget {
+  .closeWidgetButton{
+    top: 0;
+    right: 0;
+    position: absolute;
+    color: $light-black;
+  }
   .title {
     font-size: 20px;
   }
