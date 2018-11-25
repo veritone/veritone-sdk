@@ -2,9 +2,9 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import DatasetLibrary, { DatasetLibraryWidget } from './index';
+import DatasetAdder, { DatasetAdderWidget } from './index';
 
-storiesOf('DatasetLibrary', module)
+storiesOf('Dataset Adder', module)
   .add('Base', () => {
     const props = {
       label: 'this is a test',
@@ -13,9 +13,9 @@ storiesOf('DatasetLibrary', module)
 
     return (
     <BaseStory 
-      widget={DatasetLibraryWidget} 
+      widget={DatasetAdderWidget} 
       widgetProps={props}
       componentProps={props}
-      componentClass={DatasetLibrary}
+      componentClass={DatasetAdder}
     />);
   });

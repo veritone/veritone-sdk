@@ -44,7 +44,7 @@ const connectWrapper = connect(
 );
 
 @connectWrapper
-class DatasetLibrary extends React.Component {
+class DatasetAdder extends React.Component {
   static propTypes = {
     tdoIds: arrayOf(string).isRequired,
     onClosed: func,
@@ -283,5 +283,5 @@ class DatasetLibrary extends React.Component {
   }
 }
 
-const DatasetLibraryWidget = widget(DatasetLibrary);
-export { DatasetLibrary as default, DatasetLibraryWidget };
+const DatasetAdderWidget = widget(DatasetAdder);
+export { DatasetAdder as default, DatasetAdderWidget };
