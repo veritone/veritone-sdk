@@ -49,6 +49,4 @@ export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
 export Scheduler from './components/Scheduler';
-export Image from './components/Image';
-export IngestionAdapters from './components/IngestionAdapters';
 export LibraryForm from './components/LibraryForm';
