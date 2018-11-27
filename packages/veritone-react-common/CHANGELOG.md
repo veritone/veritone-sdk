@@ -150,3 +150,9 @@
 
 ## 6.3.1
 * Add recompose to excluded dependencies (fixes build issues)
+
+## 6.4.1
+* AppBar/ProfileMenu: add handlers for and button for editing user profile
+* BoundingPolyOverlay: support readOnly attribute for individual bounding boxes
+* RaisedTextField: add tool tip support for action buttons
+* redux-form-material-ui: fix helperText typo
