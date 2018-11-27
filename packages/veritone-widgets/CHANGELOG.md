@@ -174,3 +174,8 @@ const MyPage = () => (
 
 ## 6.3.1
 * Add recompose to excluded dependencies (fixes build issues)
+
+## 6.4.0
+* Revert saga changes from 6.3.0 until a better solution is found.
+* Add UserProfile widget for user profile editing
+* Update AppBar to support user profile editing with the UserProfile widget
