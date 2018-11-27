@@ -81,3 +81,6 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.9.0
 * Add initial version of KeyBindings helper component/module, for handling an app's global keybinds in redux
+
+## 3.10.0
+* Add module functions to reset user password and update user profile
