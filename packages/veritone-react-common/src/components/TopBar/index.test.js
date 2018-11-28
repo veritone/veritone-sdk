@@ -130,4 +130,13 @@ describe('TopBar', function() {
     // expect(handler).toHaveBeenCalled();
     // expect(handler2).toHaveBeenCalled();
   });
+
+  it('renders an action button', function() {
+    let wrapper = shallow(
+      // eslint-disable-next-line
+      <TopBar renderActionButton={() => <div id="action-button" />} />
+    );
+
+    expect(wrapper.find('#action-button').exists()).toBeTruthy();
+  });
 });
