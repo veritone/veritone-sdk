@@ -1,6 +1,5 @@
 import React from 'react';
 import cx from 'classnames';
-import { noop } from 'lodash';
 import Paper from '@material-ui/core/Paper';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -48,8 +47,7 @@ export default class TopBar extends React.Component {
   static defaultProps = {
     elevation: 2,
     leftOffset: 0,
-    actionButtonContainerWidth: 245,
-    renderActionButton: noop
+    actionButtonContainerWidth: 245
   };
 
   state = {
@@ -85,12 +83,14 @@ export default class TopBar extends React.Component {
         square
         elevation={this.props.elevation}
       >
-        <div
-          className={styles.actionButtonContainer}
-          style={{ width: this.props.actionButtonContainerWidth }}
-        >
-          {this.props.renderActionButton()}
-        </div>
+        {this.props.renderActionButton && (
+          <div
+            className={styles.actionButtonContainer}
+            style={{ width: this.props.actionButtonContainerWidth }}
+          >
+            {this.props.renderActionButton()}
+          </div>
+        )}
         <div
           style={{ height: topBarHeight }}
           className={styles.leftButtonContainer}
