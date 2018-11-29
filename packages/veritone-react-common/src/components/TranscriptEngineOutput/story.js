@@ -64,8 +64,23 @@ export class TranscriptExample extends Component {
       badSerieRatio,
       props.lazyLoading
     );
+    const genSpeaker = true;
+    const mockSpeakerData = genMockData(
+      initialStartTime,
+      initialStopTime,
+      initialNumDataChunks,
+      maxSerieSize,
+      minSerieSize,
+      'vtn-standard',
+      badSerieRatio,
+      props.lazyLoading,
+      genSpeaker
+    );
+    const mockViewTypeId = genSpeaker ? 'speaker-view' : 'transcript-view';
     this.state = {
-      data: mockData
+      data: mockData,
+      speakerData: mockSpeakerData,
+      viewTypeId: mockViewTypeId
     };
   }
 
@@ -82,10 +97,23 @@ export class TranscriptExample extends Component {
         'VLF',
         0.2
       );
+      const additionalSpeakerData = genMockData(
+        startTime,
+        stopTime,
+        3,
+        50,
+        1,
+        'vtn-standard',
+        0.2,
+        true,
+        true
+      )
       this.setState(prevState => {
         const newMockData = { ...prevState }.data.concat(additionalData);
+        const newMockSpeakerData = { ... prevState }.data.concat(additionalSpeakerData);
         return {
-          data: newMockData
+          data: newMockData,
+          speakerData: newMockSpeakerData
         };
       });
     }
@@ -98,6 +126,8 @@ export class TranscriptExample extends Component {
         onChange={action('on change')}
         onEditTypeChange={this.props.onEditTypeChange}
         data={this.state.data}
+        speakerData={this.state.speakerData}
+        selectedCombineViewTypeId={this.state.viewTypeId}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
         mediaPlayerTimeIntervalMs={
@@ -134,7 +164,8 @@ function genMockData(
   minSerieSize = 0,
   type = 'TTML',
   badSerieRatio = 0.2,
-  enableLazyLoading = true
+  enableLazyLoading = true,
+  genSpeaker = false
 ) {
   const dataChunks = [];
 
@@ -150,7 +181,8 @@ function genMockData(
       maxSerieSize,
       minSerieSize,
       type,
-      isBadSerie
+      isBadSerie,
+      genSpeaker
     );
 
     if (enableLazyLoading) {
@@ -178,12 +210,16 @@ function genMockSerie(
   maxSerieSize,
   minSerieSize,
   type = 'TTML',
-  badSerie = false
+  badSerie = false,
+  genSpeaker = false
 ) {
   const mockSeries = [];
   if (badSerie === false) {
-    const serieSize =
+    let serieSize =
       Math.round(Math.random() * (maxSerieSize - minSerieSize)) + minSerieSize;
+    if (genSpeaker) {
+      serieSize = Math.round(serieSize / 10);
+    }
     const timeInterval = (stopTimeMs - startTimeMs) / serieSize;
 
     let lastStopTime = startTimeMs;
@@ -193,9 +229,13 @@ function genMockSerie(
       const newStopTime = Math.ceil(lastStopTime + timeInterval);
       const entry = {
         startTimeMs: lastStopTime,
-        stopTimeMs: newStopTime,
-        words: words
+        stopTimeMs: newStopTime
       };
+      if (!genSpeaker) {
+        entry.words = words;
+      } else {
+        entry.speakerId = genMockSpeakerId();
+      }
 
       lastStopTime = newStopTime;
 
@@ -203,10 +243,15 @@ function genMockSerie(
     }
   } else {
     // bad series only has one entry & doesn't contain words
-    mockSeries.push({
+    const mockBadSerie = {
       startTimeMs: startTimeMs,
       stopTimeMs: stopTimeMs
-    });
+    };
+    // Speaker doesn't have bad series items, so just fill it
+    if (genSpeaker) {
+      mockBadSerie.speakerId = genMockSpeakerId();
+    }
+    mockSeries.push(mockBadSerie);
   }
 
   return mockSeries;
@@ -233,6 +278,11 @@ function genMockWords(size, type = 'TTML') {
   }
 
   return words;
+}
+
+function genMockSpeakerId() {
+  const speakerIndex = Math.floor(Math.random() * speakerTags.length);
+  return speakerTags[speakerIndex];
 }
 
 const ttmlSentences = [
@@ -319,3 +369,10 @@ const vlfWords = [
   'check',
   'wiggly'
 ];
+
+const speakerTags = [
+  'A',
+  'B',
+  'C',
+  'D'
+]
