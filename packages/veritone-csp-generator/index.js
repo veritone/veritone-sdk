@@ -22,11 +22,11 @@ const FingerprintConditionGenerator = modalState => {
 
 const RecognizedTextConditionGenerator = modalState => {
   if(modalState && modalState.includeSpecialCharacters) {
-    const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
+    const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
     query.highlight = "true";
     return query;
   } else {
-    const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
+    const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
     query.highlight = "true";
     return query;
   }
