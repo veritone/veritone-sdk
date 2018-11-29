@@ -21,10 +21,15 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
-  query.highlight = "true";
-
-  return query;
+  if(modalState && modalState.includeSpecialCharacters) {
+    const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
+    query.highlight = "true";
+    return query;
+  } else {
+    const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
+    query.highlight = "true";
+    return query;
+  }
 };
 
 const StructuredDataGenerator = modalState => {
@@ -33,7 +38,7 @@ const StructuredDataGenerator = modalState => {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
-        value: `\"${modalState.value1.toLowerCase()}\"`,
+        value: `*${modalState.value1.toLowerCase()}*`,
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
     } else {
