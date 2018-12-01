@@ -29,7 +29,15 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual, isUndefined, isArray } from 'lodash';
+import {
+  find,
+  get,
+  some,
+  includes,
+  isEqual,
+  isUndefined,
+  isArray
+} from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -128,7 +136,10 @@ const programLiveImageNullState =
       state,
       id
     ),
-    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(state, id),
+    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(
+      state,
+      id
+    ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
     betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
@@ -806,12 +817,12 @@ class MediaDetailsWidget extends React.Component {
       ['withType', selectedEngineCategory.categoryType]
     );
     if (hasCombineEngineOutput) {
-      const combineCategory = find(
-        engineCategories,
-        ['categoryType', hasCombineEngineOutput.combineType]
-      );
+      const combineCategory = find(engineCategories, [
+        'categoryType',
+        hasCombineEngineOutput.combineType
+      ]);
       if (combineCategory) {
-        selectedCombineCategoryId = combineCategory.id;        
+        selectedCombineCategoryId = combineCategory.id;
         if (hasCombineEngineOutput.quickExportOptions) {
           formatOptions = {
             ...formatOptions,
@@ -865,35 +876,40 @@ class MediaDetailsWidget extends React.Component {
     //   }
     // }
     const secondaryEngineCombiner = {};
-    const engineCategorySelectorItems = isArray(engineCategories) ? 
-      engineCategories.filter(category => {
-        // If the current category is to be combined with another
-        // then load it's engines into the combiner using withId as the key
-        const isCombineCategory = !find(categoryCombinationMapper, map => {
-          const isCombineMatch = map.combineType === category.categoryType;
-          if (isCombineMatch) {
-            if (!secondaryEngineCombiner[map.withType]) {
-              secondaryEngineCombiner[map.withType] = {};
+    const engineCategorySelectorItems = isArray(engineCategories)
+      ? engineCategories.filter(category => {
+          // If the current category is to be combined with another
+          // then load it's engines into the combiner using withId as the key
+          const isCombineCategory = !find(categoryCombinationMapper, map => {
+            const isCombineMatch = map.combineType === category.categoryType;
+            if (isCombineMatch) {
+              if (!secondaryEngineCombiner[map.withType]) {
+                secondaryEngineCombiner[map.withType] = {};
+              }
+              const combineCategory = find(engineCategories, [
+                'categoryType',
+                map.combineType
+              ]);
+              if (combineCategory) {
+                secondaryEngineCombiner[map.withType][map.combineType] =
+                  combineCategory.engines;
+              }
             }
-            const combineCategory = find(engineCategories, ['categoryType', map.combineType]);
-            if (combineCategory) {
-              secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
-            }
-          }
-          return isCombineMatch;
-        });
+            return isCombineMatch;
+          });
 
-        return isCombineCategory;
-      }) : [];
+          return isCombineCategory;
+        })
+      : [];
 
-    const combineEngines = selectedEngineCategory ? 
-      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
-      [];
+    const combineEngines = selectedEngineCategory
+      ? get(secondaryEngineCombiner, selectedEngineCategory.categoryType)
+      : [];
     return {
       combineEngines,
       engineCategorySelectorItems
     };
-  }
+  };
 
   render() {
     let {
@@ -935,7 +951,7 @@ class MediaDetailsWidget extends React.Component {
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'primaryAsset.contentType') ||
-      get(tdo, 'details.veritoneFile.mimetype')
+        get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
@@ -1314,10 +1330,7 @@ class MediaDetailsWidget extends React.Component {
                   selectedEngineCategory,
                   'iconClass'
                 )}
-                engineCategoryType={get(
-                  selectedEngineCategory,
-                  'categoryType'
-                )}
+                engineCategoryType={get(selectedEngineCategory, 'categoryType')}
                 // eslint-disable-next-line
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
@@ -1334,32 +1347,36 @@ class MediaDetailsWidget extends React.Component {
                 ) && (
                   <div className={styles.mediaView}>
                     {!this.getPrimaryAssetUri() &&
-                      <Image
-                        src={programLiveImageNullState}
-                        width="450px"
-                        height="250px"
-                        type="contain"
-                      />
-                    }
-                    {isImage && !!this.getPrimaryAssetUri() &&
-                      <Image
-                        src={this.getPrimaryAssetUri()}
-                        width="450px"
-                        height="250px"
-                        type="contain"
-                      />
-                    }
-                    {!isImage && !!this.getPrimaryAssetUri() &&
-                      <MediaPlayer
-                        fluid={false}
-                        width={450}
-                        height={250}
-                        playerRef={this.mediaPlayerRef}
-                        src={this.getPrimaryAssetUri()}
-                        streams={get(this.props, 'tdo.streams')}
-                        poster={tdo.thumbnailUrl || programLiveImageNullState}
-                      />
-                    }
+                      !get(this.props, 'tdo.streams.length') && (
+                        <Image
+                          src={programLiveImageNullState}
+                          width="450px"
+                          height="250px"
+                          type="contain"
+                        />
+                      )}
+                    {isImage &&
+                      !!this.getPrimaryAssetUri() && (
+                        <Image
+                          src={this.getPrimaryAssetUri()}
+                          width="450px"
+                          height="250px"
+                          type="contain"
+                        />
+                      )}
+                    {!isImage &&
+                      (!!this.getPrimaryAssetUri() ||
+                        !!get(this.props, 'tdo.streams.length')) && (
+                        <MediaPlayer
+                          fluid={false}
+                          width={450}
+                          height={250}
+                          playerRef={this.mediaPlayerRef}
+                          src={this.getPrimaryAssetUri()}
+                          streams={get(this.props, 'tdo.streams')}
+                          poster={tdo.thumbnailUrl || programLiveImageNullState}
+                        />
+                      )}
                     {this.getMediaSource() && (
                       <div className={styles.sourceLabel}>
                         Source: {this.getMediaSource()}
