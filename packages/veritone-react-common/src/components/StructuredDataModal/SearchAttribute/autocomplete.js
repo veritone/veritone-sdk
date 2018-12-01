@@ -39,7 +39,10 @@ export default class StringValuePicker extends React.Component {
                 onFocus: this.props.onFocusAutocomplete
               })}
             />
-            <Paper>
+            <Paper style={{
+                maxHeight: '300px',
+                overflow: 'auto',
+              }}>
               {isOpen &&
                 this.props.items && (
                   <ListItem style={{ borderBottom: this.props.items && this.props.items.length > 0 ? '1px dashed #ccc' : null }}>

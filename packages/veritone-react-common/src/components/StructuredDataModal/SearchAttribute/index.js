@@ -50,7 +50,6 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
     return x;
   }, {});
 
-
   return results.reduce((result, section, sectionIndex) => {
     result.sections.push(
       <div key={`${section.schema}_${section.author}_${section.version}`}>

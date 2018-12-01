@@ -105,6 +105,7 @@ export const RecognizedTextSearchForm = ( { includeSpecialCharacters, toggleSpec
       <FormControlLabel
         control={
           <Switch
+            color="primary"
             checked={includeSpecialCharacters}
             onChange={toggleSpecialCharacters}
           />

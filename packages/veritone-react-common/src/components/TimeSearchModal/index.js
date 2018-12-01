@@ -41,8 +41,6 @@ export default class TimeSearchModal extends React.Component {
     return copy;
   };
 
-
-
   initializeState = (initialValue) => {
     const filterValue = this.copyFilter(initialValue);
     if(filterValue.stationBroadcastTime === false) {
@@ -221,6 +219,7 @@ export const TimeSearchForm = ({
               control={
                 <Switch
                   className="stationBroadcastSwitch"
+                  color="primary"
                   checked={inputValue.stationBroadcastTime}
                   onChange={onStationBroadcastTimeChange}
                 />
@@ -241,6 +240,7 @@ export const TimeSearchForm = ({
                   key={dayOfTheWeek.isoWeekday}
                   control={
                     <Checkbox
+                      color="primary"
                       checked={
                         inputValue.selectedDays[dayOfTheWeek.isoWeekday - 1]
                       }
