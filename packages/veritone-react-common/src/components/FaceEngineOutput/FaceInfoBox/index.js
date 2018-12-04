@@ -276,7 +276,9 @@ class FaceInfoBox extends Component {
                               </div>
                               <div className={styles.searchResultsList}>
                                 {isSearchingEntities ? (
-                                  <CircularProgress />
+                                  <div className={styles.progressContainer}>
+                                    <CircularProgress />
+                                  </div>
                                 ) : searchResults && searchResults.length ? (
                                   renderEntitySearchMenu({
                                     results: searchResults,
