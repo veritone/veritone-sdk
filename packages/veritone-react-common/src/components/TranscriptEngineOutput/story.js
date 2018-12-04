@@ -228,6 +228,7 @@ function genMockSerie(
       const words = genMockWords(numWords, type);
       const newStopTime = Math.ceil(lastStopTime + timeInterval);
       const entry = {
+        guid: guid(),
         startTimeMs: lastStopTime,
         stopTimeMs: newStopTime
       };
@@ -244,6 +245,7 @@ function genMockSerie(
   } else {
     // bad series only has one entry & doesn't contain words
     const mockBadSerie = {
+      guid: guid(),
       startTimeMs: startTimeMs,
       stopTimeMs: stopTimeMs
     };
@@ -375,4 +377,14 @@ const speakerTags = [
   'B',
   'C',
   'D'
-]
+];
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+
+  return `${s4()}-${s4()}-${s4()}`;
+}
