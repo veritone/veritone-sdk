@@ -35,4 +35,4 @@ export SDOTable from './widgets/SDOTable';
 export IngestionJobsList from './widgets/IngestionJobsList';
 export { SchedulerWidget } from './widgets/Scheduler';
 export ProgramInfo from './widgets/ProgramInfo';
-export { UserProfileWidget } from './widgets/UserProfile';
+export UserProfileWidget from './widgets/UserProfile';
