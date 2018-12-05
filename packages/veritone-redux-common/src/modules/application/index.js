@@ -1,4 +1,4 @@
-import { isEmpty, keyBy, get } from 'lodash';
+import { isEmpty, keyBy, get, mapValues } from 'lodash';
 import { getConfig } from 'modules/config';
 import fetchGraphQLApi from 'helpers/api/fetchGraphQLApi';
 import { createReducer } from 'helpers/redux';
@@ -142,12 +142,22 @@ export function getContextMenuExtensions(state) {
 
   const contextMenuExtensions = Object.values(applicationsById).reduce(
     (accumulator, currentVal) => {
+
+      // assign applicationId for cme
+      const currentcontextMenuExtensions = mapValues(currentVal.contextMenuExtensions, cmeValue => {
+        return cmeValue.length > 0 ?
+          cmeValue.map(item => Object.assign(item, { applicationId: currentVal.id }))
+          : cmeValue
+      })
       return {
         ...accumulator,
-        tdos: [...accumulator.tdos, ...get(currentVal, 'contextMenuExtensions.tdos', [])],
+        tdos: [
+          ...accumulator.tdos, 
+          ...currentcontextMenuExtensions.tdos
+        ],
         mentions: [
           ...accumulator.mentions,
-          ...get(currentVal, 'contextMenuExtensions.mentions', [])
+          ...currentcontextMenuExtensions.mentions
         ]
       };
     },
