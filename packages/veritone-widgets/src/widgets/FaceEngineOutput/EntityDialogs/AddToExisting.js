@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
-import { get } from 'lodash';
+import {get, isUndefined} from 'lodash';
 import cx from 'classnames';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
@@ -16,21 +16,21 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Tooltip from '@material-ui/core/Tooltip';
+import GroupIcon from "@material-ui/icons/Group";
 import Downshift from 'downshift';
 import * as faceEngineOutput from '../../../redux/modules/mediaDetails/faceEngineOutput';
 import IdentifierSelector from './IdentifierSelector';
+import { modules } from 'veritone-redux-common';
 import styles from './styles.scss';
+
+const { user: userModule } = modules;
 
 function renderInput(inputProps) {
   const { classes, ...other } = inputProps;
 
   return (
     <TextField
-      InputProps={{
-        classes: {
-          root: classes.inputField
-        }
-      }}
       InputLabelProps={{
         shrink: true,
         classes: {
@@ -48,11 +48,13 @@ function renderInput(inputProps) {
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state),
-    isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state)
+    isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state),
+    acknowledgedCantAddIdentifiers: userModule.selectUserSettingByKey(state,'acknowledgedCantAddIdentifiers')
   }),
   {
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
-    createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers
+    createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers,
+    updateUserSetting: userModule.updateUserSetting
   },
   null,
   { withRef: true }
@@ -65,9 +67,12 @@ export default class AddToExistingEntityDialog extends Component {
     isSearchingEntities: bool,
     entitySearchResults: arrayOf(
       shape({
-        entityName: string,
-        libraryName: string,
-        profileImageUrl: string
+        name: string.isRequired,
+        library: shape({
+          name: string.isRequired
+        }).isRequired,
+        profileImageUrl: string,
+        ownedByOrganization: bool
       })
     ),
     currentlyEditedFaces: arrayOf(
@@ -84,7 +89,12 @@ export default class AddToExistingEntityDialog extends Component {
     ),
     fetchEntitySearchResults: func,
     createEntityIdentifiers: func,
-    isCreatingIdentifiers: bool
+    isCreatingIdentifiers: bool,
+    updateUserSetting: func,
+    acknowledgedCantAddIdentifiers: shape({
+      key: string.isRequired,
+      value: string.isRequired
+    })
   };
 
   state = {
@@ -123,7 +133,7 @@ export default class AddToExistingEntityDialog extends Component {
 
   handleSelectEntity = entity => evt => {
     this.setState({
-      searchText: entity.name,
+      searchText: entity.name + ': ' + get(entity, 'library.name'),
       selectedEntity: entity
     });
   };
@@ -146,9 +156,26 @@ export default class AddToExistingEntityDialog extends Component {
   };
 
   onNextClick = () => {
-    this.setState({
-      selectingIdentifiers: true
-    });
+    const { selectedEntity } = this.state;
+    const { acknowledgedCantAddIdentifiers, onSubmit, currentlyEditedFaces } = this.props;
+    if (!get(selectedEntity, 'ownedByOrganization') && acknowledgedCantAddIdentifiers) {
+      this.setState(
+        {
+          searchText: '',
+          selectedEntity: null,
+          selectingIdentifiers: false,
+          identifierError: null
+        },
+        () => {
+          onSubmit(currentlyEditedFaces, selectedEntity);
+        }
+      );
+    } else {
+      this.setState({
+        displayUnownedEntityMessage: !get(selectedEntity, 'ownedByOrganization'),
+        selectingIdentifiers: true
+      });
+    }
   };
 
   handleCancel = () => {
@@ -170,46 +197,67 @@ export default class AddToExistingEntityDialog extends Component {
     });
   };
 
-  handleCreateIdentifiers = selectedIdentifiers => {
+  handleCreateIdentifiers = (selectedIdentifiers, saveAcknowledgedCantAddIdentifiers) => {
     const {
       createEntityIdentifiers,
       currentlyEditedFaces,
-      onSubmit
+      onSubmit,
+      updateUserSetting
     } = this.props;
     const { selectedEntity } = this.state;
-    createEntityIdentifiers(
-      selectedIdentifiers.map(face => {
-        return {
-          entityId: selectedEntity.id,
-          identifierTypeId: 'face',
-          contentType: 'image',
-          url: get(face, 'object.uri'),
-          isPriority: false
-        };
-      })
-    ).then(
-      res => {
-        this.setState(
-          {
-            searchText: '',
-            selectedEntity: null,
-            selectingIdentifiers: false,
-            identifierError: null
-          },
-          () => {
-            onSubmit(currentlyEditedFaces, selectedEntity);
-          }
-        );
-        return res;
-      },
-      e => {
-        console.error(e);
-        this.setState({
-          identifierError:
-            'An error occurred while creating identifiers. Please try again later.'
-        });
+    if (get(selectedEntity, 'ownedByOrganization')) {
+      createEntityIdentifiers(
+        selectedIdentifiers.map(face => {
+          return {
+            entityId: selectedEntity.id,
+            identifierTypeId: 'face',
+            contentType: 'image',
+            url: get(face, 'object.uri'),
+            isPriority: false
+          };
+        })
+      ).then(
+        res => {
+          this.setState(
+            {
+              searchText: '',
+              selectedEntity: null,
+              selectingIdentifiers: false,
+              identifierError: null
+            },
+            () => {
+              onSubmit(currentlyEditedFaces, selectedEntity);
+            }
+          );
+          return res;
+        },
+        e => {
+          console.error(e);
+          this.setState({
+            identifierError:
+              'An error occurred while creating identifiers. Please try again later.'
+          });
+        }
+      );
+    } else {
+      if (saveAcknowledgedCantAddIdentifiers) {
+        updateUserSetting({
+          key: 'acknowledgedCantAddIdentifiers',
+          value: new Date().toString()
+        })
       }
-    );
+      this.setState(
+        {
+          searchText: '',
+          selectedEntity: null,
+          selectingIdentifiers: false,
+          identifierError: null
+        },
+        () => {
+          onSubmit(currentlyEditedFaces, selectedEntity);
+        }
+      );
+    }
   };
 
   inputRef = React.createRef();
@@ -220,7 +268,8 @@ export default class AddToExistingEntityDialog extends Component {
       isSearchingEntities,
       open,
       currentlyEditedFaces,
-      isCreatingIdentifiers
+      isCreatingIdentifiers,
+      acknowledgedCantAddIdentifiers
     } = this.props;
     return (
       <Dialog
@@ -407,10 +456,11 @@ export default class AddToExistingEntityDialog extends Component {
           {this.state.selectingIdentifiers && (
             <IdentifierSelector
               identifiers={currentlyEditedFaces}
-              defaultSelectAll
+              defaultSelectAll={get(this.state.selectedEntity, 'ownedByOrganization')}
               onConfirm={this.handleCreateIdentifiers}
               onCancel={this.handleBackClick}
               isCreatingIdentifiers={isCreatingIdentifiers}
+              userDoesNotOwnEntity={!get(this.state.selectedEntity, 'ownedByOrganization')}
               error={this.state.identifierError}
             />
           )}

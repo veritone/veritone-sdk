@@ -56,7 +56,9 @@ const renderEntitySearchMenu = ({
           <div className={styles.menuEntityName}>
             {getEntityNameElement(result.name, searchEntityText)}
           </div>
-          <div className={styles.menuLibraryName}>{result.library.name}</div>
+          <div className={styles.menuLibraryName}>
+            {result.library.name}
+          </div>
         </div>
       </MenuItem>
     );
@@ -74,9 +76,12 @@ class FaceInfoBox extends Component {
     }),
     searchResults: arrayOf(
       shape({
-        entityName: string,
-        libraryName: string,
-        profileImageUrl: string
+        name: string.isRequired,
+        library: shape({
+          name: string.isRequired
+        }).isRequired,
+        profileImageUrl: string,
+        ownedByOrganization: bool
       })
     ),
     enableEdit: bool,
@@ -141,9 +146,13 @@ class FaceInfoBox extends Component {
 
   inputRef = node => (this._inputRef = node);
 
-  handleCheckboxClicked = face => evt => {
+  preventClickPropagation = evt => {
     evt.stopPropagation();
     evt.nativeEvent.stopImmediatePropagation();
+  };
+
+  handleCheckboxClicked = face => evt => {
+    this.preventClickPropagation(evt);
     this.props.onCheckboxClicked(face, evt);
   };
 
@@ -252,6 +261,7 @@ class FaceInfoBox extends Component {
                     <div>
                       <div ref={this.inputRef}>
                         <Input
+                          onClick={this.preventClickPropagation}
                           {...getInputProps({
                             placeholder: 'Unknown',
                             className: styles.entitySearchInput

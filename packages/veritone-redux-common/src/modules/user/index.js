@@ -1,11 +1,12 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
-import { get, isEmpty, includes } from 'lodash';
+import { get, isEmpty, includes, find } from 'lodash';
 import {
   permissions as perms,
   util as permissionUtil
 } from 'veritone-functional-permissions';
 
 import { commonHeaders, getCredentialsMode } from 'helpers/api';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { getConfig } from 'modules/config';
 import { selectSessionToken } from 'modules/auth';
@@ -26,7 +27,15 @@ const defaultState = {
   isFetchingApplications: false,
   fetchApplicationsFailed: false,
   fetchApplicationsFailureMessage: null,
-  enabledApps: []
+  enabledApps: [],
+
+  isFetchingUserSettings: false,
+  fetchUserSettingsFailed: false,
+  fetchUserSettingsFailureMessage: null,
+  isUpdatingUserSettings: false,
+  updateUserSettingsFailed: false,
+  updateUserSettingsFailureMessage: null,
+  userSettings: []
 };
 
 const reducer = createReducer(defaultState, {
@@ -164,7 +173,88 @@ const reducer = createReducer(defaultState, {
       ...state,
       user: action.payload
     };
-  }
+  },
+
+  [constants.FETCH_USER_SETTINGS](state) {
+    return {
+      ...state,
+      isFetchingUserSettings: false,
+      fetchUserSettingsFailed: false,
+      fetchUserSettingsFailureMessage: null,
+      userSettings: []
+    }
+  },
+
+  [constants.FETCH_USER_SETTINGS_SUCCESS](state, { payload: { me: { userSettings } } }) {
+    return {
+      ...state,
+      isFetchingUserSettings: false,
+      fetchUserSettingsFailed: false,
+      fetchUserSettingsFailureMessage: null,
+      userSettings: userSettings
+    }
+  },
+
+  [constants.FETCH_USER_SETTINGS_FAILURE](state, action) {
+    const statusErrors = {
+      default: "Couldn't get user settings."
+    };
+
+    const failureMessage =
+      action.payload.name === 'ApiError'
+        ? statusErrors[action.payload.status] || statusErrors.default
+        : action.payload.name === 'RequestError'
+        ? 'There was an error when fetching your user settings, please try again.'
+        : statusErrors.default;
+
+    return {
+      ...state,
+      isFetchingUserSettings: false,
+      fetchUserSettingsFailed: true,
+      fetchUserSettingsFailureMessage: failureMessage,
+      userSettings: []
+    };
+  },
+
+  [constants.UPDATE_USER_SETTING](state) {
+    return {
+      ...state,
+      isUpdatingUserSetting: false,
+      updateUserSettingFailed: false,
+      updateUserSettingFailureMessage: null
+    }
+  },
+
+  [constants.UPDATE_USER_SETTING_SUCCESS](state, { payload: { updateCurrentUser: { userSettings } } }) {
+    return {
+      ...state,
+      isUpdatingUserSetting: false,
+      updateUserSettingFailed: false,
+      updateUserSettingFailureMessage: null,
+      userSettings: userSettings
+    }
+  },
+
+  [constants.UPDATE_USER_SETTING_FAILURE](state, action) {
+    const statusErrors = {
+      default: "Couldn't update user settings."
+    };
+
+    const failureMessage =
+      action.payload.name === 'ApiError'
+        ? statusErrors[action.payload.status] || statusErrors.default
+        : action.payload.name === 'RequestError'
+        ? 'There was an error when updating your user settings, please try again.'
+        : statusErrors.default;
+
+    return {
+      ...state,
+      isUpdatingUserSetting: false,
+      updateUserSettingFailed: true,
+      updateUserSettingFailureMessage: failureMessage,
+      userSettings: []
+    };
+  },
 });
 
 export default reducer;
@@ -261,6 +351,59 @@ export function fetchEnabledApps() {
     }
   };
 }
+
+export const fetchUserSettings = () => async (dispatch, getState) => {
+  const query = `
+      query {
+        met {
+          userSettings {
+            key
+            value
+          }
+        }
+      }
+    `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      constants.FETCH_USER_SETTINGS,
+      constants.FETCH_USER_SETTINGS_SUCCESS,
+      constants.FETCH_USER_SETTINGS_FAILURE
+    ],
+    query,
+    dispatch,
+    getState
+  });
+};
+
+export const updateUserSetting = userSetting => async (dispatch, getState) => {
+  const query = `
+      mutation updateCurrentUser($userSetting: UserSettingInfo){
+        updateCurrentUser(input: {
+          userSetting: $userSetting
+        }) {
+          userSettings {
+            key
+            value
+          }
+        }
+      }
+    `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      constants.UPDATE_USER_SETTING,
+      constants.UPDATE_USER_SETTING_SUCCESS,
+      constants.UPDATE_USER_SETTING_FAILURE
+    ],
+    query,
+    variables: {
+      userSetting
+    },
+    dispatch,
+    getState
+  });
+};
 
 export function isLoggingIn(state) {
   return local(state).isLoggingIn;
@@ -361,4 +504,8 @@ export function hasOrgAppAccess(state, applicationId) {
     get(local(state), 'user.organization.kvp.applicationIds'),
     applicationId
   );
+}
+
+export function selectUserSettingByKey(state, settingKey) {
+  return find(get(local(state), 'userSettings'), { key: settingKey });
 }

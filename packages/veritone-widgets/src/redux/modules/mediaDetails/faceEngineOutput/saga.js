@@ -20,7 +20,8 @@ import * as gqlQuery from './queries';
 const {
   auth: authModule,
   config: configModule,
-  engineResults: engineResultsModule
+  engineResults: engineResultsModule,
+  user: userModule
 } = modules;
 
 /* WATCH FUNCTIONS */
@@ -99,6 +100,23 @@ function* searchForEntities(action) {
       },
       token
     });
+    if (get(response, 'data.libraries.records.length')) {
+      const usersOrgId = yield select(userModule.selectUserOrganizationId);
+      response.data.libraries.records = response.data.libraries.records.map(library => {
+        return {
+          ...library,
+          entities: {
+            ...library.entities,
+            records: library.entities.records.map(entity => {
+              return {
+                ...entity,
+                ownedByOrganization: library.organizationId === String(usersOrgId)
+              }
+            })
+          }
+        };
+      });
+    }
 
     yield put(faceEngineOutput.fetchEntitySearchResultsSuccess(response, meta));
   } catch (error) {

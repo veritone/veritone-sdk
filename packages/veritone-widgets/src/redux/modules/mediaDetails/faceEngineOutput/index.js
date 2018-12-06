@@ -283,9 +283,9 @@ const reducer = createReducer(defaultState, {
     const entitySearchResults = [];
 
     get(action.payload.data, 'libraries.records', []).forEach(
-      libraryEntities => {
-        if (libraryEntities.entities.records.length) {
-          entitySearchResults.push(libraryEntities.entities.records);
+      library => {
+        if (library.entities.records.length) {
+          entitySearchResults.push(library.entities.records);
         }
       }
     );

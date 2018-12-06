@@ -34,7 +34,7 @@
     font-family: Roboto;
     font-size: 12px;
     line-height: 18px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
   }
 
   .addEntityContent {
@@ -97,6 +97,14 @@
           text-align: left;
           overflow: hidden;
           text-overflow: ellipsis;
+          display: flex;
+          align-items: center;
+
+          .unownedEntityIcon {
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+          }
         }
       }
     }
@@ -110,6 +118,10 @@
     margin: 12px 0;
     text-align: center;
   }
+}
+
+.unownedEntityTooltip {
+  margin: 5px 0 !important;
 }
 
 .inputField {
@@ -177,7 +189,7 @@
   overflow: hidden;
   position: relative;
 
-  .requestProgress {
+  .identifierOverlay {
     position: absolute;
     width: calc(100% - 50px);
     height: 100%;
@@ -185,6 +197,25 @@
     z-index: 1;
     font-size: 18px !important;
     line-height: 20px !important;
+  }
+
+  .warningIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .warningText {
+    font-size: 16px !important;
+    line-height: 18px !important;
+    font-weight: 500 !important;
+    max-width: 80%;
+  }
+
+  .warningDescription {
+    font-size: 14px !important;
+    line-height: 18px !important;
+    max-width: 80%;
+    text-align: center;
   }
 
   .identifierSelectTitle {
@@ -236,7 +267,15 @@
 }
 
 .identifierSelectActions {
-  padding: 25px 20px 5px;
+  padding: 25px 0 5px 20px;
+
+  .dontShowAgainCheckbox {
+    margin-bottom: 0 !important;
+  }
+
+  .dontShowAgainLabel {
+    font-size: 14px !important;
+  }
 }
 
 .noLibraryImage {

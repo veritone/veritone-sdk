@@ -104,8 +104,9 @@ export const getEntityInLibrary = `
 export const searchForEntities = `
   ${entityFieldsFragment}
   query SearchForEntities($type: String, $name: String) {
-    libraries(type: $type) {
+    libraries(limit:100, type: $type) {
       records {
+        organizationId
         entities(name: $name) {
           records {
             ...entityFields

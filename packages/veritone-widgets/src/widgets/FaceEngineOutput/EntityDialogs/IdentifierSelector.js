@@ -8,6 +8,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import WarningIcon from '@material-ui/icons/Warning';
 import styles from './styles.scss';
 
 export default class IdentifierSelector extends Component {
@@ -28,6 +29,7 @@ export default class IdentifierSelector extends Component {
     onCancel: func.isRequired,
     defaultSelectAll: bool,
     isCreatingIdentifiers: bool,
+    userDoesNotOwnEntity: bool,
     error: string
   };
 
@@ -35,7 +37,8 @@ export default class IdentifierSelector extends Component {
     selectedIdentifiers: this.props.defaultSelectAll
       ? this.props.identifiers
       : [],
-    lastSelectedIdentifier: null
+    lastSelectedIdentifier: null,
+    dontShowWarning: false
   };
 
   handleSelectAll = evt => {
@@ -98,7 +101,13 @@ export default class IdentifierSelector extends Component {
   };
 
   handleFinishClick = () => {
-    this.props.onConfirm(this.state.selectedIdentifiers);
+    this.props.onConfirm(this.state.selectedIdentifiers, this.state.dontShowWarning);
+  };
+
+  handleShowWarningChange = evt => {
+    this.setState({
+      dontShowWarning: evt.target.checked
+    });
   };
 
   renderCell = columnCount => ({
@@ -136,7 +145,7 @@ export default class IdentifierSelector extends Component {
   };
 
   render() {
-    const { identifiers, onCancel, isCreatingIdentifiers, error } = this.props;
+    const { identifiers, onCancel, isCreatingIdentifiers, error, userDoesNotOwnEntity } = this.props;
     const { selectedIdentifiers } = this.state;
     const columnWidth = 98,
       rowHeight = 90,
@@ -159,12 +168,30 @@ export default class IdentifierSelector extends Component {
               direction="column"
               justify="center"
               alignItems="center"
-              className={styles.requestProgress}
+              className={styles.identifierOverlay}
             >
               <Grid item>
                 <CircularProgress size={60} />
               </Grid>
               <Grid item>Processing Request</Grid>
+            </Grid>
+          )}
+          {userDoesNotOwnEntity && (
+            <Grid
+              item
+              container
+              spacing={8}
+              direction="column"
+              justify="center"
+              alignItems="center"
+              className={styles.identifierOverlay}
+            >
+              <Grid item><WarningIcon className={styles.warningIcon}/></Grid>
+              <Grid item className={styles.warningText}>Image Assignment Not Allowed</Grid>
+              <Grid item className={styles.warningDescription}>
+                The person you have selected belongs to a shared library which
+                cannot be modified. Adding additional images is not allowed.
+              </Grid>
             </Grid>
           )}
           <Grid item classes={{ item: styles.identifierSelectTitle }}>
@@ -224,27 +251,48 @@ export default class IdentifierSelector extends Component {
         <Grid
           item
           container
-          justify="flex-end"
+          justify="space-between"
+          alignItems="center"
           classes={{ container: styles.identifierSelectActions }}
         >
-          <Button
-            color="primary"
-            data-veritone-element="back-button"
-            classes={{ root: styles.entityDialogButton }}
-            onClick={onCancel}
-            disabled={isCreatingIdentifiers}
-          >
-            Back
-          </Button>
-          <Button
-            color="primary"
-            data-veritone-element="finish-button"
-            classes={{ root: styles.entityDialogButton }}
-            onClick={this.handleFinishClick}
-            disabled={isCreatingIdentifiers}
-          >
-            Finish
-          </Button>
+          <Grid item>
+            {userDoesNotOwnEntity && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.dontShowWarning}
+                    onChange={this.handleShowWarningChange}
+                    color="primary"
+                  />
+                }
+                classes={{
+                  root: styles.dontShowAgainCheckbox,
+                  label: styles.dontShowAgainLabel
+                }}
+                label="Don't Show Again"
+              />
+            )}
+          </Grid>
+          <Grid item>
+            <Button
+              color="primary"
+              data-veritone-element="back-button"
+              classes={{ root: styles.entityDialogButton }}
+              onClick={onCancel}
+              disabled={isCreatingIdentifiers}
+            >
+              Back
+            </Button>
+            <Button
+              color="primary"
+              data-veritone-element="finish-button"
+              classes={{ root: styles.entityDialogButton }}
+              onClick={this.handleFinishClick}
+              disabled={isCreatingIdentifiers}
+            >
+              Finish
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     );

@@ -85,7 +85,8 @@ const saga = util.reactReduxSaga.saga;
     onAddToExistingEntity: faceEngineOutput.openAddToExistingEntityDialog,
     closeAddToExistingEntityDialog:
       faceEngineOutput.closeAddToExistingEntityDialog,
-    setSelectedEntityId: faceEngineOutput.setSelectedEntityId
+    setSelectedEntityId: faceEngineOutput.setSelectedEntityId,
+    fetchUserSettings: userModule.fetchUserSettings
   },
   null,
   { withRef: true }
@@ -200,13 +201,18 @@ class FaceEngineOutputContainer extends Component {
     closeAddToExistingEntityDialog: func,
     selectedEntityId: string,
     setSelectedEntityId: func,
-    hasLibraryAccess: bool
+    hasLibraryAccess: bool,
+    fetchUserSettings: func
   };
 
   state = {
     showFaceDetectionDoneSnack: false,
     faceDetectionDoneEntity: null
   };
+
+  componentDidMount() {
+    this.props.fetchUserSettings();
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const {
