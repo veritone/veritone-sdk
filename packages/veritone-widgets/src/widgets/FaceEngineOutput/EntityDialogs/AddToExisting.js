@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
-import {get, isUndefined} from 'lodash';
+import { get, isUndefined } from 'lodash';
 import cx from 'classnames';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,7 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
-import GroupIcon from "@material-ui/icons/Group";
+import GroupIcon from '@material-ui/icons/Group';
 import Downshift from 'downshift';
 import * as faceEngineOutput from '../../../redux/modules/mediaDetails/faceEngineOutput';
 import IdentifierSelector from './IdentifierSelector';
@@ -49,7 +49,10 @@ function renderInput(inputProps) {
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state),
     isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state),
-    acknowledgedCantAddIdentifiers: userModule.selectUserSettingByKey(state,'acknowledgedCantAddIdentifiers')
+    acknowledgedCantAddIdentifiers: userModule.selectUserSettingByKey(
+      state,
+      'acknowledgedCantAddIdentifiers'
+    )
   }),
   {
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
@@ -157,8 +160,15 @@ export default class AddToExistingEntityDialog extends Component {
 
   onNextClick = () => {
     const { selectedEntity } = this.state;
-    const { acknowledgedCantAddIdentifiers, onSubmit, currentlyEditedFaces } = this.props;
-    if (!get(selectedEntity, 'ownedByOrganization') && acknowledgedCantAddIdentifiers) {
+    const {
+      acknowledgedCantAddIdentifiers,
+      onSubmit,
+      currentlyEditedFaces
+    } = this.props;
+    if (
+      !get(selectedEntity, 'ownedByOrganization') &&
+      acknowledgedCantAddIdentifiers
+    ) {
       this.setState(
         {
           searchText: '',
@@ -172,7 +182,10 @@ export default class AddToExistingEntityDialog extends Component {
       );
     } else {
       this.setState({
-        displayUnownedEntityMessage: !get(selectedEntity, 'ownedByOrganization'),
+        displayUnownedEntityMessage: !get(
+          selectedEntity,
+          'ownedByOrganization'
+        ),
         selectingIdentifiers: true
       });
     }
@@ -197,7 +210,10 @@ export default class AddToExistingEntityDialog extends Component {
     });
   };
 
-  handleCreateIdentifiers = (selectedIdentifiers, saveAcknowledgedCantAddIdentifiers) => {
+  handleCreateIdentifiers = (
+    selectedIdentifiers,
+    saveAcknowledgedCantAddIdentifiers
+  ) => {
     const {
       createEntityIdentifiers,
       currentlyEditedFaces,
@@ -244,7 +260,7 @@ export default class AddToExistingEntityDialog extends Component {
         updateUserSetting({
           key: 'acknowledgedCantAddIdentifiers',
           value: new Date().toString()
-        })
+        });
       }
       this.setState(
         {
@@ -314,8 +330,8 @@ export default class AddToExistingEntityDialog extends Component {
                   root: styles.dialogHintText
                 }}
               >
-                Type the name of the person you are looking for below
-                and any matches from your library will be displayed.
+                Type the name of the person you are looking for below and any
+                matches from your library will be displayed.
               </DialogContentText>
               <Grid container direction="column" spacing={32}>
                 <Grid item>
@@ -383,9 +399,11 @@ export default class AddToExistingEntityDialog extends Component {
                                       tooltip: styles.unownedEntityTooltip
                                     }}
                                     title={
-                                      !isUndefined(result.ownedByOrganization) && !result.ownedByOrganization ?
-                                        'This person belongs to a shared library.' :
-                                        ''
+                                      !isUndefined(
+                                        result.ownedByOrganization
+                                      ) && !result.ownedByOrganization
+                                        ? 'This person belongs to a shared library.'
+                                        : ''
                                     }
                                     placement="top-start"
                                     key={`menu-entity-${result.id}`}
@@ -405,7 +423,16 @@ export default class AddToExistingEntityDialog extends Component {
                                         </div>
                                         <div className={styles.menuLibraryName}>
                                           {result.library.name}
-                                          {!isUndefined(result.ownedByOrganization) && !result.ownedByOrganization && <GroupIcon className={styles.unownedEntityIcon}/>}
+                                          {!isUndefined(
+                                            result.ownedByOrganization
+                                          ) &&
+                                            !result.ownedByOrganization && (
+                                              <GroupIcon
+                                                className={
+                                                  styles.unownedEntityIcon
+                                                }
+                                              />
+                                            )}
                                         </div>
                                       </div>
                                     </MenuItem>
@@ -442,11 +469,10 @@ export default class AddToExistingEntityDialog extends Component {
                       }}
                       onClick={this.onNextClick}
                     >
-                      {
-                        !get(this.state.selectedEntity, 'ownedByOrganization') && acknowledgedCantAddIdentifiers ?
-                          'Finish' :
-                          'Next'
-                      }
+                      {!get(this.state.selectedEntity, 'ownedByOrganization') &&
+                      acknowledgedCantAddIdentifiers
+                        ? 'Finish'
+                        : 'Next'}
                     </Button>
                   </Grid>
                 </Grid>
@@ -456,11 +482,16 @@ export default class AddToExistingEntityDialog extends Component {
           {this.state.selectingIdentifiers && (
             <IdentifierSelector
               identifiers={currentlyEditedFaces}
-              defaultSelectAll={get(this.state.selectedEntity, 'ownedByOrganization')}
+              defaultSelectAll={get(
+                this.state.selectedEntity,
+                'ownedByOrganization'
+              )}
               onConfirm={this.handleCreateIdentifiers}
               onCancel={this.handleBackClick}
               isCreatingIdentifiers={isCreatingIdentifiers}
-              userDoesNotOwnEntity={!get(this.state.selectedEntity, 'ownedByOrganization')}
+              userDoesNotOwnEntity={
+                !get(this.state.selectedEntity, 'ownedByOrganization')
+              }
               error={this.state.identifierError}
             />
           )}

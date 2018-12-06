@@ -886,7 +886,7 @@ export const createEntity = input => async (dispatch, getState) => {
   });
 };
 
-export const getEntityInLibrary = (input) => async (dispatch, getState) => {
+export const getEntityInLibrary = input => async (dispatch, getState) => {
   return await callGraphQLApi({
     actionTypes: [GET_ENTITY, GET_ENTITY_SUCCESS, GET_ENTITY_FAILURE],
     query: gqlQuery.getEntityInLibrary,

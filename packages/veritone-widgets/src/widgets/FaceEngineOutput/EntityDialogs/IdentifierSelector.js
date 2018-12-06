@@ -101,7 +101,10 @@ export default class IdentifierSelector extends Component {
   };
 
   handleFinishClick = () => {
-    this.props.onConfirm(this.state.selectedIdentifiers, this.state.dontShowWarning);
+    this.props.onConfirm(
+      this.state.selectedIdentifiers,
+      this.state.dontShowWarning
+    );
   };
 
   handleShowWarningChange = evt => {
@@ -145,7 +148,13 @@ export default class IdentifierSelector extends Component {
   };
 
   render() {
-    const { identifiers, onCancel, isCreatingIdentifiers, error, userDoesNotOwnEntity } = this.props;
+    const {
+      identifiers,
+      onCancel,
+      isCreatingIdentifiers,
+      error,
+      userDoesNotOwnEntity
+    } = this.props;
     const { selectedIdentifiers } = this.state;
     const columnWidth = 98,
       rowHeight = 90,
@@ -186,8 +195,12 @@ export default class IdentifierSelector extends Component {
               alignItems="center"
               className={styles.identifierOverlay}
             >
-              <Grid item><WarningIcon className={styles.warningIcon}/></Grid>
-              <Grid item className={styles.warningText}>Image Assignment Not Allowed</Grid>
+              <Grid item>
+                <WarningIcon className={styles.warningIcon} />
+              </Grid>
+              <Grid item className={styles.warningText}>
+                Image Assignment Not Allowed
+              </Grid>
               <Grid item className={styles.warningDescription}>
                 The person you have selected belongs to a shared library which
                 cannot be modified. Adding additional images is not allowed.
