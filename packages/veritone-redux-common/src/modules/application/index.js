@@ -139,7 +139,6 @@ export function failedToFetchApplications(state) {
 
 export function getContextMenuExtensions(state) {
   const applicationsById = getApplications(state);
-
   const contextMenuExtensions = Object.values(applicationsById).reduce(
     (accumulator, currentVal) => {
 
@@ -163,6 +162,6 @@ export function getContextMenuExtensions(state) {
     },
     { tdos: [], mentions: [] }
   );
-
+  console.log(contextMenuExtensions)
   return contextMenuExtensions;
 }

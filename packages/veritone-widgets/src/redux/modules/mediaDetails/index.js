@@ -53,6 +53,9 @@ export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAI
 export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
 export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE`;
 export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
+export const HANDLE_CME_SAGA = `${namespace}_CLICK_CME_SAGA`;
+export const SHOW_TOAST = `${namespace}_SHOW_TOAST`
+
 
 const defaultMDPState = {
   engineCategories: [],
@@ -999,6 +1002,15 @@ export const emitEntityUpdatedEventFailure = error => ({
   type: EMIT_ENTITY_UPDATED_EVENT_FAILURE,
   meta: { error }
 });
+
+export const handleCMESaga = (cme, tdoId) => {
+  console.log("action handle cme saga");
+  return (
+    ({
+      type: HANDLE_CME_SAGA,
+      payload: { cme, tdoId }
+    }))
+}
 
 export const createQuickExport = (
   tdoId,

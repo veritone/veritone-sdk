@@ -1,4 +1,6 @@
 import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -17,6 +19,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
+import GlobalSnackBar from '../Notifications/GlobalSnackBar'
+import * as notificationsModule from '../../redux/modules/notifications';
+
+
 import {
   bool,
   func,
@@ -74,8 +80,16 @@ import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
 
-const saga = util.reactReduxSaga.saga;
+const snackbarStyle = {
+  errSnackBar: {
+    background: 'rgba(255, 0, 0, 0.918)'
+  },
+  successSnackBar: {
+    background: 'rgba(0, 128, 0, 0.918)'
+  }
+};
 
+const saga = util.reactReduxSaga.saga;
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
@@ -83,6 +97,8 @@ const programLiveImageNullState =
   id: id || guid()
 }))
 @saga(rootSaga)
+
+// @withStyles(snackbarStyle)
 @connect(
   (state, { id, mediaId }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
@@ -143,7 +159,8 @@ const programLiveImageNullState =
       state,
       'downloadPublicMedia'
     ),
-    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia')
+    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia'),
+    snackbarMessage: notificationsModule.selectSnackbarNotificationState(state).message
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -161,7 +178,8 @@ const programLiveImageNullState =
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
     createQuickExport: mediaDetailsModule.createQuickExport,
-    cancelEdit: mediaDetailsModule.cancelEdit
+    cancelEdit: mediaDetailsModule.cancelEdit,
+    handleCMESaga: mediaDetailsModule.handleCMESaga
   },
   null,
   { withRef: true }
@@ -671,7 +689,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleContextMenuClick = cme => {
-    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+    console.log(cme)
+    console.log("go from link")
+    if(cme.url) {
+      // window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+    }
+    this.props.handleCMESaga(cme, this.props.tdo.id);
   };
 
   showEditButton = () => {
@@ -918,10 +941,15 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit
+      cancelEdit,
+      snackbarMessage,
+      classes
     } = this.props;
 
+    console.log(this.props)
     const { isMenuOpen } = this.state;
+
+    const snackbarColor = snackbarMessage === 'Something went wrong' ? classes.errSnackBar : classes.successSnackBar
 
     // Filter out any categories that should be combined with another category
     const {
@@ -1556,9 +1584,15 @@ class MediaDetailsWidget extends React.Component {
               onCancel={this.closeEngineOutputExport}
             />
           )}
+          <GlobalSnackBar 
+            ContentProps={{
+              classes: {
+                root: snackbarColor
+              }
+            }}/>
       </Dialog>
     );
   }
 }
 
-export default widget(MediaDetailsWidget);
+export default withStyles(snackbarStyle)(widget(MediaDetailsWidget));
