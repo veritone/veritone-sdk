@@ -162,6 +162,5 @@ export function getContextMenuExtensions(state) {
     },
     { tdos: [], mentions: [] }
   );
-  console.log(contextMenuExtensions)
   return contextMenuExtensions;
 }
