@@ -896,8 +896,6 @@ function* watchRestoreOriginalEngineResults() {
 
 
 function* handleCMESaga(cme, tdoId) {
-  console.log("handle cme saga");
-  console.log(cme)
   const { applicationId: appId, label: actionName } = cme
   // call graphql
   const config = yield select(configModule.getConfig);
@@ -920,13 +918,10 @@ function* handleCMESaga(cme, tdoId) {
     variables: { input },
     token
   });
-  console.log(response)
   if (!get(response, 'data.emitEvent.id') || get(response, 'errors.length')) {
-    console.log('call failed')
-    return yield put(showNotification('Something went wrong'));
+    yield put(showNotification('Something went wrong'));
   } else {
-    console.log('call success');
-    return yield put(showNotification(`Action ${actionName} was initiated`));
+    yield put(showNotification(`Action ${actionName} was initiated`));
   }
 }
 
@@ -967,7 +962,6 @@ function* emitEntityUpdatedEvent(tdoId) {
 
 function* watchHandleCMEEvent() {
   yield takeEvery(HANDLE_CME_SAGA, function* (action) {
-    console.log("watch")
     const { cme, tdoId } = action.payload;
     yield* handleCMESaga(cme, tdoId);
   })

@@ -87,7 +87,7 @@ const programLiveImageNullState =
 
 @connect(
   (state, { id, mediaId }) => ({
-    engineCategories: mediaDetailsModule.getEnginehandleCCategories(state, id),
+    engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
@@ -380,7 +380,9 @@ class MediaDetailsWidget extends React.Component {
     bulkEditEnabled: bool,
     publicMediaDownloadEnabled: bool,
     downloadMediaEnabled: bool,
-    cancelEdit: func
+    cancelEdit: func,
+    handleCMESaga: func,
+    snackbarMessage: string
   };
 
   static contextTypes = {
@@ -395,12 +397,15 @@ class MediaDetailsWidget extends React.Component {
   state = {
     isMenuOpen: false,
     selectedTabValue: 'mediaDetails',
-    engineOutputExportOpen: false
+    engineOutputExportOpen: false,
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
+    this.setState({
+      isClickCME: false
+    })
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -675,12 +680,13 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleContextMenuClick = cme => {
-    console.log(cme)
-    console.log("go from link")
     if(cme.url) {
       window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
     }
     this.props.handleCMESaga(cme, this.props.tdo.id);
+    this.setState({
+      isClickCME: true
+    })
   };
 
   showEditButton = () => {
@@ -931,8 +937,7 @@ class MediaDetailsWidget extends React.Component {
       snackbarMessage,
     } = this.props;
 
-    console.log(this.props)
-    const { isMenuOpen } = this.state;
+    const { isMenuOpen, isClickCME } = this.state;
 
     const snackbarStyle = snackbarMessage === 'Something went wrong' ? styles.errSnackBar : styles.successSnackBar
 
@@ -1569,9 +1574,12 @@ class MediaDetailsWidget extends React.Component {
               onCancel={this.closeEngineOutputExport}
             />
           )}
-          <GlobalSnackBar 
+          {isClickCME && 
+            <GlobalSnackBar 
             className={snackbarStyle}
-          />
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            /> 
+          }
       </Dialog>
     );
   }
