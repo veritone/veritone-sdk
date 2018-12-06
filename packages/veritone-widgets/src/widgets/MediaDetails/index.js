@@ -59,6 +59,7 @@ import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './MoreMenuItems';
+import DatasetAdder from '../DatasetAdder';
 import EditHeader from './Headers/EditHeader';
 import { modules, util } from 'veritone-redux-common';
 const {
@@ -746,6 +747,18 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  handleAddDatasetClick = () => {
+    this.setState({
+      showDatasetAdder: true
+    });
+  }
+
+  handleDatasetAdderExit = () => {
+    this.setState({
+      showDatasetAdder: false
+    });
+  }
+
   onRestoreOriginalClick = () => {
     this.props.openConfirmModal(this.props.id, {
       title: 'Reset to Original',
@@ -896,6 +909,7 @@ class MediaDetailsWidget extends React.Component {
 
   render() {
     let {
+      kvp,
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
@@ -921,7 +935,7 @@ class MediaDetailsWidget extends React.Component {
       cancelEdit
     } = this.props;
 
-    const { isMenuOpen } = this.state;
+    const { isMenuOpen, showDatasetAdder } = this.state;
 
     // Filter out any categories that should be combined with another category
     const {
@@ -1182,6 +1196,16 @@ class MediaDetailsWidget extends React.Component {
                                           </MenuItem>
                                         )
                                       )}
+                                    {
+                                      (get(kvp, 'feature.dataset') === 'enabled') &&
+                                      <MenuItem
+                                        key="btnDataset"
+                                        classes={{ root: styles.headerMenuItem }}
+                                        onClick={this.handleAddDatasetClick}
+                                      >
+                                        Add to Dataset Library
+                                      </MenuItem>
+                                    }
                                   </MenuList>
                                 </Paper>
                               </Grow>
@@ -1210,7 +1234,13 @@ class MediaDetailsWidget extends React.Component {
                     </IconButton>
                   </div>
                 </div>
-
+                {
+                  (get(kvp, 'feature.dataset') === 'enabled') && showDatasetAdder &&
+                  <DatasetAdder
+                    tdoIds={[tdo.id]}
+                    onClose={this.handleDatasetAdderExit}
+                  />
+                }
                 {isLoadingTdo && (
                   <div className={styles.tdoLoadingProgress}>
                     <CircularProgress size={80} color="primary" thickness={1} />
