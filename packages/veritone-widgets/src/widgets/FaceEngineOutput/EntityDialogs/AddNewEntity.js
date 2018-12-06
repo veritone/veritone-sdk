@@ -27,6 +27,7 @@ import styles from './styles.scss';
     libraries: faceEngineOutput.getLibraries(state),
     currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state),
     isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state),
+    isCreatingEntity: faceEngineOutput.isCreatingEntity(state),
     initialEntityName: faceEngineOutput.getInitialEntityName(state),
     faceLibraryTypes: faceEngineOutput.getLibraryTypesByIdentifierType(
       state,
@@ -59,6 +60,7 @@ export default class AddNewEntityDialog extends Component {
     isFetchingLibraries: bool,
     isFetchingLibraryTypes: bool,
     createEntity: func,
+    isCreatingEntity: bool,
     onSubmit: func.isRequired,
     onCancel: func.isRequired,
     currentlyEditedFaces: arrayOf(
@@ -130,7 +132,8 @@ export default class AddNewEntityDialog extends Component {
               selectingIdentifiers: true,
               cachedEntityInfo: {
                 ...formData
-              }
+              },
+              identifierError: null
             });
           }
           return res;
@@ -147,7 +150,8 @@ export default class AddNewEntityDialog extends Component {
   handleBackClick = () => {
     this.setState({
       configuringNewLibrary: false,
-      selectingIdentifiers: false
+      selectingIdentifiers: false,
+      identifierError: null
     });
   };
 
@@ -164,29 +168,28 @@ export default class AddNewEntityDialog extends Component {
       newEntityResponse = await createEntity({
         ...cachedEntityInfo,
         profileImageUrl: removeAwsSignatureParams(
-          get(selectedIdentifiers, '[0].object.uri')
+          get(currentlyEditedFaces, '[0].object.uri')
         )
       });
     } catch (e) {
       this.setState({
-        configuringNewLibrary: false,
-        selectingIdentifiers: false,
-        cachedEntityInfo: null,
         identifierError: 'Unable to create entity. Please try again later.'
       });
     }
     const newEntity = get(newEntityResponse, 'entity');
-    if (newEntity.id) {
+    if (newEntity && newEntity.id) {
       try {
-        await createEntityIdentifiers(
-          selectedIdentifiers.map(face => ({
-            entityId: newEntity.id,
-            identifierTypeId: 'face',
-            contentType: 'image',
-            url: get(face, 'object.uri'),
-            isPriority: false
-          }))
-        );
+        if (get(selectedIdentifiers, 'length')) {
+          await createEntityIdentifiers(
+            selectedIdentifiers.map(face => ({
+              entityId: newEntity.id,
+              identifierTypeId: 'face',
+              contentType: 'image',
+              url: get(face, 'object.uri'),
+              isPriority: false
+            }))
+          );
+        }
         this.setState(
           {
             selectedLibraryId: null,
@@ -262,7 +265,8 @@ export default class AddNewEntityDialog extends Component {
       currentlyEditedFaces,
       isCreatingIdentifiers,
       initialEntityName,
-      faceLibraryTypes
+      faceLibraryTypes,
+      isCreatingEntity
     } = this.props;
     const initialLibraryId =
       this.state.selectedLibraryId || get(libraries, '[0].id');
@@ -360,6 +364,7 @@ export default class AddNewEntityDialog extends Component {
                     onConfirm={this.handleCreateIdentifiers}
                     onCancel={this.handleBackClick}
                     isCreatingIdentifiers={isCreatingIdentifiers}
+                    isCreatingEntity={isCreatingEntity}
                     error={this.state.identifierError}
                   />
                 )}

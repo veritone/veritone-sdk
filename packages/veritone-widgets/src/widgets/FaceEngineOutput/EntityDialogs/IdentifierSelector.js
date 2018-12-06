@@ -30,7 +30,8 @@ export default class IdentifierSelector extends Component {
     defaultSelectAll: bool,
     isCreatingIdentifiers: bool,
     userDoesNotOwnEntity: bool,
-    error: string
+    error: string,
+    isCreatingEntity: bool
   };
 
   state = {
@@ -152,6 +153,7 @@ export default class IdentifierSelector extends Component {
       identifiers,
       onCancel,
       isCreatingIdentifiers,
+      isCreatingEntity,
       error,
       userDoesNotOwnEntity
     } = this.props;
@@ -169,7 +171,7 @@ export default class IdentifierSelector extends Component {
           wrap="nowrap"
           className={styles.identifierSelector}
         >
-          {isCreatingIdentifiers && (
+          {(isCreatingIdentifiers || isCreatingEntity) && (
             <Grid
               item
               container
@@ -292,7 +294,7 @@ export default class IdentifierSelector extends Component {
               data-veritone-element="back-button"
               classes={{ root: styles.entityDialogButton }}
               onClick={onCancel}
-              disabled={isCreatingIdentifiers}
+              disabled={isCreatingIdentifiers || isCreatingEntity}
             >
               Back
             </Button>
@@ -301,7 +303,7 @@ export default class IdentifierSelector extends Component {
               data-veritone-element="finish-button"
               classes={{ root: styles.entityDialogButton }}
               onClick={this.handleFinishClick}
-              disabled={isCreatingIdentifiers}
+              disabled={isCreatingIdentifiers || isCreatingEntity}
             >
               Finish
             </Button>

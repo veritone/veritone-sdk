@@ -186,7 +186,8 @@ export default class AddToExistingEntityDialog extends Component {
           selectedEntity,
           'ownedByOrganization'
         ),
-        selectingIdentifiers: true
+        selectingIdentifiers: true,
+        identifierError: null
       });
     }
   };
@@ -196,7 +197,8 @@ export default class AddToExistingEntityDialog extends Component {
       {
         searchText: '',
         selectedEntity: null,
-        selectingIdentifiers: false
+        selectingIdentifiers: false,
+        identifierError: null
       },
       () => {
         this.props.onClose();
@@ -206,7 +208,8 @@ export default class AddToExistingEntityDialog extends Component {
 
   handleBackClick = () => {
     this.setState({
-      selectingIdentifiers: false
+      selectingIdentifiers: false,
+      identifierError: null
     });
   };
 
@@ -221,7 +224,7 @@ export default class AddToExistingEntityDialog extends Component {
       updateUserSetting
     } = this.props;
     const { selectedEntity } = this.state;
-    if (get(selectedEntity, 'ownedByOrganization')) {
+    if (get(selectedEntity, 'ownedByOrganization') && get(selectedIdentifiers, 'length')) {
       createEntityIdentifiers(
         selectedIdentifiers.map(face => {
           return {

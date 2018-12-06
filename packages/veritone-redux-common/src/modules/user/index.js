@@ -355,7 +355,7 @@ export function fetchEnabledApps() {
 export const fetchUserSettings = () => async (dispatch, getState) => {
   const query = `
       query {
-        met {
+        me {
           userSettings {
             key
             value
