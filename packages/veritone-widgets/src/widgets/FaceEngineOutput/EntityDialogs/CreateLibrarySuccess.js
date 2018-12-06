@@ -45,7 +45,7 @@ const CreateLibrarySuccess = ({
           }}
           data-veritone-element="create-new-entity-button"
         >
-          Create New Entity
+          Create A New Person
         </Button>
       </Grid>
     </Grid>

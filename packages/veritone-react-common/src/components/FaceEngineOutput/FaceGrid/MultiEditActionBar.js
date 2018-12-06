@@ -59,7 +59,7 @@ const MultiEditActionBar = ({
               disableLibraryButtons ? '-disabled' : ''
             }`}
           >
-            <Tooltip title="Add to an Existing Entity" placement="bottom-start">
+            <Tooltip title="Add Images to an Existing Person" placement="bottom-start">
               <Icon className={cx('icon-existing-entity', styles.entityIcon)} />
             </Tooltip>
           </IconButton>
@@ -71,7 +71,7 @@ const MultiEditActionBar = ({
               disableLibraryButtons ? '-disabled' : ''
             }`}
           >
-            <Tooltip title="Create New Entity" placement="bottom-start">
+            <Tooltip title="Create a New Person" placement="bottom-start">
               <Icon className={cx('icon-new-entity', styles.entityIcon)} />
             </Tooltip>
           </IconButton>

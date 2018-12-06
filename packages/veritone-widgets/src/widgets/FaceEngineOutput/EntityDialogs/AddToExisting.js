@@ -238,11 +238,11 @@ export default class AddToExistingEntityDialog extends Component {
           }}
         >
           <div className={styles.dialogTitleLabel}>
-            Add to an Existing Entity
+            Assign a Person to the Images You Selected
           </div>
           <IconButton
             onClick={this.handleCancel}
-            aria-label="Close Add to an Existing Entity"
+            aria-label="Close Add to an Existing Person"
             classes={{
               root: styles.closeButton
             }}
@@ -265,7 +265,8 @@ export default class AddToExistingEntityDialog extends Component {
                   root: styles.dialogHintText
                 }}
               >
-                Type the name of the person you are looking for.
+                Type the name of the person you are looking for below
+                and any matches from your library will be displayed.
               </DialogContentText>
               <Grid container direction="column" spacing={32}>
                 <Grid item>
@@ -285,14 +286,17 @@ export default class AddToExistingEntityDialog extends Component {
                           {renderInput({
                             fullWidth: true,
                             classes: {
-                              inputField: styles.inputField,
                               entityInputLabel: styles.entityInputLabel
                             },
                             label: 'Name',
                             InputProps: getInputProps({
                               onChange: this.handleSearchEntities,
                               id: 'entity-search-text-field',
-                              autoFocus: true
+                              autoFocus: true,
+                              classes: {
+                                root: styles.inputField
+                              },
+                              placeholder: 'First or Last Name'
                             }),
                             'data-veritone-element': 'entity-search-input'
                           })}
@@ -324,25 +328,39 @@ export default class AddToExistingEntityDialog extends Component {
                               {!!entitySearchResults.length &&
                                 !isSearchingEntities &&
                                 entitySearchResults.map(result => (
-                                  <MenuItem
+                                  <Tooltip
+                                    id="unownedEntityTooltip"
+                                    classes={{
+                                      tooltip: styles.unownedEntityTooltip
+                                    }}
+                                    title={
+                                      !isUndefined(result.ownedByOrganization) && !result.ownedByOrganization ?
+                                        'This person belongs to a shared library.' :
+                                        ''
+                                    }
+                                    placement="top-start"
                                     key={`menu-entity-${result.id}`}
-                                    component="div"
-                                    classes={{ root: styles.entityMenuItem }}
-                                    onClick={this.handleSelectEntity(result)}
                                   >
-                                    <Avatar src={result.profileImageUrl} />
-                                    <div className={styles.entityInfo}>
-                                      <div className={styles.menuEntityName}>
-                                        {this.getEntityNameElement(
-                                          result.name,
-                                          this.state.searchText
-                                        )}
+                                    <MenuItem
+                                      component="div"
+                                      classes={{ root: styles.entityMenuItem }}
+                                      onClick={this.handleSelectEntity(result)}
+                                    >
+                                      <Avatar src={result.profileImageUrl} />
+                                      <div className={styles.entityInfo}>
+                                        <div className={styles.menuEntityName}>
+                                          {this.getEntityNameElement(
+                                            result.name,
+                                            this.state.searchText
+                                          )}
+                                        </div>
+                                        <div className={styles.menuLibraryName}>
+                                          {result.library.name}
+                                          {!isUndefined(result.ownedByOrganization) && !result.ownedByOrganization && <GroupIcon className={styles.unownedEntityIcon}/>}
+                                        </div>
                                       </div>
-                                      <div className={styles.menuLibraryName}>
-                                        {result.library.name}
-                                      </div>
-                                    </div>
-                                  </MenuItem>
+                                    </MenuItem>
+                                  </Tooltip>
                                 ))}
                             </div>
                             {!isSearchingEntities &&
@@ -375,7 +393,11 @@ export default class AddToExistingEntityDialog extends Component {
                       }}
                       onClick={this.onNextClick}
                     >
-                      Next
+                      {
+                        !get(this.state.selectedEntity, 'ownedByOrganization') && acknowledgedCantAddIdentifiers ?
+                          'Finish' :
+                          'Next'
+                      }
                     </Button>
                   </Grid>
                 </Grid>

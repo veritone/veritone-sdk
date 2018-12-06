@@ -284,7 +284,7 @@ export default class AddNewEntityDialog extends Component {
             {!this.state.configuringNewLibrary &&
               !this.state.showLibraryCreationSuccess &&
               get(libraries, 'length') > 0 &&
-              'Create New Entity'}
+              'Create New Person'}
             {(this.state.configuringNewLibrary ||
               this.state.showLibraryCreationSuccess) &&
               'Create New Library'}
