@@ -967,6 +967,7 @@ function* emitEntityUpdatedEvent(tdoId) {
 
 function* watchHandleCMEEvent() {
   yield takeEvery(HANDLE_CME_SAGA, function* (action) {
+    console.log("watch")
     const { cme, tdoId } = action.payload;
     yield* handleCMESaga(cme, tdoId);
   })

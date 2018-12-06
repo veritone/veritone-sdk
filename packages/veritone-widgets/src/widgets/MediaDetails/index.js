@@ -1,6 +1,4 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -21,8 +19,6 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import GlobalSnackBar from '../Notifications/GlobalSnackBar'
 import * as notificationsModule from '../../redux/modules/notifications';
-
-
 import {
   bool,
   func,
@@ -80,15 +76,6 @@ import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
 
-const snackbarStyle = {
-  errSnackBar: {
-    background: 'rgba(255, 0, 0, 0.918)'
-  },
-  successSnackBar: {
-    background: 'rgba(0, 128, 0, 0.918)'
-  }
-};
-
 const saga = util.reactReduxSaga.saga;
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
@@ -98,10 +85,9 @@ const programLiveImageNullState =
 }))
 @saga(rootSaga)
 
-// @withStyles(snackbarStyle)
 @connect(
   (state, { id, mediaId }) => ({
-    engineCategories: mediaDetailsModule.getEngineCategories(state, id),
+    engineCategories: mediaDetailsModule.getEnginehandleCCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
@@ -692,7 +678,7 @@ class MediaDetailsWidget extends React.Component {
     console.log(cme)
     console.log("go from link")
     if(cme.url) {
-      // window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+      window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
     }
     this.props.handleCMESaga(cme, this.props.tdo.id);
   };
@@ -943,13 +929,12 @@ class MediaDetailsWidget extends React.Component {
       bulkEditEnabled,
       cancelEdit,
       snackbarMessage,
-      classes
     } = this.props;
 
     console.log(this.props)
     const { isMenuOpen } = this.state;
 
-    const snackbarColor = snackbarMessage === 'Something went wrong' ? classes.errSnackBar : classes.successSnackBar
+    const snackbarStyle = snackbarMessage === 'Something went wrong' ? styles.errSnackBar : styles.successSnackBar
 
     // Filter out any categories that should be combined with another category
     const {
@@ -1585,14 +1570,11 @@ class MediaDetailsWidget extends React.Component {
             />
           )}
           <GlobalSnackBar 
-            ContentProps={{
-              classes: {
-                root: snackbarColor
-              }
-            }}/>
+            className={snackbarStyle}
+          />
       </Dialog>
     );
   }
 }
 
-export default withStyles(snackbarStyle)(widget(MediaDetailsWidget));
+export default widget(MediaDetailsWidget);

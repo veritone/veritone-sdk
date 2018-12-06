@@ -291,3 +291,11 @@
     margin: 0 0 0 15px;
   }
 }
+
+.errSnackBar > div {
+  background-color: rgba(255, 0, 0, 0.918)
+}
+
+.successSnackBar > div {
+  background-color: rgba(0, 128, 0, 0.918)
+}
