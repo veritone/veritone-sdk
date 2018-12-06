@@ -47,7 +47,7 @@ const connectWrapper = connect(
 class DatasetAdder extends React.Component {
   static propTypes = {
     tdoIds: arrayOf(string).isRequired,
-    onClosed: func,
+    onClose: func,
 
     addDatasetTitle: string,
     libraries: arrayOf(
@@ -180,7 +180,9 @@ class DatasetAdder extends React.Component {
   }
 
   handleExited = () => {
-    this.props.onClosed && this.props.onClosed();
+    const { onClose, resetTdos } = this.props;
+    resetTdos && resetTdos();
+    onClose && onClose();
   }
 
   //----Error Handlers----
