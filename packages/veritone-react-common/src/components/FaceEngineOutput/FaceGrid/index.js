@@ -151,7 +151,7 @@ class FaceGrid extends Component {
     }
     const selectedFace = find(selectedFaces, { guid: face.guid });
     return (
-      <div style={style} key={`${key}-${face.guid}`}>
+      <div style={style} key={face.guid}>
         <FaceInfoBox
           isSelected={!!selectedFace}
           onCheckboxClicked={this.handleSingleFaceSelect}
