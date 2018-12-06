@@ -36,4 +36,4 @@ export IngestionJobsList from './widgets/IngestionJobsList';
 export IngestionAdapters from './widgets/IngestionAdapters';
 export { SchedulerWidget } from './widgets/Scheduler';
 export ProgramInfo from './widgets/ProgramInfo';
-export { DatasetAdderWidget } from './widgets/DatasetAdder';
+export DatasetAdder, { DatasetAdderWidget } from './widgets/DatasetAdder';
