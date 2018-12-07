@@ -1335,14 +1335,15 @@ class MediaDetailsWidget extends React.Component {
                     'correlation' && isExpandedMode
                 ) && (
                   <div className={styles.mediaView}>
-                    {!this.getPrimaryAssetUri() && (
-                      <Image
-                        src={programLiveImageNullState}
-                        width="450px"
-                        height="250px"
-                        type="contain"
-                      />
-                    )}
+                    {!this.getPrimaryAssetUri() &&
+                      !get(this.props, 'tdo.streams.length') && (
+                        <Image
+                          src={programLiveImageNullState}
+                          width="450px"
+                          height="250px"
+                          type="contain"
+                        />
+                      )}
                     {isImage &&
                       !!this.getPrimaryAssetUri() && (
                         <Image
@@ -1353,7 +1354,8 @@ class MediaDetailsWidget extends React.Component {
                         />
                       )}
                     {!isImage &&
-                      !!this.getPrimaryAssetUri() && (
+                      (!!this.getPrimaryAssetUri() ||
+                        !!get(this.props, 'tdo.streams.length')) && (
                         <MediaPlayer
                           fluid={false}
                           width={450}
