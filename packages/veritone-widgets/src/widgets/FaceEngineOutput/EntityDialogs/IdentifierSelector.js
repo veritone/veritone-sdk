@@ -201,11 +201,12 @@ export default class IdentifierSelector extends Component {
                 <WarningIcon className={styles.warningIcon} />
               </Grid>
               <Grid item className={styles.warningText}>
-                Image Assignment Not Allowed
+                Cannot Add Images to a Shared Library
               </Grid>
               <Grid item className={styles.warningDescription}>
-                The person you have selected belongs to a shared library which
-                cannot be modified. Adding additional images is not allowed.
+                This shared library is owned by another organization and cannot
+                be modified. Selected images will be moved to Face Recognition
+                tab only.
               </Grid>
             </Grid>
           )}
