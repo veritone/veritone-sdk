@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bool, func } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
-import { boolean, number } from '@storybook/addon-knobs/react';
+import { boolean, number, select } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
 import EngineOutputNullState from '../EngineOutputNullState';
@@ -76,11 +76,9 @@ export class TranscriptExample extends Component {
       props.lazyLoading,
       genSpeaker
     );
-    const mockViewTypeId = genSpeaker ? 'speaker-view' : 'transcript-view';
     this.state = {
       data: mockData,
-      speakerData: mockSpeakerData,
-      viewTypeId: mockViewTypeId
+      speakerData: mockSpeakerData
     };
   }
 
@@ -123,11 +121,11 @@ export class TranscriptExample extends Component {
     return (
       <TranscriptEngineOutput
         editMode={boolean('Edit Mode', false)}
-        onChange={action('on change')}
+        selectedCombineViewTypeId={select('View Type', mockViewTypes, mockViewTypes[0])}
+        onChange={mockOnChange}
         onEditTypeChange={this.props.onEditTypeChange}
         data={this.state.data}
         speakerData={this.state.speakerData}
-        selectedCombineViewTypeId={this.state.viewTypeId}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
         mediaPlayerTimeIntervalMs={
@@ -137,7 +135,7 @@ export class TranscriptExample extends Component {
         neglectableTimeMs={2000}
         estimatedDisplayTimeMs={1500000}
         onScroll={this.handleDataRequesting}
-        onClick={action('on click')}
+        onClick={mockOnClick}
         engines={this.engines}
         selectedEngineId={this.selectedEngineId}
         onEngineChange={action('engine changed')}
@@ -154,6 +152,14 @@ export class TranscriptExample extends Component {
       />
     );
   }
+}
+
+function mockOnChange(event, newContent) {
+  console.log(newContent);
+}
+
+function mockOnClick(startTimeMs, stopTimeMs) {
+  console.log(startTimeMs, stopTimeMs);
 }
 
 function genMockData(
@@ -174,7 +180,7 @@ function genMockData(
   for (let chunkIndex = 0; chunkIndex < numDataChunks; chunkIndex++) {
     const chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
 
-    const isBadSerie = Math.random() < badSerieRatio;
+    const isBadSerie = false; //Math.random() < badSerieRatio;
     const series = genMockSerie(
       chunkStartTime,
       chunkStoptime,
@@ -377,6 +383,11 @@ const speakerTags = [
   'B',
   'C',
   'D'
+];
+
+const mockViewTypes = [
+  'speaker-view',
+  'transcript-view'
 ];
 
 function guid() {

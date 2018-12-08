@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, reduce, isArray } from 'lodash';
+import { orderBy, reduce, isArray, get, includes } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -12,6 +12,7 @@ import OverviewSegment from '../TranscriptSegment/OverviewSegment';
 import TranscriptBulkEdit from '../TranscriptBulkEdit';
 import { View, Edit } from '../TranscriptContent';
 import SpeakerPill from '../SpeakerPill';
+import EditableWrapper from '../ContentEditableWrapper/EditableWrapper';
 
 import styles from './styles.scss';
 
@@ -67,7 +68,9 @@ export default class SpeakerTranscriptContent extends Component {
     estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+
+    selectedCombineViewTypeId: string
   };
 
   static defaultProps = {
@@ -78,13 +81,13 @@ export default class SpeakerTranscriptContent extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
-  handleOnClick = (target, value) => {
+  handleOnClick = (event, seriesObject) => {
     this.props.onClick &&
-      this.props.onClick(value.startTimeMs, value.stopTimeMs);
+      this.props.onClick(seriesObject.startTimeMs, seriesObject.stopTimeMs);
   };
 
-  handleDataChanged = value => {
-    this.props.onChange && this.props.onChange(value);
+  handleDataChanged = (event, newContent) => {
+    this.props.onChange && this.props.onChange(event, newContent);
   };
 
   // totalTranscriptSegments will be mutated. This function picks off the first element
@@ -137,13 +140,22 @@ export default class SpeakerTranscriptContent extends Component {
     let overviewStatus = undefined;
 
     const saveOverviewData = () => {
+      const wordGuidMap = overviewParts.reduce((acc, entry, index) => {
+        acc[entry.guid] = {
+          index,
+          serie: entry
+        }
+        return acc;
+      }, {});
+
       //---Save Previous Overview Data---
       overviewSegments.push({
         startTimeMs: overviewStartTime,
         stopTimeMs: overviewStopTime,
         status: overviewStatus,
         sentences: overviewSentences,
-        fragments: overviewParts.concat([])
+        fragments: overviewParts.slice(),
+        wordGuidMap
       });
       //---Reset Overview Data to Handle New Status---
       overviewStatus = undefined;
@@ -299,9 +311,11 @@ export default class SpeakerTranscriptContent extends Component {
     });
 
     // Speaker Data
-    this.props.speakerData.forEach(chunk => {
-      speakerSegments = speakerSegments.concat(chunk.series);
-    });
+    if (isArray(this.props.speakerData)){
+      this.props.speakerData.forEach(chunk => {
+        speakerSegments = speakerSegments.concat(chunk.series);
+      });
+    }
 
     saveOverviewData();
 
@@ -318,7 +332,8 @@ export default class SpeakerTranscriptContent extends Component {
       editMode,
       viewType,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      selectedCombineViewTypeId
     } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
@@ -329,75 +344,104 @@ export default class SpeakerTranscriptContent extends Component {
       totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
     });
 
-    const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
-      const nextSpeaker = speakerSeries[index + 1];
-      const speakerStartTime = speakerSegment.startTimeMs;
-      const speakerStopTime = speakerSegment.stopTimeMs;
-      const fragments = this.allocateSpeakerTranscripts(
-        totalTranscriptSegmentData,
-        speakerSegment,
-        nextSpeaker
-      );
+    if (selectedCombineViewTypeId === 'speaker-view') {
+      const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
+        const nextSpeaker = speakerSeries[index + 1];
+        const speakerStartTime = speakerSegment.startTimeMs;
+        const speakerStopTime = speakerSegment.stopTimeMs;
+        const fragments = this.allocateSpeakerTranscripts(
+          totalTranscriptSegmentData,
+          speakerSegment,
+          nextSpeaker
+        );
 
-      const filteredSpeakerSegmentDataWrapper = { fragments };
+        const filteredSpeakerSegmentDataWrapper = { fragments };
 
-      const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-      const speakerTimingStart = format(speakerStartTime, timeFormat);
-      const speakerTimingStop = format(speakerStopTime, timeFormat);
+        const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+        const speakerTimingStart = format(speakerStartTime, timeFormat);
+        const speakerTimingStop = format(speakerStopTime, timeFormat);
 
-      const speakerGridKey = `speaker-edit-row-${speakerSegment.guid}`;
+        const speakerGridKey = `speaker-edit-row-${speakerSegment.guid}`;
 
-      const segmentContent = (
-        <Grid container key={speakerGridKey}>
-          <Grid item
-            xs={4}
-            sm={3}
-            md={2}
-            lg={1}
-            xl={1}
-          >
-            <SpeakerPill
-              speakerSegment={speakerSegment}
-              onClick={this.handleOnClick}
-              startMediaPlayHeadMs={mediaPlayerTimeMs}
-              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            />
-          </Grid>
-          <Grid item xs sm md lg xl>
-            <span className={styles.speakerStartTimeLabel}>
-              {`${speakerTimingStart} - ${speakerTimingStop}`}
-            </span>
-            {
-              <SnippetSegment
-                key={'transcript-speaker-snippet' + speakerStartTime}
-                content={filteredSpeakerSegmentDataWrapper}
-                editMode={editMode}
-                showSegmentTime={viewType == View.TIME}
-                onChange={this.handleDataChanged}
+        const segmentContent = (
+          <Grid container key={speakerGridKey}>
+            <Grid item
+              xs={4}
+              sm={3}
+              md={2}
+              lg={1}
+              xl={1}
+            >
+              <SpeakerPill
+                speakerSegment={speakerSegment}
                 onClick={this.handleOnClick}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}
                 stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                classNames={classNames(styles.contentSegment)}
               />
-            }
+            </Grid>
+            <Grid item xs sm md lg xl>
+              <span className={styles.speakerStartTimeLabel}>
+                {`${speakerTimingStart} - ${speakerTimingStop}`}
+              </span>
+              {
+                <SnippetSegment
+                  key={'transcript-speaker-snippet' + speakerStartTime}
+                  content={filteredSpeakerSegmentDataWrapper}
+                  editMode={editMode}
+                  showSegmentTime={viewType == View.TIME}
+                  onChange={this.handleDataChanged}
+                  onClick={this.handleOnClick}
+                  startMediaPlayHeadMs={mediaPlayerTimeMs}
+                  stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                  classNames={classNames(styles.contentSegment)}
+                />
+              }
+            </Grid>
           </Grid>
-        </Grid>
-      );
+        );
 
-      return {
-        start: speakerStartTime,
-        stop: speakerStopTime,
-        content: segmentContent
-      };
-    });
+        return {
+          start: speakerStartTime,
+          stop: speakerStopTime,
+          content: segmentContent
+        };
+      });
 
-    return speakerSnippetSegments;
+      return speakerSnippetSegments;
+    } else {
+      const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+        const segmentStartTime = segmentData.startTimeMs;
+        const segmentStopTime = segmentData.stopTimeMs;
+        const segmentContent = (
+          <EditableWrapper
+            key={'transcript-snippet' + segmentData.startTimeMs}
+            content={segmentData}
+            editMode={editMode}
+            onChange={this.handleDataChanged}
+            onClick={this.handleOnClick}
+            startMediaPlayHeadMs={mediaPlayerTimeMs}
+            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+            classNames={classNames(styles.contentSegment)}
+            wordGuidMap={parsedData.wordGuidMap}
+          />
+        );
+
+        return {
+          start: segmentStartTime,
+          stop: segmentStopTime,
+          content: segmentContent
+        };
+      });
+
+      return overviewSegments;
+    }
   };
 
   renderSpeakerOverviewSegments = parsedData => {
     const {
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      selectedCombineViewTypeId
     } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
@@ -408,66 +452,91 @@ export default class SpeakerTranscriptContent extends Component {
       totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
     });
 
-    const speakerOverviewSegments = speakerSeries.map((speakerSegment, index) => {
-      const nextSpeaker = speakerSeries[index + 1];
-      const speakerStartTime = speakerSegment.startTimeMs;
-      const speakerStopTime = speakerSegment.stopTimeMs;
-      const fragments = this.allocateSpeakerTranscripts(
-        totalTranscriptSegmentData,
-        speakerSegment,
-        nextSpeaker
-      );
+    if (selectedCombineViewTypeId === 'speaker-view') {
+      const speakerOverviewSegments = speakerSeries.map((speakerSegment, index) => {
+        const nextSpeaker = speakerSeries[index + 1];
+        const speakerStartTime = speakerSegment.startTimeMs;
+        const speakerStopTime = speakerSegment.stopTimeMs;
+        const fragments = this.allocateSpeakerTranscripts(
+          totalTranscriptSegmentData,
+          speakerSegment,
+          nextSpeaker
+        );
 
-      const filteredSpeakerSegmentDataWrapper = { fragments };
+        const filteredSpeakerSegmentDataWrapper = { fragments };
 
-      const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-      const speakerTimingStart = format(speakerStartTime, timeFormat);
-      const speakerTimingStop = format(speakerStopTime, timeFormat);
+        const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+        const speakerTimingStart = format(speakerStartTime, timeFormat);
+        const speakerTimingStop = format(speakerStopTime, timeFormat);
 
-      const speakerGridKey = `speaker-row-${speakerSegment.guid}`;
+        const speakerGridKey = `speaker-row-${speakerSegment.guid}`;
 
-      const segmentContent = (
-        <Grid container key={speakerGridKey}>
-          <Grid item
-            xs={4}
-            sm={3}
-            md={2}
-            lg={1}
-            xl={1}
-          >
-            <SpeakerPill
-              speakerSegment={speakerSegment}
-              onClick={this.handleOnClick}
-              startMediaPlayHeadMs={mediaPlayerTimeMs}
-              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            />
-          </Grid>
-          <Grid item xs sm md lg xl>
-            <span className={styles.speakerStartTimeLabel}>
-              {`${speakerTimingStart} - ${speakerTimingStop}`}
-            </span>
-            {
-              <OverviewSegment
-                key={'transcript-speaker-overview' + speakerStartTime}
-                content={filteredSpeakerSegmentDataWrapper}
+        const segmentContent = (
+          <Grid container key={speakerGridKey}>
+            <Grid item
+              xs={4}
+              sm={3}
+              md={2}
+              lg={1}
+              xl={1}
+            >
+              <SpeakerPill
+                speakerSegment={speakerSegment}
                 onClick={this.handleOnClick}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}
                 stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                classNames={classNames(styles.contentSegment)}
               />
-            }
+            </Grid>
+            <Grid item xs sm md lg xl>
+              <span className={styles.speakerStartTimeLabel}>
+                {`${speakerTimingStart} - ${speakerTimingStop}`}
+              </span>
+              {
+                <OverviewSegment
+                  key={'transcript-speaker-overview' + speakerStartTime}
+                  content={filteredSpeakerSegmentDataWrapper}
+                  onClick={this.handleOnClick}
+                  startMediaPlayHeadMs={mediaPlayerTimeMs}
+                  stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                  classNames={classNames(styles.contentSegment)}
+                />
+              }
+            </Grid>
           </Grid>
-        </Grid>
-      );
+        );
 
-      return {
-        startTimeMs: speakerStartTime,
-        stopTimeMs: speakerStopTime,
-        content: segmentContent
-      }
-    });
+        return {
+          startTimeMs: speakerStartTime,
+          stopTimeMs: speakerStopTime,
+          content: segmentContent
+        }
+      });
 
-    return speakerOverviewSegments;
+      return speakerOverviewSegments;
+    } else {
+      const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+        const segmentStartTime = segmentData.startTimeMs;
+        const segmentStopTime = segmentData.stopTimeMs;
+        const segmentContent = (
+          <OverviewSegment
+            key={'transcript-overview' + segmentStartTime}
+            content={segmentData}
+            onClick={this.handleOnClick}
+            startMediaPlayHeadMs={mediaPlayerTimeMs}
+            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+            classNames={classNames(styles.contentSegment)}
+          />
+        );
+
+        return {
+          start: segmentStartTime,
+          stop: segmentStopTime,
+          content: segmentContent
+        };
+      });
+
+      return overviewSegments;
+    }
   };
 
   renderBulkEdit = parsedData => {
@@ -522,28 +591,11 @@ export default class SpeakerTranscriptContent extends Component {
   };
 
   renderEditMode = parsedData => {
-    let content;
-    switch (this.props.editType) {
-      case Edit.BULK:
-        content = this.renderBulkEdit(parsedData);
-        break;
-      case Edit.SNIPPET:
-        content = this.renderSpeakerSnippetSegments(parsedData);
-        break;
-    }
-
-    return content;
+    return this.renderSpeakerSnippetSegments(parsedData);
   };
 
   renderViewMode = parsedData => {
-    let content;
-    switch (this.props.viewType) {
-      case View.OVERVIEW:
-        content = this.renderSpeakerOverviewSegments(parsedData);
-        break;
-    }
-
-    return content;
+    return this.renderSpeakerOverviewSegments(parsedData);
   };
 
   render() {
@@ -568,11 +620,7 @@ export default class SpeakerTranscriptContent extends Component {
           }
           estimatedDisplaySize={estimatedDisplayTimeMs}
           neglectableSize={neglectableTimeMs}
-          contents={
-            editMode
-              ? this.renderEditMode(parsedData)
-              : this.renderViewMode(parsedData)
-          }
+          contents={ this.renderSpeakerSnippetSegments(parsedData) }
         />
       </div>
     );

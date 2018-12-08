@@ -151,49 +151,6 @@ export default class TranscriptEngineOutput extends Component {
     }
   };
 
-  renderEditOptions() {
-    const editType = this.props.onEditTypeChange
-      ? this.props.editType
-      : this.state.editType;
-    return (
-      <RadioGroup
-        row
-        aria-label="edit_mode"
-        value={editType}
-        name="editMode"
-        className={styles.radioButtonGroup}
-        onChange={this.handleEditChange}
-      >
-        <FormControlLabel
-          value={Edit.SNIPPET}
-          classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
-          control={
-            <Radio
-              color="primary"
-              disableRipple
-              classes={{ root: styles.radioRoot }}
-            />
-          }
-          label="Snippet Edit Mode"
-        />
-        {this.props.bulkEditEnabled && (
-          <FormControlLabel
-            value={Edit.BULK}
-            classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
-            control={
-              <Radio
-                color="primary"
-                disableRipple
-                classes={{ root: styles.radioRoot }}
-              />
-            }
-            label="Bulk Edit Mode"
-          />
-        )}
-      </RadioGroup>
-    );
-  }
-
   renderResultOptions() {
     const { showingUserEditedOutput } = this.props;
     return (
@@ -323,7 +280,6 @@ export default class TranscriptEngineOutput extends Component {
         handleCombineViewTypeChange={handleCombineViewTypeChange}
       >
         <div className={styles.controllers}>
-          {editMode && this.renderEditOptions()}
           {!editMode &&
             selectedEngine &&
             selectedEngine.hasUserEdits &&
@@ -361,43 +317,24 @@ export default class TranscriptEngineOutput extends Component {
       outputNullState || (
         <div className={styles.content}>
           {
-            selectedCombineViewTypeId === 'speaker-view' ? 
-            (
-              <SpeakerTranscriptContent
-                data={data}
-                speakerData={speakerData}
-                editMode={editMode}
-                viewType={this.state.viewType}
-                editType={currentEditType}
-                mediaPlayerTimeMs={mediaPlayerTimeMs}
-                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-                estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-                mediaLengthMs={mediaLengthMs}
-                neglectableTimeMs={neglectableTimeMs}
-                onClick={onClick}
-                onScroll={onScroll}
-                onChange={onChange}
-                selectedEngineId={selectedEngineId}
-                className={contentClassName}
-              />
-            ) : (
-              <TranscriptContent
-                data={data}
-                editMode={editMode}
-                viewType={this.state.viewType}
-                editType={currentEditType}
-                mediaPlayerTimeMs={mediaPlayerTimeMs}
-                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-                estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-                mediaLengthMs={mediaLengthMs}
-                neglectableTimeMs={neglectableTimeMs}
-                onClick={onClick}
-                onScroll={onScroll}
-                onChange={onChange}
-                selectedEngineId={selectedEngineId}
-                className={contentClassName}
-              />
-            )
+            <SpeakerTranscriptContent
+              data={data}
+              speakerData={speakerData}
+              editMode={editMode}
+              viewType={this.state.viewType}
+              editType={currentEditType}
+              mediaPlayerTimeMs={mediaPlayerTimeMs}
+              mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+              estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+              mediaLengthMs={mediaLengthMs}
+              neglectableTimeMs={neglectableTimeMs}
+              onClick={onClick}
+              onScroll={onScroll}
+              onChange={onChange}
+              selectedEngineId={selectedEngineId}
+              className={contentClassName}
+              selectedCombineViewTypeId={selectedCombineViewTypeId}
+            />
           }
         </div>
       )
