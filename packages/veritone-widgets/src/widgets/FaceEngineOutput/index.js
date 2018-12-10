@@ -60,7 +60,8 @@ const saga = util.reactReduxSaga.saga;
     hasLibraryAccess: userModule.hasOrgAppAccess(
       state,
       'cf05552b-52e0-46fa-8f7f-4c9eee135c51' // library-app app id
-    ) //TODO: find a better way to check for app access other than hard coding the id
+    ), //TODO: find a better way to check for app access other than hard coding the id
+    viewMode: faceEngineOutput.getViewMode(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -86,7 +87,8 @@ const saga = util.reactReduxSaga.saga;
     closeAddToExistingEntityDialog:
       faceEngineOutput.closeAddToExistingEntityDialog,
     setSelectedEntityId: faceEngineOutput.setSelectedEntityId,
-    fetchUserSettings: userModule.fetchUserSettings
+    fetchUserSettings: userModule.fetchUserSettings,
+    setViewMode: faceEngineOutput.setViewMode
   },
   null,
   { withRef: true }
@@ -196,13 +198,16 @@ class FaceEngineOutputContainer extends Component {
     selectFaceObjects: func,
     removeSelectedFaceObjects: func,
     activeTab: string,
+    setActiveTab: func,
     onAddNewEntity: func,
     closeAddEntityDialog: func,
     closeAddToExistingEntityDialog: func,
     selectedEntityId: string,
     setSelectedEntityId: func,
     hasLibraryAccess: bool,
-    fetchUserSettings: func
+    fetchUserSettings: func,
+    viewMode: string,
+    setViewMode: func
   };
 
   state = {
@@ -398,12 +403,12 @@ class FaceEngineOutputContainer extends Component {
       'disableEditButton',
       'bulkEditActionItems',
       'activeTab',
-      'setActiveTab',
       'moreMenuItems',
       'onAddNewEntity',
       'onAddToExistingEntity',
       'selectedEntityId',
-      'hasLibraryAccess'
+      'hasLibraryAccess',
+      'viewMode'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -441,6 +446,8 @@ class FaceEngineOutputContainer extends Component {
           onSelectFaces={this.props.selectFaceObjects}
           onUnselectFaces={this.props.removeSelectedFaceObjects}
           onSelectEntity={this.props.setSelectedEntityId}
+          onActiveTabChange={this.props.setActiveTab}
+          onViewModeChange={this.props.setViewMode}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>

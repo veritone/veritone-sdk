@@ -131,36 +131,27 @@ class FaceEngineOutput extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     activeTab: string,
-    setActiveTab: func,
+    onActiveTabChange: func,
     selectedEntityId: string,
     onSelectEntity: func,
-    hasLibraryAccess: bool
+    hasLibraryAccess: bool,
+    viewMode: string,
+    onViewModeChange: func
   };
 
   state = {
-    viewMode: 'summary',
     lastCheckedFace: null
   };
 
-  static getDerivedStateFromProps(nextProps, state) {
-    if (nextProps.editMode && state.viewMode !== 'summary') {
-      return {
-        viewMode: 'summary'
-      };
-    }
-    return null;
-  }
 
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.props.activeTab) {
-      this.props.setActiveTab(activeTab);
+      this.props.onActiveTabChange(activeTab);
     }
   };
 
   handleViewModeChange = evt => {
-    this.setState({
-      viewMode: evt.target.value
-    });
+    this.props.onViewModeChange(evt.target.value);
     this.props.onSelectEntity(null);
   };
 
@@ -202,10 +193,10 @@ class FaceEngineOutput extends Component {
       onAddToExistingEntity,
       selectedEntityId,
       onSelectEntity,
-      hasLibraryAccess
+      hasLibraryAccess,
+      viewMode
     } = this.props;
 
-    const { viewMode } = this.state;
     const recognizedFaceCount = reduce(
       Object.values(this.props.recognizedFaces),
       (acc, faces) => {
@@ -325,35 +316,35 @@ class FaceEngineOutput extends Component {
                 </MenuItem>
               </Select>
             )}
-          {!editMode && (
-            <Select
-              autoWidth
-              value={viewMode}
-              onChange={this.handleViewModeChange}
-              className={cx(styles.outputHeaderSelect)}
-              MenuProps={{
-                anchorOrigin: {
-                  horizontal: 'center',
-                  vertical: 'bottom'
-                },
-                transformOrigin: {
-                  horizontal: 'center',
-                  vertical: 'top'
-                },
-                getContentAnchorEl: null
-              }}
-            >
-              <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
-                Summary
-              </MenuItem>
+          <Select
+            autoWidth
+            value={viewMode}
+            onChange={this.handleViewModeChange}
+            className={cx(styles.outputHeaderSelect)}
+            MenuProps={{
+              anchorOrigin: {
+                horizontal: 'center',
+                vertical: 'bottom'
+              },
+              transformOrigin: {
+                horizontal: 'center',
+                vertical: 'top'
+              },
+              getContentAnchorEl: null
+            }}
+          >
+            <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
+              Summary
+            </MenuItem>
+            {activeTab === 'faceRecognition' && (
               <MenuItem value="byFrame" className={cx(styles.selectMenuItem)}>
                 By Frame
               </MenuItem>
-              <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
-                By Scene
-              </MenuItem>
-            </Select>
-          )}
+            )}
+            <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
+              By Scene
+            </MenuItem>
+          </Select>
         </EngineOutputHeader>
         {!editMode && faceTabs}
         {outputNullState}
@@ -394,7 +385,6 @@ class FaceEngineOutput extends Component {
                 faces={unrecognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 editMode={editMode}
-                viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}

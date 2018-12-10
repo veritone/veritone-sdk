@@ -66,6 +66,8 @@ export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
 
 export const SET_SELECTED_ENTITY_ID = `vtn/${namespace}/SET_SELECTED_ENTITY_ID`;
 
+export const SET_VIEW_MODE = `vtn/${namespace}/SET_VIEW_MODE`;
+
 import {
   get,
   map,
@@ -121,7 +123,8 @@ const defaultState = {
   initialEntityName: '',
   addToExistingEntityDialogOpen: false,
   currentlyEditedFaces: [], // selected unrecognized face objects from which to create a new 'entity'
-  selectedEntityId: null
+  selectedEntityId: null,
+  viewMode: 'summary'
 };
 
 const reducer = createReducer(defaultState, {
@@ -282,13 +285,11 @@ const reducer = createReducer(defaultState, {
 
     const entitySearchResults = [];
 
-    get(action.payload.data, 'libraries.records', []).forEach(
-      library => {
-        if (library.entities.records.length) {
-          entitySearchResults.push(library.entities.records);
-        }
+    get(action.payload.data, 'libraries.records', []).forEach(library => {
+      if (library.entities.records.length) {
+        entitySearchResults.push(library.entities.records);
       }
-    );
+    });
 
     return {
       ...state,
@@ -528,6 +529,10 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       editModeEnabled: !state.editModeEnabled,
+      viewMode:
+        state.editModeEnabled && state.viewMode !== 'summary'
+          ? 'summary'
+          : state.viewMode,
       bulkEditActionItems: {
         faceRecognition: [],
         faceDetection: []
@@ -585,6 +590,9 @@ const reducer = createReducer(defaultState, {
       ...state,
       selectedEntityId: null,
       activeTab,
+      viewMode: activeTab == 'faceDetection' && state.viewMode === 'byFrame'
+          ? 'summary'
+          : state.viewMode,
       bulkEditActionItems: {
         faceRecognition: [],
         faceDetection: []
@@ -658,6 +666,17 @@ const reducer = createReducer(defaultState, {
           : state.bulkEditActionItems[state.activeTab]
       }
     };
+  },
+  [SET_VIEW_MODE](
+    state,
+    {
+      payload: { viewMode }
+    }
+  ) {
+    return {
+      ...state,
+      viewMode
+    };
   }
 });
 export default reducer;
@@ -665,6 +684,15 @@ export default reducer;
 function local(state) {
   return state[namespace];
 }
+
+export const getViewMode = state => get(local(state), 'viewMode');
+export const setViewMode = viewMode => ({
+  type: SET_VIEW_MODE,
+  payload: {
+    viewMode
+  }
+});
+
 
 export const getFaceDataByEngine = (state, engineId, tdoId) => {
   return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
