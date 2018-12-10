@@ -876,6 +876,9 @@ export const getCurrentlyEditedFaces = state =>
 export const getInitialEntityName = state =>
   get(local(state), 'initialEntityName');
 
+export const isCreatingEntity = state =>
+  get(local(state), 'creatingEntity');
+
 export const createEntity = input => async (dispatch, getState) => {
   return await callGraphQLApi({
     actionTypes: [CREATE_ENTITY, CREATE_ENTITY_SUCCESS, CREATE_ENTITY_FAILURE],
