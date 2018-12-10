@@ -1,70 +1,5 @@
 @import '../../styles/modules/variables';
 
-.editNewEntityDialogPaper {
-  min-width: 640px;
-  width: 640px;
-
-  .dialogTitle {
-    h2 {
-      height: 28px;
-      line-height: 28px;
-      display: flex;
-      flex-flow: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h2 .dialogTitleLabel {
-      color: rgba(0, 0, 0, 0.87);
-      font-family: Roboto;
-      font-size: 20px;
-      font-weight: 500;
-    }
-
-    .closeButton {
-      height: 28px;
-      width: 28px;
-    }
-  }
-
-  .dialogHintText {
-    height: 18px;
-    color: rgba(0, 0, 0, 0.54);
-    font-family: Roboto;
-    font-size: 12px;
-    line-height: 18px;
-    margin-bottom: 30px;
-  }
-
-  .inputField {
-    margin-top: 20px;
-    color: rgba(0, 0, 0, 0.87);
-
-    input {
-      font-family: Roboto;
-      font-size: 14px;
-    }
-
-    label {
-      color: rgba(0, 0, 0, 0.54);
-      font-family: Roboto;
-      transform: none;
-      font-size: 12px;
-      font-weight: 400;
-    }
-  }
-
-  .librarySelect {
-    font-family: Roboto;
-    font-size: 14px;
-  }
-}
-
-.librarySelectMenuItem {
-  font-size: 14px !important;
-  line-height: 16px !important;
-}
-
 .faceDetectionDoneSnackbarContentText {
   font-size: 14px;
 }
@@ -74,7 +9,7 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  margin: 15px 80px 15px 0;
+  margin: 12px 80px 12px 0;
   border-right: 1px solid $grey-4;
   flex: none;
 

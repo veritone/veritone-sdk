@@ -7,19 +7,44 @@ export const FETCH_ENTITIES_FAILURE = `vtn/${namespace}/FETCH_ENTITIES_FAILURE`;
 export const FETCH_LIBRARIES = `vtn/${namespace}/FETCH_LIBRARIES`;
 export const FETCH_LIBRARIES_SUCCESS = `vtn/${namespace}/FETCH_LIBRARIES_SUCCESS`;
 export const FETCH_LIBRARIES_FAILURE = `vtn/${namespace}/FETCH_LIBRARIES_FAILURE`;
+export const CREATE_LIBRARY = `vtn/${namespace}/CREATE_LIBRARY`;
+export const CREATE_LIBRARY_SUCCESS = `vtn/${namespace}/CREATE_LIBRARY_SUCCESS`;
+export const CREATE_LIBRARY_FAILURE = `vtn/${namespace}/CREATE_LIBRARY_FAILURE`;
+export const FETCH_LIBRARY_TYPES = `vtn/${namespace}/FETCH_LIBRARY_TYPES`;
+export const FETCH_LIBRARY_TYPES_SUCCESS = `vtn/${namespace}/FETCH_LIBRARY_TYPES_SUCCESS`;
+export const FETCH_LIBRARY_TYPES_FAILURE = `vtn/${namespace}/FETCH_LIBRARY_TYPES_FAILURE`;
+export const FETCH_UPLOAD_URL = `vtn/${namespace}/FETCH_UPLOAD_URL`;
+export const FETCH_UPLOAD_URL_SUCCESS = `vtn/${namespace}/FETCH_UPLOAD_URL_SUCCESS`;
+export const FETCH_UPLOAD_URL_FAILURE = `vtn/${namespace}/FETCH_UPLOAD_URL_FAILURE`;
+
+export const CREATE_ENTITY_IDENTIFIERS = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS`;
+export const CREATE_ENTITY_IDENTIFIERS_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS_SUCCESS`;
+export const CREATE_ENTITY_IDENTIFIERS_FAILURE = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS_FAILURE`;
 
 export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
 export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
 export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
+
+export const GET_ENTITY = `vtn/${namespace}/GET_ENTITY`;
+export const GET_ENTITY_SUCCESS = `vtn/${namespace}/GET_ENTITY_SUCCESS`;
+export const GET_ENTITY_FAILURE = `vtn/${namespace}/GET_ENTITY_FAILURE`;
 
 export const SEARCH_ENTITIES = `vtn/${namespace}/SEARCH_ENTITIES`;
 export const SEARCHING_ENTITIES = `vtn/${namespace}/SEARCHING_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
+export const CLOSE_ADD_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_ENTITY_DIALOG`;
+export const OPEN_ADD_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_ENTITY_DIALOG`;
+export const OPEN_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_TO_EXISTING_ENTITY_DIALOG`;
+export const CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG`;
+export const UPDATE_INITIAL_ENTITY_NAME = `vtn/${namespace}/UPDATE_INITIAL_ENTITY_NAME`;
+
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
-export const REMOVE_DETECTED_FACE = `vtn/${namespace}/REMOVE_DETECTED_FACE`;
+export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
+export const PROCESS_REMOVED_FACES = `vtn/${namespace}/PROCESS_REMOVED_FACES`;
+export const PROCESS_ADDED_FACES = `vtn/${namespace}/PROCESS_ADDED_FACES`;
 
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
 export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
@@ -34,39 +59,69 @@ export const CLOSE_ERROR_SNACKBAR = `vtn/${namespace}/CLOSE_ERROR_SNACKBAR`;
 
 export const TOGGLE_EDIT_MODE = `vtn/${namespace}/TOGGLE_EDIT_MODE`;
 
+export const SELECT_FACE_OBJECTS = `vtn/${namespace}/SELECT_FACE_OBJECTS`;
+export const REMOVE_SELECTED_FACE_OBJECTS = `vtn/${namespace}/REMOVE_SELECTED_FACE_OBJECTS`;
+
+export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
+
+export const SET_SELECTED_ENTITY_ID = `vtn/${namespace}/SET_SELECTED_ENTITY_ID`;
+
 import {
   get,
   map,
   find,
   keyBy,
   isEmpty,
-  pick,
   flatten,
   reduce,
   cloneDeep,
-  forEach
+  forEach,
+  omit,
+  uniqBy,
+  differenceBy,
+  orderBy,
+  filter
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
 import { saveAsset, removeAwsSignatureParams } from '../../../../shared/asset';
+import * as gqlQuery from './queries';
 
-const { createReducer } = helpers;
+const { createReducer, callGraphQLApi } = helpers;
 const { engineResults: engineResultsModule } = modules;
 
 const defaultState = {
   entities: {},
   libraries: {},
+  creatingLibrary: false,
+  uploadingLibraryImage: false,
+  fetchingUploadUrl: false,
   entitySearchResults: [],
   isFetchingEntities: false,
+  creatingEntity: false,
   isFetchingLibraries: false,
+  libraryTypes: [],
+  fetchingLibraryTypes: false,
   isSearchingEntities: false,
-  facesDetectedByUser: {},
+  creatingIdentifiers: false,
+  facesEditedByUser: {},
   facesRemovedByUser: {},
+  pendingFaceEdits: {},
   showConfirmationDialog: false,
   displayUserEdited: false,
   savingFaceEdits: false,
   editModeEnabled: false,
-  error: null
+  error: null,
+  bulkEditActionItems: {
+    faceRecognition: [],
+    faceDetection: []
+  },
+  activeTab: 'faceRecognition',
+  addNewEntityDialogOpen: false,
+  initialEntityName: '',
+  addToExistingEntityDialogOpen: false,
+  currentlyEditedFaces: [], // selected unrecognized face objects from which to create a new 'entity'
+  selectedEntityId: null
 };
 
 const reducer = createReducer(defaultState, {
@@ -81,14 +136,11 @@ const reducer = createReducer(defaultState, {
       return this[FETCH_ENTITIES_FAILURE](state, action);
     }
 
-    const entities = keyBy(Object.values(action.payload.data), 'id');
+    const { entities } = action.payload;
 
     return {
       ...state,
-      entities: {
-        ...state.entities,
-        ...entities
-      },
+      entities: [...state.entities, ...entities],
       isFetchingEntities: false
     };
   },
@@ -109,7 +161,7 @@ const reducer = createReducer(defaultState, {
       return this[FETCH_LIBRARIES_FAILURE](state, action);
     }
 
-    const libraries = keyBy(action.payload.data.libraries.records, 'id');
+    const libraries = keyBy(get(action, 'payload.libraries.records', []), 'id');
 
     return {
       ...state,
@@ -126,21 +178,95 @@ const reducer = createReducer(defaultState, {
       isFetchingLibraries: false
     };
   },
+  [CREATE_LIBRARY](state) {
+    return {
+      ...state,
+      createNewLibrary: true
+    };
+  },
+  [CREATE_LIBRARY_SUCCESS](
+    state,
+    {
+      payload: { createLibrary }
+    }
+  ) {
+    return {
+      ...state,
+      createNewLibrary: false,
+      libraries: {
+        ...state.libraries,
+        [createLibrary.id]: createLibrary
+      }
+    };
+  },
+  [CREATE_LIBRARY_FAILURE](state) {
+    return {
+      ...state,
+      createNewLibrary: false
+    };
+  },
+  [FETCH_LIBRARY_TYPES](state) {
+    return {
+      ...state,
+      fetchingLibraryTypes: true
+    };
+  },
+  [FETCH_LIBRARY_TYPES_SUCCESS](
+    state,
+    {
+      payload: { libraryTypes }
+    }
+  ) {
+    return {
+      ...state,
+      fetchingLibraryTypes: false,
+      libraryTypes: [...libraryTypes.records]
+    };
+  },
+  [FETCH_LIBRARY_TYPES_FAILURE](state) {
+    return {
+      ...state,
+      fetchingLibraryTypes: false
+    };
+  },
+  [CREATE_ENTITY](state) {
+    return {
+      ...state,
+      creatingEntity: true
+    };
+  },
   [CREATE_ENTITY_SUCCESS](state, action) {
-    if (action.payload.errors) {
+    if (action.errors) {
       return this[CREATE_ENTITY_FAILURE](state, action);
     }
 
-    const payload = {
-      ...pick(action.meta, ['faceObj', 'selectedEngineId']),
-      entity: action.payload.data.entity
+    return {
+      ...state,
+      creatingEntity: false
     };
-
-    return this[ADD_DETECTED_FACE](state, { payload });
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
-      ...state
+      ...state,
+      creatingEntity: false
+    };
+  },
+  [GET_ENTITY](state) {
+    return {
+      ...state,
+      gettingEntity: true
+    };
+  },
+  [GET_ENTITY_SUCCESS](state) {
+    return {
+      ...state,
+      gettingEntity: false
+    };
+  },
+  [GET_ENTITY_FAILURE](state) {
+    return {
+      ...state,
+      gettingEntity: false
     };
   },
   [SEARCHING_ENTITIES](state, action) {
@@ -157,9 +283,9 @@ const reducer = createReducer(defaultState, {
     const entitySearchResults = [];
 
     get(action.payload.data, 'libraries.records', []).forEach(
-      libraryEntities => {
-        if (libraryEntities.entities.records.length) {
-          entitySearchResults.push(libraryEntities.entities.records);
+      library => {
+        if (library.entities.records.length) {
+          entitySearchResults.push(library.entities.records);
         }
       }
     );
@@ -176,43 +302,166 @@ const reducer = createReducer(defaultState, {
       isSearchingEntities: false
     };
   },
+  [CREATE_ENTITY_IDENTIFIERS](state) {
+    return {
+      ...state,
+      creatingIdentifiers: true
+    };
+  },
+  [CREATE_ENTITY_IDENTIFIERS_SUCCESS](state) {
+    return {
+      ...state,
+      creatingIdentifiers: false
+    };
+  },
+  [CREATE_ENTITY_IDENTIFIERS_FAILURE](state) {
+    return {
+      ...state,
+      creatingIdentifiers: false
+    };
+  },
   [ADD_DETECTED_FACE](state, action) {
-    const { faceObj, selectedEngineId, entity } = action.payload;
+    const { faceObjects, selectedEngineId, entity } = action.payload;
 
     return {
       ...state,
-      facesDetectedByUser: {
-        ...state.facesDetectedByUser,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
         [selectedEngineId]: [
-          ...(state.facesDetectedByUser[selectedEngineId] || []),
-          {
-            ...faceObj,
-            object: {
-              ...faceObj.object,
-              entityId: entity.id,
-              libraryId: entity.libraryId
-            }
-          }
+          ...(state.pendingFaceEdits[selectedEngineId] || []),
+          ...faceObjects.map(face => {
+            return {
+              ...face,
+              editAction: 'Added'
+            };
+          })
         ]
       },
-      entities: {
-        ...state.entities,
-        [entity.id]: entity
+      entities: uniqBy([...state.entities, entity], 'id')
+    };
+  },
+  [PROCESS_ADDED_FACES](state, action) {
+    const { faceObjects, selectedEngineId, entity } = action.payload;
+
+    return {
+      ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(
+          faceEdit => {
+            return !find(faceObjects, { guid: faceEdit.guid });
+          }
+        )
+      },
+      facesEditedByUser: {
+        ...state.facesEditedByUser,
+        [selectedEngineId]: uniqBy(
+          [
+            ...faceObjects.map(face => ({
+              ...face,
+              object: {
+                ...face.object,
+                entityId: entity.id,
+                libraryId: entity.libraryId
+              }
+            })),
+            ...(state.facesEditedByUser[selectedEngineId] || [])
+          ],
+          'guid'
+        )
+      },
+      currentlyEditedFaces: state.currentlyEditedFaces.filter(edit => {
+        return !find(faceObjects, { guid: edit.guid });
+      }),
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: [
+          ...differenceBy(
+            state.bulkEditActionItems[state.activeTab],
+            faceObjects,
+            'guid'
+          )
+        ]
       }
     };
   },
-  [REMOVE_DETECTED_FACE](state, action) {
-    const { faceObj, selectedEngineId } = action.payload;
+  [REMOVE_FACES](state, action) {
+    const { faceObjects, selectedEngineId } = action.payload;
 
     return {
       ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: [
+          ...(state.pendingFaceEdits[selectedEngineId] || []),
+          ...faceObjects.map(face => {
+            return {
+              ...face,
+              editAction: 'Deleted'
+            };
+          })
+        ]
+      }
+    };
+  },
+  [PROCESS_REMOVED_FACES](state, action) {
+    const { faceObjects, selectedEngineId } = action.payload;
+
+    let removedFaces = [],
+      editedFaces = [];
+    if (state.activeTab === 'faceDetection') {
+      removedFaces = faceObjects.map(face => omit(face, ['editAction']));
+    } else if (state.activeTab === 'faceRecognition') {
+      editedFaces = faceObjects.map(face =>
+        omit(
+          {
+            ...face,
+            object: omit(face.object, [
+              'entityId',
+              'libraryId',
+              'confidence',
+              'label'
+            ])
+          },
+          ['editAction']
+        )
+      );
+    }
+    return {
+      ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(
+          faceEdit => {
+            return !find(faceObjects, { guid: faceEdit.guid });
+          }
+        )
+      },
       facesRemovedByUser: {
         ...state.facesRemovedByUser,
         [selectedEngineId]: [
           ...(state.facesRemovedByUser[selectedEngineId] || []),
-          {
-            ...faceObj
-          }
+          ...removedFaces
+        ]
+      },
+      facesEditedByUser: {
+        ...state.facesEditedByUser,
+        [selectedEngineId]: uniqBy(
+          [
+            ...editedFaces,
+            ...(state.facesEditedByUser[selectedEngineId] || [])
+          ],
+          'guid'
+        )
+      },
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: [
+          ...differenceBy(
+            state.bulkEditActionItems[state.activeTab],
+            faceObjects,
+            'guid'
+          )
         ]
       }
     };
@@ -220,13 +469,15 @@ const reducer = createReducer(defaultState, {
   [CANCEL_FACE_EDITS](state, action) {
     return {
       ...state,
-      facesDetectedByUser: {},
-      facesRemovedByUser: {}
+      facesEditedByUser: {},
+      facesRemovedByUser: {},
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
     };
   },
-  [OPEN_CONFIRMATION_DIALOG](
-    state
-  ) {
+  [OPEN_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
       showConfirmationDialog: true
@@ -248,7 +499,11 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       error: null,
-      savingFaceEdits: false
+      savingFaceEdits: false,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
     };
   },
   [SAVE_FACE_EDITS_FAILURE](
@@ -272,7 +527,136 @@ const reducer = createReducer(defaultState, {
   [TOGGLE_EDIT_MODE](state) {
     return {
       ...state,
-      editModeEnabled: !state.editModeEnabled
+      editModeEnabled: !state.editModeEnabled,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
+    };
+  },
+  [SELECT_FACE_OBJECTS](
+    state,
+    {
+      payload: { faces }
+    }
+  ) {
+    return {
+      ...state,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: orderBy(
+          uniqBy(
+            [...state.bulkEditActionItems[state.activeTab], ...faces],
+            'guid'
+          ),
+          'startTimeMs',
+          'stopTimeMs'
+        )
+      }
+    };
+  },
+  [REMOVE_SELECTED_FACE_OBJECTS](
+    state,
+    {
+      payload: { faces }
+    }
+  ) {
+    return {
+      ...state,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: [
+          ...differenceBy(
+            state.bulkEditActionItems[state.activeTab],
+            faces,
+            'guid'
+          )
+        ]
+      }
+    };
+  },
+  [SET_ACTIVE_TAB](
+    state,
+    {
+      payload: { activeTab }
+    }
+  ) {
+    return {
+      ...state,
+      selectedEntityId: null,
+      activeTab,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
+    };
+  },
+  [OPEN_ADD_ENTITY_DIALOG](
+    state,
+    {
+      payload: { faces, initialEntityName }
+    }
+  ) {
+    return {
+      ...state,
+      addNewEntityDialogOpen: true,
+      initialEntityName,
+      currentlyEditedFaces: [...faces]
+    };
+  },
+  [UPDATE_INITIAL_ENTITY_NAME](
+    state,
+    {
+      payload: { initialEntityName }
+    }
+  ) {
+    return {
+      ...state,
+      initialEntityName
+    };
+  },
+  [CLOSE_ADD_ENTITY_DIALOG](state) {
+    return {
+      ...state,
+      addNewEntityDialogOpen: false,
+      initialEntityName: '',
+      currentlyEditedFaces: []
+    };
+  },
+  [OPEN_ADD_TO_EXISTING_ENTITY_DIALOG](
+    state,
+    {
+      payload: { faces }
+    }
+  ) {
+    return {
+      ...state,
+      addToExistingEntityDialogOpen: true,
+      currentlyEditedFaces: [...faces]
+    };
+  },
+  [CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG](state) {
+    return {
+      ...state,
+      addToExistingEntityDialogOpen: false,
+      currentlyEditedFaces: []
+    };
+  },
+  [SET_SELECTED_ENTITY_ID](
+    state,
+    {
+      payload: { selectedEntityId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedEntityId,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: !selectedEntityId
+          ? []
+          : state.bulkEditActionItems[state.activeTab]
+      }
     };
   }
 });
@@ -286,16 +670,19 @@ export const getFaceDataByEngine = (state, engineId, tdoId) => {
   return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
 };
 
-export const getUserDetectedFaces = (state, engineId) =>
-  get(local(state), ['facesDetectedByUser', engineId]);
+export const getUserEditedFaces = (state, engineId) =>
+  get(local(state), ['facesEditedByUser', engineId]);
 
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
 
+export const getPendingFaceEdits = (state, engineId) =>
+  get(local(state), ['pendingFaceEdits', engineId]);
+
 export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
 
 export const pendingUserEdits = (state, engineId) =>
-  !isEmpty(getUserDetectedFaces(state, engineId)) ||
+  !isEmpty(getUserEditedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
 
 export const getError = state => get(local(state), 'error');
@@ -309,6 +696,89 @@ export const toggleEditMode = () => ({
   type: TOGGLE_EDIT_MODE
 });
 
+export const getActiveTab = state => get(local(state), 'activeTab');
+export const setActiveTab = activeTab => ({
+  type: SET_ACTIVE_TAB,
+  payload: {
+    activeTab
+  }
+});
+
+export const getSelectedEntityId = state =>
+  get(local(state), 'selectedEntityId');
+export const setSelectedEntityId = selectedEntityId => ({
+  type: SET_SELECTED_ENTITY_ID,
+  payload: {
+    selectedEntityId
+  }
+});
+
+/* BULK FACE EDITS */
+export const getBulkEditActionItems = state =>
+  get(local(state), 'bulkEditActionItems');
+
+export const selectFaceObjects = faces => ({
+  type: SELECT_FACE_OBJECTS,
+  payload: {
+    faces
+  }
+});
+
+export const removeSelectedFaceObjects = faces => ({
+  type: REMOVE_SELECTED_FACE_OBJECTS,
+  payload: {
+    faces
+  }
+});
+
+/* ENTITY IDENTIFIERS */
+function generateCreateIdentifierQuery(identifiers) {
+  return identifiers.reduce((acc, identifier, idx) => {
+    return (
+      acc +
+      `
+      identifier${idx}: createEntityIdentifier(input: {
+        entityId: "${identifier.entityId}"
+        identifierTypeId: "${identifier.identifierTypeId}"
+        contentType: "${identifier.contentType}"
+        url: "${identifier.url}"
+        isPriority: ${identifier.isPriority}
+      }) {
+        id
+        entityId
+        identifierTypeId
+        isPriority
+      }
+    `
+    );
+  }, ``);
+}
+
+export const isCreatingIdentifiers = state =>
+  get(local(state), 'creatingIdentifiers');
+
+export const createEntityIdentifiers = identifiers => async (
+  dispatch,
+  getState
+) => {
+  const query = `
+    mutation {
+      ${generateCreateIdentifierQuery(identifiers)}
+    }
+  `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_ENTITY_IDENTIFIERS,
+      CREATE_ENTITY_IDENTIFIERS_SUCCESS,
+      CREATE_ENTITY_IDENTIFIERS_FAILURE
+    ],
+    query,
+    dispatch,
+    getState
+  });
+};
+
 /* ENTITIES */
 export const fetchingEntities = meta => ({
   type: FETCH_ENTITIES,
@@ -316,27 +786,14 @@ export const fetchingEntities = meta => ({
 });
 export const fetchEntitiesSuccess = (payload, meta) => ({
   type: FETCH_ENTITIES_SUCCESS,
-  payload,
+  payload: {
+    entities: get(payload, 'entities.records', [])
+  },
   meta
 });
 export const fetchEntitiesFailure = (error, meta) => ({
   type: FETCH_ENTITIES_FAILURE,
   error,
-  meta
-});
-export const createEntity = (payload, meta) => ({
-  type: CREATE_ENTITY,
-  payload,
-  meta
-});
-export const createEntitySuccess = (payload, meta) => ({
-  type: CREATE_ENTITY_SUCCESS,
-  payload,
-  meta
-});
-export const createEntityFailure = (payload, meta) => ({
-  type: CREATE_ENTITY_FAILURE,
-  payload,
   meta
 });
 
@@ -360,6 +817,37 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
+export const openAddEntityDialog = (faces, initialEntityName) => {
+  return {
+    type: OPEN_ADD_ENTITY_DIALOG,
+    payload: {
+      faces,
+      initialEntityName
+    }
+  };
+};
+export const closeAddEntityDialog = () => ({
+  type: CLOSE_ADD_ENTITY_DIALOG
+});
+
+export const openAddToExistingEntityDialog = faces => {
+  return {
+    type: OPEN_ADD_TO_EXISTING_ENTITY_DIALOG,
+    payload: {
+      faces
+    }
+  };
+};
+export const closeAddToExistingEntityDialog = () => ({
+  type: CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG
+});
+
+export const updateInitialEntityName = initialEntityName => ({
+  type: UPDATE_INITIAL_ENTITY_NAME,
+  payload: {
+    initialEntityName
+  }
+});
 
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
@@ -376,22 +864,42 @@ export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
 
-/* LIBRARIES */
-export const fetchLibraries = payload => ({
-  type: FETCH_LIBRARIES,
-  payload
-});
-export const fetchLibrariesSuccess = (payload, meta) => ({
-  type: FETCH_LIBRARIES_SUCCESS,
-  payload,
-  meta
-});
-export const fetchLibrariesFailure = (payload, meta) => ({
-  type: FETCH_LIBRARIES_FAILURE,
-  payload,
-  meta
-});
+export const getAddNewEntityDialogOpen = state =>
+  get(local(state), 'addNewEntityDialogOpen');
 
+export const getAddToExistingEntityDialogOpen = state =>
+  get(local(state), 'addToExistingEntityDialogOpen');
+
+export const getCurrentlyEditedFaces = state =>
+  get(local(state), 'currentlyEditedFaces');
+
+export const getInitialEntityName = state =>
+  get(local(state), 'initialEntityName');
+
+export const isCreatingEntity = state =>
+  get(local(state), 'creatingEntity');
+
+export const createEntity = input => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [CREATE_ENTITY, CREATE_ENTITY_SUCCESS, CREATE_ENTITY_FAILURE],
+    query: gqlQuery.createEntity,
+    variables: { input },
+    dispatch,
+    getState
+  });
+};
+
+export const getEntityInLibrary = input => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [GET_ENTITY, GET_ENTITY_SUCCESS, GET_ENTITY_FAILURE],
+    query: gqlQuery.getEntityInLibrary,
+    variables: { ...input },
+    dispatch,
+    getState
+  });
+};
+
+/* LIBRARIES */
 export function isFetchingLibraries(state) {
   return local(state).isFetchingLibraries;
 }
@@ -400,21 +908,175 @@ export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
 
+export const fetchLibraries = entityIdentifierTypeIds => async (
+  dispatch,
+  getState
+) => {
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_LIBRARIES,
+      FETCH_LIBRARIES_SUCCESS,
+      FETCH_LIBRARIES_FAILURE
+    ],
+    query: gqlQuery.getLibrariesByIdentifierType,
+    variables: { entityIdentifierTypeIds },
+    dispatch,
+    getState
+  });
+};
+
+export const isFetchingLibraryTypes = state =>
+  get(local(state), 'fetchingLibraryTypes');
+export const getLibraryTypesByIdentifierType = (state, identifierType) =>
+  filter(local(state).libraryTypes, type => {
+    return !!find(get(type, 'entityIdentifierTypes'), { id: identifierType });
+  });
+
+export const fetchLibraryTypes = () => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_LIBRARY_TYPES,
+      FETCH_LIBRARY_TYPES_SUCCESS,
+      FETCH_LIBRARY_TYPES_FAILURE
+    ],
+    query: gqlQuery.getLibraryTypes,
+    dispatch,
+    getState
+  });
+};
+
+const uploadCoverImage = (url, file) => {
+  return new Promise(function(resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response);
+      } else {
+        reject('Error uploading image');
+      }
+    });
+    xhr.addEventListener('error', () => {
+      reject('Error uploading image');
+    });
+    xhr.open('PUT', url);
+    xhr.send(file);
+  });
+};
+
+export const createNewLibrary = ({
+  libraryName,
+  libraryTypeId,
+  coverImage,
+  description
+}) => async (dispatch, getState) => {
+  let signedImageUrl;
+  if (coverImage) {
+    const getSignedWriteableUrlQuery = `
+      query {
+        getSignedWritableUrl {
+          url
+          key
+          bucket
+          expiresInSeconds
+          getUrl
+          unsignedUrl
+        }
+      }
+    `;
+    let signedUrlResponse;
+    try {
+      signedUrlResponse = await callGraphQLApi({
+        actionTypes: [
+          FETCH_UPLOAD_URL,
+          FETCH_UPLOAD_URL_SUCCESS,
+          FETCH_UPLOAD_URL_FAILURE
+        ],
+        query: getSignedWriteableUrlQuery,
+        dispatch,
+        getState
+      });
+    } catch (e) {
+      dispatch({
+        type: CREATE_LIBRARY_FAILURE,
+        payload: {
+          error: 'Could not get url to upload image.'
+        }
+      });
+      return Promise.reject('Could not get url to upload image.');
+    }
+
+    try {
+      await uploadCoverImage(
+        get(signedUrlResponse, 'getSignedWritableUrl.url'),
+        coverImage
+      ).then(res => {
+        //TODO: sending an unsigned url doesn't work
+        signedImageUrl = get(signedUrlResponse, 'getSignedWritableUrl.getUrl');
+        return res;
+      });
+    } catch (e) {
+      dispatch({
+        type: CREATE_LIBRARY_FAILURE,
+        payload: {
+          error: 'Could not upload cover image.'
+        }
+      });
+      return Promise.reject('Could not upload cover image.');
+    }
+  }
+
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_LIBRARY,
+      CREATE_LIBRARY_SUCCESS,
+      CREATE_LIBRARY_FAILURE
+    ],
+    query: gqlQuery.createLibrary,
+    variables: {
+      input: {
+        name: libraryName,
+        libraryTypeId,
+        description,
+        coverImageUrl: signedImageUrl
+      }
+    },
+    dispatch,
+    getState
+  });
+};
+
 /* USER DETECTED FACES */
-export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
+export const addDetectedFace = (selectedEngineId, faceObjects, entity) => ({
   type: ADD_DETECTED_FACE,
   payload: {
     selectedEngineId,
-    faceObj,
+    faceObjects,
     entity
   }
 });
 
-export const removeDetectedFace = (selectedEngineId, faceObj) => ({
-  type: REMOVE_DETECTED_FACE,
+export const removeFaces = (selectedEngineId, faceObjects) => ({
+  type: REMOVE_FACES,
   payload: {
     selectedEngineId,
-    faceObj
+    faceObjects
+  }
+});
+
+export const processRemovedFaces = (selectedEngineId, faceObjects) => ({
+  type: PROCESS_REMOVED_FACES,
+  payload: {
+    selectedEngineId,
+    faceObjects
+  }
+});
+
+export const processAddedFaces = (selectedEngineId, faceObjects, entity) => ({
+  type: PROCESS_ADDED_FACES,
+  payload: {
+    selectedEngineId,
+    faceObjects,
+    entity
   }
 });
 
@@ -444,8 +1106,20 @@ export const showConfirmationDialog = state =>
 
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getFaceDataByEngine, getUserDetectedFaces, getUserRemovedFaces, getEntities],
-  (faceData, userDetectedFaces, userRemovedFaces, entities) => {
+  [
+    getFaceDataByEngine,
+    getUserEditedFaces,
+    getUserRemovedFaces,
+    getEntities,
+    getPendingFaceEdits
+  ],
+  (
+    faceData,
+    userDetectedFaces,
+    userRemovedFaces,
+    entities,
+    pendingFaceEdits
+  ) => {
     const faceEntities = {
       unrecognizedFaces: [],
       recognizedFaces: {}
@@ -455,7 +1129,8 @@ export const getFaces = createSelector(
     const faceSeries = addUserDetectedFaces(
       faceData,
       userDetectedFaces,
-      userRemovedFaces
+      userRemovedFaces,
+      pendingFaceEdits
     ).reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
@@ -491,7 +1166,7 @@ export const getFaces = createSelector(
 export const getFaceEngineAssetData = (state, tdoId, engineId) => {
   const engineResults = cloneDeep(getFaceDataByEngine(state, engineId, tdoId));
   const userDetectedFaces =
-    cloneDeep(getUserDetectedFaces(state, engineId)) || [];
+    cloneDeep(getUserEditedFaces(state, engineId)) || [];
   const userRemovedFaces =
     cloneDeep(getUserRemovedFaces(state, engineId)) || [];
 
@@ -519,7 +1194,8 @@ export const getFaceEngineAssetData = (state, tdoId, engineId) => {
 function addUserDetectedFaces(
   engineResults,
   userDetectedFaces,
-  userRemovedFaces
+  userRemovedFaces,
+  pendingFaceEdits = []
 ) {
   return map(engineResults, data => ({
     taskId: data.taskId,
@@ -533,7 +1209,8 @@ function addUserDetectedFaces(
         }
         return [
           ...accumulator,
-          find(userDetectedFaces, { guid: originalFaceObj.guid }) ||
+          find(pendingFaceEdits, { guid: originalFaceObj.guid }) ||
+            find(userDetectedFaces, { guid: originalFaceObj.guid }) ||
             originalFaceObj
         ];
       },
@@ -547,7 +1224,11 @@ export const saveFaceEdits = (tdoId, selectedEngineId) => {
     dispatch({
       type: SAVE_FACE_EDITS
     });
-    const assetData = getFaceEngineAssetData(getState(), tdoId, selectedEngineId);
+    const assetData = getFaceEngineAssetData(
+      getState(),
+      tdoId,
+      selectedEngineId
+    );
     const contentType = 'application/json';
     const type = 'vtn-standard';
     const createAssetCalls = [];

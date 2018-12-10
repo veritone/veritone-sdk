@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
-import { pick } from 'lodash';
-
+import { pick, find, get, findIndex, isArray, isObject } from 'lodash';
+import Grid from '@material-ui/core/Grid';
+import { AutoSizer, Grid as VirtualizedGrid } from 'react-virtualized';
 import NoFacesFound from '../NoFacesFound';
-import FaceDetectionBox from '../FaceDetectionBox';
-
+import FaceInfoBox from '../FaceInfoBox';
+import MultiEditActionBar from './MultiEditActionBar';
 import styles from './styles.scss';
 
 class FaceGrid extends Component {
@@ -12,7 +13,17 @@ class FaceGrid extends Component {
     faces: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
+    selectedFaces: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
         object: shape({
           label: string,
           originalImage: string
@@ -27,12 +38,27 @@ class FaceGrid extends Component {
       })
     ),
     editMode: bool,
+    hasRecognizedItems: bool,
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
-    onRemoveFaceDetection: func,
+    onRemoveFaces: func,
     onSearchForEntities: func,
-    isSearchingEntities: bool
+    isSearchingEntities: bool,
+    hideEntityLabels: bool,
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddToExistingEntity: func,
+    disableLibraryButtons: bool,
+    columnWidth: number
+  };
+
+  static defaultProps = {
+    columnWidth: 100
+  };
+
+  state = {
+    lastCheckedFace: null
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -42,41 +68,167 @@ class FaceGrid extends Component {
     }
   };
 
-  handleAddNewEntity = faceIdx => (face, entity) => {
-    this.props.onAddNewEntity(face);
+  handleAddNewEntity = (face, inputValue) => {
+    this.props.onAddNewEntity([face], inputValue);
   };
 
-  render() {
-    const { faces } = this.props;
+  handleSelectAll = evt => {
+    const { faces, onUnselectFaces, onSelectFaces } = this.props;
+    if (evt.target.checked) {
+      onSelectFaces(faces);
+    } else {
+      onUnselectFaces(faces);
+    }
+  };
+
+  handleAllToNewEntity = () => {
+    const { selectedFaces } = this.props;
+    this.props.onAddNewEntity(selectedFaces);
+  };
+
+  handleAddAllToExistingEntity = () => {
+    const { selectedFaces } = this.props;
+    this.props.onAddToExistingEntity(selectedFaces);
+  };
+
+  handleSingleFaceSelect = (face, evt) => {
+    const { faces, onUnselectFaces, onSelectFaces } = this.props;
+    const { lastCheckedFace } = this.state;
+    if (evt.target.checked) {
+      if (get(evt, 'nativeEvent.shiftKey') && lastCheckedFace) {
+        const selectedIndex = findIndex(faces, { guid: face.guid });
+        const lastIndex = findIndex(faces, { guid: lastCheckedFace.guid });
+        onSelectFaces(
+          faces.slice(
+            Math.min(selectedIndex, lastIndex),
+            Math.max(selectedIndex, lastIndex) + 1
+          )
+        );
+      } else {
+        onSelectFaces([face]);
+      }
+    } else {
+      onUnselectFaces([face]);
+    }
+    this.setState({
+      lastCheckedFace: { ...face }
+    });
+  };
+
+  handleRemoveFaces = faces => () => {
+    if (isArray(faces)) {
+      this.props.onRemoveFaces(faces);
+    } else if (isObject(faces)) {
+      this.props.onRemoveFaces([faces]);
+    }
+  };
+
+  renderCell = columnCount => ({
+    columnIndex,
+    isScrolling,
+    isVisible,
+    key,
+    parent,
+    rowIndex,
+    style
+  }) => {
+    const {
+      faces,
+      selectedFaces,
+      hideEntityLabels,
+      editMode,
+      entitySearchResults,
+      columnWidth
+    } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
-      'onRemoveFaceDetection',
       'onSearchForEntities',
       'isSearchingEntities'
     ]);
+    const face = faces[rowIndex * columnCount + columnIndex];
+    if (!face) {
+      return null;
+    }
+    const selectedFace = find(selectedFaces, { guid: face.guid });
+    return (
+      <div style={style} key={face.guid}>
+        <FaceInfoBox
+          isSelected={!!selectedFace}
+          onCheckboxClicked={this.handleSingleFaceSelect}
+          face={face}
+          enableEdit={editMode}
+          addNewEntity={this.handleAddNewEntity}
+          searchResults={entitySearchResults}
+          onClick={this.handleFaceClick(face)}
+          hideEntityLabel={hideEntityLabels}
+          onRemoveFace={this.handleRemoveFaces(face)}
+          width={columnWidth}
+          {...detectionBoxProps}
+        />
+      </div>
+    );
+  };
+
+  render() {
+    const {
+      faces,
+      selectedFaces,
+      editMode,
+      hasRecognizedItems,
+      disableLibraryButtons,
+      hideEntityLabels,
+      columnWidth
+    } = this.props;
 
     return (
-      <div className={styles.faceGrid}>
+      <Grid item container direction="column" className={styles.faceGrid}>
         {!faces.length ? (
-          <NoFacesFound />
+          <Grid item>
+            <NoFacesFound />
+          </Grid>
         ) : (
-          faces.map((face, idx) => {
-            return (
-              <FaceDetectionBox
-                key={`face-${face.guid}-${face.startTimeMs}-${face.stopTimeMs}-${
-                  face.object.uri
-                }`}
-                face={face}
-                enableEdit={this.props.editMode}
-                addNewEntity={this.handleAddNewEntity(idx)}
-                searchResults={this.props.entitySearchResults}
-                onClick={this.handleFaceClick(face)}
-                {...detectionBoxProps}
-              />
-            );
-          })
+          <Fragment>
+            {editMode && (
+              <Grid item>
+                <MultiEditActionBar
+                  selectedItemsCount={selectedFaces.length}
+                  itemType="Face"
+                  hasRecognizedItems={hasRecognizedItems}
+                  onSelectAllChange={this.handleSelectAll}
+                  onAddToExistingEntityClick={this.handleAddAllToExistingEntity}
+                  onAddNewEntityClick={this.handleAllToNewEntity}
+                  onDeleteItemClick={this.handleRemoveFaces(selectedFaces)}
+                  disableLibraryButtons={disableLibraryButtons}
+                />
+              </Grid>
+            )}
+            <div style={{ flex: '1 1 auto' }}>
+              <AutoSizer>
+                {({ width, height }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <VirtualizedGrid
+                      cellRenderer={this.renderCell(columnCount)}
+                      width={width}
+                      height={height}
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      rowCount={Math.ceil(faces.length / columnCount)}
+                      rowHeight={
+                        hideEntityLabels ? columnWidth + 22 : columnWidth + 42
+                      }
+                      overscanRowCount={3}
+                      style={{
+                        overflowX: 'hidden'
+                      }}
+                    />
+                  );
+                }}
+              </AutoSizer>
+            </div>
+          </Fragment>
         )}
-      </div>
+      </Grid>
     );
   }
 }

@@ -99,6 +99,7 @@ export const tdoInfoQueryClause = `id
     primaryAsset(assetType: "media") {
       id
       signedUri
+      contentType
     }
     streams {
       protocol

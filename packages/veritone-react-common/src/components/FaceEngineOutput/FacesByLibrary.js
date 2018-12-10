@@ -5,7 +5,7 @@ import Chip from '@material-ui/core//Chip';
 import Icon from '@material-ui/core//Icon';
 import { shape, string, objectOf, arrayOf, func, number } from 'prop-types';
 
-import {isEmpty, orderBy} from 'lodash';
+import { isEmpty, orderBy } from 'lodash';
 import noAvatar from 'images/no-avatar.png';
 import NoFacesFound from './NoFacesFound';
 import styles from './styles.scss';
@@ -29,25 +29,27 @@ const FacesByLibrary = ({ faceEntityLibraries, onSelectEntity }) => {
             </span>
           </div>
           <div className={styles.entityCountContainer}>
-            {orderBy(faceEntityLibraries[key].faces, ['count'], ['desc']).map(face => (
-              <Chip
-                key={`face-${face.entityId}`}
-                className={styles.entityCountChip}
-                label={
-                  <span>
-                    {`${face.fullName} `}
-                    <a>({face.count})</a>
-                  </span>
-                }
-                avatar={
-                  <Avatar
-                    className={styles.faceAvatar}
-                    src={face.profileImage || noAvatar}
-                  />
-                }
-                onClick={handleSelectEntity(face.entityId)}
-              />
-            ))}
+            {orderBy(faceEntityLibraries[key].faces, ['count'], ['desc']).map(
+              face => (
+                <Chip
+                  key={`face-${face.entityId}`}
+                  className={styles.entityCountChip}
+                  label={
+                    <span>
+                      {`${face.fullName} `}
+                      <a>({face.count})</a>
+                    </span>
+                  }
+                  avatar={
+                    <Avatar
+                      className={styles.faceAvatar}
+                      src={face.profileImage || noAvatar}
+                    />
+                  }
+                  onClick={handleSelectEntity(face.entityId)}
+                />
+              )
+            )}
           </div>
         </div>
       ))}

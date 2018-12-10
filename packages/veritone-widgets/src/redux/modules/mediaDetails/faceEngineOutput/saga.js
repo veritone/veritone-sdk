@@ -20,81 +20,52 @@ import * as gqlQuery from './queries';
 const {
   auth: authModule,
   config: configModule,
-  engineResults: engineResultsModule
+  engineResults: engineResultsModule,
+  user: userModule
 } = modules;
 
 /* WATCH FUNCTIONS */
 function* fetchEntities(entityIds) {
-  const entityQueries = gqlQuery.getEntities(entityIds);
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
 
+  const entitiesQuery = `
+    query entities($ids:[ID!]) {
+      entities(ids: $ids) {
+        records {
+          id
+          name
+          libraryId
+          library {
+            id
+            name
+          }
+          profileImageUrl
+          description
+          jsondata
+        }
+      }
+    }`;
+
   try {
     const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
-      query: `query{${entityQueries.join(' ')}}`,
-      token
+      query: entitiesQuery,
+      token,
+      variables: {
+        ids: entityIds
+      }
     });
 
-    yield put(faceEngineOutput.fetchEntitiesSuccess(response, { entityIds }));
+    yield put(
+      faceEngineOutput.fetchEntitiesSuccess(get(response, 'data'), {
+        entityIds
+      })
+    );
   } catch (error) {
     yield put(faceEngineOutput.fetchEntitiesFailure(error, { entityIds }));
-  }
-}
-
-function* fetchLibraries(action) {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const { libraryType } = action.payload;
-
-  try {
-    const response = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: gqlQuery.getLibrariesByType,
-      variables: { type: libraryType },
-      token
-    });
-
-    yield put(
-      faceEngineOutput.fetchLibrariesSuccess(response, { libraryType })
-    );
-  } catch (error) {
-    yield put(faceEngineOutput.fetchLibrariesFailure(error, { libraryType }));
-  }
-}
-
-function* createNewEntity(action) {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const { meta } = action;
-
-  try {
-    const response = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: gqlQuery.createEntity,
-      variables: { input: action.payload.entity },
-      token
-    });
-
-    if (response.errors) {
-      return faceEngineOutput.createEntityFailure(response);
-    }
-
-    yield put(
-      faceEngineOutput.addDetectedFace(
-        meta.selectedEngineId,
-        meta.faceObj,
-        response.data.entity
-      )
-    );
-  } catch (error) {
-    yield put(faceEngineOutput.createEntityFailure(error, meta));
   }
 }
 
@@ -129,6 +100,26 @@ function* searchForEntities(action) {
       },
       token
     });
+    if (get(response, 'data.libraries.records.length')) {
+      const usersOrgId = yield select(userModule.selectUserOrganizationId);
+      response.data.libraries.records = response.data.libraries.records.map(
+        library => {
+          return {
+            ...library,
+            entities: {
+              ...library.entities,
+              records: library.entities.records.map(entity => {
+                return {
+                  ...entity,
+                  ownedByOrganization:
+                    library.organizationId === String(usersOrgId)
+                };
+              })
+            }
+          };
+        }
+      );
+    }
 
     yield put(faceEngineOutput.fetchEntitySearchResultsSuccess(response, meta));
   } catch (error) {
@@ -180,20 +171,6 @@ function* watchFetchEngineResultsSuccess() {
   );
 }
 
-function* watchFetchLibraries() {
-  yield takeEvery(
-    action => action.type === faceEngineOutput.FETCH_LIBRARIES,
-    fetchLibraries
-  );
-}
-
-function* watchCreateEntity() {
-  yield takeEvery(
-    action => action.type === faceEngineOutput.CREATE_ENTITY,
-    createNewEntity
-  );
-}
-
 function* watchSearchEntities() {
   yield takeLatest(
     action => action.type === faceEngineOutput.SEARCH_ENTITIES,
@@ -215,13 +192,35 @@ function* watchMediaDetailCancelEdit() {
   });
 }
 
+function* watchRemoveFaceDetections() {
+  yield takeEvery([faceEngineOutput.REMOVE_FACES], function*({
+    payload: { faceObjects, selectedEngineId }
+  }) {
+    yield call(delay, 800);
+    yield put(
+      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects)
+    );
+  });
+}
+
+function* watchAddFaces() {
+  yield takeEvery([faceEngineOutput.ADD_DETECTED_FACE], function*({
+    payload: { faceObjects, selectedEngineId, entity }
+  }) {
+    yield call(delay, 800);
+    yield put(
+      faceEngineOutput.processAddedFaces(selectedEngineId, faceObjects, entity)
+    );
+  });
+}
+
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
     fork(watchFetchEngineResultsSuccess),
-    fork(watchFetchLibraries),
-    fork(watchCreateEntity),
     fork(watchSearchEntities),
     fork(watchMediaDetailCancelEdit, tdo.id),
+    fork(watchRemoveFaceDetections),
+    fork(watchAddFaces),
     fork(onMount, tdo, selectedEngineId)
   ]);
 }

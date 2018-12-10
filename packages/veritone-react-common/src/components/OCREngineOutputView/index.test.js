@@ -7,7 +7,7 @@ import OCREngineOutputView from './';
 const ocrAssets = [
   {
     startTimeMs: 0,
-    endTimeMs: 22000,
+    stopTimeMs: 22000,
     sourceEngineId: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
     sourceEngineName: 'Cortex',
     taskId:
