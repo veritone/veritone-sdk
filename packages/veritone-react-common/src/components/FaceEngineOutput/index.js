@@ -143,7 +143,6 @@ class FaceEngineOutput extends Component {
     lastCheckedFace: null
   };
 
-
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.props.activeTab) {
       this.props.onActiveTabChange(activeTab);
@@ -184,7 +183,6 @@ class FaceEngineOutput extends Component {
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      unrecognizedFaces,
       bulkEditActionItems,
       activeTab,
       onSelectFaces,
@@ -194,17 +192,39 @@ class FaceEngineOutput extends Component {
       selectedEntityId,
       onSelectEntity,
       hasLibraryAccess,
-      viewMode
+      viewMode,
+      entities,
+      isSearchingEntities
     } = this.props;
+    let { unrecognizedFaces, recognizedFaces } = this.props;
+    if (viewMode === 'byScene') {
+      unrecognizedFaces = unrecognizedFaces.filter(face => {
+        return (
+          currentMediaPlayerTime >= face.startTimeMs &&
+          currentMediaPlayerTime <= face.stopTimeMs
+        );
+      });
+      recognizedFaces = Object.keys(recognizedFaces).reduce((acc, entityId) => {
+        return {
+          ...acc,
+          [entityId]: recognizedFaces[entityId].filter(face => {
+            return (
+              currentMediaPlayerTime >= face.startTimeMs &&
+              currentMediaPlayerTime <= face.stopTimeMs
+            );
+          })
+        };
+      }, {});
+    }
 
     const recognizedFaceCount = reduce(
-      Object.values(this.props.recognizedFaces),
+      Object.values(recognizedFaces),
       (acc, faces) => {
         return acc + faces.length;
       },
       0
     );
-    const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const selectedEngine = find(engines, { id: selectedEngineId });
     const faceTabs = (
       <Tabs
         value={activeTab}
@@ -358,11 +378,11 @@ class FaceEngineOutput extends Component {
               <FaceEntities
                 editMode={editMode}
                 viewMode={viewMode}
-                faces={this.props.recognizedFaces}
+                faces={recognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
-                entities={this.props.entities}
+                entities={entities}
                 onSelectEntity={onSelectEntity}
                 selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
@@ -391,7 +411,7 @@ class FaceEngineOutput extends Component {
                 onRemoveFaces={onRemoveFaces}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
-                isSearchingEntities={this.props.isSearchingEntities}
+                isSearchingEntities={isSearchingEntities}
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
                 onAddToExistingEntity={onAddToExistingEntity}

@@ -590,7 +590,8 @@ const reducer = createReducer(defaultState, {
       ...state,
       selectedEntityId: null,
       activeTab,
-      viewMode: activeTab == 'faceDetection' && state.viewMode === 'byFrame'
+      viewMode:
+        activeTab == 'faceDetection' && state.viewMode === 'byFrame'
           ? 'summary'
           : state.viewMode,
       bulkEditActionItems: {
@@ -692,7 +693,6 @@ export const setViewMode = viewMode => ({
     viewMode
   }
 });
-
 
 export const getFaceDataByEngine = (state, engineId, tdoId) => {
   return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
@@ -904,8 +904,7 @@ export const getCurrentlyEditedFaces = state =>
 export const getInitialEntityName = state =>
   get(local(state), 'initialEntityName');
 
-export const isCreatingEntity = state =>
-  get(local(state), 'creatingEntity');
+export const isCreatingEntity = state => get(local(state), 'creatingEntity');
 
 export const createEntity = input => async (dispatch, getState) => {
   return await callGraphQLApi({
