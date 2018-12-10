@@ -76,7 +76,7 @@ async function callGraphQLApi({
     throw error;
   }
 
-  if (response.errors && response.errors.length) {
+  if ((response.errors && response.errors.length) || !response.ok) {
     dispatch({
       type: failureType,
       error: true,

@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import handleApiCall from './handleApiCall';
 import fetchingStatus from './fetchingStatus';
 
@@ -263,5 +264,48 @@ describe('handleApiCall reducer factory', function() {
       'my-first-request': fetchingStatus.failure,
       'my-second-request': fetchingStatus.success
     });
+  });
+
+  it("allows stateSelector to be provided, and uses it to look up state in an app's nested reducers", function() {
+    const {
+      reducer: testReducer,
+      selectors: {
+        fetchingStatusByRequestId,
+        fetchingStatus: selectFetchingStatus,
+        fetchingFailureMessage
+      }
+    } = handleApiCall({
+      types: [GET, GET_SUCCESS, GET_FAILURE],
+      stateSelector: state => state.test
+    });
+
+    const reducer = combineReducers({
+      app: state => ({}),
+      test: testReducer
+    });
+
+    const state = [
+      undefined,
+      {
+        type: GET,
+        meta: {
+          _internalRequestId: 1
+        }
+      },
+      {
+        type: GET_FAILURE,
+        error: true,
+        payload: 'there was an error',
+        meta: {
+          _internalRequestId: 1
+        }
+      }
+    ].reduce(reducer);
+
+    expect(fetchingStatusByRequestId(state)).toEqual({
+      1: fetchingStatus.failure
+    });
+    expect(selectFetchingStatus(state, 1)).toEqual(fetchingStatus.failure);
+    expect(fetchingFailureMessage(state, 1)).toEqual('there was an error');
   });
 });
