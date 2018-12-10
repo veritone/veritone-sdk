@@ -156,3 +156,8 @@
 * BoundingPolyOverlay: support readOnly attribute for individual bounding boxes
 * RaisedTextField: add tool tip support for action buttons
 * redux-form-material-ui: fix helperText typo
+
+## 6.5.0
+* added StatusPill
+* TopBar
+** Added ability to render an action button on the bar's left side
