@@ -9,6 +9,7 @@ export const entityFieldsFragment = `
       name
     }
     profileImageUrl
+    description
   }
 `;
 
@@ -26,24 +27,6 @@ export const getEngineResultsQuery = `
     }
   }`;
 
-export function getEntities(entityIds) {
-  return entityIds.map((id, index) => {
-    return `
-      entity${index}: entity(id:"${id}") {
-        id
-        name
-        libraryId
-        library {
-          id
-          name
-        }
-        profileImageUrl
-        jsondata
-      }
-    `;
-  });
-}
-
 export const getLibrariesByType = `
   query libraries($type: String) {
     libraries(type: $type) {
@@ -52,11 +35,49 @@ export const getLibrariesByType = `
         name
         libraryType {
           id
+          label
           entityTypeName
         }
       }
     }
   }`;
+
+export const getLibrariesByIdentifierType = `
+  query libraries($entityIdentifierTypeIds: [String!]) {
+    libraries(limit:500, entityIdentifierTypeIds: $entityIdentifierTypeIds, includeOwnedOnly:true) {
+      records {
+        id
+        name
+        libraryType {
+          id
+          label
+          entityTypeName
+        }
+      }
+    }
+  }`;
+
+export const getLibraryTypes = `
+  query {
+    libraryTypes {
+      records {
+        id
+        label
+        entityIdentifierTypes {
+          id
+        }
+      }
+    }
+  }`;
+
+export const createLibrary = `
+  mutation CreateLibrary($input: CreateLibrary!) {
+    createLibrary(input: $input) {
+      id
+      name
+    }
+  }  
+`;
 
 export const createEntity = `
   ${entityFieldsFragment}
@@ -68,14 +89,28 @@ export const createEntity = `
   }
 `;
 
+export const getEntityInLibrary = `
+  ${entityFieldsFragment}
+  query GetEntity($libraryIds: [ID!], $name: String!) {
+    entities(name: $name, libraryIds: $libraryIds) {
+      records {
+        ...entityFields
+        jsondata
+      }
+    }
+  }
+`;
+
 export const searchForEntities = `
   ${entityFieldsFragment}
   query SearchForEntities($type: String, $name: String) {
-    libraries(type: $type) {
+    libraries(limit:100, type: $type) {
       records {
+        organizationId
         entities(name: $name) {
           records {
             ...entityFields
+            jsondata
           }
         }
       }

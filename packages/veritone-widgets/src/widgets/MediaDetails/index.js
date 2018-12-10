@@ -38,7 +38,7 @@ import {
   isUndefined,
   isArray
 } from 'lodash';
-import { Manager, Target, Popper } from 'react-popper';
+import { Manager, Reference, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
@@ -652,14 +652,7 @@ class MediaDetailsWidget extends React.Component {
     });
   };
 
-  setMenuTarget = node => {
-    this.target1 = node;
-  };
-
   onMenuClose = event => {
-    if (event && this.target1.contains(event.target)) {
-      return;
-    }
     this.setState({ isMenuOpen: false });
   };
 
@@ -970,7 +963,7 @@ class MediaDetailsWidget extends React.Component {
     }
 
     return (
-      <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
+      <div className={cx(styles.mediaDetailsPage, className)}>
         {alertDialogConfig && (
           <Dialog
             open={alertDialogConfig.show}
@@ -1145,67 +1138,75 @@ class MediaDetailsWidget extends React.Component {
                     )}
                     {!!get(this.props, 'contextMenuExtensions.tdos.length') && (
                       <Manager>
-                        <Target>
-                          <div ref={this.setMenuTarget}>
-                            <IconButton
-                              className={styles.pageHeaderActionButton}
-                              aria-label="More"
-                              aria-haspopup="true"
-                              aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                              onClick={this.toggleIsMenuOpen}
-                            >
-                              <Tooltip
-                                id="tooltip-show-overflow-menu"
-                                title="Show more options"
-                                leaveDelay={20}
-                                PopperProps={{
-                                  style: {
-                                    pointerEvents: 'none'
-                                  }
-                                }}
+                        <Reference>
+                          {({ ref }) => (
+                            <div ref={ref}>
+                              <IconButton
+                                className={styles.pageHeaderActionButton}
+                                aria-label="More"
+                                aria-haspopup="true"
+                                aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                                onClick={this.toggleIsMenuOpen}
                               >
-                                <MoreVertIcon />
-                              </Tooltip>
-                            </IconButton>
-                          </div>
-                        </Target>
+                                <Tooltip
+                                  id="tooltip-show-overflow-menu"
+                                  title="Show more options"
+                                  leaveDelay={20}
+                                  PopperProps={{
+                                    style: {
+                                      pointerEvents: 'none'
+                                    }
+                                  }}
+                                >
+                                  <MoreVertIcon />
+                                </Tooltip>
+                              </IconButton>
+                            </div>
+                          )}
+                        </Reference>
                         {isMenuOpen && (
                           <Popper
-                            className={styles.popperContent}
                             placement="bottom-end"
                             eventsEnabled={isMenuOpen}
                           >
-                            <ClickAwayListener onClickAway={this.onMenuClose}>
-                              <Grow
-                                in={isMenuOpen}
-                                id="menu-list-grow"
-                                style={{ transformOrigin: '0 0 0' }}
+                            {({ ref, style, placement }) => (
+                              <div
+                                ref={ref}
+                                style={style}
+                                data-placement={placement}
+                                className={styles.popperContent}
                               >
-                                <Paper>
-                                  <MenuList role="menu">
-                                    {this.props.contextMenuExtensions &&
-                                      this.props.contextMenuExtensions.tdos.map(
-                                        tdoMenu => (
-                                          <MenuItem
-                                            key={tdoMenu.id}
-                                            classes={{
-                                              root: styles.headerMenuItem
-                                            }}
-                                            // eslint-disable-next-line
-                                            onClick={() =>
-                                              this.handleContextMenuClick(
-                                                tdoMenu
-                                              )
-                                            }
-                                          >
-                                            {tdoMenu.label}
-                                          </MenuItem>
-                                        )
-                                      )}
-                                  </MenuList>
-                                </Paper>
-                              </Grow>
-                            </ClickAwayListener>
+                                <ClickAwayListener
+                                  onClickAway={this.onMenuClose}
+                                >
+                                  <Grow in={isMenuOpen} id="menu-list-grow">
+                                    <Paper>
+                                      <MenuList role="menu">
+                                        {this.props.contextMenuExtensions &&
+                                          this.props.contextMenuExtensions.tdos.map(
+                                            tdoMenu => (
+                                              <MenuItem
+                                                key={tdoMenu.id}
+                                                classes={{
+                                                  root: styles.headerMenuItem
+                                                }}
+                                                // eslint-disable-next-line
+                                                onClick={() =>
+                                                  this.handleContextMenuClick(
+                                                    tdoMenu
+                                                  )
+                                                }
+                                              >
+                                                {tdoMenu.label}
+                                              </MenuItem>
+                                            )
+                                          )}
+                                      </MenuList>
+                                    </Paper>
+                                  </Grow>
+                                </ClickAwayListener>
+                              </div>
+                            )}
                           </Popper>
                         )}
                       </Manager>
@@ -1305,8 +1306,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    // eslint-disable-next-line
-                    onClick={() => cancelEdit(this.props.id, selectedEngineId)}
+                    onClick={this.toggleExpandedMode}
                     aria-label="Back"
                   >
                     <Icon
@@ -1314,6 +1314,15 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
+                  <Icon
+                    className={cx(
+                      selectedEngineCategory.iconClass,
+                      styles.engineCategoryIcon
+                    )}
+                  />
+                  <div className={styles.pageHeaderTitleLabelEditMode}>
+                    {selectedEngineCategory.name}
+                  </div>
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
@@ -1582,7 +1591,7 @@ class MediaDetailsWidget extends React.Component {
               onCancel={this.closeEngineOutputExport}
             />
           )}
-      </Dialog>
+      </div>
     );
   }
 }
