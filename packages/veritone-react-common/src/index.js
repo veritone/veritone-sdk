@@ -49,3 +49,4 @@ export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
 export Scheduler from './components/Scheduler';
+export StatusPill from './components/StatusPill';
