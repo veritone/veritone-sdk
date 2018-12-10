@@ -29,7 +29,7 @@ class RecognizedFaceMatch extends Component {
           <div className={styles.entityFullName}>{entity.fullName}</div>
         </div>
         <div>
-          {confidence && (
+          {!!confidence && (
             <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
               {Math.round(confidence * 100)}% Match
             </div>
