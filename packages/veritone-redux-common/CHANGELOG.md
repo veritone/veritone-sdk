@@ -88,3 +88,6 @@ This allows redux-common to use more than one version of the API.
 ## 3.11.0
 * Calls made with callGraphQLApi now fail on bad responses as well as graphql errors
 * add stateSelector to handleApiCall selectors so they can get data within an app's nested reducer
+
+## 3.11.1
+* revert "Calls made with callGraphQLApi now fail on bad responses as well as graphql errors"
