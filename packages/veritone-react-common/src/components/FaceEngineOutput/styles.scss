@@ -48,12 +48,17 @@
 
 .faceTabBody {
   padding-top: 20px;
-  overflow-y: auto;
-  border-top: 1px solid $grey-4;
-  flex: auto;
+  overflow-y: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-top: 1px solid $grey-4;
+  flex: 1 1 auto;
+}
+
+.editMode {
+  border-top: none;
+  padding-top: 15px;
 }
 
 .facesByLibrary {

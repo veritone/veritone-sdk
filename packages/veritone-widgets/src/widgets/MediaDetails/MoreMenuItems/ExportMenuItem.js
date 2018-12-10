@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { shape, arrayOf, string, func, bool } from 'prop-types';
 import { includes, without, find } from 'lodash';
-import { Manager, Target, Popper } from 'react-popper';
+import { Manager, Reference, Popper } from 'react-popper';
 import styles from './styles.scss';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -77,64 +77,78 @@ class ExportMenuItem extends Component {
 
     return (
       <Manager>
-        <Target>
-          <MenuItem
-            classes={{ root: styles.moreMenuItem }}
-            onClick={this.toggleSubMenu}
-          >
-            {label}
-            <ChevronRightIcon className={styles.rightArrowIcon} />
-          </MenuItem>
-        </Target>
+        <Reference>
+          {({ ref }) => (
+            <MenuItem
+              ref={ref}
+              classes={{ root: styles.moreMenuItem }}
+              onClick={this.toggleSubMenu}
+            >
+              {label}
+              <ChevronRightIcon className={styles.rightArrowIcon} />
+            </MenuItem>
+          )}
+        </Reference>
         {showSubMenu && (
           <Popper placement="left-start">
-            <Grow in={showSubMenu} id="sub-menu-list-grow">
-              <Paper className={styles.exportFormatMenu}>
-                <MenuList>
-                  <ListItem className={styles.subMenuTitle} disableGutters>
-                    TRANSCRIPTION{hasSubtitleFormats &&
-                    exportClosedCaptionsEnabled
-                      ? ' & SUBTITLES'
-                      : ''}
-                  </ListItem>
-                  {categoryExportFormats.map(format => {
-                    if (
-                      !exportClosedCaptionsEnabled &&
-                      includes(format.types, 'subtitle')
-                    ) {
-                      return null;
-                    }
-                    return (
-                      <MenuItem
-                        key={`format-menu-item-${format.format}`}
-                        className={styles.formatMenuItem}
-                        onClick={this.handleFormatToggle(format.format)}
-                      >
-                        <Checkbox
+            {({ ref, style, placement }) => (
+              <div
+                ref={ref}
+                style={{
+                  ...style,
+                  left: -300
+                }}
+                data-placement={placement}
+              >
+                <Grow in={showSubMenu} id="sub-menu-list-grow">
+                  <Paper className={styles.exportFormatMenu}>
+                    <MenuList>
+                      <ListItem className={styles.subMenuTitle} disableGutters>
+                        TRANSCRIPTION{hasSubtitleFormats &&
+                        exportClosedCaptionsEnabled
+                          ? ' & SUBTITLES'
+                          : ''}
+                      </ListItem>
+                      {categoryExportFormats.map(format => {
+                        if (
+                          !exportClosedCaptionsEnabled &&
+                          includes(format.types, 'subtitle')
+                        ) {
+                          return null;
+                        }
+                        return (
+                          <MenuItem
+                            key={`format-menu-item-${format.format}`}
+                            className={styles.formatMenuItem}
+                            onClick={this.handleFormatToggle(format.format)}
+                          >
+                            <Checkbox
+                              color="primary"
+                              checked={includes(selectedFormats, format.format)}
+                            />
+                            {`.${format.format} `}
+                            <span className={styles.formatLabel}>
+                              ({format.label})
+                            </span>
+                          </MenuItem>
+                        );
+                      })}
+                      <ListItem className={styles.subMenuActions}>
+                        <Button onClick={onMoreClicked}>More</Button>
+                        <Button
                           color="primary"
-                          checked={includes(selectedFormats, format.format)}
-                        />
-                        {`.${format.format} `}
-                        <span className={styles.formatLabel}>
-                          ({format.label})
-                        </span>
-                      </MenuItem>
-                    );
-                  })}
-                  <ListItem className={styles.subMenuActions}>
-                    <Button onClick={onMoreClicked}>More</Button>
-                    <Button
-                      color="primary"
-                      variant="raised"
-                      disabled={!selectedFormats.length}
-                      onClick={this.handleQuickExport}
-                    >
-                      Export
-                    </Button>
-                  </ListItem>
-                </MenuList>
-              </Paper>
-            </Grow>
+                          variant="raised"
+                          disabled={!selectedFormats.length}
+                          onClick={this.handleQuickExport}
+                        >
+                          Export
+                        </Button>
+                      </ListItem>
+                    </MenuList>
+                  </Paper>
+                </Grow>
+              </div>
+            )}
           </Popper>
         )}
       </Manager>

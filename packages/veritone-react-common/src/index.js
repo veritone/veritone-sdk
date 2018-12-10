@@ -87,3 +87,4 @@ export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
 export SharingConfiguration from './components/SharingConfiguration';
+export LibraryForm from './components/LibraryForm';
