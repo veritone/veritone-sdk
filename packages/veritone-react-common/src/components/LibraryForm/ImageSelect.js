@@ -84,7 +84,7 @@ class ImageSelect extends Component {
         data-veritone-component="image-input"
       >
         <input
-          accept="image/*"
+          accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif, image/tif, image/tiff"
           hidden
           id="browse-to-upload-button"
           type="file"
