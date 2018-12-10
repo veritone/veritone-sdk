@@ -680,7 +680,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleContextMenuClick = cme => {
-    if(cme.url) {
+    if(cme.url && cme.url !== '') {
       window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
     }
     this.props.handleCMESaga(cme, this.props.tdo.id);
