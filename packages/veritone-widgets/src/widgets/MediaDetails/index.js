@@ -1291,41 +1291,41 @@ class MediaDetailsWidget extends React.Component {
                             this.handleEngineCategoryChange
                           }
                         />
-                        <span className={styles.categoryIconDivider} />
-                        <Tab
-                          // eslint-disable-next-line
-                          onClick={() =>
-                            this.props.enableTagsView(this.props.id)
-                          }
-                          selected={this.props.isShowingTagsView}
-                          icon={
-                            <Tooltip
-                              id="tags-tab"
-                              title="Tags"
-                              classes={{
-                                tooltip: styles.categoryTabTooltip
-                              }}
-                            >
-                              <Icon
-                                className="icon-tag"
-                                classes={{ root: styles.categoryIcon }}
-                              />
-                            </Tooltip>
-                          }
-                          indicator={
-                            this.props.isShowingTagsView ? (
-                              <TabIndicator
-                                style={{ transition: 'none' }}
-                                color="primary"
-                              />
-                            ) : null
-                          }
-                          classes={{
-                            root: styles.accessoryTab,
-                            selected: styles.accessoryTabSelectedColor
-                          }}
-                        />
                       </div>
+                      <span className={styles.categoryIconDivider} />
+                      <Tab
+                        // eslint-disable-next-line
+                        onClick={() =>
+                          this.props.enableTagsView(this.props.id)
+                        }
+                        selected={this.props.isShowingTagsView}
+                        icon={
+                          <Tooltip
+                            id="tags-tab"
+                            title="Tags"
+                            classes={{
+                              tooltip: styles.categoryTabTooltip
+                            }}
+                          >
+                            <Icon
+                              className="icon-tag"
+                              classes={{ root: styles.categoryIcon }}
+                            />
+                          </Tooltip>
+                        }
+                        indicator={
+                          this.props.isShowingTagsView ? (
+                            <TabIndicator
+                              style={{ transition: 'none' }}
+                              color="primary"
+                            />
+                          ) : null
+                        }
+                        classes={{
+                          root: styles.accessoryTab,
+                          selected: styles.accessoryTabSelectedColor
+                        }}
+                      />
                     </div>
                   )}
               </div>

@@ -122,7 +122,6 @@
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     width: 100%;
 
     .engineCategorySelector {
@@ -130,38 +129,38 @@
       align-self: flex-end;
       display: flex;
       flex-direction: row;
+    }
 
-      .categoryIconDivider {
-        width: 1px;
-        margin: 12px 0;
-        background-color: $grey-4;
+    .categoryIconDivider {
+      width: 1px;
+      margin: 12px 0;
+      background-color: $grey-4;
+    }
+
+    .accessoryTab {
+      min-width: 58px;
+      width: 58px;
+      color: $light-black;
+      overflow: visible;
+      opacity: 1;
+
+      .categoryTabTooltip {
+        text-transform: capitalize;
+        width: 54px;
       }
 
-      .accessoryTab {
-        min-width: 58px;
-        width: 58px;
-        color: $light-black;
-        overflow: visible;
-        opacity: 1;
-
-        .categoryTabTooltip {
-          text-transform: capitalize;
-          width: 54px;
-        }
-
-        .categoryIcon {
-          font-size: 20px;
-          width: 54px;
-        }
+      .categoryIcon {
+        font-size: 20px;
+        width: 54px;
       }
+    }
 
-      .firstAccessoryTab {
-        border-left: 1px solid $grey-4;
-      }
+    .firstAccessoryTab {
+      border-left: 1px solid $grey-4;
+    }
 
-      .accessoryTabSelectedColor {
-        color: $full-black;
-      }
+    .accessoryTabSelectedColor {
+      color: $full-black;
     }
 
     .toEditModeButton {
