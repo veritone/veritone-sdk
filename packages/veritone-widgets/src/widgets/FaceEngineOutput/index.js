@@ -196,6 +196,7 @@ class FaceEngineOutputContainer extends Component {
     selectFaceObjects: func,
     removeSelectedFaceObjects: func,
     activeTab: string,
+    setActiveTab: func,
     onAddNewEntity: func,
     closeAddEntityDialog: func,
     closeAddToExistingEntityDialog: func,

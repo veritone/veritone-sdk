@@ -12,7 +12,7 @@ import styles from './styles.scss';
 
 export default class TagsView extends React.Component {
   static propTypes = {
-    tags: arrayOf(shape({})),
+    tags: arrayOf(shape({})).isRequired,
     showEditButton: bool,
     editModeEnabled: bool,
     onEditButtonClick: func,
@@ -108,8 +108,8 @@ export default class TagsView extends React.Component {
                   <Grid item>
                     <Image
                       src="//static.veritone.com/veritone-ui/tags-null.svg"
-                      width={80}
-                      height={80}
+                      width="80px"
+                      height="80px"
                       type="contain"
                     />
                   </Grid>
