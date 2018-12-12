@@ -1,7 +1,7 @@
 import React from 'react';
 import { func, number, string, bool } from 'prop-types';
 import cx from 'classnames';
-import Checkbox from '@material-ui/core/CheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
