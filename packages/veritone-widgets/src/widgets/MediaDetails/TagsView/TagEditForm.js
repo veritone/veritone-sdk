@@ -12,7 +12,11 @@ const TagEditForm = reduxForm({
     tags: []
   }
 })(({ handleSubmit, onCancel, submitting, pristine, invalid }) => (
-  <form onSubmit={handleSubmit} className={styles.tagEditForm}>
+  <form
+    onSubmit={handleSubmit}
+    className={styles.tagEditForm}
+    data-veritone-component="tag-edit-form"
+  >
     <Grid container direction="column" style={{ height: '100%' }}>
       <Grid item xs>
         <Field
@@ -20,6 +24,7 @@ const TagEditForm = reduxForm({
           label="Tag Name(s)"
           placeholder="Enter one or more tags (comma-separated)"
           component={TagsField}
+          data-veritone-element="tags-field"
         />
       </Grid>
       <Grid item className={styles.actionButtonsEditMode}>
@@ -27,6 +32,7 @@ const TagEditForm = reduxForm({
           className={styles.actionButtonEditMode}
           onClick={onCancel}
           disabled={submitting}
+          data-veritone-element="cancel-button"
         >
           CANCEL
         </Button>
@@ -36,6 +42,7 @@ const TagEditForm = reduxForm({
           disabled={submitting || pristine || invalid}
           variant="contained"
           color="primary"
+          data-veritone-element="save-button"
         >
           SAVE
         </Button>

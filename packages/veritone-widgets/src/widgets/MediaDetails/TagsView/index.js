@@ -28,7 +28,12 @@ export default class TagsView extends React.Component {
       onSubmit
     } = this.props;
     return (
-      <Grid className={styles.tagsView} container direction="column">
+      <Grid
+        className={styles.tagsView}
+        container
+        direction="column"
+        data-veritone-component="tags-view"
+      >
         <Grid item container justify="space-between" alignItems="center">
           {!editModeEnabled && (
             <Grid item className={styles.tagsTitle}>
@@ -45,6 +50,7 @@ export default class TagsView extends React.Component {
                   classes={{
                     root: styles.editButton
                   }}
+                  data-veritone-element="edit-tags-icon-button"
                 >
                   <Icon className="icon-mode_edit2" />
                 </IconButton>
@@ -132,6 +138,7 @@ export default class TagsView extends React.Component {
                         variant="contained"
                         color="primary"
                         onClick={onEditButtonClick}
+                        data-veritone-element="add-tags-button"
                       >
                         Add Tags
                       </Button>

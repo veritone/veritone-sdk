@@ -134,6 +134,7 @@ export default class TagsField extends Component {
             shrink: styles.shrink
           }
         }}
+        data-veritone-component="tags-field"
       />
     );
   }

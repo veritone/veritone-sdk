@@ -1295,9 +1295,7 @@ class MediaDetailsWidget extends React.Component {
                       <span className={styles.categoryIconDivider} />
                       <Tab
                         // eslint-disable-next-line
-                        onClick={() =>
-                          this.props.enableTagsView(this.props.id)
-                        }
+                        onClick={() => this.props.enableTagsView(this.props.id)}
                         selected={this.props.isShowingTagsView}
                         icon={
                           <Tooltip
