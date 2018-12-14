@@ -11,7 +11,8 @@ import {
   func,
   arrayOf,
   shape,
-  number
+  number,
+  object
 } from 'prop-types';
 
 import veritoneLogo from 'images/veritone-logo-white.svg';
