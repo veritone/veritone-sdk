@@ -409,31 +409,57 @@ export default class SpeakerTranscriptContent extends Component {
 
       return speakerSnippetSegments;
     } else {
-      const overviewSegments = parsedData.overviewSegments.map(segmentData => {
-        const segmentStartTime = segmentData.startTimeMs;
-        const segmentStopTime = segmentData.stopTimeMs;
-        const segmentContent = (
-          <EditableWrapper
-            key={'transcript-snippet' + segmentData.startTimeMs}
-            content={segmentData}
-            editMode={editMode}
-            onChange={this.handleDataChanged}
-            onClick={this.handleOnClick}
-            startMediaPlayHeadMs={mediaPlayerTimeMs}
-            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            classNames={classNames(styles.contentSegment)}
-            wordGuidMap={parsedData.wordGuidMap}
-          />
-        );
+      // Only use content editable in edit mode since it would impact performance heavily
+      if (editMode) {
+        const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+          const segmentStartTime = segmentData.startTimeMs;
+          const segmentStopTime = segmentData.stopTimeMs;
+          const segmentContent = (
+            <EditableWrapper
+              key={'transcript-snippet' + segmentData.startTimeMs}
+              content={segmentData}
+              editMode={editMode}
+              onChange={this.handleDataChanged}
+              onClick={this.handleOnClick}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              classNames={classNames(styles.contentSegment)}
+              wordGuidMap={parsedData.wordGuidMap}
+            />
+          );
 
-        return {
-          start: segmentStartTime,
-          stop: segmentStopTime,
-          content: segmentContent
-        };
-      });
+          return {
+            start: segmentStartTime,
+            stop: segmentStopTime,
+            content: segmentContent
+          };
+        });
 
-      return overviewSegments;
+        return overviewSegments;
+      } else {
+        const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+          const segmentStartTime = segmentData.startTimeMs;
+          const segmentStopTime = segmentData.stopTimeMs;
+          const segmentContent = (
+            <OverviewSegment
+              key={'transcript-overview' + segmentStartTime}
+              content={segmentData}
+              onClick={this.handleOnClick}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              classNames={classNames(styles.contentSegment)}
+            />
+          );
+
+          return {
+            start: segmentStartTime,
+            stop: segmentStopTime,
+            content: segmentContent
+          };
+        });
+
+        return overviewSegments;
+      }
     }
   };
 

@@ -172,7 +172,7 @@ const transcriptReducer = createReducer(initialState, {
 
   [RECEIVE_DATA](state, action) {
     const past = state.past;
-    const { data } = action;
+    const { data, editableData } = action;
 
     // const oldData = (past && past.length > 0) ? past[0].toJS() : state.data;     // with immutable js
     const oldData = get(past, '[0]', state.data); // without immutable js
@@ -182,7 +182,7 @@ const transcriptReducer = createReducer(initialState, {
     } else {
       // const present = fromJS(data);    // with immutable js
       const present = cloneDeep(data); // without immutable js
-      return { ...state, data: data, past: [], future: [], present: present };
+      return { ...state, data: data, editableData: editableData, past: [], future: [], present: present };
     }
   },
   [SAVE_TRANSCRIPT_EDITS](state) {
@@ -389,7 +389,7 @@ export const redo = () => ({ type: REDO });
 export const reset = () => ({ type: RESET });
 export const change = newData => ({ type: CHANGE, data: newData });
 export const clearData = () => ({ type: CLEAR_DATA });
-export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData });
+export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData, editableData: cloneDeep(newData) });
 export const editTranscriptButtonClick = () => {
   return {
     type: TRANSCRIPT_EDIT_BUTTON_CLICKED
@@ -422,6 +422,7 @@ function local(state) {
   return state[transcriptNamespace];
 }
 export const currentData = state => get(local(state), 'data');
+export const editableData = state => get(local(state), 'editableData');
 export const hasUserEdits = state => {
   const history = get(local(state), 'past');
   return history && history.length > 0;

@@ -28,6 +28,7 @@ const saga = util.reactReduxSaga.saga;
   (state, { tdo, selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
+    editableData: TranscriptRedux.editableData(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       tdo.id,
@@ -402,11 +403,14 @@ export default class TranscriptEngineOutputContainer extends Component {
     }
 
     const speakerEngines = get(this.props, ['combineEngines', this.props.combineCategory], []);
+    const activeData = this.props.editModeEnabled ?
+      this.props.editableData :
+      this.props.currentData;
 
     return (
       <Fragment>
         <TranscriptEngineOutput
-          data={this.props.currentData}
+          data={activeData}
           {...transcriptEngineProps}
           bulkEditEnabled={bulkEditEnabled}
           editMode={this.props.editModeEnabled}

@@ -230,7 +230,7 @@ function genMockSerie(
 
     let lastStopTime = startTimeMs;
     for (let entryIndex = 0; entryIndex < serieSize; entryIndex++) {
-      const numWords = Math.round(Math.random() * 10);
+      const numWords = Math.ceil(Math.random() * 10);
       const words = genMockWords(numWords, type);
       const newStopTime = Math.ceil(lastStopTime + timeInterval);
       const entry = {
