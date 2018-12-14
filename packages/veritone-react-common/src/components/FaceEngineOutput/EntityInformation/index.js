@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { shape, string, number, func, arrayOf } from 'prop-types';
+import { shape, string, number, func, arrayOf, bool } from 'prop-types';
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { startCase } from 'lodash';
+import Grid from '@material-ui/core/Grid';
+import { startCase, get } from 'lodash';
 
-import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
+import FaceGrid from '../FaceGrid';
 
 import styles from './styles.scss';
 
@@ -21,16 +22,35 @@ class EntityInformation extends Component {
       profileImage: string
     }).isRequired,
     count: number,
-    timeSlots: arrayOf(
+    faces: arrayOf(
       shape({
         startTimeMs: number,
         stopTimeMs: number,
-        originalImage: string,
-        confidence: number
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
+    selectedFaces: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
       })
     ),
     onBackClicked: func,
-    onOccurrenceClicked: func
+    onOccurrenceClicked: func,
+    editModeEnabled: bool,
+    onRemoveFaceRecognition: func,
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddNewEntity: func,
+    onAddToExistingEntity: func,
+    hasLibraryAccess: bool
   };
 
   state = {
@@ -43,26 +63,36 @@ class EntityInformation extends Component {
     }
   };
 
-  handleFaceOccurrenceClicked = face => evt => {
-    this.props.onOccurrenceClicked &&
-      this.props.onOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
-  };
-
   render() {
-    const { entity, count, timeSlots, onBackClicked } = this.props;
+    const {
+      entity,
+      count,
+      faces,
+      onBackClicked,
+      editModeEnabled,
+      onRemoveFaceRecognition,
+      selectedFaces,
+      onSelectFaces,
+      onUnselectFaces,
+      onAddNewEntity,
+      onAddToExistingEntity,
+      hasLibraryAccess
+    } = this.props;
 
     return (
-      <div>
-        <Button
-          color="default"
-          className={styles.entityBackButton}
-          onClick={onBackClicked}
-        >
-          <Icon
-            className={classNames(styles.entityBackIcon, 'icon-arrow-back')}
-          />
-          <span className={styles.entityBackLabel}>Back</span>
-        </Button>
+      <div className={styles.entityInformation}>
+        <div className={styles.entityBackButtonContainer}>
+          <Button
+            color="default"
+            className={styles.entityBackButton}
+            onClick={onBackClicked}
+          >
+            <Icon
+              className={classNames(styles.entityBackIcon, 'icon-arrow-back')}
+            />
+            <span className={styles.entityBackLabel}>Back</span>
+          </Button>
+        </div>
         <div className={styles.selectedEntity}>
           <img
             className={styles.entityProfileImage}
@@ -81,7 +111,7 @@ class EntityInformation extends Component {
             </div>
           </div>
         </div>
-        <div>
+        <div className={styles.selectedEntityTabs}>
           <Tabs
             value={this.state.activeTab}
             onChange={this.handleTabChange}
@@ -92,46 +122,54 @@ class EntityInformation extends Component {
               value="faceMatches"
               classes={{ root: styles.infoTab }}
             />
-            <Tab
-              label="Metadata"
-              value="metadata"
-              classes={{ root: styles.infoTab }}
-            />
+            {(Object.keys(get(entity, 'jsondata', {})).length ||
+              get(entity, 'description.length')) && (
+              <Tab
+                label="Metadata"
+                value="metadata"
+                classes={{ root: styles.infoTab }}
+              />
+            )}
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
-              {timeSlots.length && (
-                <div className={styles.faceOccurrenceList}>
-                  {timeSlots.map(timeSlot => {
-                    return (
-                      <div
-                        onClick={this.handleFaceOccurrenceClicked(timeSlot)}
-                        className={styles.faceOccurrence}
-                        key={`face-match-${entity.entityId}-${
-                          timeSlot.startTimeMs
-                        }-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
-                      >
-                        <span className={styles.faceOccurrenceTimestamp}>
-                          {msToReadableString(timeSlot.startTimeMs)} -{' '}
-                          {msToReadableString(timeSlot.stopTimeMs)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <FaceGrid
+                itemsRecognized
+                faces={faces}
+                selectedFaces={selectedFaces}
+                onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
+                hideEntityLabels
+                editMode={editModeEnabled}
+                onRemoveFaces={onRemoveFaceRecognition}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
+                onAddNewEntity={onAddNewEntity}
+                onAddToExistingEntity={onAddToExistingEntity}
+                disableLibraryButtons={!hasLibraryAccess}
+              />
             </div>
           )}
           {this.state.activeTab === 'metadata' && (
-            <div className={styles.tabContainer}>
-              <div className={styles.entityJson}>
+            <Grid container className={styles.tabContainer}>
+              <Grid item container direction="row">
                 {entity.jsondata &&
                   !!Object.keys(entity.jsondata).length &&
-                  Object.keys(entity.jsondata).map((objKey, index) => {
+                  Object.keys(entity.jsondata).map(objKey => {
                     return (
-                      <div
+                      <Grid
                         key={`entity-${entity.entityId}-jsondata-${objKey}`}
                         className={styles.jsondataItem}
+                        item
+                        xs={
+                          get(entity, ['jsondata', objKey, 'length']) > 50
+                            ? 12
+                            : 4
+                        }
+                        md={
+                          get(entity, ['jsondata', objKey, 'length']) > 50
+                            ? 12
+                            : 3
+                        }
                       >
                         <div className={styles.metadataLabel}>
                           {startCase(objKey)}
@@ -139,11 +177,19 @@ class EntityInformation extends Component {
                         <div className={styles.metadataValue}>
                           {entity.jsondata[objKey]}
                         </div>
-                      </div>
+                      </Grid>
                     );
                   })}
-              </div>
-            </div>
+                {get(entity, 'description.length') && (
+                  <Grid className={styles.jsondataItem} item xs={12}>
+                    <div className={styles.metadataLabel}>Description</div>
+                    <div className={styles.metadataValue}>
+                      {entity.description}
+                    </div>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
           )}
         </div>
       </div>

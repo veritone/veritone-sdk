@@ -20,7 +20,7 @@ class FacesByFrame extends Component {
       objectOf(
         shape({
           startTimeMs: number,
-          endTimeMs: number,
+          stopTimeMs: number,
           originalImage: string,
           entities: arrayOf(
             shape({

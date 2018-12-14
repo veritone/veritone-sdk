@@ -2,20 +2,11 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { util, modules } from 'veritone-redux-common';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
-import { pick, head, get } from 'lodash';
+import { pick, get, isArray, isObject } from 'lodash';
 import {
   shape,
   number,
@@ -32,8 +23,10 @@ import { FaceEngineOutput, AlertDialog } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
+import AddNewEntityDialog from './EntityDialogs/AddNewEntity';
+import AddToAnExistingEntityDialog from './EntityDialogs/AddToExisting';
 
-const { engineResults: engineResultsModule } = modules;
+const { engineResults: engineResultsModule, user: userModule } = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -60,15 +53,22 @@ const saga = util.reactReduxSaga.saga;
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
     error: faceEngineOutput.getError(state),
-    editModeEnabled: faceEngineOutput.getEditModeEnabled(state)
+    editModeEnabled: faceEngineOutput.getEditModeEnabled(state),
+    bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state),
+    activeTab: faceEngineOutput.getActiveTab(state),
+    selectedEntityId: faceEngineOutput.getSelectedEntityId(state),
+    hasLibraryAccess: userModule.hasOrgAppAccess(
+      state,
+      'cf05552b-52e0-46fa-8f7f-4c9eee135c51' // library-app app id
+    ), //TODO: find a better way to check for app access other than hard coding the id
+    viewMode: faceEngineOutput.getViewMode(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
-    fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
-    removeDetectedFace: faceEngineOutput.removeDetectedFace,
+    removeFaces: faceEngineOutput.removeFaces,
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
@@ -77,7 +77,18 @@ const saga = util.reactReduxSaga.saga;
     onEditButtonClick: faceEngineOutput.editFaceButtonClick,
     saveFaceEdits: faceEngineOutput.saveFaceEdits,
     closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar,
-    toggleEditMode: faceEngineOutput.toggleEditMode
+    toggleEditMode: faceEngineOutput.toggleEditMode,
+    selectFaceObjects: faceEngineOutput.selectFaceObjects,
+    removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects,
+    setActiveTab: faceEngineOutput.setActiveTab,
+    onAddNewEntity: faceEngineOutput.openAddEntityDialog,
+    closeAddEntityDialog: faceEngineOutput.closeAddEntityDialog,
+    onAddToExistingEntity: faceEngineOutput.openAddToExistingEntityDialog,
+    closeAddToExistingEntityDialog:
+      faceEngineOutput.closeAddToExistingEntityDialog,
+    setSelectedEntityId: faceEngineOutput.setSelectedEntityId,
+    fetchUserSettings: userModule.fetchUserSettings,
+    setViewMode: faceEngineOutput.setViewMode
   },
   null,
   { withRef: true }
@@ -158,7 +169,6 @@ class FaceEngineOutputContainer extends Component {
     onSearchForEntities: func,
     onExpandClicked: func,
     outputNullState: node,
-    fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
     isFetchingLibraries: bool,
@@ -167,7 +177,7 @@ class FaceEngineOutputContainer extends Component {
     fetchEngineResults: func,
     fetchEntitySearchResults: func,
     addDetectedFace: func,
-    removeDetectedFace: func,
+    removeFaces: func,
     createEntity: func,
     showConfirmationDialog: bool,
     cancelFaceEdits: func,
@@ -184,29 +194,35 @@ class FaceEngineOutputContainer extends Component {
     savingFaceEdits: bool,
     error: string,
     closeErrorSnackbar: func,
-    toggleEditMode: func
+    toggleEditMode: func,
+    selectFaceObjects: func,
+    removeSelectedFaceObjects: func,
+    activeTab: string,
+    setActiveTab: func,
+    onAddNewEntity: func,
+    closeAddEntityDialog: func,
+    closeAddToExistingEntityDialog: func,
+    selectedEntityId: string,
+    setSelectedEntityId: func,
+    hasLibraryAccess: bool,
+    fetchUserSettings: func,
+    viewMode: string,
+    setViewMode: func
   };
 
   state = {
-    currentlyEditedFace: null, // selected unrecognized face object from which to create a new 'entity'
-    dialogOpen: false,
-    newEntity: {
-      libraryId: '',
-      name: ''
-    },
     showFaceDetectionDoneSnack: false,
     faceDetectionDoneEntity: null
   };
+
+  componentDidMount() {
+    this.props.fetchUserSettings();
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const {
       faces: { unrecognizedFaces }
     } = nextProps;
-
-    // set the first library as default (for `New Entity` form)
-    if (!this.props.libraries.length && nextProps.libraries.length) {
-      this.setNewEntityLibrary(head(nextProps.libraries).id);
-    }
 
     // disable editing if they are no unrecognized faces
     if (
@@ -241,91 +257,28 @@ class FaceEngineOutputContainer extends Component {
     this.props.fetchEntitySearchResults('people', searchText);
   };
 
-  handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity) => {
-    this.props.addDetectedFace(
-      this.props.selectedEngineId,
-      currentlyEditedFace,
-      selectedEntity
-    );
-
-    this.showFaceDetectionDoneSnack(selectedEntity);
+  handleRemoveFaces = faceObjects => {
+    this.props.removeFaces(this.props.selectedEngineId, faceObjects);
   };
 
-  openDialog = () => {
-    this.setState({ dialogOpen: true });
-  };
-  closeDialog = () => {
-    this.setState({
-      dialogOpen: false
-    });
-  };
-
-  handleAddNewEntity = currentlyEditedFace => {
-    if (!this.props.libraries.length) {
-      this.props.fetchLibraries({
-        libraryType: 'people'
-      });
+  handleFaceUpdates = (updatedFaces, entity) => {
+    if (isArray(updatedFaces)) {
+      this.props.addDetectedFace(
+        this.props.selectedEngineId,
+        updatedFaces,
+        entity
+      );
+    } else if (isObject(updatedFaces)) {
+      this.props.addDetectedFace(
+        this.props.selectedEngineId,
+        [updatedFaces],
+        entity
+      );
     }
 
-    this.openDialog();
-    this.setState({
-      currentlyEditedFace
-    });
-  };
-
-  handleNewEntityLibraryChange = e => {
-    this.setNewEntityLibrary(e.target.value);
-  };
-
-  handleRemoveFaceDetection = faceObj => {
-    this.props.removeDetectedFace(this.props.selectedEngineId, faceObj);
-  };
-
-  setNewEntityLibrary = libraryId => {
-    this.setState(prevState => ({
-      newEntity: {
-        ...prevState.newEntity,
-        libraryId
-      }
-    }));
-  };
-
-  setNewEntityName = e => {
-    e.persist();
-    this.setState(prevState => ({
-      newEntity: {
-        ...prevState.newEntity,
-        name: e.target.value
-      }
-    }));
-  };
-
-  clearNewEntityForm = () => {
-    this.setState(prevState => ({
-      newEntity: {
-        libraryId: '',
-        name: ''
-      }
-    }));
-  };
-
-  saveNewEntity = () => {
-    const entity = {
-      ...this.state.newEntity,
-      profileImageUrl: this.state.currentlyEditedFace.object.uri
-    };
-
-    this.props.createEntity(
-      { entity },
-      {
-        selectedEngineId: this.props.selectedEngineId,
-        faceObj: this.state.currentlyEditedFace
-      }
-    );
-
     this.showFaceDetectionDoneSnack(entity);
-
-    return this.closeDialog();
+    this.props.closeAddEntityDialog();
+    this.props.closeAddToExistingEntityDialog();
   };
 
   showFaceDetectionDoneSnack = entity => {
@@ -347,7 +300,10 @@ class FaceEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
-    this.props.clearEngineResultsByEngineId(tdo.id, this.props.selectedEngineId);
+    this.props.clearEngineResultsByEngineId(
+      tdo.id,
+      this.props.selectedEngineId
+    );
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,
@@ -356,125 +312,6 @@ class FaceEngineOutputContainer extends Component {
         Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
       ignoreUserEdited: !showUserEdited
     });
-  };
-
-  renderAddNewEntityModal = () => {
-    const { isFetchingLibraries, libraries } = this.props;
-    return (
-      <Dialog
-        open={this.state.dialogOpen}
-        onClose={this.closeDialog}
-        aria-labelledby="new-entity-title"
-        disableBackdropClick
-        onExited={this.clearNewEntityForm}
-        classes={{
-          paper: styles.editNewEntityDialogPaper
-        }}
-      >
-        <DialogTitle
-          id="new-entity-title"
-          classes={{
-            root: styles.dialogTitle
-          }}
-        >
-          <div className={styles.dialogTitleLabel}>Add New</div>
-          <IconButton
-            onClick={this.closeDialog}
-            aria-label="Close"
-            classes={{
-              root: styles.closeButton
-            }}
-          >
-            <Icon className="icon-close-exit" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            classes={{
-              root: styles.dialogHintText
-            }}
-          >
-            Identify and help train face recognition engines to find this
-            individual. You can view and add additional images in the Library
-            application.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="normal"
-            id="name"
-            label="Name"
-            fullWidth
-            required
-            classes={{
-              root: styles.inputField
-            }}
-            value={this.state.newEntity.name || ''}
-            onChange={this.setNewEntityName}
-          />
-          <TextField
-            id="select-library"
-            select
-            label="Choose Library"
-            margin="normal"
-            fullWidth
-            required
-            classes={{
-              root: styles.inputField
-            }}
-            value={
-              this.state.newEntity.libraryId ||
-              (libraries.length ? libraries[0].id : 'Loading...')
-            }
-            onChange={this.handleNewEntityLibraryChange}
-            SelectProps={{
-              MenuProps: {
-                /* temporary fix to address scrolling issue discussed here: https://github.com/mui-org/material-ui/issues/10601 */
-                PaperProps: {
-                  style: {
-                    transform: 'translate3d(0, 0, 0)',
-                    fontSize: '14px'
-                  }
-                }
-              },
-              classes: {
-                root: styles.librarySelect
-              }
-            }}
-          >
-            {isFetchingLibraries ? (
-              <MenuItem
-                value={'Loading...'}
-                classes={{
-                  root: styles.librarySelectMenuItem
-                }}
-              >
-                {'Loading...'}
-              </MenuItem>
-            ) : (
-              libraries.map(library => (
-                <MenuItem
-                  key={library.id}
-                  value={library.id}
-                  classes={{
-                    root: styles.librarySelectMenuItem
-                  }}
-                >
-                  {library.name}
-                </MenuItem>
-              ))
-            )}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.closeDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.saveNewEntity} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
   };
 
   handleEngineChange = engineId => {
@@ -487,7 +324,8 @@ class FaceEngineOutputContainer extends Component {
       selectedEngineId,
       toggleEditMode,
       saveFaceEdits,
-      fetchEngineResults
+      fetchEngineResults,
+      setSelectedEntityId
     } = this.props;
     saveFaceEdits(tdo.id, selectedEngineId).then(res => {
       fetchEngineResults({
@@ -498,7 +336,9 @@ class FaceEngineOutputContainer extends Component {
           Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
         ignoreUserEdited: false
       });
+      setSelectedEntityId(null);
       toggleEditMode();
+
       return res;
     });
   };
@@ -516,9 +356,7 @@ class FaceEngineOutputContainer extends Component {
   };
 
   handleDialogConfirm = () => {
-    const {
-      closeConfirmationDialog
-    } = this.props;
+    const { closeConfirmationDialog } = this.props;
 
     this.onSaveEdits();
     closeConfirmationDialog();
@@ -562,7 +400,15 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities',
       'onRestoreOriginalClick',
       'outputNullState',
-      'disableEditButton'
+      'disableEditButton',
+      'bulkEditActionItems',
+      'activeTab',
+      'moreMenuItems',
+      'onAddNewEntity',
+      'onAddToExistingEntity',
+      'selectedEntityId',
+      'hasLibraryAccess',
+      'viewMode'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -592,13 +438,16 @@ class FaceEngineOutputContainer extends Component {
             this.props.showEditButton && !this.props.editModeEnabled
           }
           onEngineChange={this.handleEngineChange}
-          onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}
-          onEditFaceDetection={this.handleFaceDetectionEntitySelect}
-          onRemoveFaceDetection={this.handleRemoveFaceDetection}
+          onEditFaceDetection={this.handleFaceUpdates}
+          onRemoveFaces={this.handleRemoveFaces}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
-          moreMenuItems={this.props.moreMenuItems}
+          onSelectFaces={this.props.selectFaceObjects}
+          onUnselectFaces={this.props.removeSelectedFaceObjects}
+          onSelectEntity={this.props.setSelectedEntityId}
+          onActiveTabChange={this.props.setActiveTab}
+          onViewModeChange={this.props.setViewMode}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
@@ -622,7 +471,14 @@ class FaceEngineOutputContainer extends Component {
             </Button>
           </div>
         )}
-        {this.renderAddNewEntityModal()}
+        <AddNewEntityDialog
+          onSubmit={this.handleFaceUpdates}
+          onCancel={this.props.closeAddEntityDialog}
+        />
+        <AddToAnExistingEntityDialog
+          onSubmit={this.handleFaceUpdates}
+          onClose={this.props.closeAddToExistingEntityDialog}
+        />
         {this.renderFaceDetectionDoneSnackbar()}
         <AlertDialog
           open={this.props.showConfirmationDialog}

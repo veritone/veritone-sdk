@@ -61,9 +61,10 @@ class FaceEngineOutput extends Component {
     outputNullState: node,
     currentMediaPlayerTime: number,
     onAddNewEntity: func,
+    onAddToExistingEntity: func,
     className: string,
     onFaceOccurrenceClicked: func,
-    onRemoveFaceDetection: func,
+    onRemoveFaces: func,
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
@@ -100,33 +101,57 @@ class FaceEngineOutput extends Component {
     showEditButton: bool,
     onEditButtonClick: func,
     disableEditButton: bool,
-    onRestoreOriginalClick: func.isRequired
+    onRestoreOriginalClick: func.isRequired,
+    bulkEditActionItems: shape({
+      faceDetection: arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string
+          })
+        })
+      ),
+      faceRecognition: arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string,
+            confidence: number,
+            type: string,
+            entityId: string.isRequired,
+            libraryId: string.isRequired
+          })
+        })
+      )
+    }),
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    activeTab: string,
+    onActiveTabChange: func,
+    selectedEntityId: string,
+    onSelectEntity: func,
+    hasLibraryAccess: bool,
+    viewMode: string,
+    onViewModeChange: func
   };
 
   state = {
-    activeTab: 'faceRecognition',
-    viewMode: 'summary'
+    lastCheckedFace: null
   };
 
-  static getDerivedStateFromProps(nextProps, state) {
-    if (nextProps.editMode && state.viewMode !== 'summary') {
-      return {
-        viewMode: 'summary'
-      };
-    }
-    return null;
-  }
-
   handleTabChange = (event, activeTab) => {
-    if (activeTab !== this.state.activeTab) {
-      this.setState({ activeTab });
+    if (activeTab !== this.props.activeTab) {
+      this.props.onActiveTabChange(activeTab);
     }
   };
 
   handleViewModeChange = evt => {
-    this.setState({
-      viewMode: evt.target.value
-    });
+    this.props.onViewModeChange(evt.target.value);
+    this.props.onSelectEntity(null);
   };
 
   handleUserEditChange = evt => {
@@ -146,7 +171,6 @@ class FaceEngineOutput extends Component {
       className,
       onFaceOccurrenceClicked,
       currentMediaPlayerTime,
-      onRemoveFaceDetection,
       onEditFaceDetection,
       onSearchForEntities,
       engines,
@@ -159,20 +183,51 @@ class FaceEngineOutput extends Component {
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      unrecognizedFaces
+      bulkEditActionItems,
+      activeTab,
+      onSelectFaces,
+      onUnselectFaces,
+      onRemoveFaces,
+      onAddToExistingEntity,
+      selectedEntityId,
+      onSelectEntity,
+      hasLibraryAccess,
+      viewMode,
+      entities,
+      isSearchingEntities
     } = this.props;
-    const { viewMode } = this.state;
+    let { unrecognizedFaces, recognizedFaces } = this.props;
+    if (viewMode === 'byScene') {
+      unrecognizedFaces = unrecognizedFaces.filter(face => {
+        return (
+          currentMediaPlayerTime >= face.startTimeMs &&
+          currentMediaPlayerTime <= face.stopTimeMs
+        );
+      });
+      recognizedFaces = Object.keys(recognizedFaces).reduce((acc, entityId) => {
+        return {
+          ...acc,
+          [entityId]: recognizedFaces[entityId].filter(face => {
+            return (
+              currentMediaPlayerTime >= face.startTimeMs &&
+              currentMediaPlayerTime <= face.stopTimeMs
+            );
+          })
+        };
+      }, {});
+    }
+
     const recognizedFaceCount = reduce(
-      Object.values(this.props.recognizedFaces),
+      Object.values(recognizedFaces),
       (acc, faces) => {
         return acc + faces.length;
       },
       0
     );
-    const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const selectedEngine = find(engines, { id: selectedEngineId });
     const faceTabs = (
       <Tabs
-        value={this.state.activeTab}
+        value={activeTab}
         onChange={this.handleTabChange}
         indicatorColor="primary"
       >
@@ -202,14 +257,13 @@ class FaceEngineOutput extends Component {
           onEditButtonClick={onEditButtonClick}
           disableEditButton={
             disableEditButton ||
-            this.state.activeTab === 'faceRecognition' ||
-            get(unrecognizedFaces, 'length') < 1
+            (recognizedFaceCount < 1 && get(unrecognizedFaces, 'length') < 1)
           }
           disableEngineSelect={!!editMode}
         >
-          {editMode &&
+          {editMode && (
             <div className={styles.faceTabHeaderContainer}>{faceTabs}</div>
-          }
+          )}
           {!editMode &&
             selectedEngine &&
             selectedEngine.hasUserEdits && (
@@ -282,65 +336,86 @@ class FaceEngineOutput extends Component {
                 </MenuItem>
               </Select>
             )}
-          {!editMode && (
-            <Select
-              autoWidth
-              value={viewMode}
-              onChange={this.handleViewModeChange}
-              className={cx(styles.outputHeaderSelect)}
-              MenuProps={{
-                anchorOrigin: {
-                  horizontal: 'center',
-                  vertical: 'bottom'
-                },
-                transformOrigin: {
-                  horizontal: 'center',
-                  vertical: 'top'
-                },
-                getContentAnchorEl: null
-              }}
-            >
-              <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
-                Summary
-              </MenuItem>
+          <Select
+            autoWidth
+            value={viewMode}
+            onChange={this.handleViewModeChange}
+            className={cx(styles.outputHeaderSelect)}
+            MenuProps={{
+              anchorOrigin: {
+                horizontal: 'center',
+                vertical: 'bottom'
+              },
+              transformOrigin: {
+                horizontal: 'center',
+                vertical: 'top'
+              },
+              getContentAnchorEl: null
+            }}
+          >
+            <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
+              Summary
+            </MenuItem>
+            {activeTab === 'faceRecognition' && (
               <MenuItem value="byFrame" className={cx(styles.selectMenuItem)}>
                 By Frame
               </MenuItem>
-              <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
-                By Scene
-              </MenuItem>
-            </Select>
-          )}
+            )}
+            <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
+              By Scene
+            </MenuItem>
+          </Select>
         </EngineOutputHeader>
         {!editMode && faceTabs}
         {outputNullState}
         {!outputNullState &&
-          this.state.activeTab === 'faceRecognition' && (
-            <div className={styles.faceTabBody}>
+          activeTab === 'faceRecognition' && (
+            <div
+              className={cx(styles.faceTabBody, {
+                [styles.editMode]: editMode
+              })}
+            >
               <FaceEntities
                 editMode={editMode}
                 viewMode={viewMode}
-                faces={this.props.recognizedFaces}
-                entities={this.props.entities}
+                faces={recognizedFaces}
+                selectedFaces={get(bulkEditActionItems, activeTab, [])}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
+                entities={entities}
+                onSelectEntity={onSelectEntity}
+                selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
+                onRemoveFaceRecognition={onRemoveFaces}
+                onAddNewEntity={onAddNewEntity}
+                onAddToExistingEntity={onAddToExistingEntity}
+                hasLibraryAccess={hasLibraryAccess}
               />
             </div>
           )}
         {!outputNullState &&
-          this.state.activeTab === 'faceDetection' && (
-            <div className={styles.faceTabBody}>
+          activeTab === 'faceDetection' && (
+            <div
+              className={cx(styles.faceTabBody, {
+                [styles.editMode]: editMode
+              })}
+            >
               <FaceGrid
                 faces={unrecognizedFaces}
+                selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 editMode={editMode}
-                viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-                onRemoveFaceDetection={onRemoveFaceDetection}
+                onRemoveFaces={onRemoveFaces}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
-                isSearchingEntities={this.props.isSearchingEntities}
+                isSearchingEntities={isSearchingEntities}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
+                onAddToExistingEntity={onAddToExistingEntity}
+                disableLibraryButtons={!hasLibraryAccess}
               />
             </div>
           )}

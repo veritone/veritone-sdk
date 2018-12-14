@@ -251,7 +251,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       setSelectedCombineViewTypeId
     } = this.props;
     const speakerEngines = get(combineEngines, combineCategory);
-    
+
     if (
       !selectedCombineEngineId &&
       speakerEngines &&
@@ -303,7 +303,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         stopOffsetMs:
           Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
       }).then(response => {
-        this.props.setSelectedCombineEngineId(engineId); 
+        this.props.setSelectedCombineEngineId(engineId);
         return response;
       });
     }
@@ -332,7 +332,10 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
-    this.props.clearEngineResultsByEngineId(tdo.id, this.props.selectedEngineId);
+    this.props.clearEngineResultsByEngineId(
+      tdo.id,
+      this.props.selectedEngineId
+    );
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,
