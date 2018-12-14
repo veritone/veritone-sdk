@@ -230,8 +230,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     }
   }
 
-  handleContentChanged = value => {
-    this.props.change(value);
+  handleContentChanged = (event, historyDiff) => {
+    this.props.change(historyDiff);
   };
 
   handleOnEditTypeChange = value => {

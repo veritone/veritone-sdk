@@ -86,8 +86,8 @@ export default class SpeakerTranscriptContent extends Component {
       this.props.onClick(seriesObject.startTimeMs, seriesObject.stopTimeMs);
   };
 
-  handleDataChanged = (event, newContent) => {
-    this.props.onChange && this.props.onChange(event, newContent);
+  handleDataChanged = (event, historyDiff) => {
+    this.props.onChange && this.props.onChange(event, historyDiff);
   };
 
   // totalTranscriptSegments will be mutated. This function picks off the first element
@@ -140,22 +140,13 @@ export default class SpeakerTranscriptContent extends Component {
     let overviewStatus = undefined;
 
     const saveOverviewData = () => {
-      const wordGuidMap = overviewParts.reduce((acc, entry, index) => {
-        acc[entry.guid] = {
-          index,
-          serie: entry
-        }
-        return acc;
-      }, {});
-
       //---Save Previous Overview Data---
       overviewSegments.push({
         startTimeMs: overviewStartTime,
         stopTimeMs: overviewStopTime,
         status: overviewStatus,
         sentences: overviewSentences,
-        fragments: overviewParts.slice(),
-        wordGuidMap
+        fragments: overviewParts.slice()
       });
       //---Reset Overview Data to Handle New Status---
       overviewStatus = undefined;
@@ -188,13 +179,21 @@ export default class SpeakerTranscriptContent extends Component {
         let snippetSentences = '';
 
         const saveSnippetData = () => {
+          const wordGuidMap = snippetParts.reduce((acc, entry, index) => {
+            acc[entry.guid] = {
+              index,
+              serie: entry
+            }
+            return acc;
+          }, {});
           //---Save Previous Snippets Data---
           snippetSegments.push({
             startTimeMs: snippetStartTime,
             stopTimeMs: snippetStopTime,
             status: snippetStatus,
             sentences: snippetSentences,
-            fragments: snippetParts.concat([])
+            fragments: snippetParts.concat([]),
+            wordGuidMap
           });
 
           //---Reset Snippets Data---
@@ -411,12 +410,13 @@ export default class SpeakerTranscriptContent extends Component {
     } else {
       // Only use content editable in edit mode since it would impact performance heavily
       if (editMode) {
-        const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+        const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
           const segmentStartTime = segmentData.startTimeMs;
           const segmentStopTime = segmentData.stopTimeMs;
           const segmentContent = (
             <EditableWrapper
-              key={'transcript-snippet' + segmentData.startTimeMs}
+              key={'transcript-snippet' + segmentStartTime}
+              chunkIndex={chunkIndex}
               content={segmentData}
               editMode={editMode}
               onChange={this.handleDataChanged}
@@ -435,14 +435,14 @@ export default class SpeakerTranscriptContent extends Component {
           };
         });
 
-        return overviewSegments;
+        return snippetSegments;
       } else {
-        const overviewSegments = parsedData.overviewSegments.map(segmentData => {
+        const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
           const segmentStartTime = segmentData.startTimeMs;
           const segmentStopTime = segmentData.stopTimeMs;
           const segmentContent = (
-            <OverviewSegment
-              key={'transcript-overview' + segmentStartTime}
+            <SnippetSegment
+              key={'transcript-snippet' + segmentStartTime}
               content={segmentData}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
@@ -458,7 +458,7 @@ export default class SpeakerTranscriptContent extends Component {
           };
         });
 
-        return overviewSegments;
+        return snippetSegments;
       }
     }
   };

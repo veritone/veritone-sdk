@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import { arrayOf, shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
-import { get, includes, omit, isArray } from 'lodash';
+import { get, includes, omit, isArray, isUndefined } from 'lodash';
 
 import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
 import { msToReadableString } from '../../../../helpers/time';
@@ -30,7 +30,8 @@ export default class EditableWrapper extends Component {
     onClick: func,
     onChange: func,
     startMediaPlayHeadMs: number,
-    stopMediaPlayHeadMs: number
+    stopMediaPlayHeadMs: number,
+    chunkIndex: number
   };
 
   static defaultProps = {
@@ -55,7 +56,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyPress = event => {
-    const { editMode, onChange, content } = this.props;
+    const { editMode, onChange, content, chunkIndex } = this.props;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       // event.preventDefault();   // This prevents editable text from being updated
@@ -117,7 +118,7 @@ export default class EditableWrapper extends Component {
       if (editMode && onChange) {
         // Parse content for changes and generate history diff
         const contentEditableElement = event.target;
-        const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
+        const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex)
 
         onChange(event, historyDiff);
       }
@@ -150,7 +151,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentPaste = event => {
-    const { editMode, onChange, content } = this.props;
+    const { editMode, onChange, content, chunkIndex } = this.props;
     const wordGuidMap = content.wordGuidMap;
     
     if (event) {
@@ -169,7 +170,7 @@ export default class EditableWrapper extends Component {
     const spanArray = contentEditableElement.children;
     handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
 
-    const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap);
+    const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex);
 
     if (editMode && onChange) {
       onChange(event, historyDiff);
@@ -297,11 +298,11 @@ function parseHtmlForText(htmlString) {
   return cumulativeString;
 }
 
-function generateDiffHistory(contentEditableElement, wordGuidMap) {
+function generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex) {
   const speakerChanges = [];
   const transcriptChanges = [];
   const foundMap = {};
-  if (wordGuidMap) {
+  if (wordGuidMap && !isUndefined(chunkIndex)) {
     const spanArray = Array.from(contentEditableElement.children);
     // This pass-thru is for text updates & deletes
     if (isArray(spanArray)) {
@@ -320,6 +321,7 @@ function generateDiffHistory(contentEditableElement, wordGuidMap) {
                 latestDeleteTime = oldEntry.serie.stopTimeMs;
               }
               transcriptChanges.push({
+                chunkIndex,
                 index: oldEntry.index,
                 action: 'DELETE',
                 oldValue: oldEntry.serie
@@ -334,6 +336,7 @@ function generateDiffHistory(contentEditableElement, wordGuidMap) {
                 newValue.stopTimeMs = latestDeleteTime;
               }
               transcriptChanges.push({
+                chunkIndex,
                 index: oldEntry.index,
                 action: 'UPDATE',
                 newValue,
@@ -347,6 +350,7 @@ function generateDiffHistory(contentEditableElement, wordGuidMap) {
                 stopTimeMs: latestDeleteTime
               };
               transcriptChanges.push({
+                chunkIndex,
                 index: oldEntry.index,
                 action: 'UPDATE',
                 newValue,
@@ -368,6 +372,7 @@ function generateDiffHistory(contentEditableElement, wordGuidMap) {
     deletedList.sort((a, b) => b.index - a.index);
     deletedList.forEach(deletedFrag => {
       transcriptChanges.push({
+        chunkIndex,
         index: deletedFrag.index,
         action: 'DELETE',
         oldValue: deletedFrag.serie
