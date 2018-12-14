@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { startCase, noop, isEmpty } from 'lodash';
+import { startCase, noop, isEmpty, get } from 'lodash';
 import { string, func, bool, shape } from 'prop-types';
 import { withProps, branch, renderNothing } from 'recompose';
 import {
@@ -31,6 +31,7 @@ import ChangeNameModal from './Modals/ChangeName';
 import ResetPasswordModal from './Modals/ResetPassword';
 
 import styles from './styles.scss';
+const defaultAvatarImg = 'https://static.veritone.com/veritone-ui/default-avatar.png';
 
 @connect(
   state => ({
@@ -87,9 +88,14 @@ export class UserProfile extends React.Component {
     handleSubmit: func.isRequired,
     resetUserPassword: func.isRequired,
     updateCurrentUserProfile: func.isRequired,
+    onUserUpdated: func,
     invalid: bool,
     pristine: bool,
     submitting: bool
+  };
+
+  static defaultProps = {
+    onUserUpdated: noop
   };
 
   state = {
@@ -160,7 +166,8 @@ export class UserProfile extends React.Component {
     });
   };
 
-  afterChange = () => {
+  afterChange = userResponse => {
+    this.props.onUserUpdated(get(userResponse, 'updateCurrentUser'));
     this.closeModal();
   };
 
@@ -186,7 +193,7 @@ export class UserProfile extends React.Component {
               // eslint-disable-next-line
               renderButton={({ handlePickFiles }) => (
                 <Avatar
-                  src={this.props.user.signedImageUrl}
+                  src={this.props.user.signedImageUrl || defaultAvatarImg}
                   label="Change"
                   onClick={handlePickFiles}
                 />
@@ -268,7 +275,8 @@ class UserProfileDialog extends React.Component {
   static propTypes = {
     open: bool,
     title: string,
-    onClose: func
+    onClose: func,
+    onUserUpdated: func
   };
 
   static defaultProps = {
