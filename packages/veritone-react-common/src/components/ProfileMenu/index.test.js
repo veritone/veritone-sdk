@@ -1,7 +1,10 @@
 import React from 'react';
 import { noop, omit } from 'lodash';
 import { mount } from 'enzyme';
-
+import { Build, Help } from '@material-ui/icons';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import InnerProfileMenu from './InnerProfileMenu';
 
 describe('InnerProfileMenu', function() {
@@ -130,4 +133,46 @@ describe('InnerProfileMenu', function() {
       .simulate('click');
     expect(handler).toHaveBeenCalled();
   });
+
+  it('render additional item', function() {
+    const additionMenuItems = [
+      <MenuItem
+        key='helpCenter'
+        data='helpCenter'
+      >
+        <ListItemIcon>
+          <Help />
+        </ListItemIcon>
+        <ListItemText primary='Help Center' />
+      </MenuItem>,
+        <MenuItem
+          key='appConfiguration'
+          data='appConfiguration'
+        >
+          <ListItemIcon>
+            <Build />
+          </ListItemIcon>
+          <ListItemText primary='App Configuration' />
+        </MenuItem>
+    ]
+
+    const wrapper = mount(
+      <div>
+        <InnerProfileMenu
+          user={testUser}
+          onLogout={noop}
+          onEditProfile={noop}
+          additionMenuItems={additionMenuItems}
+        />
+      </div>
+    );
+
+    expect(wrapper.find(MenuItem)).toHaveLength(3);
+    expect(
+      wrapper.find(MenuItem).filterWhere(n => n.props().data === 'helpCenter')
+    ).toHaveLength(1);
+    expect(
+      wrapper.find(MenuItem).filterWhere(n => n.props().data === 'appConfiguration')
+    ).toHaveLength(1);
+  })
 });
