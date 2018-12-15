@@ -1,4 +1,4 @@
-import { get, isEqual } from 'lodash';
+import { get, isEqual, isArray, cloneDeep, pick } from 'lodash';
 import { delay } from 'redux-saga';
 import {
   fork,
@@ -62,9 +62,11 @@ let unsavedData;
 const deferTime = 500;
 function* pushChanges() {
   if (unsavedData) {
+    const historyDiff = unsavedData;
+
     yield put({
       type: TranscriptRedux.CHANGE,
-      data: unsavedData
+      historyDiff
     });
     unsavedData = undefined;
   }

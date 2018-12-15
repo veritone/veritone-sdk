@@ -1,4 +1,4 @@
-import { get, set, isEqual, cloneDeep, forEach, find } from 'lodash';
+import { get, set, isEqual, cloneDeep, forEach, find, isArray, pick } from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -64,6 +64,8 @@ const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
 const maxSnippetHistorySize = 500; // Only alow user to undo 500 times in snippet edit
 const initialState = {
   data: [],
+  history: [],
+  revertedHistory: [],
   past: [],
   future: [],
   present: null,
@@ -151,17 +153,17 @@ const transcriptReducer = createReducer(initialState, {
   },
 
   [CHANGE](state, action) {
-    let newState = state;
-    const editType = action.data.type;
-    switch (editType) {
-      case 'snippet':
-        newState = handleSnippetEdit(state, action);
-        break;
+    const newState = handleTranscriptEdit(state, action);
+    // const editType = action.data.type;
+    // switch (editType) {
+    //   case 'snippet':
+    //     newState = handleSnippetEdit(state, action);
+    //     break;
 
-      case 'bulk':
-        newState = handleBulkEdit(state, action);
-        break;
-    }
+    //   case 'bulk':
+    //     newState = handleBulkEdit(state, action);
+    //     break;
+    // }
 
     return newState;
   },
@@ -252,6 +254,39 @@ const transcriptReducer = createReducer(initialState, {
     };
   }
 });
+
+function handleTranscriptEdit(state, action) {
+  const historyDiff = action.historyDiff;
+  const editableData = cloneDeep(state.editableData);
+
+  // Apply diff and save to history
+  isArray(historyDiff.transcriptChanges)
+    && historyDiff.transcriptChanges.forEach(diff => {
+      const chunkToEdit = editableData[diff.chunkIndex];
+      const action = diff.action;
+      switch (action) {
+        case 'UPDATE':
+          chunkToEdit.series[diff.index] = {
+            ...chunkToEdit.series[diff.index],
+            ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+            words: [{
+              bestPath: true,
+              confidence: 1,
+              word: diff.newValue.value
+            }]
+          };
+          break;
+        case 'DELETE':
+          break;
+      }
+    });
+
+  return {
+    ...state,
+    editableData,
+    history: state.history.concat([historyDiff])
+  }
+}
 
 function handleBulkEdit(state, action) {
   const changedData = action.data.newValue;
