@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
+import { get } from 'lodash';
 import cx from 'classnames';
 import Downshift from 'downshift';
 import Input from '@material-ui/core/Input';
@@ -102,8 +103,50 @@ class FaceInfoBox extends Component {
   state = {
     isHovered: false,
     searchEntityText: '',
-    imageIsLoading: true
+    imageIsLoading: true,
+    sourceImage: ''
   };
+
+  componentDidMount() {
+    this.controller = new AbortController();
+    const signal = this.controller.signal;
+    fetch(get(this.props, 'face.object.uri'), {signal})
+      .then(res => {
+        if (!res.ok) {
+          this.setState({
+            sourceImage: '',
+            imageIsLoading: false
+          });
+        }
+        return res.blob();
+      })
+      .then(imageBlob => {
+        const reader = new FileReader() ;
+        reader.onload = () => {
+          this.setState({
+            sourceImage: reader.result,
+            imageIsLoading: false
+          });
+        };
+        reader.readAsDataURL(imageBlob) ;
+        return imageBlob;
+      }).catch(err => {
+        if (err.name == 'AbortError') {
+          return;
+        }
+        this.setState({
+          sourceImage: '',
+          imageIsLoading: false
+        });
+        // It's important to rethrow all other errors so you don't silence them!
+        // For example, any error thrown by setState(), will pass through here.
+        throw err;
+      });
+  }
+
+  componentWillUnmount() {
+    this.controller.abort();
+  }
 
   handleMouseOver = () => {
     this.setState({ isHovered: true });
@@ -156,18 +199,6 @@ class FaceInfoBox extends Component {
     this.props.onCheckboxClicked(face, evt);
   };
 
-  handleImageLoad = () => {
-    this.setState({
-      imageIsLoading: false
-    });
-  };
-
-  handleImageLoadError = () => {
-    this.setState({
-      imageIsLoading: false
-    });
-  };
-
   render() {
     const {
       face,
@@ -197,13 +228,13 @@ class FaceInfoBox extends Component {
             height: width - 20
           }}
         >
-          <img
-            className={styles.entityImage}
-            src={face.object.uri}
-            onClick={onClick}
-            onLoad={this.handleImageLoad}
-            onError={this.handleImageLoadError}
-          />
+          {this.state.sourceImage && (
+            <img
+              className={styles.entityImage}
+              src={this.state.sourceImage}
+              onClick={onClick}
+            />
+          )}
           {this.state.imageIsLoading && (
             <div className={styles.loadingContainer}>
               <CircularProgress />
