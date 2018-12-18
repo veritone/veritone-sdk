@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
 import { number, func, shape } from 'prop-types';
+import { isUndefined } from 'lodash';
 
 import styles from './styles.scss';
 
@@ -29,7 +30,7 @@ class RecognizedFaceMatch extends Component {
           <div className={styles.entityFullName}>{entity.fullName}</div>
         </div>
         <div>
-          {confidence && (
+          {!isUndefined(confidence) && (
             <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
               {Math.round(confidence * 100)}% Match
             </div>

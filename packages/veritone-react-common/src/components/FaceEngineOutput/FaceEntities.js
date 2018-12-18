@@ -9,15 +9,11 @@ import {
   oneOfType,
   bool
 } from 'prop-types';
-import { find, isObject, get, reduce, pick, findIndex } from 'lodash';
-import cx from 'classnames';
-import Icon from '@material-ui/core/Icon';
+import { find, isObject, get, reduce, pick, isEqual, findIndex } from 'lodash';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
 import FacesByLibrary from './FacesByLibrary';
-
-import styles from './styles.scss';
 
 export default class FaceEntities extends Component {
   static propTypes = {
@@ -39,6 +35,16 @@ export default class FaceEntities extends Component {
         })
       )
     ).isRequired,
+    selectedFaces: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
     entities: arrayOf(
       shape({
         id: string.isRequired,
@@ -54,11 +60,17 @@ export default class FaceEntities extends Component {
     ).isRequired,
     currentMediaPlayerTime: number,
     onSelectEntity: func,
-    onFaceOccurrenceClicked: func
+    onFaceOccurrenceClicked: func,
+    onRemoveFaceRecognition: func,
+    selectedEntityId: string,
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddNewEntity: func,
+    onAddToExistingEntity: func,
+    hasLibraryAccess: bool
   };
 
   state = {
-    selectedEntity: null,
     faceEntities: {},
     entitiesByLibrary: {},
     framesBySeconds: {}
@@ -71,50 +83,60 @@ export default class FaceEntities extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.viewMode !== this.props.viewMode) {
-      this.setState(prevState => ({
-        selectedEntity: null
-      }));
-    }
     if (
       nextProps.entities.length !== this.props.entities.length ||
-      Object.keys(nextProps.faces).length !==
-        Object.keys(this.props.faces).length
+      !isEqual(nextProps.faces, this.props.faces)
     ) {
-      this.setState(prevState => ({
+      this.setState({
         ...buildFaceDataPayload(nextProps.faces, nextProps.entities)
-      }));
+      });
     }
   }
 
   handleEntitySelect = entityId => {
     if (this.state.faceEntities[entityId]) {
-      this.setState(prevState => ({
-        selectedEntity: entityId
-      }));
+      this.props.onSelectEntity(entityId);
     }
   };
 
   removeSelectedEntity = () => {
-    this.setState({
-      selectedEntity: null
-    });
+    this.props.onSelectEntity(null);
   };
 
   render() {
-    const { viewMode, currentMediaPlayerTime, editMode } = this.props;
-    const { faceEntities, selectedEntity } = this.state;
+    const {
+      viewMode,
+      currentMediaPlayerTime,
+      editMode,
+      onRemoveFaceRecognition,
+      selectedFaces,
+      selectedEntityId,
+      onSelectFaces,
+      onUnselectFaces,
+      onAddNewEntity,
+      onAddToExistingEntity,
+      hasLibraryAccess
+    } = this.props;
+    const { faceEntities } = this.state;
 
-    if (selectedEntity && faceEntities[selectedEntity]) {
+    if (selectedEntityId && faceEntities[selectedEntityId]) {
       return (
         <EntityInformation
-          {...pick(faceEntities[selectedEntity], [
+          {...pick(faceEntities[selectedEntityId], [
             'entity',
             'count',
-            'timeSlots'
+            'faces'
           ])}
+          selectedFaces={selectedFaces}
+          editModeEnabled={editMode}
           onBackClicked={this.removeSelectedEntity}
           onOccurrenceClicked={this.props.onFaceOccurrenceClicked}
+          onRemoveFaceRecognition={onRemoveFaceRecognition}
+          onSelectFaces={onSelectFaces}
+          onUnselectFaces={onUnselectFaces}
+          onAddNewEntity={onAddNewEntity}
+          onAddToExistingEntity={onAddToExistingEntity}
+          hasLibraryAccess={hasLibraryAccess}
         />
       );
     }
@@ -122,17 +144,6 @@ export default class FaceEntities extends Component {
     if (viewMode === 'summary') {
       return (
         <Fragment>
-          {editMode && (
-            <div className={styles.cantEditWarning}>
-              <Icon
-                className={cx('icon-info-panel', styles.cantEditInfoIcon)}
-              />
-              <span>
-                <span className={styles.boldNoteText}> Note: </span>Recognized
-                faces can not be edited currently
-              </span>
-            </div>
-          )}
           <FacesByLibrary
             faceEntityLibraries={this.state.entitiesByLibrary}
             onSelectEntity={this.handleEntitySelect}
@@ -164,13 +175,16 @@ function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
   return {
     ...recognizedEntityObj,
     count: recognizedEntityObj.count + 1,
-    timeSlots: [
-      ...recognizedEntityObj.timeSlots,
+    faces: [
+      ...recognizedEntityObj.faces,
       {
-        stopTimeMs: faceObj.stopTimeMs,
-        startTimeMs: faceObj.startTimeMs,
-        originalImage: faceObj.object.uri,
-        confidence: faceObj.object.confidence
+        ...faceObj,
+        object: {
+          ...faceObj.object,
+          label:
+            get(recognizedEntityObj, 'entity.name') ||
+            get(faceObj, 'object.label')
+        }
       }
     ],
     stopTimeMs:
@@ -187,16 +201,16 @@ function getFrameNamespaceForMatch(faceObj) {
 }
 
 // Gets list of nearest seconds which the face/entity appears in (MS)
-function getArrayOfSecondSpots(timeSlot) {
+function getArrayOfSecondSpots(face) {
   const secondSpots = [];
 
-  if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
+  if (!isObject(face) || !face.startTimeMs || !face.stopTimeMs) {
     return secondSpots;
   }
 
-  let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
+  let timeCursor = face.startTimeMs - face.startTimeMs % 1000;
 
-  while (timeCursor <= timeSlot.stopTimeMs) {
+  while (timeCursor <= face.stopTimeMs) {
     secondSpots.push(timeCursor);
     timeCursor += 1000;
   }
@@ -252,12 +266,12 @@ function buildFaceDataPayload(faces, entities) {
               },
               profileImage: entity.profileImageUrl,
               count: 1,
-              timeSlots: [
+              faces: [
                 {
-                  stopTimeMs: faceObj.stopTimeMs,
-                  startTimeMs: faceObj.startTimeMs,
-                  originalImage: faceObj.object.uri,
-                  confidence: faceObj.object.confidence
+                  ...faceObj,
+                  object: {
+                    ...faceObj.object
+                  }
                 }
               ],
               stopTimeMs: faceObj.stopTimeMs
