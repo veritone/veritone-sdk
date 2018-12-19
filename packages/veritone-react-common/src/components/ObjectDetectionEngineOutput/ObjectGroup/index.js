@@ -21,7 +21,7 @@ const ObjectGroup = ({
             objectData.stopTimeMs
           }`;
           const boundingPoly = get(objectData.object, 'boundingPoly', []);
-          const boundingPolyKeyPart = boundingPoly.length
+          const boundingPolyKeyPart = boundingPoly && boundingPoly.length
             ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
             : '';
           const pillKey = `object-pill-${kebabCase(
