@@ -90,14 +90,15 @@ export default class SpeakerTranscriptContent extends Component {
     this.props.onChange && this.props.onChange(event, historyDiff);
   };
 
-  // totalTranscriptSegments will be mutated. This function picks off the first element
+  // totalTranscriptFragments will be mutated. This function picks off the first element
   // and allocates it to a speakers' fragments
-  allocateSpeakerTranscripts = (totalTranscriptSegments, currentSpeaker, nextSpeaker) => {
+  allocateSpeakerTranscripts = (totalTranscriptFragments, currentSpeaker, nextSpeaker) => {
     const speakerStartTime = currentSpeaker.startTimeMs;
     const speakerStopTime = currentSpeaker.stopTimeMs;
     const fragments = [];
-    while (isArray(totalTranscriptSegments) && totalTranscriptSegments.length) {
-      const currentSnippet = totalTranscriptSegments[0];
+    const wordGuidMap = {};
+    while (isArray(totalTranscriptFragments) && totalTranscriptFragments.length) {
+      const currentSnippet = totalTranscriptFragments[0];
       // Allocate to current speaker if:
       if (
         // the snippet starts within speaker interval
@@ -110,13 +111,23 @@ export default class SpeakerTranscriptContent extends Component {
         // there are no more speakers then shove it into the current speaker
         !nextSpeaker
       ) {
-        fragments.push(totalTranscriptSegments.shift());
+        const fragment = totalTranscriptFragments.shift();
+        fragments.push(fragment);
+        wordGuidMap[fragment.guid] = {
+          chunkIndex: fragment.chunkIndex,
+          speakerIndex: fragment.index - fragments[0].index,
+          index: fragment.index,
+          serie: fragment
+        }
       } else {
         // There is a next speaker and the current snippet does belong to the next speaker
         break;
       }
     }
-    return fragments;
+    return {
+      fragments,
+      wordGuidMap
+    };
   };
 
   parseData() {
@@ -124,14 +135,13 @@ export default class SpeakerTranscriptContent extends Component {
       return {
         lazyLoading: false,
         snippetSegments: [],
-        overviewSegments: [],
         speakerSegments: []
       };
     }
 
     const snippetSegments = [];
-    const overviewSegments = [];
     let speakerSegments = [];
+    let totalTranscriptFragments = [];
 
     let overviewStartTime = 0;
     let overviewStopTime = 0;
@@ -139,27 +149,10 @@ export default class SpeakerTranscriptContent extends Component {
     let overviewSentences = '';
     let overviewStatus = undefined;
 
-    const saveOverviewData = () => {
-      //---Save Previous Overview Data---
-      overviewSegments.push({
-        startTimeMs: overviewStartTime,
-        stopTimeMs: overviewStopTime,
-        status: overviewStatus,
-        sentences: overviewSentences,
-        fragments: overviewParts.slice()
-      });
-      //---Reset Overview Data to Handle New Status---
-      overviewStatus = undefined;
-      overviewStartTime = undefined;
-      overviewStopTime = undefined;
-      overviewParts = [];
-      overviewSentences = '';
-    };
-
     const textareaToDecodeCharacters = document.createElement('textarea');
 
     let lazyLoading = true;
-    this.props.data.forEach(chunk => {
+    this.props.data.forEach((chunk, chunkIndex) => {
       const groupStartTime = chunk.startTimeMs;
       const groupStopTime = chunk.stopTimeMs;
       const groupStatus = chunk.status;
@@ -179,10 +172,13 @@ export default class SpeakerTranscriptContent extends Component {
         let snippetSentences = '';
 
         const saveSnippetData = () => {
-          const wordGuidMap = snippetParts.reduce((acc, entry, index) => {
-            acc[entry.guid] = {
-              index,
-              serie: entry
+          const wordGuidMap = snippetParts.reduce((acc, snippet, index) => {
+            if (snippet.guid) {
+              acc[snippet.guid] = {
+                chunkIndex,
+                index,
+                serie: snippet
+              };
             }
             return acc;
           }, {});
@@ -195,6 +191,8 @@ export default class SpeakerTranscriptContent extends Component {
             fragments: snippetParts.concat([]),
             wordGuidMap
           });
+
+          totalTranscriptFragments = totalTranscriptFragments.concat(snippetParts);
 
           //---Reset Snippets Data---
           snippetStatus = undefined;
@@ -245,7 +243,9 @@ export default class SpeakerTranscriptContent extends Component {
             const snippet = {
               startTimeMs: entry.startTimeMs,
               stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
+              value: selectedWord,
+              chunkIndex,
+              index: entryIndex
             };
             if (entry.guid) {
               snippet.guid = entry.guid;
@@ -316,13 +316,11 @@ export default class SpeakerTranscriptContent extends Component {
       });
     }
 
-    saveOverviewData();
-
     return {
       lazyLoading: lazyLoading,
       snippetSegments: snippetSegments,
-      overviewSegments: overviewSegments,
-      speakerSegments: speakerSegments
+      speakerSegments: speakerSegments,
+      totalTranscriptFragments
     };
   }
 
@@ -338,23 +336,18 @@ export default class SpeakerTranscriptContent extends Component {
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     const speakerSeries = parsedData.speakerSegments;
 
-    let totalTranscriptSegmentData = [];
-    parsedData.snippetSegments.forEach(segmentData => {
-      totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
-    });
-
     if (selectedCombineViewTypeId === 'speaker-view') {
       const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
         const nextSpeaker = speakerSeries[index + 1];
         const speakerStartTime = speakerSegment.startTimeMs;
         const speakerStopTime = speakerSegment.stopTimeMs;
-        const fragments = this.allocateSpeakerTranscripts(
-          totalTranscriptSegmentData,
+        const { fragments, wordGuidMap } = this.allocateSpeakerTranscripts(
+          parsedData.totalTranscriptFragments,
           speakerSegment,
           nextSpeaker
         );
 
-        const filteredSpeakerSegmentDataWrapper = { fragments };
+        const filteredSpeakerSegmentDataWrapper = { fragments, wordGuidMap };
 
         const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
         const speakerTimingStart = format(speakerStartTime, timeFormat);
@@ -383,17 +376,30 @@ export default class SpeakerTranscriptContent extends Component {
                 {`${speakerTimingStart} - ${speakerTimingStop}`}
               </span>
               {
-                <SnippetSegment
-                  key={'transcript-speaker-snippet' + speakerStartTime}
-                  content={filteredSpeakerSegmentDataWrapper}
-                  editMode={editMode}
-                  showSegmentTime={viewType == View.TIME}
-                  onChange={this.handleDataChanged}
-                  onClick={this.handleOnClick}
-                  startMediaPlayHeadMs={mediaPlayerTimeMs}
-                  stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                  classNames={classNames(styles.contentSegment)}
-                />
+                editMode ?
+                  (
+                    <EditableWrapper
+                      key={'transcript-speaker-snippet' + speakerStartTime}
+                      content={filteredSpeakerSegmentDataWrapper}
+                      editMode={editMode}
+                      onChange={this.handleDataChanged}
+                      onClick={this.handleOnClick}
+                      startMediaPlayHeadMs={mediaPlayerTimeMs}
+                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                      classNames={classNames(styles.contentSegment)}
+                      wordGuidMap={parsedData.wordGuidMap}
+                    />
+                  ) :
+                  (
+                    <SnippetSegment
+                      key={'transcript-speaker-snippet' + speakerStartTime}
+                      content={filteredSpeakerSegmentDataWrapper}
+                      onClick={this.handleOnClick}
+                      startMediaPlayHeadMs={mediaPlayerTimeMs}
+                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                      classNames={classNames(styles.contentSegment)}
+                    />
+                  )
               }
             </Grid>
           </Grid>
@@ -411,12 +417,15 @@ export default class SpeakerTranscriptContent extends Component {
       // Only use content editable in edit mode since it would impact performance heavily
       if (editMode) {
         const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
+          const segmentDataWithChunkIndices = segmentData;
+          segmentDataWithChunkIndices.fragments = segmentDataWithChunkIndices.fragments.map(frag => {
+            return { ...frag, chunkIndex };
+          })
           const segmentStartTime = segmentData.startTimeMs;
           const segmentStopTime = segmentData.stopTimeMs;
           const segmentContent = (
             <EditableWrapper
               key={'transcript-snippet' + segmentStartTime}
-              chunkIndex={chunkIndex}
               content={segmentData}
               editMode={editMode}
               onChange={this.handleDataChanged}
@@ -424,7 +433,6 @@ export default class SpeakerTranscriptContent extends Component {
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
               classNames={classNames(styles.contentSegment)}
-              wordGuidMap={parsedData.wordGuidMap}
             />
           );
 
@@ -437,7 +445,7 @@ export default class SpeakerTranscriptContent extends Component {
 
         return snippetSegments;
       } else {
-        const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
+        const snippetSegments = parsedData.snippetSegments.map(segmentData => {
           const segmentStartTime = segmentData.startTimeMs;
           const segmentStopTime = segmentData.stopTimeMs;
           const segmentContent = (
@@ -460,108 +468,6 @@ export default class SpeakerTranscriptContent extends Component {
 
         return snippetSegments;
       }
-    }
-  };
-
-  renderSpeakerOverviewSegments = parsedData => {
-    const {
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId
-    } = this.props;
-
-    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const speakerSeries = parsedData.speakerSegments;
-
-    let totalTranscriptSegmentData = [];
-    parsedData.overviewSegments.forEach(segmentData => {
-      totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
-    });
-
-    if (selectedCombineViewTypeId === 'speaker-view') {
-      const speakerOverviewSegments = speakerSeries.map((speakerSegment, index) => {
-        const nextSpeaker = speakerSeries[index + 1];
-        const speakerStartTime = speakerSegment.startTimeMs;
-        const speakerStopTime = speakerSegment.stopTimeMs;
-        const fragments = this.allocateSpeakerTranscripts(
-          totalTranscriptSegmentData,
-          speakerSegment,
-          nextSpeaker
-        );
-
-        const filteredSpeakerSegmentDataWrapper = { fragments };
-
-        const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-        const speakerTimingStart = format(speakerStartTime, timeFormat);
-        const speakerTimingStop = format(speakerStopTime, timeFormat);
-
-        const speakerGridKey = `speaker-row-${speakerSegment.guid}`;
-
-        const segmentContent = (
-          <Grid container key={speakerGridKey}>
-            <Grid item
-              xs={4}
-              sm={3}
-              md={2}
-              lg={1}
-              xl={1}
-            >
-              <SpeakerPill
-                speakerSegment={speakerSegment}
-                onClick={this.handleOnClick}
-                startMediaPlayHeadMs={mediaPlayerTimeMs}
-                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              />
-            </Grid>
-            <Grid item xs sm md lg xl>
-              <span className={styles.speakerStartTimeLabel}>
-                {`${speakerTimingStart} - ${speakerTimingStop}`}
-              </span>
-              {
-                <OverviewSegment
-                  key={'transcript-speaker-overview' + speakerStartTime}
-                  content={filteredSpeakerSegmentDataWrapper}
-                  onClick={this.handleOnClick}
-                  startMediaPlayHeadMs={mediaPlayerTimeMs}
-                  stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                  classNames={classNames(styles.contentSegment)}
-                />
-              }
-            </Grid>
-          </Grid>
-        );
-
-        return {
-          startTimeMs: speakerStartTime,
-          stopTimeMs: speakerStopTime,
-          content: segmentContent
-        }
-      });
-
-      return speakerOverviewSegments;
-    } else {
-      const overviewSegments = parsedData.overviewSegments.map(segmentData => {
-        const segmentStartTime = segmentData.startTimeMs;
-        const segmentStopTime = segmentData.stopTimeMs;
-        const segmentContent = (
-          <OverviewSegment
-            key={'transcript-overview' + segmentStartTime}
-            content={segmentData}
-            onClick={this.handleOnClick}
-            startMediaPlayHeadMs={mediaPlayerTimeMs}
-            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            classNames={classNames(styles.contentSegment)}
-          />
-        );
-
-        return {
-          start: segmentStartTime,
-          stop: segmentStopTime,
-          content: segmentContent
-        };
-      });
-
-      return overviewSegments;
     }
   };
 
@@ -618,10 +524,6 @@ export default class SpeakerTranscriptContent extends Component {
 
   renderEditMode = parsedData => {
     return this.renderSpeakerSnippetSegments(parsedData);
-  };
-
-  renderViewMode = parsedData => {
-    return this.renderSpeakerOverviewSegments(parsedData);
   };
 
   render() {

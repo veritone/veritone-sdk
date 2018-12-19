@@ -259,27 +259,30 @@ function handleTranscriptEdit(state, action) {
   const historyDiff = action.historyDiff;
   const editableData = cloneDeep(state.editableData);
 
-  // Apply diff and save to history
-  isArray(historyDiff.transcriptChanges)
-    && historyDiff.transcriptChanges.forEach(diff => {
-      const chunkToEdit = editableData[diff.chunkIndex];
-      const action = diff.action;
-      switch (action) {
-        case 'UPDATE':
-          chunkToEdit.series[diff.index] = {
-            ...chunkToEdit.series[diff.index],
-            ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
-            words: [{
-              bestPath: true,
-              confidence: 1,
-              word: diff.newValue.value
-            }]
-          };
-          break;
-        case 'DELETE':
-          break;
-      }
-    });
+  if (isArray(editableData)) {
+    // Apply diff and save to history
+    isArray(historyDiff.transcriptChanges)
+      && historyDiff.transcriptChanges.forEach(diff => {
+        const chunkToEdit = editableData[diff.chunkIndex];
+        const action = diff.action;
+        switch (action) {
+          case 'UPDATE':
+            chunkToEdit.series[diff.index] = {
+              ...chunkToEdit.series[diff.index],
+              ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+              words: [{
+                bestPath: true,
+                confidence: 1,
+                word: diff.newValue.value
+              }]
+            };
+            break;
+          case 'DELETE':
+            chunkToEdit.series.splice(diff.index, 1);
+            break;
+        }
+      });
+  }
 
   return {
     ...state,

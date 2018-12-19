@@ -20,7 +20,8 @@ export default class EditableWrapper extends Component {
         shape({
           startTimeMs: number,
           stopTimeMs: number,
-          value: string
+          value: string,
+          chunkIndex: number.isRequired   // Need this for speaker edits since a dialogue can span across chunks
         })
       )
     }),
@@ -30,8 +31,7 @@ export default class EditableWrapper extends Component {
     onClick: func,
     onChange: func,
     startMediaPlayHeadMs: number,
-    stopMediaPlayHeadMs: number,
-    chunkIndex: number
+    stopMediaPlayHeadMs: number
   };
 
   static defaultProps = {
@@ -55,10 +55,25 @@ export default class EditableWrapper extends Component {
     }
   };
 
-  handleContentKeyPress = event => {
-    const { editMode, onChange, content, chunkIndex } = this.props;
+  handleContentKeyUp = event => {
+    const { editMode, onChange, content } = this.props;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
+      event.stopPropagation();
+      const hasCommand = hasCommandModifier(event);
+      const hasControl = hasControlModifier(event);
+      const contentEditableElement = event.target;
+      // Parse content for changes and generate history diff
+      const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
+      !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff);
+    }
+  };
+
+  handleContentKeyPress = event => {
+    const { editMode, onChange, content } = this.props;
+    const wordGuidMap = content.wordGuidMap;
+    if (event) {
+      const contentEditableElement = event.target;
       // event.preventDefault();   // This prevents editable text from being updated
       event.stopPropagation();
       const cursorPos = getCursorPosition();
@@ -101,6 +116,9 @@ export default class EditableWrapper extends Component {
           event.preventDefault();
           const spanArray = Array.from(event.target.children);
           handleSelectedTextUpdate(spanArray, wordGuidMap);
+
+          const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
+          editMode && onChange && onChange(event, historyDiff);
         }
       }
 
@@ -114,13 +132,6 @@ export default class EditableWrapper extends Component {
           }
         }
         return; 
-      }
-      if (editMode && onChange) {
-        // Parse content for changes and generate history diff
-        const contentEditableElement = event.target;
-        const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex)
-
-        onChange(event, historyDiff);
       }
     }
   };
@@ -151,7 +162,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentPaste = event => {
-    const { editMode, onChange, content, chunkIndex } = this.props;
+    const { editMode, onChange, content } = this.props;
     const wordGuidMap = content.wordGuidMap;
     
     if (event) {
@@ -159,7 +170,7 @@ export default class EditableWrapper extends Component {
       event.stopPropagation();
     }
 
-    // Filter for plain text only (no html)
+    // Paste Input Sanitation: Filter for plain text only (no html)
     const rawPasteHtml = event.clipboardData.getData('text/html');
     let stringToPaste = event.clipboardData.getData('text');
     if (rawPasteHtml.includes('<') || rawPasteHtml.includes('>')) {
@@ -170,11 +181,8 @@ export default class EditableWrapper extends Component {
     const spanArray = contentEditableElement.children;
     handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
 
-    const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex);
-
-    if (editMode && onChange) {
-      onChange(event, historyDiff);
-    }
+    const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
+    editMode && onChange && onChange(event, historyDiff);
   };
 
   handleContentDrag = event => {
@@ -206,6 +214,7 @@ export default class EditableWrapper extends Component {
       onDrag: this.handleContentDrag,
       onDrop: this.handleContentDrop,
       onKeyDown: this.handleContentKeyPress,
+      onKeyUp: this.handleContentKeyUp,
       onChange: this.handleContentChange
     };
 
@@ -225,6 +234,7 @@ export default class EditableWrapper extends Component {
           word-guid={entry.guid}
           start-time={startTime}
           stop-time={stopTime}
+          chunk-index={entry.chunkIndex}
           className={classNames(styles.transcriptSnippet, className, {
             [styles.read]: !editMode,
             [styles.edit]: editMode,
@@ -298,11 +308,11 @@ function parseHtmlForText(htmlString) {
   return cumulativeString;
 }
 
-function generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex) {
+function generateDiffHistory(contentEditableElement, wordGuidMap) {
   const speakerChanges = [];
   const transcriptChanges = [];
   const foundMap = {};
-  if (wordGuidMap && !isUndefined(chunkIndex)) {
+  if (wordGuidMap) {
     const spanArray = Array.from(contentEditableElement.children);
     // This pass-thru is for text updates & deletes
     if (isArray(spanArray)) {
@@ -313,6 +323,7 @@ function generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex) {
           const spanGuid = span.getAttribute('word-guid');
           const newWord = span.innerText.trim();
           if (spanGuid && wordGuidMap[spanGuid]) {
+            const chunkIndex = wordGuidMap[spanGuid].chunkIndex;
             foundMap[spanGuid] = true;
             const oldEntry = wordGuidMap[spanGuid];
             if (!newWord) {
@@ -372,25 +383,49 @@ function generateDiffHistory(contentEditableElement, wordGuidMap, chunkIndex) {
     deletedList.sort((a, b) => b.index - a.index);
     deletedList.forEach(deletedFrag => {
       transcriptChanges.push({
-        chunkIndex,
+        chunkIndex: deletedFrag.chunkIndex,
         index: deletedFrag.index,
         action: 'DELETE',
         oldValue: deletedFrag.serie
       });
     })
   }
+
+  speakerChanges.sort(sortByAction);
+  transcriptChanges.sort(sortByAction);
   return {
     speakerChanges,
-    transcriptChanges: transcriptChanges.reverse()
+    transcriptChanges: transcriptChanges
   };
+}
+
+// Sort actions to be Update, Insert, Delete
+//  and for matched actions, we sort in descending index order
+function sortByAction(a, b) {
+  if (a.action && b.action) {
+    if (a.action > b.action) {
+      return -1;
+    } else if (a.action > b.action) {
+      return 1;
+    } else if (a.action === b.action) {
+      return b.index - a.index;
+    }
+    return 0;
+  }
+  return 0;
 }
 
 function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   const cursorPos = getCursorPosition();
   const startPos = cursorPos.start;
   const endPos = cursorPos.end;
-  const startIndex = wordGuidMap[cursorPos.start.guid].index;
-  const endIndex = wordGuidMap[cursorPos.end.guid].index;
+  const cursorStartMap = wordGuidMap[cursorPos.start.guid];
+  const cursorEndMap = wordGuidMap[cursorPos.end.guid];
+  let startIndex = cursorStartMap.speakerIndex;
+  if (isUndefined(startIndex)) {
+    startIndex = cursorStartMap.index;
+  }
+  const endIndex = cursorEndMap.speakerIndex || cursorEndMap.index;
   const startSpan = spanArray[startIndex];
   const endSpan = spanArray[endIndex];
 
