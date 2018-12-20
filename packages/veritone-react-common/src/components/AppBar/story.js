@@ -1,6 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { Build, Help } from '@material-ui/icons';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 
 import AppBar from './';
 
@@ -78,6 +82,40 @@ storiesOf('AppBar', module)
         enabledAppsFailedLoading
         fetchEnabledApps={action('Fetch apps')}
         enabledApps={[]}
+      />
+    );
+  })
+  .add('Profile menu extra items', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        additionMenuItems={[
+          <MenuItem key="helpCenter" data="helpCenter">
+            <ListItemIcon>
+              <Help />
+            </ListItemIcon>
+            <ListItemText primary="Help Center" />
+          </MenuItem>,
+          <MenuItem key="appConfiguration" data="appConfiguration">
+            <ListItemIcon>
+              <Build />
+            </ListItemIcon>
+            <ListItemText primary="App Configuration" />
+          </MenuItem>
+        ]}
       />
     );
   });

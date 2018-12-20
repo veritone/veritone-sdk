@@ -7,8 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { string, func, shape } from 'prop-types';
-
+import { string, func, shape, arrayOf, element } from 'prop-types';
 import styles from './styles.scss';
 
 export default class InnerProfileMenu extends React.Component {
@@ -23,7 +22,8 @@ export default class InnerProfileMenu extends React.Component {
         image: string
       }),
       signedImageUrl: string
-    })
+    }),
+    additionMenuItems: arrayOf(element)
   };
 
   render() {
@@ -36,7 +36,6 @@ export default class InnerProfileMenu extends React.Component {
       this.props.user.signedImageUrl ||
       get(this.props.user, 'kvp.image') ||
       '//static.veritone.com/veritone-ui/default-avatar-2.png';
-
     return (
       <Fragment>
         <ListSubheader className={styles['header']} key="header">
@@ -63,6 +62,8 @@ export default class InnerProfileMenu extends React.Component {
             </div>
           </div>
         </ListSubheader>
+
+        {this.props.additionMenuItems}
 
         <MenuItem
           onClick={this.props.onLogout}
