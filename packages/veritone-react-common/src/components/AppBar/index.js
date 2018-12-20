@@ -12,7 +12,7 @@ import {
   arrayOf,
   shape,
   number,
-  object
+  element
 } from 'prop-types';
 
 import veritoneLogo from 'images/veritone-logo-white.svg';
@@ -55,7 +55,7 @@ export default class AppBar extends React.Component {
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func,
-    additionMenuItems: arrayOf(object)
+    additionMenuItems: arrayOf(element)
   };
   static defaultProps = {
     logo: true,

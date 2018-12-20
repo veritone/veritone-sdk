@@ -63,7 +63,7 @@ export default class InnerProfileMenu extends React.Component {
           </div>
         </ListSubheader>
 
-        {this.props.additionMenuItems && this.props.additionMenuItems.map(item => item)}
+        {this.props.additionMenuItems}
 
         <MenuItem
           onClick={this.props.onLogout}
