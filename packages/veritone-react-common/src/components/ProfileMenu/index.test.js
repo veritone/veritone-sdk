@@ -134,27 +134,21 @@ describe('InnerProfileMenu', function() {
     expect(handler).toHaveBeenCalled();
   });
 
-  it('render additional item', function() {
+  it('renders additional items', function() {
     const additionMenuItems = [
-      <MenuItem
-        key='helpCenter'
-        data='helpCenter'
-      >
+      <MenuItem key="helpCenter" data="helpCenter">
         <ListItemIcon>
           <Help />
         </ListItemIcon>
-        <ListItemText primary='Help Center' />
+        <ListItemText primary="Help Center" />
       </MenuItem>,
-        <MenuItem
-          key='appConfiguration'
-          data='appConfiguration'
-        >
-          <ListItemIcon>
-            <Build />
-          </ListItemIcon>
-          <ListItemText primary='App Configuration' />
-        </MenuItem>
-    ]
+      <MenuItem key="appConfiguration" data="appConfiguration">
+        <ListItemIcon>
+          <Build />
+        </ListItemIcon>
+        <ListItemText primary="App Configuration" />
+      </MenuItem>
+    ];
 
     const wrapper = mount(
       <div>
@@ -172,7 +166,9 @@ describe('InnerProfileMenu', function() {
       wrapper.find(MenuItem).filterWhere(n => n.props().data === 'helpCenter')
     ).toHaveLength(1);
     expect(
-      wrapper.find(MenuItem).filterWhere(n => n.props().data === 'appConfiguration')
+      wrapper
+        .find(MenuItem)
+        .filterWhere(n => n.props().data === 'appConfiguration')
     ).toHaveLength(1);
-  })
+  });
 });

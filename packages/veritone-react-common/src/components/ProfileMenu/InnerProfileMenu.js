@@ -7,7 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { string, func, shape, arrayOf, object } from 'prop-types';
+import { string, func, shape, arrayOf, element } from 'prop-types';
 import styles from './styles.scss';
 
 export default class InnerProfileMenu extends React.Component {
@@ -23,7 +23,7 @@ export default class InnerProfileMenu extends React.Component {
       }),
       signedImageUrl: string
     }),
-    additionMenuItems: arrayOf(object)
+    additionMenuItems: arrayOf(element)
   };
 
   render() {

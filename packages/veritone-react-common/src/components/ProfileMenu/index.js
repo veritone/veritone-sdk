@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
-import { string, func, shape, arrayOf, object } from 'prop-types';
+import { string, func, shape, arrayOf, element } from 'prop-types';
 
 import InnerProfileMenu from './InnerProfileMenu';
 
@@ -20,7 +20,7 @@ export default class ProfileMenu extends React.Component {
         image: string
       })
     }),
-    additionMenuItems: arrayOf(object)
+    additionMenuItems: arrayOf(element)
   };
 
   static defaultProps = {
