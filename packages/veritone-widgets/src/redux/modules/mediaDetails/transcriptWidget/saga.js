@@ -58,17 +58,19 @@ function* watchContentReset() {
   });
 }
 
-let unsavedData;
+let unsavedData, unsavedCursorPosition;
 const deferTime = 500;
 function* pushChanges() {
   if (unsavedData) {
     const historyDiff = unsavedData;
+    const cursorPosition = unsavedCursorPosition;
 
     yield put({
       type: TranscriptRedux.CHANGE,
-      historyDiff
+      historyDiff,
+      cursorPosition
     });
-    unsavedData = undefined;
+    unsavedData = unsavedCursorPosition = undefined;
   }
 }
 
@@ -82,6 +84,7 @@ function* watchContentChange() {
     });
 
     unsavedData = action.data;
+    unsavedCursorPosition = action.cursorPosition;
     if (action.data.onBlur) {
       yield call(pushChanges);
     } else {
@@ -139,7 +142,8 @@ function* watchMediaDetailCancelEdit() {
   });
 }
 
-export const changeWidthDebounce = newData => ({
+export const changeWidthDebounce = (newData, cursorPosition) => ({
+  cursorPosition,
   data: newData,
   type: CHANGE_WITH_DEBOUNCE
 });

@@ -1,5 +1,5 @@
-import { get, set, isEqual, cloneDeep, forEach, find, isArray, pick } from 'lodash';
-
+import { get, set, isEqual, cloneDeep, forEach, find, isArray, pick, omit } from 'lodash';
+import update from 'immutability-helper';
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
 // 2. comment out or remove lines that have "// without immutable js"
@@ -15,6 +15,7 @@ export const UNDO = transcriptNamespace + '_UNDO';
 export const REDO = transcriptNamespace + '_REDO';
 export const RESET = transcriptNamespace + '_RESET';
 export const CHANGE = transcriptNamespace + '_CHANGE';
+export const CLEAR_CURSOR_POSITION = transcriptNamespace + '_CLEAR_CURSOR_POSITION';
 export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
@@ -151,7 +152,11 @@ const transcriptReducer = createReducer(initialState, {
       present: initialPresent
     };
   },
-
+  [CLEAR_CURSOR_POSITION](state, action) {
+    return {
+      ...omit(state, ['cursorPosition'])
+    };
+  },
   [CHANGE](state, action) {
     const newState = handleTranscriptEdit(state, action);
     // const editType = action.data.type;
@@ -257,8 +262,9 @@ const transcriptReducer = createReducer(initialState, {
 
 function handleTranscriptEdit(state, action) {
   const historyDiff = action.historyDiff;
-  const editableData = cloneDeep(state.editableData);
-
+  const cursorPosition = action.cursorPosition;
+  const editableData = state.editableData;
+  let newEditableData = editableData;
   if (isArray(editableData)) {
     // Apply diff and save to history
     isArray(historyDiff.transcriptChanges)
@@ -267,18 +273,40 @@ function handleTranscriptEdit(state, action) {
         const action = diff.action;
         switch (action) {
           case 'UPDATE':
-            chunkToEdit.series[diff.index] = {
-              ...chunkToEdit.series[diff.index],
-              ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
-              words: [{
-                bestPath: true,
-                confidence: 1,
-                word: diff.newValue.value
-              }]
-            };
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: {
+                  [diff.index]: {
+                    $set: {
+                      ...chunkToEdit.series[diff.index],
+                      ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+                      words: [{
+                        bestPath: true,
+                        confidence: 1,
+                        word: diff.newValue.value
+                      }]
+                    }
+                  }
+                }
+              }
+            });
+            // chunkToEdit.series[diff.index] = {
+            //   ...chunkToEdit.series[diff.index],
+            //   ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+            //   words: [{
+            //     bestPath: true,
+            //     confidence: 1,
+            //     word: diff.newValue.value
+            //   }]
+            // };
             break;
           case 'DELETE':
-            chunkToEdit.series.splice(diff.index, 1);
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 1]] }
+              }
+            });
+            // chunkToEdit.series.splice(diff.index, 1);
             break;
         }
       });
@@ -286,8 +314,9 @@ function handleTranscriptEdit(state, action) {
 
   return {
     ...state,
-    editableData,
-    history: state.history.concat([historyDiff])
+    editableData: newEditableData,
+    history: state.history.concat([historyDiff]),
+    cursorPosition
   }
 }
 
@@ -425,6 +454,7 @@ export default transcriptReducer;
 export const undo = () => ({ type: UNDO });
 export const redo = () => ({ type: REDO });
 export const reset = () => ({ type: RESET });
+export const clearCursorPosition = () => ({ type: CLEAR_CURSOR_POSITION });
 export const change = newData => ({ type: CHANGE, data: newData });
 export const clearData = () => ({ type: CLEAR_DATA });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData, editableData: cloneDeep(newData) });
@@ -461,6 +491,7 @@ function local(state) {
 }
 export const currentData = state => get(local(state), 'data');
 export const editableData = state => get(local(state), 'editableData');
+export const cursorPosition = state => get(local(state), 'cursorPosition');
 export const hasUserEdits = state => {
   const history = get(local(state), 'past');
   return history && history.length > 0;

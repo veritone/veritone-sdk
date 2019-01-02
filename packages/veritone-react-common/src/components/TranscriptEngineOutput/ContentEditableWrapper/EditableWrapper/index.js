@@ -40,6 +40,20 @@ export default class EditableWrapper extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
+  componentDidUpdate() {
+    const { cursorPosition, clearCursorPosition } = this.props;
+    if (cursorPosition) {
+      const spanChildren = get(this, 'editableInput.current.htmlEl.children', []);
+      const spanArray = Array.from(spanChildren);
+      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPosition.end.guid);
+      if (targetIndex !== -1) {
+        const targetSpan = spanChildren.item(targetIndex);
+        setCursorPosition(targetSpan.firstChild, cursorPosition.end.offset);
+        clearCursorPosition();
+      }
+    }
+  }
+
   editableInput = React.createRef();
 
   handleContentClick = event => {
@@ -60,12 +74,15 @@ export default class EditableWrapper extends Component {
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       event.stopPropagation();
+      const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
-      const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
-      !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff);
+      const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap);
+      if (keyCode !== 8 && keyCode !== 46 && event.type !== 'paste') {
+        hasChange && !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff, cursorPos);
+      }
     }
   };
 
@@ -88,82 +105,61 @@ export default class EditableWrapper extends Component {
           c.getAttribute('word-guid') === cursorPos.start.guid
         );
 
-      if (keyCode === 37) {
-        // LEFT
-        // Set cursor position to front of current fragment
-        //  instead of jumping to the next fragment
-        if (cursorPos.start.offset === 1) {
+      if (targetElem) {
+        if (keyCode === 37) {
+          // LEFT
+          // Set cursor position to front of current fragment
+          //  instead of jumping to the next fragment
+          if (cursorPos.start.offset === 1) {
 
+          }
+          return;
+        } else if (keyCode === 39) {
+          // RIGHT
+          // Set cursor position to front of adjacent fragment
+          //  instead of jumping to the 2nd index of the adjacent fragment
+          if (cursorPos.start.offset === targetElem.innerText.length) {
+
+          }
+          return;
+        } else if (keyCode === 38 || keyCode === 40) {
+          // UP & DOWN
+          return;
         }
-        return;
-      } else if (keyCode === 39) {
-        // RIGHT
-        // Set cursor position to front of adjacent fragment
-        //  instead of jumping to the 2nd index of the adjacent fragment
-        if (cursorPos.start.offset === targetElem.innerText.length) {
 
-        }
-        return;
-      } else if (keyCode === 38 || keyCode === 40) {
-        // UP & DOWN
-        return;
-      }
+        if (keyCode === 8 || keyCode === 46) {
+          // Handle BACKSPACE & DELETE
+          if (!noCursorSelection) {
+            // If there is a selection, handle deletes by setting empty strings
+            event.preventDefault();
+            const spanArray = Array.from(event.target.children);
+            const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
 
-      if (keyCode === 8 || keyCode === 46) {
-        // Handle BACKSPACE & DELETE
-        if (!noCursorSelection) {
-          // If there is a selection, handle deletes by setting empty strings
-          event.preventDefault();
-          const spanArray = Array.from(event.target.children);
-          handleSelectedTextUpdate(spanArray, wordGuidMap);
-
-          const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
-          editMode && onChange && onChange(event, historyDiff);
-        }
-      }
-
-      if (hasCommand || hasControl) { // Command/Control Key
-        // TODO: Implement Undo/Redo
-        if (keyCode === 90) { // Z button
-          if (hasShiftKey(event)) {
-            // TODO: Implement Redo
-          } else {
-            // TODO: Implement Undo
+            const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
+            hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
+            setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
           }
         }
-        return; 
+
+        if (hasCommand || hasControl) { // Command/Control Key
+          // TODO: Implement Undo/Redo
+          if (keyCode === 90) { // Z button
+            if (hasShiftKey(event)) {
+              // TODO: Implement Redo
+            } else {
+              // TODO: Implement Undo
+            }
+          }
+          return; 
+        }
       }
     }
-  };
-
-  handleContentChange = event => {
-    const disabledActions = ['insertFromDrop', 'deleteByDrag'];
-    const inputType = get(event, 'nativeEvent.inputType');
-    if (includes(disabledActions, inputType)) {
-      event.nativeEvent && event.nativeEvent.preventDefault();
-      event.nativeEvent && event.nativeEvent.stopPropagation();
-      // TODO: Resync editable state with unchanged content
-      return;
-    } else if (inputType === 'insertFromPaste') {
-      // Break down into plain text
-      return;
-    } else if (inputType === 'blur') {
-      return;
-    }
-    return event;
-  };
-
-  handleContentBlur = event => {
-    const { startTimeMs, stopTimeMs } = this.props;
-    const newVal = event.target.textContent;
-    const newStartTime = startTimeMs; //These 2 are the same for now. We will have options to edit time in the future
-    const newStopTime = stopTimeMs; //These 2 are the same for now. We will have options to edit time in the future
-    this.triggerOnChange(newVal, newStartTime, newStopTime, true);
   };
 
   handleContentPaste = event => {
     const { editMode, onChange, content } = this.props;
     const wordGuidMap = content.wordGuidMap;
+    const oldCursor = getCursorPosition();
     
     if (event) {
       event.preventDefault();
@@ -179,10 +175,15 @@ export default class EditableWrapper extends Component {
 
     const contentEditableElement = get(event, 'target.parentElement');
     const spanArray = contentEditableElement.children;
-    handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
+    const targetElem = Array.from(spanArray)
+      .find(c => 
+        c.getAttribute('word-guid') === oldCursor.start.guid
+      );
+    const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
 
-    const historyDiff = generateDiffHistory(contentEditableElement, wordGuidMap)
-    editMode && onChange && onChange(event, historyDiff);
+    const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
+    hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
+    setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
   };
 
   handleContentDrag = event => {
@@ -291,6 +292,17 @@ function getCursorPosition() {
   };
 }
 
+function setCursorPosition(elem, offset = 0) {
+  if (elem) {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range && range.setStart && range.setStart(elem, offset);
+    range.collapse(true);
+    sel && sel.removeAllRanges && sel.removeAllRanges();
+    sel && sel.addRange && sel.addRange(range);
+  }
+}
+
 function parseHtmlForText(htmlString) {
   let cumulativeString = '';
   const utilDiv = document.createElement('div');
@@ -308,7 +320,7 @@ function parseHtmlForText(htmlString) {
   return cumulativeString;
 }
 
-function generateDiffHistory(contentEditableElement, wordGuidMap) {
+function generateDiffHistory(contentEditableElement, wordGuidMap, cursorPosition) {
   const speakerChanges = [];
   const transcriptChanges = [];
   const foundMap = {};
@@ -388,14 +400,24 @@ function generateDiffHistory(contentEditableElement, wordGuidMap) {
         action: 'DELETE',
         oldValue: deletedFrag.serie
       });
-    })
+    });
   }
 
   speakerChanges.sort(sortByAction);
   transcriptChanges.sort(sortByAction);
+
+  let cursorPos;
+  if (speakerChanges.length || transcriptChanges.length) {
+    cursorPos = cursorPosition || getCursorPosition();
+  }
+
   return {
-    speakerChanges,
-    transcriptChanges: transcriptChanges
+    hasChange: speakerChanges.length || transcriptChanges.length,
+    historyDiff: {
+      speakerChanges,
+      transcriptChanges
+    },
+    cursorPos
   };
 }
 
@@ -415,6 +437,7 @@ function sortByAction(a, b) {
   return 0;
 }
 
+// spanArray will be mutated
 function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   const cursorPos = getCursorPosition();
   const startPos = cursorPos.start;
@@ -443,4 +466,23 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
       spanArray[i].innerText = '';  // Delete fragment
     }
   }
+
+  // Return old cursor position since the mutation resets it
+  const newCursorPos = cursorPos;
+  if (startSpan.innerText || startIndex === endIndex) {
+    newCursorPos.end = newCursorPos.start;
+    newCursorPos.end.offset = newCursorPos.start.offset += textToInsert.length;
+  } else if (endSpan.innerText) {
+    newCursorPos.start = newCursorPos.end;
+    newCursorPos.start.offset = newCursorPos.end.offset += textToInsert.length;
+  } else {
+    if (startIndex > 0) {
+      const previousSpan = spanArray[startIndex - 1];
+      newCursorPos.start = newCursorPos.end = {
+        guid: previousSpan.getAttribute('word-guid'),
+        offset: previousSpan.innerText.length
+      };
+    }
+  }
+  return newCursorPos;
 }

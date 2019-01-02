@@ -86,8 +86,8 @@ export default class SpeakerTranscriptContent extends Component {
       this.props.onClick(seriesObject.startTimeMs, seriesObject.stopTimeMs);
   };
 
-  handleDataChanged = (event, historyDiff) => {
-    this.props.onChange && this.props.onChange(event, historyDiff);
+  handleDataChanged = (event, historyDiff, cursorPosition) => {
+    this.props.onChange && this.props.onChange(event, historyDiff, cursorPosition);
   };
 
   // totalTranscriptFragments will be mutated. This function picks off the first element
@@ -330,7 +330,9 @@ export default class SpeakerTranscriptContent extends Component {
       viewType,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId
+      selectedCombineViewTypeId,
+      cursorPosition,
+      clearCursorPosition
     } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
@@ -387,7 +389,8 @@ export default class SpeakerTranscriptContent extends Component {
                       startMediaPlayHeadMs={mediaPlayerTimeMs}
                       stopMediaPlayHeadMs={stopMediaPlayHeadMs}
                       classNames={classNames(styles.contentSegment)}
-                      wordGuidMap={parsedData.wordGuidMap}
+                      cursorPosition={cursorPosition}
+                      clearCursorPosition={clearCursorPosition}
                     />
                   ) :
                   (
@@ -433,6 +436,8 @@ export default class SpeakerTranscriptContent extends Component {
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
               classNames={classNames(styles.contentSegment)}
+              cursorPosition={cursorPosition}
+              clearCursorPosition={clearCursorPosition}
             />
           );
 

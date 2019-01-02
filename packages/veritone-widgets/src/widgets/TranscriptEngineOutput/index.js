@@ -29,6 +29,7 @@ const saga = util.reactReduxSaga.saga;
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
     editableData: TranscriptRedux.editableData(state),
+    cursorPosition: TranscriptRedux.cursorPosition(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       tdo.id,
@@ -55,6 +56,7 @@ const saga = util.reactReduxSaga.saga;
     //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
+    clearCursorPosition: TranscriptRedux.clearCursorPosition,
     receiveData: TranscriptRedux.receiveData,
     fetchEngineResults: engineResultsModule.fetchEngineResults,
     clearEngineResultsByEngineId:
@@ -230,8 +232,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     }
   }
 
-  handleContentChanged = (event, historyDiff) => {
-    this.props.change(historyDiff);
+  handleContentChanged = (event, historyDiff, cursorPosition) => {
+    this.props.change(historyDiff, cursorPosition);
   };
 
   handleOnEditTypeChange = value => {
@@ -367,6 +369,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       'headerClassName',
       'contentClassName',
       'editMode',
+      'cursorPosition',
       'onClick',
       'onScroll',
       'onExpandClick',
@@ -382,7 +385,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'onCombineEngineChange',
       'combineViewTypes',
       'selectedCombineViewTypeId',
-      'speakerData'
+      'speakerData',
+      'clearCursorPosition'
     ]);
 
     const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?

@@ -307,6 +307,8 @@ export default class TranscriptEngineOutput extends Component {
   renderBody() {
     const {
       data,
+      cursorPosition,
+      clearCursorPosition,
       onClick,
       onScroll,
       editMode,
@@ -342,6 +344,8 @@ export default class TranscriptEngineOutput extends Component {
               estimatedDisplayTimeMs={estimatedDisplayTimeMs}
               mediaLengthMs={mediaLengthMs}
               neglectableTimeMs={neglectableTimeMs}
+              cursorPosition={cursorPosition}
+              clearCursorPosition={clearCursorPosition}
               onClick={onClick}
               onScroll={onScroll}
               onChange={onChange}
