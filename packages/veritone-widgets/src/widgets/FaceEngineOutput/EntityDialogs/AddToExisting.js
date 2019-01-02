@@ -405,7 +405,7 @@ export default class AddToExistingEntityDialog extends Component {
                                       !isUndefined(
                                         result.ownedByOrganization
                                       ) && !result.ownedByOrganization
-                                        ? 'This person belongs to a shared library.'
+                                        ? 'This person belongs to a shared library and is managed by another organization.'
                                         : ''
                                     }
                                     placement="top-start"

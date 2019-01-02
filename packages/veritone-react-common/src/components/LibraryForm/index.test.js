@@ -46,11 +46,11 @@ describe('LibraryForm', () => {
   const libraryTypes = [
     {
       id: 'test-123',
-      name: 'testLibraryType'
+      label: 'testLibraryType'
     },
     {
       id: 'test-abc',
-      name: 'testLibraryType2'
+      label: 'testLibraryType2'
     }
   ];
   beforeEach(() => {
