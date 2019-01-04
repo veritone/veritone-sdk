@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
 import { get, includes, omit, isArray, isUndefined } from 'lodash';
 
+import { guid } from 'helpers/guid';
 import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
 import { msToReadableString } from '../../../../helpers/time';
 
@@ -79,7 +80,7 @@ export default class EditableWrapper extends Component {
       const hasControl = hasControlModifier(event);
       const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
-      const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap);
+      const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
       if (keyCode !== 8 && keyCode !== 46 && event.type !== 'paste') {
         hasChange && !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff, cursorPos);
       }
@@ -87,22 +88,23 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyPress = event => {
-    const { editMode, onChange, content } = this.props;
+    const { editMode, onChange, content, speakerData } = this.props;
+    const hasSpeakerData = get(speakerData, 'length');
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       const contentEditableElement = event.target;
       // event.preventDefault();   // This prevents editable text from being updated
       event.stopPropagation();
-      const cursorPos = getCursorPosition();
-      const noCursorSelection = cursorPos.start && cursorPos.end &&
-        cursorPos.start.guid === cursorPos.end.guid &&
-        cursorPos.start.offset === cursorPos.end.offset;
+      const curCursorPos = getCursorPosition();
+      const noCursorSelection = curCursorPos.start && curCursorPos.end &&
+        curCursorPos.start.guid === curCursorPos.end.guid &&
+        curCursorPos.start.offset === curCursorPos.end.offset;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const keyCode = event.keyCode;
       const targetElem = Array.from(event.target.children)
         .find(c => 
-          c.getAttribute('word-guid') === cursorPos.start.guid
+          c.getAttribute('word-guid') === curCursorPos.start.guid
         );
 
       if (targetElem) {
@@ -110,15 +112,16 @@ export default class EditableWrapper extends Component {
           // LEFT
           // Set cursor position to front of current fragment
           //  instead of jumping to the next fragment
-          if (cursorPos.start.offset === 1) {
-
+          if (curCursorPos.start.offset === 1) {
+            // event.preventDefault();
+            // setCursorPosition(targetElem.firstChild, 0);
           }
           return;
         } else if (keyCode === 39) {
           // RIGHT
           // Set cursor position to front of adjacent fragment
           //  instead of jumping to the 2nd index of the adjacent fragment
-          if (cursorPos.start.offset === targetElem.innerText.length) {
+          if (curCursorPos.start.offset === targetElem.innerText.length) {
 
           }
           return;
@@ -135,10 +138,24 @@ export default class EditableWrapper extends Component {
             const spanArray = Array.from(event.target.children);
             const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
 
-            const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
+            const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
             setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
           }
+        }
+
+        if (keyCode === 13) {
+          // Handle return key
+          event.preventDefault();
+          const isCursorAtEnd = 
+            targetElem.innerText.length &&
+            targetElem.innerText.length === curCursorPos.end.offset;
+          if (hasSpeakerData && noCursorSelection && isCursorAtEnd) {
+            // Split current speaker pill by current snippet end time
+            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(curCursorPos, wordGuidMap, 'ENTER');
+            hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
+          }
+          return;
         }
 
         if (hasCommand || hasControl) { // Command/Control Key
@@ -181,7 +198,7 @@ export default class EditableWrapper extends Component {
       );
     const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
 
-    const { hasChange, historyDiff, cursorPos } = generateDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
+    const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
     hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
     setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
   };
@@ -320,7 +337,47 @@ function parseHtmlForText(htmlString) {
   return cumulativeString;
 }
 
-function generateDiffHistory(contentEditableElement, wordGuidMap, cursorPosition) {
+function generateSpeakerDiffHistory(cursorPosition, wordGuidMap, keyType) {
+  const speakerChanges = [];
+  const targetGuid = get(cursorPosition, 'start.guid');
+  const wordObj = wordGuidMap && wordGuidMap[targetGuid];
+  if (wordObj) {
+    if (keyType === 'ENTER') {
+      const splitTime = wordObj.serie.stopTimeMs;
+      speakerChanges.push({
+        index: wordObj.speakerIndex,
+        action: 'UPDATE',
+        oldValue: wordObj.speaker,
+        newValue: {
+          ...wordObj.speaker,
+          stopTimeMs: splitTime
+        }
+      });
+      speakerChanges.push({
+        index: wordObj.speakerIndex + 1,
+        action: 'INSERT',
+        newValue: {
+          ...wordObj.speaker,
+          guid: guid(),
+          startTimeMs: splitTime,
+          speakerId: '?'
+        }
+      })
+    } else if (keyType === 'BACKSPACE') {
+
+    }
+  }
+
+  return {
+    hasChange: speakerChanges.length,
+    historyDiff: {
+      speakerChanges
+    },
+    cursorPos: cursorPosition || getCursorPosition()
+  }
+}
+
+function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, cursorPosition) {
   const speakerChanges = [];
   const transcriptChanges = [];
   const foundMap = {};
@@ -338,6 +395,8 @@ function generateDiffHistory(contentEditableElement, wordGuidMap, cursorPosition
             const chunkIndex = wordGuidMap[spanGuid].chunkIndex;
             foundMap[spanGuid] = true;
             const oldEntry = wordGuidMap[spanGuid];
+
+            // Transcript Changes
             if (!newWord) {
               // Delete fragment and set time for adjacent fragment to append
               if (!latestDeleteTime) {
@@ -444,11 +503,11 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   const endPos = cursorPos.end;
   const cursorStartMap = wordGuidMap[cursorPos.start.guid];
   const cursorEndMap = wordGuidMap[cursorPos.end.guid];
-  let startIndex = cursorStartMap.speakerIndex;
+  let startIndex = cursorStartMap.dialogueIndex;
   if (isUndefined(startIndex)) {
     startIndex = cursorStartMap.index;
   }
-  const endIndex = cursorEndMap.speakerIndex || cursorEndMap.index;
+  const endIndex = cursorEndMap.dialogueIndex || cursorEndMap.index;
   const startSpan = spanArray[startIndex];
   const endSpan = spanArray[endIndex];
 
@@ -456,12 +515,17 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   if (startIndex !== endIndex) {
     startSpan.innerText = startSpan.innerText.slice(0, startPos.offset) + textToInsert;
     endSpan.innerText = endSpan.innerText.slice(endPos.offset, endSpan.innerText.length + 1);
+
+    // Check if everything was deleted, if so - retain first snippet
+    if (!startSpan.innerText && !endSpan.innerText && startIndex === 0 && endIndex === spanArray.length - 1) {
+      startSpan.innerText = '.';
+    }
   } else {
     startSpan.innerText = startSpan.innerText.slice(0, startPos.offset) + textToInsert + endSpan.innerText.slice(endPos.offset, endSpan.innerText.length);
   }
 
   // Delete middle indices
-  for (let i = startIndex + 1; i < endIndex; i++) {
+  for (let i = endIndex - 1; i > startIndex; i--) {
     if (spanArray[i]) {
       spanArray[i].innerText = '';  // Delete fragment
     }

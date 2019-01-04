@@ -29,6 +29,7 @@ const saga = util.reactReduxSaga.saga;
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
     editableData: TranscriptRedux.editableData(state),
+    editableSpeakerData: TranscriptRedux.editableSpeakerData(state),
     cursorPosition: TranscriptRedux.cursorPosition(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
@@ -58,6 +59,7 @@ const saga = util.reactReduxSaga.saga;
     reset: TranscriptRedux.reset,
     clearCursorPosition: TranscriptRedux.clearCursorPosition,
     receiveData: TranscriptRedux.receiveData,
+    receiveSpeakerData: TranscriptRedux.receiveSpeakerData,
     fetchEngineResults: engineResultsModule.fetchEngineResults,
     clearEngineResultsByEngineId:
       engineResultsModule.clearEngineResultsByEngineId,
@@ -215,9 +217,16 @@ export default class TranscriptEngineOutputContainer extends Component {
           });
       });
 
+    const nextSpeakerData = get(nextProps, 'speakerData');
+
     const prevProps = prevState.props;
+
     !isEqual(prevProps.selectedEngineResults, nextData) &&
       prevProps.receiveData(nextData);
+
+    !isEqual(prevProps.speakerData, nextSpeakerData) &&
+      prevProps.receiveSpeakerData(nextSpeakerData);
+
     return { ...prevState, props: nextProps };
   }
 
@@ -385,7 +394,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       'onCombineEngineChange',
       'combineViewTypes',
       'selectedCombineViewTypeId',
-      'speakerData',
       'clearCursorPosition'
     ]);
 
@@ -410,11 +418,15 @@ export default class TranscriptEngineOutputContainer extends Component {
     const activeData = this.props.editModeEnabled ?
       this.props.editableData :
       this.props.currentData;
+    const activeSpeakerData = this.props.editModeEnabled ?
+      this.props.editableSpeakerData :
+      this.props.speakerData;
 
     return (
       <Fragment>
         <TranscriptEngineOutput
           data={activeData}
+          speakerData={activeSpeakerData}
           {...transcriptEngineProps}
           bulkEditEnabled={bulkEditEnabled}
           editMode={this.props.editModeEnabled}

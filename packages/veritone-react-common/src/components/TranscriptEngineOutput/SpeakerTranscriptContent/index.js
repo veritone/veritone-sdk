@@ -92,7 +92,7 @@ export default class SpeakerTranscriptContent extends Component {
 
   // totalTranscriptFragments will be mutated. This function picks off the first element
   // and allocates it to a speakers' fragments
-  allocateSpeakerTranscripts = (totalTranscriptFragments, currentSpeaker, nextSpeaker) => {
+  allocateSpeakerTranscripts = (totalTranscriptFragments, currentSpeaker, nextSpeaker, speakerIndex) => {
     const speakerStartTime = currentSpeaker.startTimeMs;
     const speakerStopTime = currentSpeaker.stopTimeMs;
     const fragments = [];
@@ -115,9 +115,11 @@ export default class SpeakerTranscriptContent extends Component {
         fragments.push(fragment);
         wordGuidMap[fragment.guid] = {
           chunkIndex: fragment.chunkIndex,
-          speakerIndex: fragment.index - fragments[0].index,
+          dialogueIndex: fragment.index - fragments[0].index,
           index: fragment.index,
-          serie: fragment
+          serie: fragment,
+          speakerIndex,
+          speaker: currentSpeaker
         }
       } else {
         // There is a next speaker and the current snippet does belong to the next speaker
@@ -346,7 +348,8 @@ export default class SpeakerTranscriptContent extends Component {
         const { fragments, wordGuidMap } = this.allocateSpeakerTranscripts(
           parsedData.totalTranscriptFragments,
           speakerSegment,
-          nextSpeaker
+          nextSpeaker,
+          index
         );
 
         const filteredSpeakerSegmentDataWrapper = { fragments, wordGuidMap };

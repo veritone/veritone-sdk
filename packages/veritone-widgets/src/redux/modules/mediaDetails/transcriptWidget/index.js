@@ -18,6 +18,7 @@ export const CHANGE = transcriptNamespace + '_CHANGE';
 export const CLEAR_CURSOR_POSITION = transcriptNamespace + '_CLEAR_CURSOR_POSITION';
 export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
+export const RECEIVE_SPEAKER_DATA = transcriptNamespace + '_RECEIVE_SPEAKER_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
 export const TRANSCRIPT_EDIT_BUTTON_CLICKED =
   transcriptNamespace + '_TRANSCRIPT_EDIT_BUTTON_CLICKED';
@@ -192,6 +193,10 @@ const transcriptReducer = createReducer(initialState, {
       return { ...state, data: data, editableData: editableData, past: [], future: [], present: present };
     }
   },
+  [RECEIVE_SPEAKER_DATA](state, action) {
+    const { speakerData, editableSpeakerData } = action;
+    return { ...state, speakerData, editableSpeakerData };
+  },
   [SAVE_TRANSCRIPT_EDITS](state) {
     return {
       ...state,
@@ -264,7 +269,9 @@ function handleTranscriptEdit(state, action) {
   const historyDiff = action.historyDiff;
   const cursorPosition = action.cursorPosition;
   const editableData = state.editableData;
+  const editableSpeakerData = state.editableSpeakerData;
   let newEditableData = editableData;
+  let newEditableSpeakerData = editableSpeakerData;
   if (isArray(editableData)) {
     // Apply diff and save to history
     isArray(historyDiff.transcriptChanges)
@@ -310,11 +317,40 @@ function handleTranscriptEdit(state, action) {
             break;
         }
       });
+
+    isArray(historyDiff.speakerChanges)
+      && historyDiff.speakerChanges.forEach(diff => {
+        const action = diff.action;
+        switch (action) {
+          case 'UPDATE':
+            const serieToEdit = editableSpeakerData[diff.index];
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: {
+                  [diff.index]: {
+                    $set: diff.newValue
+                  } 
+                }
+              }
+            });
+            break;
+          case 'INSERT':
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: {
+                  $splice: [[diff.index, 0, diff.newValue]]
+                }
+              }
+            });
+            break;
+        }
+      });
   }
 
   return {
     ...state,
     editableData: newEditableData,
+    editableSpeakerData: newEditableSpeakerData,
     history: state.history.concat([historyDiff]),
     cursorPosition
   }
@@ -458,6 +494,13 @@ export const clearCursorPosition = () => ({ type: CLEAR_CURSOR_POSITION });
 export const change = newData => ({ type: CHANGE, data: newData });
 export const clearData = () => ({ type: CLEAR_DATA });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData, editableData: cloneDeep(newData) });
+export const receiveSpeakerData = newSpeakerData => (
+  {
+    type: RECEIVE_SPEAKER_DATA,
+    speakerData: newSpeakerData,
+    editableSpeakerData: cloneDeep(newSpeakerData)
+  }
+);
 export const editTranscriptButtonClick = () => {
   return {
     type: TRANSCRIPT_EDIT_BUTTON_CLICKED
@@ -491,6 +534,7 @@ function local(state) {
 }
 export const currentData = state => get(local(state), 'data');
 export const editableData = state => get(local(state), 'editableData');
+export const editableSpeakerData = state => get(local(state), 'editableSpeakerData');
 export const cursorPosition = state => get(local(state), 'cursorPosition');
 export const hasUserEdits = state => {
   const history = get(local(state), 'past');
