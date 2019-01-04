@@ -88,8 +88,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyPress = event => {
-    const { editMode, onChange, content, speakerData } = this.props;
-    const hasSpeakerData = get(speakerData, 'length');
+    const { editMode, onChange, content, hasSpeakerData } = this.props;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       const contentEditableElement = event.target;

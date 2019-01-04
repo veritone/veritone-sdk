@@ -385,6 +385,7 @@ export default class SpeakerTranscriptContent extends Component {
                   (
                     <EditableWrapper
                       key={'transcript-speaker-snippet' + speakerStartTime}
+                      hasSpeakerData
                       content={filteredSpeakerSegmentDataWrapper}
                       editMode={editMode}
                       onChange={this.handleDataChanged}
