@@ -54,7 +54,7 @@ export default class AclGroups extends React.Component {
 
   render() {
     const { description, organizations, defaultPermission } = this.props;
-
+    console.log(this.props);
     return (
       <div className={styles.aclGroupsContainer}>
         <div className={styles.title}>
@@ -92,6 +92,7 @@ export default class AclGroups extends React.Component {
                       {organization.name}
                     </div>
                     <IconButton
+                      disabled = {organization.permission === 'owner'}
                       className={styles.aclRowDeleteIcon}
                       aria-label="Delete"
                       onClick={() => this.handleRemoveAcl(organization.id)}
