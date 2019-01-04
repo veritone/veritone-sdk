@@ -315,6 +315,21 @@ function handleTranscriptEdit(state, action) {
             });
             // chunkToEdit.series.splice(diff.index, 1);
             break;
+          case 'INSERT':
+            const newValue = {
+              ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+              words: [{
+                bestPath: true,
+                confidence: 1,
+                word: diff.newValue.value
+              }]
+            };
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 0, newValue]] }
+              }
+            });
+            break;
         }
       });
 

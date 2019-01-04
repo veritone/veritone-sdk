@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import { arrayOf, shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
-import { get, includes, omit, isArray, isUndefined } from 'lodash';
+import { get, includes, omit, isArray, isUndefined, pick } from 'lodash';
 
 import { guid } from 'helpers/guid';
 import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
@@ -146,10 +146,7 @@ export default class EditableWrapper extends Component {
         if (keyCode === 13) {
           // Handle return key
           event.preventDefault();
-          const isCursorAtEnd = 
-            targetElem.innerText.length &&
-            targetElem.innerText.length === curCursorPos.end.offset;
-          if (hasSpeakerData && noCursorSelection && isCursorAtEnd) {
+          if (hasSpeakerData && noCursorSelection) {
             // Split current speaker pill by current snippet end time
             const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(curCursorPos, wordGuidMap, 'ENTER');
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
@@ -337,12 +334,41 @@ function parseHtmlForText(htmlString) {
 }
 
 function generateSpeakerDiffHistory(cursorPosition, wordGuidMap, keyType) {
+  const transcriptChanges = [];
   const speakerChanges = [];
   const targetGuid = get(cursorPosition, 'start.guid');
   const wordObj = wordGuidMap && wordGuidMap[targetGuid];
   if (wordObj) {
     if (keyType === 'ENTER') {
-      const splitTime = wordObj.serie.stopTimeMs;
+      const serieText = get(wordObj, 'serie.value');
+      const serieDuration = wordObj.serie.stopTimeMs - wordObj.serie.startTimeMs;
+      const cursorOffset = get(cursorPosition, 'start.offset');
+      const splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
+      const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'value']);
+
+      transcriptChanges.push({
+        index: wordObj.index,
+        chunkIndex: wordObj.chunkIndex,
+        action: 'UPDATE',
+        oldValue,
+        newValue: {
+          ...oldValue,
+          stopTimeMs: splitTime,
+          value: serieText.slice(0, cursorOffset)
+        }
+      });
+      transcriptChanges.push({
+        index: wordObj.index + 1,
+        chunkIndex: wordObj.chunkIndex,
+        action: 'INSERT',
+        newValue: {
+          ...oldValue,
+          guid: guid(),
+          startTimeMs: splitTime,
+          value: serieText.slice(cursorOffset, serieText.length)
+        }
+      });
+
       speakerChanges.push({
         index: wordObj.speakerIndex,
         action: 'UPDATE',
@@ -361,15 +387,19 @@ function generateSpeakerDiffHistory(cursorPosition, wordGuidMap, keyType) {
           startTimeMs: splitTime,
           speakerId: '?'
         }
-      })
+      });
     } else if (keyType === 'BACKSPACE') {
 
     }
   }
+  
+  speakerChanges.sort(sortByAction);
+  transcriptChanges.sort(sortByAction);
 
   return {
     hasChange: speakerChanges.length,
     historyDiff: {
+      transcriptChanges,
       speakerChanges
     },
     cursorPos: cursorPosition || getCursorPosition()

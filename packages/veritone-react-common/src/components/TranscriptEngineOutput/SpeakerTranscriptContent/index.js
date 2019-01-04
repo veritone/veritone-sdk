@@ -213,9 +213,6 @@ export default class SpeakerTranscriptContent extends Component {
             if (snippetStatus && snippetStatus !== 'success') {
               saveSnippetData();
             }
-            if (overviewStatus && overviewStatus !== 'success') {
-              saveOverviewData();
-            }
 
             //---Get Correct Word---
             let selectedWord = '';
@@ -234,7 +231,6 @@ export default class SpeakerTranscriptContent extends Component {
             }
 
             snippetStatus = 'success';
-            overviewStatus = 'success';
 
             // escape special characters to show in UI
             if (selectedWord) {
@@ -257,20 +253,12 @@ export default class SpeakerTranscriptContent extends Component {
             snippetSentences =
               snippetSentences + selectedWord + sentenceSeparator;
             snippetParts.push(snippet);
-            //---Update Overview Data---
-            overviewSentences =
-              overviewSentences + selectedWord + sentenceSeparator;
-            overviewParts.push(snippet);
           } else {
             // No Transcript Data
             if (snippetStatus && snippetStatus !== 'no-transcript') {
               saveSnippetData();
             }
-            if (overviewStatus && overviewStatus !== 'no-transcript') {
-              saveOverviewData();
-            }
             snippetStatus = 'no-transcript';
-            overviewStatus = 'no-transcript';
           }
 
           //---Update Start & Stop Time---
@@ -292,18 +280,6 @@ export default class SpeakerTranscriptContent extends Component {
             groupStopTime > snippetStopTime
           ) {
             snippetStopTime = groupStopTime;
-          }
-          if (
-            overviewStartTime === undefined ||
-            overviewStartTime > snippetStartTime
-          ) {
-            overviewStartTime = snippetStartTime;
-          }
-          if (
-            overviewStopTime === undefined ||
-            overviewStopTime < snippetStopTime
-          ) {
-            overviewStopTime = snippetStopTime;
           }
         });
 
