@@ -304,6 +304,7 @@ export default class SpeakerTranscriptContent extends Component {
 
   renderSpeakerSnippetSegments = parsedData => {
     const {
+      speakerData,
       editMode,
       viewType,
       mediaPlayerTimeMs,
@@ -346,8 +347,10 @@ export default class SpeakerTranscriptContent extends Component {
               xl={1}
             >
               <SpeakerPill
+                editMode={editMode}
                 speakerSegment={speakerSegment}
                 onClick={this.handleOnClick}
+                onChange={this.handleDataChanged}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}
                 stopMediaPlayHeadMs={stopMediaPlayHeadMs}
               />
@@ -361,9 +364,9 @@ export default class SpeakerTranscriptContent extends Component {
                   (
                     <EditableWrapper
                       key={'transcript-speaker-snippet' + speakerStartTime}
-                      hasSpeakerData
+                      speakerData={speakerData}
                       content={filteredSpeakerSegmentDataWrapper}
-                      editMode={editMode}
+                      editMode
                       onChange={this.handleDataChanged}
                       onClick={this.handleOnClick}
                       startMediaPlayHeadMs={mediaPlayerTimeMs}
@@ -410,7 +413,7 @@ export default class SpeakerTranscriptContent extends Component {
             <EditableWrapper
               key={'transcript-snippet' + segmentStartTime}
               content={segmentData}
-              editMode={editMode}
+              editMode
               onChange={this.handleDataChanged}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
@@ -505,10 +508,6 @@ export default class SpeakerTranscriptContent extends Component {
     );
 
     return overviewSegments;
-  };
-
-  renderEditMode = parsedData => {
-    return this.renderSpeakerSnippetSegments(parsedData);
   };
 
   render() {

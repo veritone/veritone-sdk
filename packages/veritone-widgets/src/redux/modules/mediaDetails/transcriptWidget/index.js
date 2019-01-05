@@ -352,9 +352,14 @@ function handleTranscriptEdit(state, action) {
           case 'INSERT':
             newEditableSpeakerData = update(newEditableSpeakerData, {
               [0]: {
-                series: {
-                  $splice: [[diff.index, 0, diff.newValue]]
-                }
+                series: { $splice: [[diff.index, 0, diff.newValue]] }
+              }
+            });
+            break;
+          case 'DELETE':
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: { $splice: [[diff.index, 1]] }
               }
             });
             break;

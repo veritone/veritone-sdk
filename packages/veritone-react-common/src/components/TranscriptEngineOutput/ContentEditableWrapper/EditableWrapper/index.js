@@ -81,14 +81,15 @@ export default class EditableWrapper extends Component {
       const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
       const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
-      if (keyCode !== 8 && keyCode !== 46 && event.type !== 'paste') {
+      if (event.type !== 'paste') {
         hasChange && !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff, cursorPos);
       }
     }
   };
 
   handleContentKeyPress = event => {
-    const { editMode, onChange, content, hasSpeakerData } = this.props;
+    const { editMode, onChange, content, speakerData } = this.props;
+    const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       const contentEditableElement = event.target;
@@ -105,6 +106,7 @@ export default class EditableWrapper extends Component {
         .find(c => 
           c.getAttribute('word-guid') === curCursorPos.start.guid
         );
+      const wordObj = wordGuidMap[curCursorPos.start.guid];
 
       if (targetElem) {
         if (keyCode === 37) {
@@ -140,6 +142,11 @@ export default class EditableWrapper extends Component {
             const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
             setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
+          } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
+            // Delete current speaker and add its time to the previous speaker
+            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
+            hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
+            return;
           }
         }
 
@@ -148,7 +155,7 @@ export default class EditableWrapper extends Component {
           event.preventDefault();
           if (hasSpeakerData && noCursorSelection) {
             // Split current speaker pill by current snippet end time
-            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(curCursorPos, wordGuidMap, 'ENTER');
+            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'ENTER');
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
           }
           return;
@@ -333,7 +340,7 @@ function parseHtmlForText(htmlString) {
   return cumulativeString;
 }
 
-function generateSpeakerDiffHistory(cursorPosition, wordGuidMap, keyType) {
+function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, keyType) {
   const transcriptChanges = [];
   const speakerChanges = [];
   const targetGuid = get(cursorPosition, 'start.guid');
@@ -389,10 +396,27 @@ function generateSpeakerDiffHistory(cursorPosition, wordGuidMap, keyType) {
         }
       });
     } else if (keyType === 'BACKSPACE') {
-
+      // Can't do this operation on first speaker
+      if (wordObj.speakerIndex) {
+        const previousSpeaker = get(speakerData, [0, 'series', wordObj.speakerIndex - 1]);
+        speakerChanges.push({
+          index: wordObj.speakerIndex,
+          action: 'DELETE',
+          oldValue: wordObj.speaker
+        });
+        speakerChanges.push({
+          index: wordObj.speakerIndex - 1,
+          action: 'UPDATE',
+          oldValue: previousSpeaker,
+          newValue: {
+            ...previousSpeaker,
+            stopTimeMs: wordObj.speaker.stopTimeMs
+          }
+        });
+      }
     }
   }
-  
+
   speakerChanges.sort(sortByAction);
   transcriptChanges.sort(sortByAction);
 
