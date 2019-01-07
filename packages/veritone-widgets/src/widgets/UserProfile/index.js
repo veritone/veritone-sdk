@@ -167,7 +167,10 @@ export class UserProfile extends React.Component {
   };
 
   afterChange = userResponse => {
-    this.props.onUserUpdated(get(userResponse, 'updateCurrentUser'));
+    const updatedUser = get(userResponse, 'updateCurrentUser');
+    if (updatedUser) {
+      this.props.onUserUpdated(updatedUser);
+    }
     this.closeModal();
   };
 
