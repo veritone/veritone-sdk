@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-
+import { List } from 'react-virtualized';
 import EngineOutputHeader from '../EngineOutputHeader';
 import OCREngineOutputView from './';
 
@@ -22,8 +22,8 @@ const ocrAssets = [
         }
       },
       {
-        startTimeMs: 2000,
-        stopTimeMs: 1000,
+        startTimeMs: 1000,
+        stopTimeMs: 2000,
         object: {
           text:
             'WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray CNW Political Reporter \n LIVE \n NAS -58.43 \n IONY ON CHAMPS-ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURITY It SITUATION ROOM \n '
@@ -46,14 +46,6 @@ describe('OCREngineOutputView', () => {
     expect(wrapper.find('.ocrContent')).toHaveLength(1);
   });
 
-  it('should display a list of ocr objects', () => {
-    const wrapper = mount(<OCREngineOutputView data={ocrAssets} />);
-
-    expect(wrapper.find('.ocrContainer')).toHaveLength(
-      ocrAssets[0].series.length
-    );
-  });
-
   it('adds props.className to the root', function() {
     const wrapper = mount(
       <OCREngineOutputView data={ocrAssets} className="ocr-class" />
@@ -61,15 +53,10 @@ describe('OCREngineOutputView', () => {
     expect(wrapper.hasClass('ocr-class')).toBe(true);
   });
 
-  it('calls props.onOcrClicked when user clicks an orc pill', () => {
-    const handler = jest.fn();
-    const wrapper = mount(
-      <OCREngineOutputView data={ocrAssets} onOcrClicked={handler} />
-    );
-    wrapper
-      .find('.ocrContainer')
-      .first()
-      .simulate('click');
-    expect(handler).toHaveBeenCalledWith(0, 1000);
+
+  it('should display a virtualized list of ocr objects', () => {
+    const wrapper = mount(<OCREngineOutputView data={ocrAssets} />);
+
+    expect(wrapper.find(List).exists()).toBe(true);
   });
 });

@@ -22,7 +22,8 @@ const engines = [
     name: 'Cortex'
   }
 ];
-const mockData = genMockData(0, 60000, 1000, texts);
+const timeLength = 60000;
+const mockData = genMockData(0, timeLength, 1000, texts);
 
 storiesOf('OCREngineOutputView', module).add('Base', () => {
   return (
@@ -34,7 +35,7 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
       currentMediaPlayerTime={number('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
-        max: 600000,
+        max: timeLength,
         step: 100
       })}
       onEngineChange={action('onEngineChange')}

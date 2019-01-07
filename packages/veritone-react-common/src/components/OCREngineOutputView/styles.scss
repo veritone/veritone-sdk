@@ -4,19 +4,18 @@
 .ocrOutputView {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .ocrContent {
-  display: flex;
-  flex-flow: row wrap;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1 1 auto;
   padding-top: 20px;
 }
 
 .ocrContainer {
   @include mui-text('body1');
   max-width: 100%;
+  width: auto;
   align-items: center;
   margin: 0 15px 15px 0;
   height: auto;
