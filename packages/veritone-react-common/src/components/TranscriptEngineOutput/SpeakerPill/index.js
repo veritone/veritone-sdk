@@ -8,6 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import Menu from '@material-ui/core/Menu';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -165,14 +166,28 @@ export default class SpeakerPill extends Component {
         className={ this.props.className }
         onMouseEnter={ this.handleMouseEnter }
         onMouseLeave={ this.handleMouseLeave }>
-        <Tooltip title={speakerLabel} placement="bottom-end">
-          <Chip
-            className={ classNames(styles.speakerPill, colorClass) }
-            key={ speakerKey }
-            label={ speakerPillLabel }
-            onClick={ this.handlePillClick }
-            clickable
-          />
+        <Tooltip
+          title={speakerLabel}
+          placement="bottom-end"
+          disableHoverListener={!speakerId}>
+          {
+            speakerId ? (
+              <Chip
+                className={ classNames(styles.speakerPill, colorClass) }
+                key={ speakerKey }
+                label={ speakerPillLabel }
+                onClick={ this.handlePillClick }
+                clickable
+              />
+            ) : (
+              <IconButton
+              className={ classNames(styles.nullSpeakerIcon, colorClass) }
+                disableRipple
+                onClick={ this.handlePillClick }>
+                <PersonAddIcon />
+              </IconButton>
+            )
+          }
         </Tooltip>
         {
           (editMode && showMenuButton) ?

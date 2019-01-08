@@ -392,7 +392,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
           ...wordObj.speaker,
           guid: guid(),
           startTimeMs: splitTime,
-          speakerId: '?'
+          speakerId: ''
         }
       });
     } else if (keyType === 'BACKSPACE') {
