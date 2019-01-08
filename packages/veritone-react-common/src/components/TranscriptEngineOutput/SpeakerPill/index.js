@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { number, string, func, shape, bool } from 'prop-types';
 import classNames from 'classnames';
-import { isString, isArray } from 'lodash';
+import { isString, isArray, findIndex } from 'lodash';
 
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -73,7 +73,7 @@ export default class SpeakerPill extends Component {
   };
 
   handleMenuClose = () => {
-    this.setState({ anchorEl: null });
+    this.setState({ anchorEl: null, showMenuButton: false });
   };
 
   handleClickApplyAll = () => {
@@ -90,24 +90,24 @@ export default class SpeakerPill extends Component {
     this.setState({ speakerName: id });
   };
 
-  handleAddClick = () => {
-    const { applyAll } = this.state;
-    // Set current speaker name
-    if (applyAll) {
+  handleAddClick = event => {
+    const { editMode, speakerData, speakerSegment, onChange } = this.props;
+    const { applyAll, speakerName } = this.state;
+    const { speakerId } = speakerSegment;
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName)
 
-    } else {
-      
-    }
+    hasChange, editMode && onChange && onChange(event, historyDiff);
+    this.handleMenuClose();
   };
 
-  handleRemoveClick = () => {
-    const { applyAll } = this.state;
-    // Remove current speaker name
-    if (applyAll) {
+  handleRemoveClick = event => {
+    const { editMode, speakerData, speakerSegment, onChange } = this.props;
+    const { applyAll, speakerName } = this.state;
+    const { speakerId } = speakerSegment;
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, '')
 
-    } else {
-
-    }
+    hasChange, editMode && onChange && onChange(event, historyDiff);
+    this.handleMenuClose();
   };
 
   render() {
@@ -282,3 +282,48 @@ export default class SpeakerPill extends Component {
     );
   }
 };
+
+function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName) {
+  const speakerChanges = [];
+  const { guid, speakerId } = speakerSegment;
+
+  if (applyAll) {
+    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
+      isArray(chunk.series) && chunk.series.forEach((serie, index) => {
+        serie.speakerId === speakerId && speakerChanges.push({
+          chunkIndex,
+          index,
+          action: 'UPDATE',
+          oldValue: serie,
+          newValue: {
+            ...serie,
+            speakerId: speakerName
+          }
+        });
+      });
+    });
+  } else {
+    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
+      let index;
+      isArray(chunk.series) &&
+        (index = findIndex(chunk.series, ['speakerId', speakerId])) !== -1 &&
+        speakerChanges.push({
+          chunkIndex,
+          index,
+          action: 'UPDATE',
+          oldValue: speakerSegment,
+          newValue: {
+            ...speakerSegment,
+            speakerId: speakerName
+          }
+        });
+    });
+  }
+
+  return {
+    hasChange: speakerChanges.length,
+    historyDiff: {
+      speakerChanges
+    }
+  };
+}
