@@ -349,6 +349,7 @@ export default class SpeakerTranscriptContent extends Component {
               <SpeakerPill
                 editMode={editMode}
                 speakerSegment={speakerSegment}
+                speakerData={speakerData}
                 onClick={this.handleOnClick}
                 onChange={this.handleDataChanged}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}
