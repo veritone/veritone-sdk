@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { number, string, func, shape, bool } from 'prop-types';
 import classNames from 'classnames';
-import { isString } from 'lodash';
+import { isString, isArray } from 'lodash';
 
 import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
+import CheckIcon from '@material-ui/icons/Check';
 import Menu from '@material-ui/core/Menu';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -84,12 +86,28 @@ export default class SpeakerPill extends Component {
     this.setState({ speakerName: value });
   };
 
-  handleAddClick = () => {
+  handleAvailableSpeakerClick = id => () => {
+    this.setState({ speakerName: id });
+  };
 
+  handleAddClick = () => {
+    const { applyAll } = this.state;
+    // Set current speaker name
+    if (applyAll) {
+
+    } else {
+      
+    }
   };
 
   handleRemoveClick = () => {
+    const { applyAll } = this.state;
+    // Remove current speaker name
+    if (applyAll) {
 
+    } else {
+
+    }
   };
 
   render() {
@@ -97,6 +115,7 @@ export default class SpeakerPill extends Component {
       editMode,
       speakerSegment,
       speakerData,
+      availableSpeakers,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
@@ -138,6 +157,8 @@ export default class SpeakerPill extends Component {
     const colorClass = isHighlighted ? styles.highlight : '';
     const speakerPillLabel = extractPillLabel(speakerId);
     const speakerLabel = extractLabel(speakerId);
+    const otherSpeakers = availableSpeakers.filter(id => speakerId !== id);
+    
 
     return (
       <div
@@ -198,6 +219,7 @@ export default class SpeakerPill extends Component {
                 type="text"
                 onChange={this.handleNameInputChange}
                 value={speakerName}
+                fullWidth
                 endAdornment={
                   speakerName !== speakerId ? (
                     <Button
@@ -231,6 +253,30 @@ export default class SpeakerPill extends Component {
               Available Speakers
             </span>
           </ListItem>
+          <div
+            className={ styles.availableSpeakersScroller }>
+            {
+              otherSpeakers.map(id => {
+                return (
+                  <ListItem
+                    key={`available-speaker-${id}`}
+                    className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
+                    dense button
+                    onClick={this.handleAvailableSpeakerClick(id)}>
+                    
+                    <ListItemIcon>
+                      {
+                        speakerName === id ? (
+                            <CheckIcon className={ styles.speakerCheckIcon } />
+                        ) : <div />
+                      }
+                    </ListItemIcon>
+                    <ListItemText>{extractLabel(id)}</ListItemText>
+                  </ListItem>
+                )
+              })
+            }
+          </div>
         </Menu>
       </div>
     );

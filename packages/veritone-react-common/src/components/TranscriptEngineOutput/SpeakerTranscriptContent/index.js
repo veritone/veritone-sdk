@@ -314,8 +314,20 @@ export default class SpeakerTranscriptContent extends Component {
       clearCursorPosition
     } = this.props;
 
+    const availableSpeakerSet = new Set();
+    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
+      isArray(chunk.series) && chunk.series.forEach((serie, index) => {
+        availableSpeakerSet.add(serie.speakerId);
+      });
+    });
+    const availableSpeakers = Array.from(availableSpeakerSet);
+    availableSpeakers.sort((a, b) => {
+      return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
+    });
+
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     const speakerSeries = parsedData.speakerSegments;
+
 
     if (selectedCombineViewTypeId === 'speaker-view') {
       const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
@@ -350,6 +362,7 @@ export default class SpeakerTranscriptContent extends Component {
                 editMode={editMode}
                 speakerSegment={speakerSegment}
                 speakerData={speakerData}
+                availableSpeakers={availableSpeakers}
                 onClick={this.handleOnClick}
                 onChange={this.handleDataChanged}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}

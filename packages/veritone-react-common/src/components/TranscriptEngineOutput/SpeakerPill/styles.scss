@@ -1,5 +1,7 @@
 @import 'src/styles/modules/variables';
 
+$speakerItemHeight: 64px;
+
 .speakerPill {
   min-width: 50px;
   height: 24px !important;
@@ -29,16 +31,18 @@
 }
 
 .speakerMenuItem {
-  height: 45px !important;
+  height: $speakerItemHeight;
   padding-left: 4px !important;
   padding-right: 4px !important;
   outline: none;
   color: $dark-black !important;
+  min-width: 300px !important;
 }
 
 .speakerInputContainer {
   display: block !important;
   margin: 0 16px !important;
+  min-width: 280px !important;
   &:focus {
     outline: none;
   }
@@ -60,9 +64,20 @@
   font-weight: 500;
   font-size: 16px;
   color: $dark-black !important;
-  padding: 0px 16px; 
+  vertical-align: middle;
 }
 
 .darkMenuSection {
-  background-color: #F5F5F5;
+  background-color: #F5F5F5 !important;
+  padding: 0px 20px !important;
+}
+
+.availableSpeakersScroller {
+  max-height: calc(3 * #{$speakerItemHeight});
+  overflow-y: auto;
+}
+
+.speakerCheckIcon {
+  margin-right: 0px;
+  margin-left: -8px;
 }
