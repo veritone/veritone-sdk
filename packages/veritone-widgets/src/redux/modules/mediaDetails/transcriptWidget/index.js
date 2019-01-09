@@ -157,17 +157,6 @@ const transcriptReducer = createReducer(initialState, {
   },
   [CHANGE](state, action) {
     const newState = handleTranscriptEdit(state, action);
-    // const editType = action.data.type;
-    // switch (editType) {
-    //   case 'snippet':
-    //     newState = handleSnippetEdit(state, action);
-    //     break;
-
-    //   case 'bulk':
-    //     newState = handleBulkEdit(state, action);
-    //     break;
-    // }
-
     return newState;
   },
 
