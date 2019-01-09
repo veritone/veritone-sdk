@@ -122,6 +122,37 @@ export default class TranscriptEngineOutputContainer extends Component {
         series: arrayOf(shape({}))
       })
     ),
+    speakerData: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
+          })
+        )
+      })
+    ),
+    editableData: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(shape({}))
+      })
+    ),
+    editableSpeakerData: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
+          })
+        )
+      })
+    ),
 
     selectedEngineId: string,
     engines: arrayOf(

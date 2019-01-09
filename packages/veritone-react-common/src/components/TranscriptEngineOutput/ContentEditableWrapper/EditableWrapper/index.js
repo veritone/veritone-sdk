@@ -3,11 +3,10 @@ import ReactDOMServer from 'react-dom/server';
 import { arrayOf, shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
-import { get, includes, omit, isArray, isUndefined, pick } from 'lodash';
+import { get, omit, isArray, isUndefined, pick, isObject } from 'lodash';
+// import UserAgent from 'useragent';
 
 import { guid } from 'helpers/guid';
-import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
-import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
@@ -26,13 +25,31 @@ export default class EditableWrapper extends Component {
         })
       )
     }),
+    speakerData: arrayOf(shape({
+      series: arrayOf(shape({
+        speakerId: string,
+        startTimeMs: number,
+        stopTimeMs: number
+      }))
+    })),
     className: string,
     contentClassName: string,
     editMode: bool,
     onClick: func,
     onChange: func,
     startMediaPlayHeadMs: number,
-    stopMediaPlayHeadMs: number
+    stopMediaPlayHeadMs: number,
+    cursorPosition: shape({
+      start: shape({
+        guid: string,
+        offset: number
+      }),
+      end: shape({
+        guid: string,
+        offset: number
+      })
+    }),
+    clearCursorPosition: func
   };
 
   static defaultProps = {
@@ -75,7 +92,6 @@ export default class EditableWrapper extends Component {
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       event.stopPropagation();
-      const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const contentEditableElement = event.target;
@@ -109,27 +125,27 @@ export default class EditableWrapper extends Component {
       const wordObj = wordGuidMap[curCursorPos.start.guid];
 
       if (targetElem) {
-        if (keyCode === 37) {
-          // LEFT
-          // Set cursor position to front of current fragment
-          //  instead of jumping to the next fragment
-          if (curCursorPos.start.offset === 1) {
-            // event.preventDefault();
-            // setCursorPosition(targetElem.firstChild, 0);
-          }
-          return;
-        } else if (keyCode === 39) {
-          // RIGHT
-          // Set cursor position to front of adjacent fragment
-          //  instead of jumping to the 2nd index of the adjacent fragment
-          if (curCursorPos.start.offset === targetElem.innerText.length) {
+        // if (keyCode === 37) {
+        //   // LEFT
+        //   // Set cursor position to front of current fragment
+        //   //  instead of jumping to the next fragment
+        //   if (curCursorPos.start.offset === 1) {
+        //     // event.preventDefault();
+        //     // setCursorPosition(targetElem.firstChild, 0);
+        //   }
+        //   return;
+        // } else if (keyCode === 39) {
+        //   // RIGHT
+        //   // Set cursor position to front of adjacent fragment
+        //   //  instead of jumping to the 2nd index of the adjacent fragment
+        //   if (curCursorPos.start.offset === targetElem.innerText.length) {
 
-          }
-          return;
-        } else if (keyCode === 38 || keyCode === 40) {
-          // UP & DOWN
-          return;
-        }
+        //   }
+        //   return;
+        // } else if (keyCode === 38 || keyCode === 40) {
+        //   // UP & DOWN
+        //   return;
+        // }
 
         if (keyCode === 8 || keyCode === 46) {
           // Handle BACKSPACE & DELETE
@@ -252,6 +268,7 @@ export default class EditableWrapper extends Component {
 
       return (
         <span
+          key={fragmentKey}
           word-guid={entry.guid}
           start-time={startTime}
           stop-time={stopTime}
@@ -282,9 +299,14 @@ export default class EditableWrapper extends Component {
 }
 
 function hasCommandModifier(e) {
-  return e && (true || isOSX)   // TODO: Remove true
+  const isOSX = true; //UserAgent.isPlatform('Mac OS X');
+  return e && isOSX
     ? !!e.metaKey && !e.altKey
-    : true; //KeyBindingUtil.isCtrlKeyCommand(e);
+    : isCtrlKeyCommand(e);
+}
+
+function isCtrlKeyCommand(e) {
+  return !!e.ctrlKey && !e.altKey;
 }
 
 function hasShiftKey(e) {
@@ -328,7 +350,7 @@ function parseHtmlForText(htmlString) {
   const utilDiv = document.createElement('div');
   utilDiv.innerHTML = htmlString;
   const spanArray = utilDiv.children;
-  if (typeof spanArray === 'object') {
+  if (isObject(spanArray)) {
     for (let key in spanArray) {
       const elem = spanArray[key];
       const nodeName = elem.nodeName && elem.nodeName.toLowerCase();

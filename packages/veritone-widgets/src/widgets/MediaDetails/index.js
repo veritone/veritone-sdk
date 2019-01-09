@@ -271,6 +271,18 @@ class MediaDetailsWidget extends React.Component {
         )
       })
     ),
+    selectedCombineEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
+          })
+        )
+      })
+    ),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -287,7 +299,11 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     selectedEngineId: string,
+    selectedCombineEngineId: string,
+    selectedCombineViewTypeId: string,
     setEngineId: func,
+    setCombineEngineId: func,
+    setSelectedCombineViewTypeId: func,
     toggleInfoPanel: func,
     isEditModeEnabled: bool,
     isInfoPanelOpen: bool,
@@ -378,6 +394,12 @@ class MediaDetailsWidget extends React.Component {
       shape({
         combineType: string,
         withType: string
+      })
+    ),
+    combineViewTypes: arrayOf(
+      shape({
+        name: string.isRequired,
+        id: string.isRequired
       })
     ),
     createQuickExport: func.isRequired,

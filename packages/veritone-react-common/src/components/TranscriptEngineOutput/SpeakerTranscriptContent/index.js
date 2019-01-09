@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, reduce, isArray, get, includes } from 'lodash';
+import { orderBy, isArray } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -8,9 +8,6 @@ import Grid from '@material-ui/core/Grid';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
 import SnippetSegment from '../TranscriptSegment/SnippetSegment';
-import OverviewSegment from '../TranscriptSegment/OverviewSegment';
-import TranscriptBulkEdit from '../TranscriptBulkEdit';
-import { View, Edit } from '../TranscriptContent';
 import SpeakerPill from '../SpeakerPill';
 import EditableWrapper from '../ContentEditableWrapper/EditableWrapper';
 
@@ -53,11 +50,8 @@ export default class SpeakerTranscriptContent extends Component {
       })
     ),
     className: string,
-    selectedEngineId: string,
 
     editMode: bool,
-    viewType: string,
-    editType: string,
 
     onClick: func,
     onScroll: func,
@@ -70,13 +64,22 @@ export default class SpeakerTranscriptContent extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
 
-    selectedCombineViewTypeId: string
+    selectedCombineViewTypeId: string,
+    cursorPosition: shape({
+      start: shape({
+        guid: string,
+        offset: number
+      }),
+      end: shape({
+        guid: string,
+        offset: number
+      })
+    }),
+    clearCursorPosition: func
   };
 
   static defaultProps = {
     editMode: false,
-    viewType: View.TIME,
-    editType: Edit.SNIPPET,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -144,12 +147,6 @@ export default class SpeakerTranscriptContent extends Component {
     const snippetSegments = [];
     let speakerSegments = [];
     let totalTranscriptFragments = [];
-
-    let overviewStartTime = 0;
-    let overviewStopTime = 0;
-    let overviewParts = [];
-    let overviewSentences = '';
-    let overviewStatus = undefined;
 
     const textareaToDecodeCharacters = document.createElement('textarea');
 
@@ -306,7 +303,6 @@ export default class SpeakerTranscriptContent extends Component {
     const {
       speakerData,
       editMode,
-      viewType,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
       selectedCombineViewTypeId,
@@ -471,57 +467,6 @@ export default class SpeakerTranscriptContent extends Component {
         return snippetSegments;
       }
     }
-  };
-
-  renderBulkEdit = parsedData => {
-    let overalStartTime = 0;
-    let overalStopTime = 0;
-    let overalString = '';
-
-    const overviewSegments = reduce(
-      parsedData.overviewSegments,
-      (memo, segmentData, segmentIndex) => {
-        const segmentStartTime = segmentData.startTimeMs;
-        const segmentStopTime = segmentData.stopTimeMs;
-
-        overalStartTime > segmentStartTime &&
-          (overalStartTime = segmentStartTime);
-        overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
-
-        if (segmentData.status === 'success') {
-          overalString = overalString + segmentData.sentences;
-        } else {
-          overalString = overalString + '\n\n\n';
-        }
-
-        if (segmentIndex === parsedData.overviewSegments.length - 1) {
-          // Reach the last segment
-          memo.push({
-            start: overalStartTime,
-            stop: overalStopTime,
-            content: (
-              <TranscriptBulkEdit
-                key={
-                  'transcript-bulk-edit:' +
-                  overalStartTime +
-                  '-' +
-                  overalStopTime
-                }
-                content={overalString}
-                onChange={this.handleDataChanged}
-                startTimeMs={overalStartTime}
-                stopTimeMs={overalStopTime}
-                selectedEngineId={this.props.selectedEngineId}
-              />
-            )
-          });
-        }
-        return memo;
-      },
-      []
-    );
-
-    return overviewSegments;
   };
 
   render() {

@@ -1,4 +1,4 @@
-import { get, isEqual, isArray, cloneDeep, pick } from 'lodash';
+import { get, isEqual } from 'lodash';
 import { delay } from 'redux-saga';
 import {
   fork,

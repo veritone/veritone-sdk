@@ -5,16 +5,12 @@ import cx from 'classnames';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
 import DoneIcon from '@material-ui/icons/Done';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import TranscriptContent, { View, Edit } from './TranscriptContent';
 import SpeakerTranscriptContent from './SpeakerTranscriptContent';
 import styles from './styles.scss';
 
@@ -92,10 +88,8 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
     outputNullState: node,
-    bulkEditEnabled: bool,
     showingUserEditedOutput: bool,
     onToggleUserEditedOutput: func,
-    viewTypeSelectionEnabled: bool,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
@@ -103,31 +97,31 @@ export default class TranscriptEngineOutput extends Component {
     onRestoreOriginalClick: func.isRequired,
     combineViewTypes: arrayOf(
       shape({
-        name: string,
-        id: string
+        name: string.isRequired,
+        id: string.isRequired
       })
     ),
     handleCombineViewTypeChange: func,
-    selectedCombineViewTypeId: string
+    selectedCombineViewTypeId: string,
+    cursorPosition: shape({
+      start: shape({
+        guid: string,
+        offset: number
+      }),
+      end: shape({
+        guid: string,
+        offset: number
+      })
+    }),
+    clearCursorPosition: func
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
-    editType: Edit.SNIPPET,
-    viewTypeSelectionEnabled: false,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      viewType: View.OVERVIEW,
-      editType: Edit.SNIPPET
-    };
-  }
 
   handleUserEditChange = evt => {
     if (evt.target.value == 'restoreOriginal') {
@@ -219,35 +213,6 @@ export default class TranscriptEngineOutput extends Component {
     );
   }
 
-  renderViewOptions() {
-    return (
-      <Select
-        autoWidth
-        value={this.state.viewType}
-        className={styles.outputHeaderSelect}
-        onChange={this.handleViewChange}
-        MenuProps={{
-          anchorOrigin: {
-            horizontal: 'center',
-            vertical: 'bottom'
-          },
-          transformOrigin: {
-            horizontal: 'center',
-            vertical: 'top'
-          },
-          getContentAnchorEl: null
-        }}
-      >
-        <MenuItem value={View.TIME} className={styles.selectMenuItem}>
-          Time
-        </MenuItem>
-        <MenuItem value={View.OVERVIEW} className={styles.selectMenuItem}>
-          Overview
-        </MenuItem>
-      </Select>
-    );
-  }
-
   renderHeader() {
     const {
       title,
@@ -258,7 +223,6 @@ export default class TranscriptEngineOutput extends Component {
       onCombineEngineChange,
       onExpandClick,
       headerClassName,
-      viewTypeSelectionEnabled,
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
@@ -298,7 +262,6 @@ export default class TranscriptEngineOutput extends Component {
             selectedEngine &&
             selectedEngine.hasUserEdits &&
             this.renderResultOptions()}
-          {!editMode && viewTypeSelectionEnabled && this.renderViewOptions()}
         </div>
       </EngineOutputHeader>
     );
@@ -337,7 +300,6 @@ export default class TranscriptEngineOutput extends Component {
               data={data}
               speakerData={speakerData}
               editMode={editMode}
-              viewType={this.state.viewType}
               editType={currentEditType}
               mediaPlayerTimeMs={mediaPlayerTimeMs}
               mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}

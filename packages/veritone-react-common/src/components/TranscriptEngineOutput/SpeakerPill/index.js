@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, func, shape, bool } from 'prop-types';
+import { number, string, func, shape, bool, arrayOf } from 'prop-types';
 import classNames from 'classnames';
 import { isString, isArray, findIndex } from 'lodash';
 
@@ -14,7 +14,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -31,11 +30,24 @@ export default class SpeakerPill extends Component {
       stopTimeMs: number,
       guid: string
     }).isRequired,
+    speakerData: arrayOf(shape({
+      series: arrayOf(shape({
+        speakerId: string,
+        startTimeMs: number,
+        stopTimeMs: number
+      }))
+    })).isRequired,
+    availableSpeakers: arrayOf(string).isRequired,
     editMode: bool,
     onChange: func,
     onClick: func,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number
+  };
+
+  static defaultProps = {
+    startMediaPlayHeadMs: 0,
+    stopMediaPlayHeadMs: 1000
   };
 
   state = {
@@ -47,13 +59,8 @@ export default class SpeakerPill extends Component {
 
   componentDidMount() {
     const { speakerSegment } = this.props;
-    this.state.speakerName = speakerSegment.speakerId;
+    this.setState({ speakerName: speakerSegment.speakerId });
   }
-
-  static defaultProps = {
-    startMediaPlayHeadMs: 0,
-    stopMediaPlayHeadMs: 1000
-  };
 
   handlePillClick = (event) => {
     if (this.props.onClick) {
@@ -94,7 +101,6 @@ export default class SpeakerPill extends Component {
   handleAddClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll, speakerName } = this.state;
-    const { speakerId } = speakerSegment;
     const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName)
 
     hasChange, editMode && onChange && onChange(event, historyDiff);
@@ -103,8 +109,7 @@ export default class SpeakerPill extends Component {
 
   handleRemoveClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
-    const { applyAll, speakerName } = this.state;
-    const { speakerId } = speakerSegment;
+    const { applyAll } = this.state;
     const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, '')
 
     hasChange, editMode && onChange && onChange(event, historyDiff);
@@ -115,7 +120,6 @@ export default class SpeakerPill extends Component {
     const {
       editMode,
       speakerSegment,
-      speakerData,
       availableSpeakers,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
@@ -130,7 +134,6 @@ export default class SpeakerPill extends Component {
       showMenuButton,
       anchorEl,
       applyAll,
-      isSet,
       speakerName
     } = this.state;
 
@@ -170,24 +173,26 @@ export default class SpeakerPill extends Component {
           title={speakerLabel}
           placement="bottom-end"
           disableHoverListener={!speakerId}>
-          {
-            speakerId ? (
-              <Chip
-                className={ classNames(styles.speakerPill, colorClass) }
-                key={ speakerKey }
-                label={ speakerPillLabel }
-                onClick={ this.handlePillClick }
-                clickable
-              />
-            ) : (
-              <IconButton
-              className={ classNames(styles.nullSpeakerIcon, colorClass) }
-                disableRipple
-                onClick={ this.handlePillClick }>
-                <PersonAddIcon />
-              </IconButton>
-            )
-          }
+          <div style={{ display: 'inline' }}>
+            {
+              speakerId ? (
+                <Chip
+                  className={ classNames(styles.speakerPill, colorClass) }
+                  key={ speakerKey }
+                  label={ speakerPillLabel }
+                  onClick={ this.handlePillClick }
+                  clickable
+                />
+              ) : (
+                <IconButton
+                className={ classNames(styles.nullSpeakerIcon, colorClass) }
+                  disableRipple
+                  onClick={ this.handlePillClick }>
+                  <PersonAddIcon />
+                </IconButton>
+              )
+            }
+          </div>
         </Tooltip>
         {
           (editMode && showMenuButton) ?
@@ -206,18 +211,22 @@ export default class SpeakerPill extends Component {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={this.handleMenuClose}>
-          <ListItem
-            className={styles.speakerMenuItem}
-            dense
-            button
-            disableRipple
-            onClick={this.handleClickApplyAll}>
-            <Checkbox
-              color="primary"
-              disableRipple
-              checked={applyAll} />
-            <ListItemText primary={`Apply to all "${speakerLabel}"`} />
-          </ListItem>
+          {
+            speakerId ? (
+              <ListItem
+                className={styles.speakerMenuItem}
+                dense
+                button
+                disableRipple
+                onClick={this.handleClickApplyAll}>
+                <Checkbox
+                  color="primary"
+                  disableRipple
+                  checked={applyAll} />
+                <ListItemText primary={`Apply to all "${speakerLabel}"`} />
+              </ListItem>
+            ) : null
+          }
           <ListItem
             className={styles.speakerMenuItem}
             dense
@@ -238,7 +247,6 @@ export default class SpeakerPill extends Component {
                 endAdornment={
                   speakerName !== speakerId ? (
                     <Button
-                      className={styles.speakerInputButton}
                       disabled={!speakerName}
                       disableRipple
                       color="primary"
@@ -248,7 +256,6 @@ export default class SpeakerPill extends Component {
                     </Button>
                   ) : (
                     <Button
-                      className={styles.speakerInputButton}
                       disabled={!speakerName}
                       disableRipple
                       color="primary"
@@ -321,7 +328,7 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
     isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
       let index;
       isArray(chunk.series) &&
-        (index = findIndex(chunk.series, ['speakerId', speakerId])) !== -1 &&
+        (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
         speakerChanges.push({
           chunkIndex,
           index,
