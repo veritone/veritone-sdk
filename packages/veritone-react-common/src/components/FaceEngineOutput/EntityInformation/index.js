@@ -134,7 +134,7 @@ class EntityInformation extends Component {
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
               <FaceGrid
-                itemsRecognized
+                hasRecognizedItems
                 faces={faces}
                 selectedFaces={selectedFaces}
                 onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
