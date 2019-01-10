@@ -56,6 +56,8 @@ export default class SpeakerTranscriptContent extends Component {
     onClick: func,
     onScroll: func,
     onChange: func,
+    undo: func,
+    redo: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -307,7 +309,9 @@ export default class SpeakerTranscriptContent extends Component {
       mediaPlayerTimeIntervalMs,
       selectedCombineViewTypeId,
       cursorPosition,
-      clearCursorPosition
+      clearCursorPosition,
+      undo,
+      redo
     } = this.props;
 
     const availableSpeakerSet = new Set();
@@ -378,6 +382,8 @@ export default class SpeakerTranscriptContent extends Component {
                       content={filteredSpeakerSegmentDataWrapper}
                       editMode
                       onChange={this.handleDataChanged}
+                      undo={undo}
+                      redo={redo}
                       onClick={this.handleOnClick}
                       startMediaPlayHeadMs={mediaPlayerTimeMs}
                       stopMediaPlayHeadMs={stopMediaPlayHeadMs}
@@ -425,6 +431,8 @@ export default class SpeakerTranscriptContent extends Component {
               content={segmentData}
               editMode
               onChange={this.handleDataChanged}
+              undo={undo}
+              redo={redo}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}

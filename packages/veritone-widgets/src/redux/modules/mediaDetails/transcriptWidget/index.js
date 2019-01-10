@@ -80,53 +80,119 @@ const initialState = {
 
 const transcriptReducer = createReducer(initialState, {
   [UNDO](state, action) {
-    const newPast = state.past || [];
-    const newFuture = state.future || [];
-    let newCurrentData = state.data || [];
-    let newPresent;
+    const { editableData, editableSpeakerData } = state;
+    let newEditableData = editableData;
+    let newEditableSpeakerData = editableSpeakerData;
+    const historyDiff = state.history.length
+      ? state.history.slice(-1)[0]
+      : undefined;
 
-    if (newPast.length > 0) {
-      newPresent = newPast.pop();
-      // newCurrentData = newPresent.toJS();          // with immutable js
-      newCurrentData = cloneDeep(newPresent); // without immutable js
-      state.present && newFuture.push(state.present);
-    } else {
-      // newPresent = fromJS(state.data);       // with immutable js
-      newPresent = cloneDeep(state.data); // without immutable js
+    if (historyDiff) {
+
+      isArray(historyDiff.transcriptChanges)
+      && historyDiff.transcriptChanges.slice().reverse().forEach(diff => {
+        const chunkToEdit = editableData[diff.chunkIndex];
+        const action = diff.action;
+        const oldValue = {
+          ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs']),
+          words: [{
+            bestPath: true,
+            confidence: 1,
+            word: diff.oldValue && diff.oldValue.value
+          }]
+        };
+        switch (action) {
+          case 'UPDATE': {
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: {
+                  [diff.index]: {
+                    $set: oldValue
+                  }
+                }
+              }
+            });
+            break;
+          }
+          case 'DELETE': {
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 0, oldValue]] }
+              }
+            });
+            break;
+          }
+          case 'INSERT': {
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 1]] }
+              }
+            });
+            break;
+          }
+        }
+      });
+
+    isArray(historyDiff.speakerChanges)
+      && historyDiff.speakerChanges.slice().reverse().forEach(diff => {
+        const action = diff.action;
+        switch (action) {
+          case 'UPDATE': {
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: {
+                  [diff.index]: {
+                    $set: diff.oldValue
+                  } 
+                }
+              }
+            });
+            break;
+          }
+          case 'INSERT': {
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: { $splice: [[diff.index, 1]] }
+              }
+            });
+            break;
+          }
+          case 'DELETE': {
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [0]: {
+                series: { $splice: [[diff.index, 0, diff.oldValue]] }
+              }
+            });
+            break;
+          }
+        }
+      });
     }
 
-    return {
+    const newState = {
       ...state,
-      data: newCurrentData,
-      past: newPast,
-      future: newFuture,
-      present: newPresent
+      editableData: newEditableData,
+      editableSpeakerData: newEditableSpeakerData
     };
+
+    if (historyDiff) {
+      newState.history = state.history.slice(0, state.history.length - 1);
+      newState.revertedHistory = state.revertedHistory.concat([historyDiff]);
+      // newState.cursorPosition = historyDiff.cursorPosition;
+    }
+
+    return newState;
   },
 
   [REDO](state, action) {
-    const newPast = state.past || [];
-    const newFuture = state.future || [];
-    let newCurrentData = state.data || [];
-    let newPresent;
+    const historyDiff = state.revertedHistory.length
+      ? state.revertedHistory.slice(-1)[0]
+      : undefined;
+    const cursorPosition = action.cursorPosition;
 
-    if (newFuture.length > 0) {
-      newPresent = newFuture.pop();
-      // newCurrentData = newPresent.toJS();    // with immutable js
-      newCurrentData = cloneDeep(newPresent); // without immutable js
-      state.present && newPast.push(state.present);
-    } else {
-      // newPresent = fromJS(state.data);       // with immutable js
-      newPresent = cloneDeep(state.data); // without immutable js
-    }
-
-    return {
-      ...state,
-      data: newCurrentData,
-      past: newPast,
-      future: newFuture,
-      present: newPresent
-    };
+    const newState = applyHistoryDiff(state, historyDiff, cursorPosition);
+    newState.revertedHistory = state.revertedHistory.slice(0, state.revertedHistory.length - 1);
+    return newState;
   },
 
   [RESET](state, action) {
@@ -156,7 +222,11 @@ const transcriptReducer = createReducer(initialState, {
     };
   },
   [CHANGE](state, action) {
-    const newState = handleTranscriptEdit(state, action);
+    const historyDiff = action.historyDiff;
+    const cursorPosition = action.cursorPosition;
+
+    const newState = applyHistoryDiff(state, historyDiff, cursorPosition);
+    newState.revertedHistory = [];
     return newState;
   },
 
@@ -251,16 +321,15 @@ const transcriptReducer = createReducer(initialState, {
   }
 });
 
-function handleTranscriptEdit(state, action) {
-  const historyDiff = action.historyDiff;
-  const cursorPosition = action.cursorPosition;
+function applyHistoryDiff(state, historyDiff, cursorPosition) {
   const editableData = state.editableData;
   const editableSpeakerData = state.editableSpeakerData;
   let newEditableData = editableData;
   let newEditableSpeakerData = editableSpeakerData;
-  if (isArray(editableData)) {
+  if (historyDiff) {
     // Apply diff and save to history
-    isArray(historyDiff.transcriptChanges)
+    isArray(editableData)
+      && isArray(historyDiff.transcriptChanges)
       && historyDiff.transcriptChanges.forEach(diff => {
         const chunkToEdit = editableData[diff.chunkIndex];
         const action = diff.action;
@@ -291,7 +360,6 @@ function handleTranscriptEdit(state, action) {
                 series: { $splice: [[diff.index, 1]] }
               }
             });
-            // chunkToEdit.series.splice(diff.index, 1);
             break;
           }
           case 'INSERT': {
@@ -313,7 +381,8 @@ function handleTranscriptEdit(state, action) {
         }
       });
 
-    isArray(historyDiff.speakerChanges)
+    isArray(newEditableSpeakerData)
+      && isArray(historyDiff.speakerChanges)
       && historyDiff.speakerChanges.forEach(diff => {
         const action = diff.action;
         switch (action) {
@@ -347,6 +416,8 @@ function handleTranscriptEdit(state, action) {
           }
         }
       });
+
+    historyDiff.cursorPosition = cursorPosition;
   }
 
   return {

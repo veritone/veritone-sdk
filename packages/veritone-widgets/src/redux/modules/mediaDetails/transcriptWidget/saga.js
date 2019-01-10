@@ -26,14 +26,14 @@ function* watchContentUndo() {
   ) {
     yield call(TranscriptRedux.undo);
 
-    const state = getState();
-    const past = get(state, 'past');
-    if (state && past.length === 0) {
-      yield put({
-        type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasUserEdits: false
-      });
-    }
+    // const state = getState();
+    // const past = get(state, 'past');
+    // if (state && past.length === 0) {
+    //   yield put({
+    //     type: TranscriptRedux.UPDATE_EDIT_STATUS,
+    //     hasUserEdits: false
+    //   });
+    // }
   });
 }
 
@@ -42,7 +42,7 @@ function* watchContentRedo() {
     action
   ) {
     yield call(TranscriptRedux.redo);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: true });
+    // yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: true });
   });
 }
 

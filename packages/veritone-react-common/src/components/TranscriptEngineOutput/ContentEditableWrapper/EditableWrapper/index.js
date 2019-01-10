@@ -37,6 +37,8 @@ export default class EditableWrapper extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
+    undo: func,
+    redo: func,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number,
     cursorPosition: shape({
@@ -63,10 +65,10 @@ export default class EditableWrapper extends Component {
     if (cursorPosition) {
       const spanChildren = get(this, 'editableInput.current.htmlEl.children', []);
       const spanArray = Array.from(spanChildren);
-      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPosition.end.guid);
+      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPosition.start.guid);
       if (targetIndex !== -1) {
         const targetSpan = spanChildren.item(targetIndex);
-        setCursorPosition(targetSpan.firstChild, cursorPosition.end.offset);
+        setCursorPosition(targetSpan.firstChild, cursorPosition.start.offset);
         clearCursorPosition();
       }
     }
@@ -104,7 +106,14 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyPress = event => {
-    const { editMode, onChange, content, speakerData } = this.props;
+    const {
+      editMode,
+      content,
+      speakerData,
+      onChange,
+      undo,
+      redo
+    } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
@@ -181,9 +190,11 @@ export default class EditableWrapper extends Component {
           // TODO: Implement Undo/Redo
           if (keyCode === 90) { // Z button
             if (hasShiftKey(event)) {
-              // TODO: Implement Redo
+              // MAC
+              redo && redo();
             } else {
-              // TODO: Implement Undo
+              // MAC
+              undo && undo();
             }
           }
           return; 
@@ -270,9 +281,6 @@ export default class EditableWrapper extends Component {
         <span
           key={fragmentKey}
           word-guid={entry.guid}
-          start-time={startTime}
-          stop-time={stopTime}
-          chunk-index={entry.chunkIndex}
           className={classNames(styles.transcriptSnippet, className, {
             [styles.read]: !editMode,
             [styles.edit]: editMode,
@@ -561,7 +569,7 @@ function sortByAction(a, b) {
   if (a.action && b.action) {
     if (a.action > b.action) {
       return -1;
-    } else if (a.action > b.action) {
+    } else if (a.action < b.action) {
       return 1;
     } else if (a.action === b.action) {
       return b.index - a.index;

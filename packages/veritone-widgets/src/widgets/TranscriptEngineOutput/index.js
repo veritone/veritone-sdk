@@ -53,8 +53,8 @@ const saga = util.reactReduxSaga.saga;
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
   }),
   {
-    //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
-    //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
+    undo: TranscriptRedux.undo,
+    redo: TranscriptRedux.redo,
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
     clearCursorPosition: TranscriptRedux.clearCursorPosition,
@@ -201,8 +201,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
 
-    //undo: func,     //Uncomment when needed to enable undo option
-    //redo: func,     //Uncomment when needed to enable redo option
+    undo: func,
+    redo: func,
     reset: func.isRequired,
     change: func.isRequired,
     receiveData: func.isRequired,
@@ -411,6 +411,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'editMode',
       'cursorPosition',
       'onClick',
+      'undo',
+      'redo',
       'onScroll',
       'onExpandClick',
       'onRestoreOriginalClick',

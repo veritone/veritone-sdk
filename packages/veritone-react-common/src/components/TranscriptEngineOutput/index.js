@@ -71,6 +71,8 @@ export default class TranscriptEngineOutput extends Component {
     contentClassName: string,
 
     editMode: bool,
+    undo: func,
+    redo: func,
     onChange: func,
     editType: string,
     onEditTypeChange: func,
@@ -275,6 +277,8 @@ export default class TranscriptEngineOutput extends Component {
       onClick,
       onScroll,
       editMode,
+      undo,
+      redo,
       onChange,
       editType,
       onEditTypeChange,
@@ -311,6 +315,8 @@ export default class TranscriptEngineOutput extends Component {
               onClick={onClick}
               onScroll={onScroll}
               onChange={onChange}
+              undo={undo}
+              redo={redo}
               selectedEngineId={selectedEngineId}
               className={contentClassName}
               selectedCombineViewTypeId={selectedCombineViewTypeId}
