@@ -270,9 +270,6 @@ export default class EditableWrapper extends Component {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
       const value = entry.value || '';
-      const active = !(
-        stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
-      );
       const fragmentKey = entry.guid
         ? entry.guid
         : `snippet-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
@@ -281,11 +278,7 @@ export default class EditableWrapper extends Component {
         <span
           key={fragmentKey}
           word-guid={entry.guid}
-          className={classNames(styles.transcriptSnippet, className, {
-            [styles.read]: !editMode,
-            [styles.edit]: editMode,
-            [styles.highlight]: active && !editMode
-          })}
+          className={classNames(styles.transcriptSnippet, className, styles.edit)}
         >
           {value}
         </span>
@@ -473,7 +466,7 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
         const span = spanArray[i];
         if (span.getAttribute) {
           const spanGuid = span.getAttribute('word-guid');
-          const newWord = span.innerText.trim();
+          const newWord = span.innerText;
           if (spanGuid && wordGuidMap[spanGuid]) {
             const chunkIndex = wordGuidMap[spanGuid].chunkIndex;
             foundMap[spanGuid] = true;
