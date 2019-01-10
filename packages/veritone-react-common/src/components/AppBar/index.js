@@ -50,6 +50,7 @@ export default class AppBar extends React.Component {
     enabledAppsFailedLoading: bool,
     isFetchingApps: bool,
     onLogout: func,
+    onEditProfile: func,
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func
@@ -61,6 +62,7 @@ export default class AppBar extends React.Component {
     rightActions: [],
     elevation: 2,
     onLogout: () => {},
+    onEditProfile: () => {},
     fetchEnabledApps: () => {},
     onSwitchApp: () => {}
   };
@@ -117,6 +119,7 @@ export default class AppBar extends React.Component {
               <div className={styles['iconGroup__icon']}>
                 <ProfileMenu
                   onLogout={this.props.onLogout}
+                  onEditProfile={this.props.onEditProfile}
                   user={this.props.user}
                 />
               </div>

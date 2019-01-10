@@ -1,15 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
-
 import Image from './';
-
 storiesOf('Image', module)
   .add('Base', () => <Image src="http://placekitten.com/g/400/300" />)
   .add('Custom width and height', () => {
     const height = number('Height', 75);
     const width = number('Width', 100);
-
     return (
       <div>
         Width: {width}
