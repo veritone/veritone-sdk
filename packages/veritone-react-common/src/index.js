@@ -63,6 +63,7 @@ export GeoEngineOutput from './components/GeoEngineOutput';
 export NullState from './components/NullState';
 export ButtonWrapper from './components/share-components/buttons/ButtonWrapper';
 
+export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 export ProgramInfo from './components/ProgramInfo';
 

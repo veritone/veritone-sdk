@@ -1,0 +1,62 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.itemLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.itemSelector {
+  min-width: 400px;
+
+  & > div > div {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.itemScrollContainer {
+  &:focus {
+    outline: none;
+  }
+
+  & > li {
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 16px !important;
+  }
+}
+
+.menuItemName {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 15px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+}
+
+.secondaryNameDisplay {
+  margin-left: 20px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  max-width: 135px;
+}
+
+.menuIconSpacer {
+  width: 30px;
+
+  svg {
+    font-size: 20px !important;
+  }
+}
+
+.customTriggerItem {
+  border-top: 1px solid rgba(224, 224, 224, 0.38) !important;
+  display: block !important;
+  text-align: center !important;
+  color: #2196f3 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
