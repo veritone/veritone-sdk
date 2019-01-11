@@ -155,7 +155,9 @@ export default class EngineCategoryConfig extends Component {
 
     return (
       <div data-veritone-component="engine-category-config">
-        <ListItem data-veritone-element={`${kebabCase(category.name)}-engine-category`}>
+        <ListItem
+          data-veritone-element={`${kebabCase(category.name)}-engine-category`}
+        >
           <ListItemIcon>
             <Icon className={category.iconClass} />
           </ListItemIcon>

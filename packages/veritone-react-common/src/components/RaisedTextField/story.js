@@ -46,6 +46,14 @@ storiesOf('RaisedTextField', module)
         action="edit"
         onClickAction={action('clicked')}
       />
+      <RaisedTextField value="Hello" action="edit" disabled />
+      <RaisedTextField label="With Button" value="Hello" action="RESET" />
+      <RaisedTextField
+        label="With Button (disabled)"
+        value="Hello"
+        action="RESET"
+        disabled
+      />
     </div>
   ))
   .add('With styling', () => (
@@ -55,5 +63,14 @@ storiesOf('RaisedTextField', module)
       action="go"
       onClickAction={action('clicked')}
       containerStyle={{ maxWidth: '300px' }}
+    />
+  ))
+  .add('Tooltip', () => (
+    <RaisedTextField
+      action="go"
+      label="Name"
+      value="The President"
+      onClickAction={action('clicked')}
+      actionTooltipLabel="Click here for a great time"
     />
   ));

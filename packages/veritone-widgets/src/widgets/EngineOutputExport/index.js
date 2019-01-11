@@ -17,7 +17,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import styles from './styles.scss';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
-import engineOutputExportSaga from '../../redux/modules/engineOutputExport/saga';
 import widget from '../../shared/widget';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
@@ -287,8 +286,5 @@ class EngineOutputExportWidgetComponent extends Component {
   }
 }
 
-const EngineOutputExportWidget = widget(
-  EngineOutputExportWidgetComponent,
-  engineOutputExportSaga
-);
+const EngineOutputExportWidget = widget(EngineOutputExportWidgetComponent);
 export { EngineOutputExport as default, EngineOutputExportWidget };

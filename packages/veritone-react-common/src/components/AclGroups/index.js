@@ -54,7 +54,6 @@ export default class AclGroups extends React.Component {
 
   render() {
     const { description, organizations, defaultPermission } = this.props;
-    console.log(this.props);
     return (
       <div className={styles.aclGroupsContainer}>
         <div className={styles.title}>

@@ -78,3 +78,6 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.8.0
 * Add handleApiCall helper which, along with an updated callGraphQLApi, should be able to handle most data-fetching reducer/selector requirements. See the header comment in src/helpers/redux/handleApiCall.js for details.
+
+## 3.9.0
+* Add initial version of KeyBindings helper component/module, for handling an app's global keybinds in redux

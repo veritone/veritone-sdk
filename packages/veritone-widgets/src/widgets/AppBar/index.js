@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { func, string } from 'prop-types';
 import { connect } from 'react-redux';
 import { AppBar as LibAppBar } from 'veritone-react-common';
@@ -6,8 +6,9 @@ import { modules } from 'veritone-redux-common';
 const { user, config } = modules;
 
 import widget from '../../shared/widget';
+import UserProfile from '../UserProfile';
 
-const connectWrapper = connect(
+@connect(
   state => ({
     user: user.selectUser(state),
     enabledApps: user.selectEnabledApps(state),
@@ -18,32 +19,22 @@ const connectWrapper = connect(
   { fetchEnabledApps: user.fetchEnabledApps },
   null,
   { withRef: true }
-);
-
-@connectWrapper
+)
 class AppBar extends React.Component {
   static propTypes = {
-    switchAppRoute: string.isRequired
-  };
-
-  handleSwitchApp = id => {
-    window.location = `${this.props.switchAppRoute}/${id}`;
-  };
-
-  render() {
-    return <LibAppBar {...this.props} onSwitchApp={this.handleSwitchApp} />;
-  }
-}
-
-@connectWrapper
-class AppBarWidgetComponent extends React.Component {
-  static propTypes = {
+    _widgetId: string,
     fetchEnabledApps: func,
     switchAppRoute: string.isRequired
   };
 
+  state = {
+    editingUserProfile: false
+  };
+
   componentDidMount() {
-    this.props.fetchEnabledApps();
+    if (this.props._widgetId) {
+      this.props.fetchEnabledApps();
+    }
   }
 
   veritoneAppDidAuthenticate = () => {
@@ -51,13 +42,38 @@ class AppBarWidgetComponent extends React.Component {
   };
 
   handleSwitchApp = id => {
-    window.location = `${this.props.switchAppRoute}/${id}`;
+    window.open(`${this.props.switchAppRoute}/${id}`);
+  };
+
+  handleEditProfile = () => {
+    this.setState({
+      editingUserProfile: true
+    });
+  };
+
+  closeUserProfileEditor = () => {
+    this.setState({
+      editingUserProfile: false
+    });
   };
 
   render() {
-    return <LibAppBar {...this.props} onSwitchApp={this.handleSwitchApp} />;
+    return (
+      <Fragment>
+        <LibAppBar
+          {...this.props}
+          onSwitchApp={this.handleSwitchApp}
+          onEditProfile={this.handleEditProfile}
+        />
+
+        <UserProfile
+          open={this.state.editingUserProfile}
+          onClose={this.closeUserProfileEditor}
+        />
+      </Fragment>
+    );
   }
 }
 
-const AppBarWidget = widget(AppBarWidgetComponent);
+const AppBarWidget = widget(AppBar);
 export { AppBar as default, AppBarWidget };
