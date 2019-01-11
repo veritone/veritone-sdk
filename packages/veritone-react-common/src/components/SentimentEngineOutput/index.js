@@ -235,6 +235,7 @@ export default class SentimentEngineOutput extends Component {
           [styles.positive]: average >= 0,
           [styles.negative]: average < 0
         })}
+        data-veritone-component="sentiment-output-summary-content"
       >
         {average + (average >= 0 ? '% positive' : '% negative')}
       </div>
@@ -264,7 +265,10 @@ export default class SentimentEngineOutput extends Component {
     }
 
     return (
-      <div className={styles.sentimentBody}>
+      <div 
+        className={styles.sentimentBody}
+        data-veritone-component="sentiment-engine-output-body"
+        >
         {/* Draw Y axis this part is not scrollable */}
         <div className={styles.yAxis}>
           <ResponsiveContainer width="100%" height="100%">
@@ -369,7 +373,10 @@ export default class SentimentEngineOutput extends Component {
             />
           )}
         {outputNullState}
-        <div className={styles.sentimentOutputContent}>
+        <div 
+          className={styles.sentimentOutputContent}
+          data-veritone-component="sentiment-engine-output-content"                    
+          >
           {!outputNullState && this.renderSummary(extractedData.average)}
           {!outputNullState && this.renderChart(extractedData)}
         </div>

@@ -726,7 +726,7 @@ class MediaDetailsWidget extends React.Component {
   renderTranscriptBulkEditSnack = () => {
     return (
       <Snackbar
-        data-veritone-component="VERITONE_TRANSCRIPT_SNACKBAR"
+        data-veritone-component="veritone-transcript-snackbar"
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={this.props.showTranscriptBulkEditSnack}
         autoHideDuration={5000}
@@ -940,7 +940,7 @@ class MediaDetailsWidget extends React.Component {
           onMoreClicked={this.openEngineOutputExport}
           categoryExportFormats={categoryExportFormats}
           exportClosedCaptionsEnabled={exportClosedCaptionsEnabled}
-          data-veritone-component="mdp_export_menu_item"
+          data-veritone-component="mdp-export-menu-item"
         />
       );
     }
@@ -1005,7 +1005,7 @@ class MediaDetailsWidget extends React.Component {
               <div>
                 <div 
                   className={styles.pageHeader}
-                  data-veritone-component="mdp_page_header" 
+                  data-veritone-component="mdp-page-header" 
                   >
                   {get(
                     this.props,
@@ -1056,7 +1056,7 @@ class MediaDetailsWidget extends React.Component {
                   )}
                   <div 
                     className={styles.pageHeaderActionButtons}
-                    data-veritone-component="mdp_page_header_actions" 
+                    data-veritone-component="mdp-page-header-actions" 
                     >
                     {get(this.props, 'tdo.id') && (
                       <IconButton
@@ -1086,7 +1086,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.downloadFile}
                         disabled={!this.isDownloadAllowed()}
                         aria-label="Download"
-                        data-veritone-component="mdp_download_button" 
+                        data-veritone-component="mdp-download-button" 
                       >
                         <Tooltip
                           id="tooltip-download"
@@ -1109,7 +1109,7 @@ class MediaDetailsWidget extends React.Component {
                         className={styles.pageHeaderActionButton}
                         onClick={this.toggleInfoPanel}
                         aria-label="Info Panel"
-                        data-veritone-component="mdp_show_metadata_button" 
+                        data-veritone-component="mdp-show-metadata-button" 
 
                       >
                         <Tooltip
@@ -1139,7 +1139,7 @@ class MediaDetailsWidget extends React.Component {
                                 aria-haspopup="true"
                                 aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                                 onClick={this.toggleIsMenuOpen}
-                                data-veritone-component="mdp_more_option_button" 
+                                data-veritone-component="mdp-more-option-button" 
                               >
                                 <Tooltip
                                   id="tooltip-show-overflow-menu"
@@ -1252,7 +1252,7 @@ class MediaDetailsWidget extends React.Component {
                       flexContainer: styles.mediaDetailsPageTabSelector,
                       indicator: styles.tabIndicator
                     }}
-                    data-veritone-component="mdp_tabs_selector" 
+                    data-veritone-component="mdp-tabs-selector" 
                   >
                     <Tab
                       label="Media Details"
@@ -1264,7 +1264,7 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp_media_deatails_tab" 
+                      data-veritone-component="mdp-media-deatails-tab" 
                     />
                     <Tab
                       label="Content Templates"
@@ -1276,7 +1276,7 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp_content_templates_tab" 
+                      data-veritone-component="mdp-content-templates-tab" 
                     />
                   </Tabs>
                 )}
@@ -1284,7 +1284,7 @@ class MediaDetailsWidget extends React.Component {
                   this.state.selectedTabValue === 'mediaDetails' && (
                     <div 
                       className={styles.engineActionHeader}
-                      data-veritone-component="mdp_engine_action_header"                      
+                      data-veritone-component="mdp-engine-action-header"                      
                       >
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
@@ -1308,7 +1308,7 @@ class MediaDetailsWidget extends React.Component {
                     className={styles.backButtonEditMode}
                     onClick={this.toggleExpandedMode}
                     aria-label="Back"
-                    data-veritone-component="mdp_back_button_edit_mode" 
+                    data-veritone-component="mdp-back-button-edit-mode" 
 
                   >
                     <Icon
@@ -1346,14 +1346,14 @@ class MediaDetailsWidget extends React.Component {
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
                 }
-                data-veritone-component="mdp_edit_header" 
+                data-veritone-component="mdp-edit-header" 
               />
             )}
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div 
               className={styles.mediaScreen}
-              data-veritone-component="mdp_media_screen" 
+              data-veritone-component="mdp-media-screen" 
               >
               {get(tdo, 'id') &&
                 !(
@@ -1362,7 +1362,7 @@ class MediaDetailsWidget extends React.Component {
                 ) && (
                   <div 
                     className={styles.mediaView}
-                    data-veritone-component="mdp_media_view"
+                    data-veritone-component="mdp-media-view"
                     >
                     {!this.getPrimaryAssetUri() &&
                       !get(this.props, 'tdo.streams.length') && (
@@ -1404,7 +1404,7 @@ class MediaDetailsWidget extends React.Component {
                 )}
               {selectedEngineId && (
                 <div 
-                  data-veritone-component="mdp_category_view" 
+                  data-veritone-component="mdp-category-view" 
                   className={styles.engineCategoryView}
                   >
                   {selectedEngineCategory &&
@@ -1425,7 +1425,6 @@ class MediaDetailsWidget extends React.Component {
                         bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
-                        data-veritone-component="mdp_transcript_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1445,7 +1444,6 @@ class MediaDetailsWidget extends React.Component {
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
-                        data-veritone-component="mdp_face_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1460,7 +1458,6 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_object_detection_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1474,7 +1471,6 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         onEntrySelected={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_logo_detection_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1488,7 +1484,6 @@ class MediaDetailsWidget extends React.Component {
                         onOcrClicked={this.handleUpdateMediaPlayerTime}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_orc_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1501,7 +1496,6 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_fingerprint_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1517,7 +1511,6 @@ class MediaDetailsWidget extends React.Component {
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_translation_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1534,7 +1527,6 @@ class MediaDetailsWidget extends React.Component {
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         onClick={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_sentiment_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1552,7 +1544,6 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_geo_engine_output"
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1568,7 +1559,6 @@ class MediaDetailsWidget extends React.Component {
                         onSdoClick={this.handleUpdateMediaPlayerTime}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        data-veritone-component="mdp_structured_data_engine_output"
                       />
                     )}
                 </div>
@@ -1584,7 +1574,7 @@ class MediaDetailsWidget extends React.Component {
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
               canEditMedia={this.canEditMedia}
-              data-veritone-component="mdp_media_info_panel"
+              data-veritone-component="mdp-media-info-panel"
             />
           )}
 

@@ -134,9 +134,15 @@ class EngineOutputHeader extends Component {
     });
 
     return (
-      <div className={styles.engineOutputHeader}>
+      <div 
+        className={styles.engineOutputHeader}
+        data-veritone-component="engine-output-header"        
+        >
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
-        <div className={styles.headerActions}>
+        <div 
+          className={styles.headerActions}
+          data-veritone-component="engine-header-actions"
+          >
           {children}
           {isArray(combineViewTypes) && combineViewTypes.length > 1 && (
             <FormControl
@@ -260,6 +266,7 @@ class EngineOutputHeader extends Component {
                 root: styles.actionIconButton
               }}
               disabled={disableEditButton}
+              data-veritone-component="engine-output-content"          
             >
               <Icon className="icon-mode_edit2" />
             </IconButton>
