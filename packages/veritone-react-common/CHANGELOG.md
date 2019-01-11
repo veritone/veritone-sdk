@@ -133,3 +133,20 @@
     * props.stagedBoundingBoxStyles apply to new, unconfirmed bounding boxes
     * props.stylesByObjectType apply to a bounding box if that box has a matching "overlayObjectType" key
     * props.defaultBoundingBoxStyles apply to every box not covered by the above props
+
+## 6.3.0
+* Add missing recompose dependency
+* DataTable
+  * Propagate focusedRow to simple table when no focused row renderer was provided. Make focused row highlighted in that simple table - this allows to control which row is selected even when no special renderer needed for focused row.
+* ContentTemplate
+  * text inputs are now multiline
+  * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
+* ContentTemplateForm
+  * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
+* ProfileMenu
+  * fix profile image location
+* SDOTable
+  * Make SdoTable able to render schemas with nested object properties flatten all to one level and build columns. Surface onClick and focusedRow to allow users react to on row/cell click and highlight specific rows.
+
+## 6.3.1
+* Add recompose to excluded dependencies (fixes build issues)

@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "6.2.0",
+  "version": "6.3.1",
   "dependencies": {
     "@material-ui/core": "^1.0.0",
     "@material-ui/icons": "^1.0.0",
@@ -23,7 +23,7 @@
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^6.2.0",
     "veritone-redux-common": "^3.7.0",
-    "video-react": "~0.13.0"
+    "video-react": "^0.13.1"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",

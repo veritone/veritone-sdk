@@ -20,6 +20,7 @@ export default {
     'react-dom',
     'react-redux',
     'react-redux-saga',
+    'recompose',
     'redux',
     'redux-api-middleware-fixed',
     'redux-saga',
