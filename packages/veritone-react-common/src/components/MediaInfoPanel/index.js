@@ -207,9 +207,15 @@ class MediaInfoPanel extends Component {
     };
 
     const contentElement = (
-      <div className={styles.mediaInfoPanel}>
+      <div 
+        className={styles.mediaInfoPanel}
+        data-veritone-component="media-info-panel"
+        >
         <div>
-          <div className={styles.infoPanelHeader}>
+          <div 
+            className={styles.infoPanelHeader}
+            data-veritone-component="media-info-panel-header"
+            >
             <span>Metadata</span>
             <div className={styles.headerMenu}>
               {this.props.canEditMedia() && (
@@ -283,7 +289,10 @@ class MediaInfoPanel extends Component {
               </IconButton>
             </div>
           </div>
-          <Paper className={styles.infoPanelContent}>
+          <Paper 
+            className={styles.infoPanelContent}
+            data-veritone-component="media-info-panel-content"            
+            >
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
