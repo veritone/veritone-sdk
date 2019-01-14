@@ -165,6 +165,7 @@ class EngineOutputHeader extends Component {
                   },
                   getContentAnchorEl: null
                 }}
+                data-veritone-component="header-combines-view-select"
               >
                 {combineViewTypes.map(e => {
                   return (
@@ -203,6 +204,7 @@ class EngineOutputHeader extends Component {
                   },
                   getContentAnchorEl: null
                 }}
+                data-veritone-component="engine-output-header-select"
               >
                 {engines.map(e => {
                   return (
@@ -241,6 +243,7 @@ class EngineOutputHeader extends Component {
                   },
                   getContentAnchorEl: null
                 }}
+                data-veritone-component="engine-combines-select"
               >
                 {combineEngines.map(e => {
                   return (
