@@ -81,6 +81,7 @@ class MediaPlayerComponent extends React.Component {
     isActive: bool,
     paused: bool,
     currentTime: number,
+    autofocus: bool,
     forwardedRef: objectOf(any)
   };
 
@@ -131,6 +132,7 @@ class MediaPlayerComponent extends React.Component {
             stagedBoundingBoxStyles={props.stagedBoundingBoxStyles}
             stylesByObjectType={props.stylesByObjectType}
             defaultBoundingBoxStyles={props.defaultBoundingBoxStyles}
+            autofocus={props.autofocus}
           />
         )}
         <Player
