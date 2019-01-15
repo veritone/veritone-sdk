@@ -12,7 +12,7 @@ import {
   any
 } from 'prop-types';
 import { branch, renderNothing } from 'recompose';
-import uuidv4 from 'uuid/v4';
+import { guid } from 'helpers/guid';
 
 import { getMousePosition } from 'helpers/dom';
 import withContextProps from 'helpers/withContextProps';
@@ -79,7 +79,8 @@ export default class Overlay extends React.Component {
         label: string.isRequired,
         onClick: func.isRequired
       })
-    )
+    ),
+    autofocus: bool
   };
 
   static defaultProps = {
@@ -271,7 +272,7 @@ export default class Overlay extends React.Component {
 
   confirmStagedBoundingBox = () => {
     if (this.hasStagedBoundingBox()) {
-      const id = uuidv4();
+      const id = guid();
       this.props.onAddBoundingBox({
         boundingPoly: pixelXYWidthHeightToPercentagePoly(
           this.state.stagedBoundingBoxPosition,
@@ -281,9 +282,9 @@ export default class Overlay extends React.Component {
         id: id
       });
 
-      this.setState({
-        focusedBoundingBoxId: id
-      });
+      if (this.props.autofocus) {
+        this.setState({ focusedBoundingBoxId: id });
+      }
 
       this.removeStagedBoundingBox();
     }
