@@ -161,3 +161,7 @@
 * added StatusPill
 * TopBar
 ** Added ability to render an action button on the bar's left side
+
+## 6.6.0
+* Add additionalMenuItems prop to AppBar/profile menu
+* Add autoSelect to BoundingPolyOverlay
