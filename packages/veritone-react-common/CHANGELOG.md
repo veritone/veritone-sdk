@@ -165,3 +165,6 @@
 ## 6.6.0
 * Add additionalMenuItems prop to AppBar/profile menu
 * Add autoSelect to BoundingPolyOverlay
+
+## 6.7.0
+* Add CopyPrompt component
