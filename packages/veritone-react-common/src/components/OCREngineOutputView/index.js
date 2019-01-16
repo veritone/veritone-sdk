@@ -68,7 +68,10 @@ class OCREngineOutputView extends Component {
           onExpandClick={onExpandClick}
         />
         {outputNullState || (
-          <div className={styles.ocrContent}>
+          <div 
+            className={styles.ocrContent}
+            data-veritone-component="orc-engine-output-content"          
+          >
             {data.map(dataObject => {
               return (
                 <Fragment
