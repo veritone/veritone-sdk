@@ -271,6 +271,7 @@ export default class TranscriptEngineOutput extends Component {
 
   renderBody() {
     const {
+      parsedData,
       data,
       cursorPosition,
       clearCursorPosition,
@@ -301,6 +302,7 @@ export default class TranscriptEngineOutput extends Component {
         <div className={styles.content}>
           {
             <SpeakerTranscriptContent
+              parsedData={parsedData}
               data={data}
               speakerData={speakerData}
               editMode={editMode}

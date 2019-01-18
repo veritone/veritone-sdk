@@ -3,7 +3,16 @@ import ReactDOMServer from 'react-dom/server';
 import { arrayOf, shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
-import { get, omit, isArray, isUndefined, pick, isObject } from 'lodash';
+import {
+  get,
+  omit,
+  isArray,
+  isUndefined,
+  pick,
+  isObject,
+  orderBy,
+  debounce
+} from 'lodash';
 // import UserAgent from 'useragent';
 
 import { guid } from 'helpers/guid';
@@ -16,12 +25,16 @@ export default class EditableWrapper extends Component {
       startTimeMs: number,
       stopTimeMs: number,
       sentences: string,
-      fragments: arrayOf(
+      series: arrayOf(
         shape({
           startTimeMs: number,
           stopTimeMs: number,
-          value: string,
-          chunkIndex: number.isRequired   // Need this for speaker edits since a dialogue can span across chunks
+          words: arrayOf(
+            shape({
+              word: string,
+              confidence: number
+            })
+          )
         })
       )
     }),
@@ -76,6 +89,38 @@ export default class EditableWrapper extends Component {
 
   editableInput = React.createRef();
 
+  debounceOptions = {
+    'leading': false,
+    'trailing': true
+  };
+  debounceTimeMs = 1000;
+  savedEvent = undefined;
+
+  triggerDebouncedOnChange = event => {
+    event.persist();
+    this.savedEvent = event;
+    this.debouncedOnChange();
+  };
+
+  debouncedOnChange = debounce(
+    () => this.handleDebounceOnChange(),
+    this.debounceTimeMs
+  );
+
+  handleDebounceOnChange = () => {
+    const event = this.savedEvent;
+    const { content, onChange } = this.props;
+    if (event && event.target) {
+      const contentEditableElement = event.target;
+      const wordGuidMap = content.wordGuidMap;
+      const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
+      onChange && hasChange && onChange(event, historyDiff, cursorPos);
+      this.savedEvent = undefined;
+
+    }
+  }
+
+
   handleContentClick = event => {
     const { content, onClick } = this.props;
     const wordGuidMap = content.wordGuidMap;
@@ -90,17 +135,20 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyUp = event => {
-    const { editMode, onChange, content } = this.props;
+    const { editMode, content } = this.props;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       event.stopPropagation();
+      const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
-      const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
-      if (event.type !== 'paste') {
-        hasChange && !hasCommand && !hasControl && editMode && onChange && onChange(event, historyDiff, cursorPos);
+      if (event.type !== 'paste' && keyCode !== 13) {
+        !hasCommand
+          && !hasControl
+          && editMode
+          && this.triggerDebouncedOnChange(event);
       }
     }
   };
@@ -110,9 +158,9 @@ export default class EditableWrapper extends Component {
       editMode,
       content,
       speakerData,
-      onChange,
       undo,
-      redo
+      redo,
+      onChange
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
@@ -167,12 +215,28 @@ export default class EditableWrapper extends Component {
             const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
             setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
+            return;
           } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
             const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
             return;
           }
+        }
+
+        // Backspace on 1 char left
+        const backspaceOneCharLeft = keyCode === 8
+          && curCursorPos.end.offset === 1 
+          && targetElem.innerText.length === 1;
+        const deleteOneCharLeft = keyCode === 46
+          && curCursorPos.end.offset === 0
+          && targetElem.innerText.length === 1;
+
+        if (backspaceOneCharLeft || deleteOneCharLeft) {
+          event.preventDefault();
+          targetElem.innerText = '';
+          editMode && this.triggerDebouncedOnChange(event);
+          return;
         }
 
         if (keyCode === 13) {
@@ -204,7 +268,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentPaste = event => {
-    const { editMode, onChange, content } = this.props;
+    const { editMode, content, onChange } = this.props;
     const wordGuidMap = content.wordGuidMap;
     const oldCursor = getCursorPosition();
     
@@ -265,14 +329,22 @@ export default class EditableWrapper extends Component {
       onKeyUp: this.handleContentKeyUp,
       onChange: this.handleContentChange
     };
+    const textareaToDecodeCharacters = document.createElement('textarea');
 
-    const contentComponents = content.fragments.map(entry => {
+    const contentComponents = content.series.map(entry => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
-      const value = entry.value || '';
+      const words = entry.words || [];
+      const orderedWords = orderBy(words, ['confidence'], ['desc']);
+      const selectedWord = get(orderedWords, '[0].word');
       const fragmentKey = entry.guid
         ? entry.guid
-        : `snippet-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
+        : `snippet-fragment-${startTime}-${stopTime}`;
+      let value = '';
+      if (selectedWord) {
+        textareaToDecodeCharacters.innerHTML = selectedWord;
+        value = textareaToDecodeCharacters.value;
+      }
 
       return (
         <span
@@ -339,7 +411,8 @@ function setCursorPosition(elem, offset = 0) {
   if (elem) {
     const sel = window.getSelection();
     const range = document.createRange();
-    range && range.setStart && range.setStart(elem, offset);
+    const availableOffset = Math.min(elem.textContent.length, offset);
+    range && range.setStart && range.setStart(elem, availableOffset);
     range.collapse(true);
     sel && sel.removeAllRanges && sel.removeAllRanges();
     sel && sel.addRange && sel.addRange(range);
@@ -370,36 +443,56 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
   const wordObj = wordGuidMap && wordGuidMap[targetGuid];
   if (wordObj) {
     if (keyType === 'ENTER') {
-      const serieText = get(wordObj, 'serie.value');
+      const serieText = orderBy(
+        get(wordObj, 'serie.words'),
+        ['confidence'],
+        ['desc']
+      )[0].word;
       const serieDuration = wordObj.serie.stopTimeMs - wordObj.serie.startTimeMs;
       const cursorOffset = get(cursorPosition, 'start.offset');
       const splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
-      const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'value']);
+      const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'words']);
 
-      transcriptChanges.push({
-        index: wordObj.index,
-        chunkIndex: wordObj.chunkIndex,
-        action: 'UPDATE',
-        oldValue,
-        newValue: {
-          ...oldValue,
-          stopTimeMs: splitTime,
-          value: serieText.slice(0, cursorOffset)
-        }
-      });
-      transcriptChanges.push({
-        index: wordObj.index + 1,
-        chunkIndex: wordObj.chunkIndex,
-        action: 'INSERT',
-        newValue: {
-          ...oldValue,
-          guid: guid(),
-          startTimeMs: splitTime,
-          value: serieText.slice(cursorOffset, serieText.length)
-        }
-      });
+      // TODO: handle returns on beginning/end of fragment
+      const leftTextSplit = serieText.slice(0, cursorOffset);
+      if (leftTextSplit !== serieText) {
+        transcriptChanges.push({
+          index: wordObj.index,
+          chunkIndex: wordObj.chunkIndex,
+          action: 'UPDATE',
+          oldValue,
+          newValue: {
+            ...oldValue,
+            stopTimeMs: splitTime,
+            words: [{
+              bestPath: true,
+              confidence: 1,
+              word: leftTextSplit
+            }]
+          }
+        });
+      }
+      const rightTextSplit = serieText.slice(cursorOffset, serieText.length);
+      if (rightTextSplit) {
+        transcriptChanges.push({
+          index: wordObj.index + 1,
+          chunkIndex: wordObj.chunkIndex,
+          action: 'INSERT',
+          newValue: {
+            ...oldValue,
+            guid: guid(),
+            startTimeMs: splitTime,
+            words: [{
+              bestPath: true,
+              confidence: 1,
+              word: rightTextSplit
+            }]
+          }
+        });
+      }
 
       speakerChanges.push({
+        chunkIndex: wordObj.speakerChunkIndex,
         index: wordObj.speakerIndex,
         action: 'UPDATE',
         oldValue: wordObj.speaker,
@@ -409,6 +502,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
         }
       });
       speakerChanges.push({
+        chunkIndex: wordObj.speakerChunkIndex,
         index: wordObj.speakerIndex + 1,
         action: 'INSERT',
         newValue: {
@@ -421,13 +515,15 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
     } else if (keyType === 'BACKSPACE') {
       // Can't do this operation on first speaker
       if (wordObj.speakerIndex) {
-        const previousSpeaker = get(speakerData, [0, 'series', wordObj.speakerIndex - 1]);
+        const previousSpeaker = get(speakerData, [wordObj.speakerChunkIndex, 'series', wordObj.speakerIndex - 1]);
         speakerChanges.push({
+          chunkIndex: wordObj.speakerChunkIndex,
           index: wordObj.speakerIndex,
           action: 'DELETE',
           oldValue: wordObj.speaker
         });
         speakerChanges.push({
+          chunkIndex: wordObj.speakerChunkIndex,
           index: wordObj.speakerIndex - 1,
           action: 'UPDATE',
           oldValue: previousSpeaker,
@@ -471,6 +567,11 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
             const chunkIndex = wordGuidMap[spanGuid].chunkIndex;
             foundMap[spanGuid] = true;
             const oldEntry = wordGuidMap[spanGuid];
+            const oldValue = orderBy(
+              get(oldEntry, 'serie.words'),
+              ['confidence'],
+              ['desc']
+            )[0].word;
 
             // Transcript Changes
             if (!newWord) {
@@ -484,11 +585,15 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 action: 'DELETE',
                 oldValue: oldEntry.serie
               });
-            } else if (newWord !== oldEntry.serie.value) {
+            } else if (newWord !== oldValue) {
               // Text change and possibly append time
               const newValue = {
                 ...oldEntry.serie,
-                value: newWord
+                words: [{
+                  bestPath: true,
+                  confidence: 1,
+                  word: newWord
+                }]
               };
               if (latestDeleteTime) {
                 newValue.stopTimeMs = latestDeleteTime;

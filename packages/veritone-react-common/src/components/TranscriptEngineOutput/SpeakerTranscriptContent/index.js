@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, isArray } from 'lodash';
+import { orderBy, isArray, pick } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -95,215 +95,8 @@ export default class SpeakerTranscriptContent extends Component {
     this.props.onChange && this.props.onChange(event, historyDiff, cursorPosition);
   };
 
-  // totalTranscriptFragments will be mutated. This function picks off the first element
-  // and allocates it to a speakers' fragments
-  allocateSpeakerTranscripts = (totalTranscriptFragments, currentSpeaker, nextSpeaker, speakerIndex) => {
-    const speakerStartTime = currentSpeaker.startTimeMs;
-    const speakerStopTime = currentSpeaker.stopTimeMs;
-    const fragments = [];
-    const wordGuidMap = {};
-    while (isArray(totalTranscriptFragments) && totalTranscriptFragments.length) {
-      const currentSnippet = totalTranscriptFragments[0];
-      // Allocate to current speaker if:
-      if (
-        // the snippet starts within speaker interval
-        ( speakerStartTime <= currentSnippet.startTimeMs
-          && currentSnippet.startTimeMs < speakerStopTime
-        ) || 
-        // Snippet startTimeMs did not fall into the previous AND current speakers aperture
-        // Gotta do something with this snippet, so add it to the current speaker
-        currentSnippet.startTimeMs < speakerStartTime ||
-        // there are no more speakers then shove it into the current speaker
-        !nextSpeaker
-      ) {
-        const fragment = totalTranscriptFragments.shift();
-        fragments.push(fragment);
-        wordGuidMap[fragment.guid] = {
-          chunkIndex: fragment.chunkIndex,
-          dialogueIndex: fragment.index - fragments[0].index,
-          index: fragment.index,
-          serie: fragment,
-          speakerIndex,
-          speaker: currentSpeaker
-        }
-      } else {
-        // There is a next speaker and the current snippet does belong to the next speaker
-        break;
-      }
-    }
-    return {
-      fragments,
-      wordGuidMap
-    };
-  };
-
-  parseData() {
-    if (!this.props.data) {
-      return {
-        lazyLoading: false,
-        snippetSegments: [],
-        speakerSegments: []
-      };
-    }
-
-    const snippetSegments = [];
-    let speakerSegments = [];
-    let totalTranscriptFragments = [];
-
-    const textareaToDecodeCharacters = document.createElement('textarea');
-
-    let lazyLoading = true;
-    this.props.data.forEach((chunk, chunkIndex) => {
-      const groupStartTime = chunk.startTimeMs;
-      const groupStopTime = chunk.stopTimeMs;
-      const groupStatus = chunk.status;
-
-      lazyLoading =
-        lazyLoading &&
-        groupStartTime !== undefined &&
-        groupStopTime !== undefined &&
-        groupStatus !== undefined;
-
-      const series = chunk.series;
-      if (series && series.length > 0) {
-        let snippetStatus = undefined;
-        let snippetStartTime = groupStartTime;
-        let snippetStopTime = undefined;
-        let snippetParts = [];
-        let snippetSentences = '';
-
-        const saveSnippetData = () => {
-          const wordGuidMap = snippetParts.reduce((acc, snippet, index) => {
-            if (snippet.guid) {
-              acc[snippet.guid] = {
-                chunkIndex,
-                index,
-                serie: snippet
-              };
-            }
-            return acc;
-          }, {});
-          //---Save Previous Snippets Data---
-          snippetSegments.push({
-            startTimeMs: snippetStartTime,
-            stopTimeMs: snippetStopTime,
-            status: snippetStatus,
-            sentences: snippetSentences,
-            fragments: snippetParts.concat([]),
-            wordGuidMap
-          });
-
-          totalTranscriptFragments = totalTranscriptFragments.concat(snippetParts);
-
-          //---Reset Snippets Data---
-          snippetStatus = undefined;
-          snippetStartTime = undefined;
-          snippetStopTime = undefined;
-          snippetParts = [];
-          snippetSentences = '';
-        };
-
-        const sentenceSeparator = series.length ? ' ' : '';
-
-        series.forEach((entry, entryIndex) => {
-          //---Updata Content Value---
-          if (entry.words) {
-            // Has Transcript Data
-            if (snippetStatus && snippetStatus !== 'success') {
-              saveSnippetData();
-            }
-
-            //---Get Correct Word---
-            let selectedWord = '';
-            let words = entry.words || [];
-            words = orderBy(words, ['confidence'], ['desc']);
-            if (words.length > 0) {
-              selectedWord = words[0].word;
-            }
-
-            // ignore special words / states
-            if (selectedWord === '!silence' ||
-              selectedWord === '[noise]' ||
-              selectedWord === '<noise>'
-            ) {
-              return;
-            }
-
-            snippetStatus = 'success';
-
-            // escape special characters to show in UI
-            if (selectedWord) {
-              textareaToDecodeCharacters.innerHTML = selectedWord;
-              selectedWord = textareaToDecodeCharacters.value;
-            }
-
-            const snippet = {
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord,
-              chunkIndex,
-              index: entryIndex
-            };
-            if (entry.guid) {
-              snippet.guid = entry.guid;
-            }
-
-            //---Update Snippet Data---
-            snippetSentences =
-              snippetSentences + selectedWord + sentenceSeparator;
-            snippetParts.push(snippet);
-          } else {
-            // No Transcript Data
-            if (snippetStatus && snippetStatus !== 'no-transcript') {
-              saveSnippetData();
-            }
-            snippetStatus = 'no-transcript';
-          }
-
-          //---Update Start & Stop Time---
-          if (
-            snippetStartTime === undefined ||
-            snippetStartTime > entry.startTimeMs
-          ) {
-            snippetStartTime = entry.startTimeMs;
-          }
-          if (
-            snippetStopTime === undefined ||
-            snippetStopTime < entry.stopTimeMs
-          ) {
-            snippetStopTime = entry.stopTimeMs;
-          }
-          if (
-            entryIndex === series.length - 1 &&
-            groupStopTime &&
-            groupStopTime > snippetStopTime
-          ) {
-            snippetStopTime = groupStopTime;
-          }
-        });
-
-        saveSnippetData();
-      }
-    });
-
-    // Speaker Data
-    if (isArray(this.props.speakerData)){
-      this.props.speakerData.forEach(chunk => {
-        speakerSegments = speakerSegments.concat(chunk.series);
-      });
-    }
-
-    return {
-      lazyLoading: lazyLoading,
-      snippetSegments: snippetSegments,
-      speakerSegments: speakerSegments,
-      totalTranscriptFragments
-    };
-  }
-
   renderSpeakerSnippetSegments = parsedData => {
     const {
-      speakerData,
       editMode,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
@@ -311,8 +104,9 @@ export default class SpeakerTranscriptContent extends Component {
       cursorPosition,
       clearCursorPosition,
       undo,
-      redo
+      redo,
     } = this.props;
+    const speakerData = parsedData.speakerSegments;
 
     const availableSpeakerSet = new Set();
     isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
@@ -326,101 +120,96 @@ export default class SpeakerTranscriptContent extends Component {
     });
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const speakerSeries = parsedData.speakerSegments;
+    const speakerSegments = parsedData.speakerSegments;
 
 
     if (selectedCombineViewTypeId === 'speaker-view') {
-      const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
-        const nextSpeaker = speakerSeries[index + 1];
-        const speakerStartTime = speakerSegment.startTimeMs;
-        const speakerStopTime = speakerSegment.stopTimeMs;
-        const { fragments, wordGuidMap } = this.allocateSpeakerTranscripts(
-          parsedData.totalTranscriptFragments,
-          speakerSegment,
-          nextSpeaker,
-          index
-        );
+      const speakerSnippetSegments = speakerSegments.map((speakerSegment, speakerChunkIndex) => {
+        const speakerSeries = speakerSegment.series.map((speakerSerie, speakerIndex) => {
+          const speakerStartTime = speakerSerie.startTimeMs;
+          const speakerStopTime = speakerSerie.stopTimeMs;
+          const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+          const speakerTimingStart = format(speakerStartTime, timeFormat);
+          const speakerTimingStop = format(speakerStopTime, timeFormat);
+          const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
 
-        const filteredSpeakerSegmentDataWrapper = { fragments, wordGuidMap };
-
-        const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-        const speakerTimingStart = format(speakerStartTime, timeFormat);
-        const speakerTimingStop = format(speakerStopTime, timeFormat);
-
-        const speakerGridKey = `speaker-edit-row-${speakerSegment.guid}`;
-
-        const segmentContent = (
-          <Grid container key={speakerGridKey}>
-            <Grid item
-              xs={4}
-              sm={3}
-              md={2}
-              lg={1}
-              xl={1}
-            >
-              <SpeakerPill
-                editMode={editMode}
-                speakerSegment={speakerSegment}
-                speakerData={speakerData}
-                availableSpeakers={availableSpeakers}
-                onClick={this.handleOnClick}
-                onChange={this.handleDataChanged}
-                startMediaPlayHeadMs={mediaPlayerTimeMs}
-                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              />
+          const speakerContent = (
+            <Grid container key={speakerGridKey}>
+              <Grid item
+                xs={4}
+                sm={3}
+                md={2}
+                lg={1}
+                xl={1}
+              >
+                <SpeakerPill
+                  editMode={editMode}
+                  speakerSegment={speakerSerie}
+                  speakerData={speakerSegments}
+                  availableSpeakers={availableSpeakers}
+                  onClick={this.handleOnClick}
+                  onChange={this.handleDataChanged}
+                  startMediaPlayHeadMs={mediaPlayerTimeMs}
+                  stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                />
+              </Grid>
+              <Grid item xs sm md lg xl>
+                <span className={styles.speakerStartTimeLabel}>
+                  {`${speakerTimingStart} - ${speakerTimingStop}`}
+                </span>
+                {
+                  editMode ?
+                    (
+                      <EditableWrapper
+                        key={'transcript-speaker-snippet' + speakerStartTime}
+                        speakerData={speakerData}
+                        content={{
+                          series: speakerSerie.fragments,
+                          wordGuidMap: speakerSerie.wordGuidMap
+                        }}
+                        editMode
+                        onChange={this.handleDataChanged}
+                        undo={undo}
+                        redo={redo}
+                        onClick={this.handleOnClick}
+                        startMediaPlayHeadMs={mediaPlayerTimeMs}
+                        stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                        classNames={classNames(styles.contentSegment)}
+                        cursorPosition={cursorPosition}
+                        clearCursorPosition={clearCursorPosition}
+                      />
+                    ) :
+                    (
+                      <SnippetSegment
+                        key={'transcript-speaker-snippet' + speakerStartTime}
+                        series={speakerSerie.fragments}
+                        onClick={this.handleOnClick}
+                        startMediaPlayHeadMs={mediaPlayerTimeMs}
+                        stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                        classNames={classNames(styles.contentSegment)}
+                      />
+                    )
+                }
+              </Grid>
             </Grid>
-            <Grid item xs sm md lg xl>
-              <span className={styles.speakerStartTimeLabel}>
-                {`${speakerTimingStart} - ${speakerTimingStop}`}
-              </span>
-              {
-                editMode ?
-                  (
-                    <EditableWrapper
-                      key={'transcript-speaker-snippet' + speakerStartTime}
-                      speakerData={speakerData}
-                      content={filteredSpeakerSegmentDataWrapper}
-                      editMode
-                      onChange={this.handleDataChanged}
-                      undo={undo}
-                      redo={redo}
-                      onClick={this.handleOnClick}
-                      startMediaPlayHeadMs={mediaPlayerTimeMs}
-                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                      classNames={classNames(styles.contentSegment)}
-                      cursorPosition={cursorPosition}
-                      clearCursorPosition={clearCursorPosition}
-                    />
-                  ) :
-                  (
-                    <SnippetSegment
-                      key={'transcript-speaker-snippet' + speakerStartTime}
-                      content={filteredSpeakerSegmentDataWrapper}
-                      onClick={this.handleOnClick}
-                      startMediaPlayHeadMs={mediaPlayerTimeMs}
-                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                      classNames={classNames(styles.contentSegment)}
-                    />
-                  )
-              }
-            </Grid>
-          </Grid>
-        );
+          );
+
+          return speakerContent;
+        });
 
         return {
-          start: speakerStartTime,
-          stop: speakerStopTime,
-          content: segmentContent
+          start: speakerSegment.startTimeMs,
+          stop: speakerSegment.stopTimeMs,
+          content: speakerSeries
         };
       });
 
       return speakerSnippetSegments;
     } else {
-      // Only use content editable in edit mode since it would impact performance heavily
       if (editMode) {
         const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
           const segmentDataWithChunkIndices = segmentData;
-          segmentDataWithChunkIndices.fragments = segmentDataWithChunkIndices.fragments.map(frag => {
+          segmentDataWithChunkIndices.series = segmentDataWithChunkIndices.series.map(frag => {
             return { ...frag, chunkIndex };
           })
           const segmentStartTime = segmentData.startTimeMs;
@@ -457,7 +246,7 @@ export default class SpeakerTranscriptContent extends Component {
           const segmentContent = (
             <SnippetSegment
               key={'transcript-snippet' + segmentStartTime}
-              content={segmentData}
+              series={segmentData.series}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
@@ -479,6 +268,7 @@ export default class SpeakerTranscriptContent extends Component {
 
   render() {
     const {
+      parsedData,
       editMode,
       className,
       mediaLengthMs,
@@ -486,8 +276,6 @@ export default class SpeakerTranscriptContent extends Component {
       estimatedDisplayTimeMs,
       onScroll
     } = this.props;
-
-    const parsedData = this.parseData();
 
     return (
       <div className={classNames(styles.transcriptContent, className)}>

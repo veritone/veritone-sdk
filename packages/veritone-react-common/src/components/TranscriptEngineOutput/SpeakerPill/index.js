@@ -101,7 +101,10 @@ export default class SpeakerPill extends Component {
   handleAddClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll, speakerName } = this.state;
-    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName)
+    const { speakerId } = speakerSegment;
+    const isApplyAll = speakerId ? applyAll : false;
+
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, speakerName)
 
     hasChange, editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
@@ -110,7 +113,10 @@ export default class SpeakerPill extends Component {
   handleRemoveClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll } = this.state;
-    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, '')
+    const { speakerId } = speakerSegment;
+    const isApplyAll = speakerId ? applyAll : false;
+
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, '')
 
     hasChange, editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();

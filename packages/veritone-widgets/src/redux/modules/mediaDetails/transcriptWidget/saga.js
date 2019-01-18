@@ -79,20 +79,26 @@ function* watchContentChange() {
     action
   ) {
     yield put({
-      type: TranscriptRedux.UPDATE_EDIT_STATUS,
-      hasUserEdits: true
+      type: TranscriptRedux.CHANGE,
+      historyDiff: action.data,
+      cursorPosition: action.cursorPosition
     });
 
-    unsavedData = action.data;
-    unsavedCursorPosition = action.cursorPosition;
-    if (action.data.onBlur) {
-      yield call(pushChanges);
-    } else {
-      yield call(function*() {
-        yield call(delay, deferTime);
-        yield call(pushChanges);
-      }, action);
-    }
+    // yield put({
+    //   type: TranscriptRedux.UPDATE_EDIT_STATUS,
+    //   hasUserEdits: true
+    // });
+
+    // unsavedData = action.data;
+    // unsavedCursorPosition = action.cursorPosition;
+    // if (action.data.onBlur) {
+    //   yield call(pushChanges);
+    // } else {
+    //   yield call(function*() {
+    //     yield call(delay, deferTime);
+    //     yield call(pushChanges);
+    //   }, action);
+    // }
   });
 }
 
