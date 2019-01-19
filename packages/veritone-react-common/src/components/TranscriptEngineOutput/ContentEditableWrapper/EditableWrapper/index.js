@@ -73,18 +73,27 @@ export default class EditableWrapper extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const { cursorPosition, clearCursorPosition } = this.props;
-    if (cursorPosition) {
+    const cursorPositionToBeUsed = cursorPosition || snapshot.cursorPosition;
+    if (cursorPositionToBeUsed) {
       const spanChildren = get(this, 'editableInput.current.htmlEl.children', []);
       const spanArray = Array.from(spanChildren);
-      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPosition.start.guid);
+      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPositionToBeUsed.start.guid);
       if (targetIndex !== -1) {
         const targetSpan = spanChildren.item(targetIndex);
-        setCursorPosition(targetSpan.firstChild, cursorPosition.start.offset);
-        clearCursorPosition();
+        setCursorPosition(targetSpan.firstChild, cursorPositionToBeUsed.start.offset);
+        if (cursorPosition) {
+          clearCursorPosition();
+        }
       }
     }
+  }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return {
+      cursorPosition: getCursorPosition()
+    };
   }
 
   editableInput = React.createRef();
@@ -139,12 +148,16 @@ export default class EditableWrapper extends Component {
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       event.stopPropagation();
+      const curCursorPos = getCursorPosition();
+      const noCursorSelection = curCursorPos.start && curCursorPos.end &&
+        curCursorPos.start.guid === curCursorPos.end.guid &&
+        curCursorPos.start.offset === curCursorPos.end.offset;
       const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
-      if (event.type !== 'paste' && keyCode !== 13) {
+      if (event.type !== 'paste' && keyCode !== 13 && noCursorSelection) {
         !hasCommand
           && !hasControl
           && editMode
@@ -341,6 +354,9 @@ export default class EditableWrapper extends Component {
         ? entry.guid
         : `snippet-fragment-${startTime}-${stopTime}`;
       let value = '';
+      const active = !(
+        stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
+      );
       if (selectedWord) {
         textareaToDecodeCharacters.innerHTML = selectedWord;
         value = textareaToDecodeCharacters.value;
@@ -350,7 +366,9 @@ export default class EditableWrapper extends Component {
         <span
           key={fragmentKey}
           word-guid={entry.guid}
-          className={classNames(styles.transcriptSnippet, className, styles.edit)}
+          className={classNames(styles.transcriptSnippet, className, styles.edit, {
+            [styles.highlight]: active
+          })}
         >
           {value}
         </span>
@@ -469,7 +487,8 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
               confidence: 1,
               word: leftTextSplit
             }]
-          }
+          },
+          ...pick(wordObj, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
         });
       }
       const rightTextSplit = serieText.slice(cursorOffset, serieText.length);
@@ -583,7 +602,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 chunkIndex,
                 index: oldEntry.index,
                 action: 'DELETE',
-                oldValue: oldEntry.serie
+                oldValue: oldEntry.serie,
+                ...pick(oldEntry, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
               });
             } else if (newWord !== oldValue) {
               // Text change and possibly append time
@@ -603,7 +623,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 index: oldEntry.index,
                 action: 'UPDATE',
                 newValue,
-                oldValue: oldEntry.serie
+                oldValue: oldEntry.serie,
+                ...pick(oldEntry, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
               });
               latestDeleteTime = undefined;
             } else if (latestDeleteTime) {
@@ -617,7 +638,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 index: oldEntry.index,
                 action: 'UPDATE',
                 newValue,
-                oldValue: oldEntry.serie
+                oldValue: oldEntry.serie,
+                ...pick(oldEntry, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
               });
               latestDeleteTime = undefined;
             }

@@ -99,138 +99,17 @@ const transcriptReducer = createReducer(initialState, {
     const editableSpeakerData = get(state, 'editableParsedData.speakerSegments');
     let newEditableData = editableData;
     let newEditableSpeakerData = editableSpeakerData;
+
     const historyDiff = state.history.length
       ? state.history.slice(-1)[0]
       : undefined;
 
-    if (historyDiff) {
-
-      isArray(historyDiff.transcriptChanges)
-      && historyDiff.transcriptChanges.slice().reverse().forEach(diff => {
-        const chunkToEdit = editableData[diff.chunkIndex];
-        const action = diff.action;
-        const oldValue = {
-          ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
-        };
-        switch (action) {
-          case 'UPDATE': {
-            newEditableData = update(newEditableData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    $set: oldValue
-                  }
-                },
-                wordGuidMap: {
-                  [guid]: {
-                    serie: {
-                      $set: oldValue
-                    }
-                  }
-                }
-              }
-            });
-            //Update speaker map if available
-            isArray(newEditableSpeakerData)
-              && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
-                isArray(chunk.series)
-                  && chunk.series.forEach((serie, speakerIndex) => {
-                    const guidMatch = get(serie, ['wordGuidMap', guid]);
-                    if (guidMatch) {
-                      newEditableSpeakerData = update(newEditableSpeakerData, {
-                        [speakerChunkIndex]: {
-                          series: {
-                            [speakerIndex]: {
-                              fragments: {
-                                [guidMatch.dialogueIndex]: {
-                                  $set: setValue
-                                }
-                              },
-                              wordGuidMap: {
-                                [guid]: {
-                                  serie: {
-                                    $set: setValue
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      });
-                    }
-                  });
-              });
-            break;
-          }
-          case 'DELETE': {
-            newEditableData = update(newEditableData, {
-              [diff.chunkIndex]: {
-                series: { $splice: [[diff.index, 0, oldValue]] }
-              }
-            });
-            break;
-          }
-          case 'INSERT': {
-            newEditableData = update(newEditableData, {
-              [diff.chunkIndex]: {
-                series: { $splice: [[diff.index, 1]] }
-              }
-            });
-            break;
-          }
-        }
-      });
-
-    isArray(historyDiff.speakerChanges)
-      && historyDiff.speakerChanges.slice().reverse().forEach(diff => {
-        const action = diff.action;
-        switch (action) {
-          case 'UPDATE': {
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    $set: diff.oldValue
-                  } 
-                }
-              }
-            });
-            break;
-          }
-          case 'INSERT': {
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: { $splice: [[diff.index, 1]] }
-              }
-            });
-            break;
-          }
-          case 'DELETE': {
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: { $splice: [[diff.index, 0, diff.oldValue]] }
-              }
-            });
-            break;
-          }
-        }
-      });
+    if (!historyDiff) {
+      return state;
     }
 
-    const newState = {
-      ...state,
-      editableParsedData: {
-        ...state.editableParsedData,
-        snippetSegments: newEditableData,
-        speakerSegments: newEditableSpeakerData
-      }
-    };
-
-    if (historyDiff) {
-      newState.history = state.history.slice(0, state.history.length - 1);
-      newState.revertedHistory = state.revertedHistory.concat([historyDiff]);
-      // newState.cursorPosition = historyDiff.cursorPosition;
-    }
+    const newState = revertHistoryDiff(state, historyDiff);
+    newState.history = state.history.slice(0, state.history.length - 1);
 
     return newState;
   },
@@ -240,6 +119,10 @@ const transcriptReducer = createReducer(initialState, {
       ? state.revertedHistory.slice(-1)[0]
       : undefined;
     const cursorPosition = action.cursorPosition;
+
+    if (!historyDiff) {
+      return state;
+    }
 
     const newState = applyHistoryDiff(state, historyDiff, cursorPosition);
     newState.revertedHistory = state.revertedHistory.slice(0, state.revertedHistory.length - 1);
@@ -397,13 +280,245 @@ const transcriptReducer = createReducer(initialState, {
   }
 });
 
+function revertHistoryDiff(state, historyDiff) {
+  const editableData = get(state, 'editableParsedData.snippetSegments');
+  const editableSpeakerData = get(state, 'editableParsedData.speakerSegments');
+  let newEditableData = editableData;
+  let newEditableSpeakerData = editableSpeakerData;
+
+  if (historyDiff) {
+    isArray(historyDiff.transcriptChanges)
+      && historyDiff.transcriptChanges.slice().reverse().forEach(diff => {
+        const chunkToEdit = editableData[diff.chunkIndex];
+        const action = diff.action;
+        const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
+        const oldValue = {
+          ...chunkToEdit.series[diff.index],
+          ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
+        };
+        switch (action) {
+          case 'UPDATE': {
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: {
+                  [diff.index]: {
+                    $set: oldValue
+                  }
+                },
+                wordGuidMap: {
+                  [guid]: {
+                    serie: {
+                      $set: oldValue
+                    }
+                  }
+                }
+              }
+            });
+            //Update speaker map if available
+            isArray(newEditableSpeakerData)
+              && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
+                isArray(chunk.series)
+                  && chunk.series.forEach((serie, speakerIndex) => {
+                    const guidMatch = get(serie, ['wordGuidMap', guid]);
+                    if (guidMatch) {
+                      newEditableSpeakerData = update(newEditableSpeakerData, {
+                        [speakerChunkIndex]: {
+                          series: {
+                            [speakerIndex]: {
+                              fragments: {
+                                [guidMatch.dialogueIndex]: {
+                                  $set: {
+                                    ...oldValue,
+                                    ...pick(diff, ['index', 'chunkIndex'])
+                                  }
+                                }
+                              },
+                              wordGuidMap: {
+                                [guid]: {
+                                  serie: {
+                                    $set: {
+                                      ...oldValue,
+                                      ...pick(diff, ['index', 'chunkIndex'])
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      });
+                    }
+                  });
+              });
+            break;
+          }
+          case 'DELETE': {
+            const oldValue = {
+              ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
+            };
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 0, oldValue]] },
+                wordGuidMap: {
+                  [guid]: {
+                    $set : {
+                      ...oldValue,
+                      ...pick(diff, ['chunkIndex', 'index'])
+                    }
+                  }
+                }
+              }
+            });
+            // Update map indices after splice
+            const series = newEditableData[diff.chunkIndex].series;
+            series.slice(diff.index - series.length).forEach((serie, index) => {
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: {
+                    [serie.guid]: {
+                      index: {
+                        $set: diff.index + index
+                      }
+                    }
+                  }
+                }
+              });
+            });
+            // Update speaker data if available
+            newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, false);
+            break;
+          }
+          case 'INSERT': {
+            newEditableData = update(newEditableData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 1]] },
+                wordGuidMap: { $unset: [guid] }
+              }
+            });
+            // Update map indices after splice
+            const series = newEditableData[diff.chunkIndex].series;
+            series.slice(diff.index - series.length).forEach((serie, index) => {
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: {
+                    [serie.guid]: {
+                      index: {
+                        $set: diff.index + index
+                      }
+                    }
+                  }
+                }
+              });
+            });
+            // Update speaker data if available
+            newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, true);
+            break;
+          }
+        }
+      });
+
+    const totalTranscriptFragments = newEditableData.reduce((acc, chunk, chunkIndex) => 
+      acc.concat(chunk.series.map((serie, index) => ({ ...serie, index, chunkIndex }))),
+      []
+    );
+    // TODO
+    isArray(historyDiff.speakerChanges)
+      && historyDiff.speakerChanges.slice().reverse().forEach(diff => {
+        const action = diff.action;
+        switch (action) {
+          case 'UPDATE': {
+            const newFragments = totalTranscriptFragments.filter(frag => 
+              frag.startTimeMs >= diff.oldValue.startTimeMs
+                && frag.stopTimeMs <= diff.oldValue.stopTimeMs
+            );
+            const newMap = {};
+            newFragments.forEach((frag, dialogueIndex) => {
+              if (frag.guid) {
+                newMap[frag.guid] = {
+                  ...pick(frag, ['index', 'chunkIndex']),
+                  dialogueIndex,
+                  speakerIndex: diff.index,
+                  speakerChunkIndex: diff.chunkIndex,
+                  speaker: diff.oldValue,
+                  serie: frag
+                }
+              }
+            });
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [diff.chunkIndex]: {
+                series: {
+                  [diff.index]: {
+                    $set: {
+                      ...newEditableSpeakerData[diff.chunkIndex].series[diff.index],
+                      ...diff.oldValue,
+                      fragments: newFragments,
+                      wordGuidMap: newMap
+                    }
+                  } 
+                }
+              }
+            });
+            break;
+          }
+          case 'INSERT': {
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 1]] }
+              }
+            });
+            break;
+          }
+          case 'DELETE': {
+            const newFragments = totalTranscriptFragments.filter(frag =>
+              frag.startTimeMs >= diff.oldValue.startTimeMs
+                && frag.stopTimeMs <= diff.oldValue.stopTimeMs
+            );
+            const newMap = {};
+            newFragments.forEach((frag, dialogueIndex) => {
+              if (frag.guid) {
+                newMap[frag.guid] = {
+                  ...pick(frag, ['index', 'chunkIndex']),
+                  dialogueIndex,
+                  speakerIndex: diff.index,
+                  speakerChunkIndex: diff.chunkIndex,
+                  speaker: diff.oldValue,
+                  serie: frag
+                }
+              }
+            });
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [diff.chunkIndex]: {
+                series: { $splice: [[diff.index, 0, {
+                  ...diff.oldValue,
+                  fragments: newFragments,
+                  wordGuidMap: newMap
+                }]] }
+              }
+            });
+            break;
+          }
+        }
+      });
+  }
+
+  return {
+    ...state,
+    editableParsedData: {
+      ...state.editableParsedData,
+      snippetSegments: newEditableData,
+      speakerSegments: newEditableSpeakerData
+    },
+    revertedHistory: state.revertedHistory.concat([historyDiff]),
+    cursorPosition: historyDiff.cursorPosition
+  };
+}
+
 function applyHistoryDiff(state, historyDiff, cursorPosition) {
   const editableData = get(state, 'editableParsedData.snippetSegments');
   const editableSpeakerData = get(state, 'editableParsedData.speakerSegments');
   let newEditableData = editableData;
   let newEditableSpeakerData = editableSpeakerData;
   if (historyDiff) {
-    // Apply diff and save to history
     isArray(editableData)
       && isArray(historyDiff.transcriptChanges)
       && historyDiff.transcriptChanges.forEach(diff => {
@@ -411,6 +526,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
         const action = diff.action;
         const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
         switch (action) {
+          // Checked
           case 'UPDATE': {
             const setValue = {
               ...chunkToEdit.series[diff.index],
@@ -445,12 +561,20 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                             [speakerIndex]: {
                               fragments: {
                                 [guidMatch.dialogueIndex]: {
-                                  $set: setValue
+                                  $set: {
+                                    ...setValue,
+                                    ...pick(diff, ['index', 'chunkIndex'])
+                                  }
                                 }
                               },
                               wordGuidMap: {
                                 [guid]: {
-                                  serie: { $set: setValue }
+                                  serie: {
+                                    $set: {
+                                      ...setValue,
+                                      ...pick(diff, ['index', 'chunkIndex'])
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -485,55 +609,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
               });
             });
             //Update speaker map if available
-            isArray(newEditableSpeakerData)
-              && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
-                isArray(chunk.series)
-                  && chunk.series.forEach((serie, speakerIndex) => {
-                    const guidMatch = get(serie, ['wordGuidMap', guid]);
-                    if (guidMatch) {
-                      newEditableSpeakerData = update(newEditableSpeakerData, {
-                        [speakerChunkIndex]: {
-                          series: {
-                            [speakerIndex]: {
-                              fragments: {
-                                $splice: [[guidMatch.dialogueIndex, 1]]
-                              }
-                            }
-                          }
-                        }
-                      });
-                      const newWordGuidMap = get(
-                        newEditableSpeakerData,
-                        [
-                          speakerChunkIndex,
-                          'series',
-                          speakerIndex,
-                          'fragments'
-                        ],
-                        []
-                      ).reduce((acc, frag, dialogueIndex) => {
-                        acc[frag.guid] = {
-                          ...pick(diff, ['index', 'chunkIndex']),
-                          serie: frag,
-                          dialogueIndex,
-                          speakerChunkIndex,
-                          speakerIndex,
-                          speaker: pick(serie, ['guid', 'speakerId', 'startTimeMs', 'stopTimeMs'])
-                        }
-                        return acc;
-                      }, {});
-                      newEditableSpeakerData = update(newEditableSpeakerData, {
-                        [speakerChunkIndex]: {
-                          series: {
-                            [speakerIndex]: {
-                              wordGuidMap: { $set: newWordGuidMap }
-                            }
-                          }
-                        }
-                      });
-                    }
-                  });
-              });
+            newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, true);
             break;
           }
           case 'INSERT': {
@@ -568,43 +644,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 }
               });
             });
-            // DON'T NEED THIS CUZ WE CAN ONLY ADD FRAGMENTS WHEN
-            // HITTING RETURN WHICH INSERTS A SPEAKER & UPDATES A SPEAKER
-            // SPEAKER LOGIC BELOW WILL HANDLE THIS CASE.
-            // IF WE ADD A NEW FEATURE TO ADD FRAGMENTS W/O MODIFYING SPEAKERS,
-            // YOU"LL NEED THIS
-            // // Update speaker map if available
-            // isArray(newEditableSpeakerData)
-            //   && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
-            //     isArray(chunk.series)
-            //       && chunk.series.forEach((serie, speakerIndex) => {
-            //         const guidMatch = get(serie, ['wordGuidMap', guid]);
-            //         if (guidMatch) {
-            //           newEditableSpeakerData = update(newEditableSpeakerData, {
-            //             [speakerChunkIndex]: {
-            //               series: {
-            //                 [speakerIndex]: {
-            //                   fragments: {
-            //                     $splice: [[guidMatch.dialogueIndex, 0, {
-            //                       ...newValue,
-            //                       ...pick(diff, ['index', 'chunkIndex'])
-            //                     }]]
-            //                   },
-            //                   wordGuidMap: {
-            //                     [guid]: {
-            //                       $set: {
-            //                         ...newValue,
-            //                         ...pick(diff, ['chunkIndex', 'index'])
-            //                       }
-            //                     }
-            //                   }
-            //                 }
-            //               }
-            //             }
-            //           });
-            //         }
-            //       });
-            //     });
+            newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, false);
             break;
           }
         }
@@ -709,6 +749,124 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
     history: state.history.concat([historyDiff]),
     cursorPosition
   }
+}
+
+// This returns the immutability helper version of
+// newEditableSpeakerData after a fragment insert/deletion 
+function updateTrailingSpeakerData(newEditableSpeakerData, diff, isRemove) {
+  const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
+  const fragmentValue = isRemove
+    ? (diff.oldValue || diff.newValue )
+    : (diff.newValue || diff.oldValue );
+  let wasUpdated = false;
+  isArray(newEditableSpeakerData)
+    && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
+      isArray(chunk.series)
+        && chunk.series.forEach((serie, speakerIndex) => {
+          if (
+            !wasUpdated
+              && diff.speakerChunkIndex === speakerChunkIndex
+              && diff.speakerIndex === speakerIndex
+          ) {
+            const fragmentCommand = isRemove
+              ? [diff.dialogueIndex, 1]
+              : [diff.dialogueIndex, 0, {
+                ...pick(diff, ['index', 'chunkIndex']),
+                ...fragmentValue,
+              }]
+            const mapCommand = isRemove
+              ? { $unset: [fragmentValue.guid]}
+              : {
+                [fragmentValue.guid]: { $set: {
+                  serie: fragmentValue,
+                  speaker: serie,
+                  ...pick(diff, ['speakerIndex', 'speakerChunkIndex', 'index', 'chunkIndex', 'dialogueIndex'])
+                }}
+              }
+            newEditableSpeakerData = update(newEditableSpeakerData, {
+              [speakerChunkIndex]: {
+                series: {
+                  [speakerIndex]: {
+                    fragments: {
+                      $splice: [fragmentCommand]
+                    },
+                    wordGuidMap: mapCommand
+                  }
+                }
+              }
+            });
+            const newFragments = get(
+              newEditableSpeakerData,
+              [
+                speakerChunkIndex,
+                'series',
+                speakerIndex,
+                'fragments'
+              ],
+              []
+            );
+            newFragments.slice(diff.dialogueIndex, newFragments.length).forEach((frag, index) => {
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [speakerChunkIndex]: {
+                  series: {
+                    [speakerIndex]: {
+                      fragments: {
+                        [diff.index + index]: {
+                          index: { $set: diff.index + index}
+                        }
+                      },
+                      wordGuidMap: {
+                        [frag.guid]: {
+                          dialogueIndex: { $set: diff.dialogueIndex + index },
+                          index: { $set: diff.index + index }
+                        }
+                      }
+                    }
+                  }
+                }
+              })
+            });
+            wasUpdated = true;
+          } else if (wasUpdated) {
+            // Update indices in the speakers further down
+            const fragments = get(
+              newEditableSpeakerData,
+              [
+                speakerChunkIndex,
+                'series',
+                speakerIndex,
+                'fragments'
+              ],
+              []
+            );
+            const indexDifference = isRemove
+              ? (-1)
+              : 1;
+            fragments.forEach((frag, dialogueIndex) => {
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [speakerChunkIndex]: {
+                  series : {
+                    [speakerIndex]: {
+                      fragments: {
+                        [dialogueIndex]: {
+                          index: { $set: frag.index + indexDifference }
+                        }
+                      },
+                      wordGuidMap: {
+                        [frag.guid]: {
+                          index: { $set: frag.index + indexDifference }
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+            });
+          }
+        });
+    });
+
+  return newEditableSpeakerData
 }
 
 export default transcriptReducer;
