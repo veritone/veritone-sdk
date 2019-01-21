@@ -661,38 +661,51 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
         const action = diff.action;
         switch (action) {
           case 'UPDATE': {
-            const newFragments = totalTranscriptFragments.filter(frag => 
-              frag.startTimeMs >= diff.newValue.startTimeMs
-                && frag.stopTimeMs <= diff.newValue.stopTimeMs
-            );
-            const newMap = {};
-            newFragments.forEach((frag, dialogueIndex) => {
-              if (frag.guid) {
-                newMap[frag.guid] = {
-                  ...pick(frag, ['index', 'chunkIndex']),
-                  dialogueIndex,
-                  speakerIndex: diff.index,
-                  speakerChunkIndex: diff.chunkIndex,
-                  speaker: diff.newValue,
-                  serie: frag
-                }
-              }
-            });
             newEditableSpeakerData = update(newEditableSpeakerData, {
               [diff.chunkIndex]: {
                 series: {
                   [diff.index]: {
                     $set: {
                       ...newEditableSpeakerData[diff.chunkIndex].series[diff.index],
-                      ...diff.newValue,
-                      // Update the fragments it contains (this can be optimized)
-                      fragments: newFragments,
-                      wordGuidMap: newMap
+                      ...diff.newValue
                     }
                   } 
                 }
               }
             });
+            // Only update fragments if timing changes
+            if (
+              diff.oldValue.startTimeMs !== diff.newValue.startTimeMs
+                || diff.oldValue.stopTimeMs !== diff.newValue.stopTimeMs
+            ) {
+              const newFragments = totalTranscriptFragments.filter(frag => 
+                frag.startTimeMs >= diff.newValue.startTimeMs
+                  && frag.stopTimeMs <= diff.newValue.stopTimeMs
+              );
+              const newMap = {};
+              newFragments.forEach((frag, dialogueIndex) => {
+                if (frag.guid) {
+                  newMap[frag.guid] = {
+                    ...pick(frag, ['index', 'chunkIndex']),
+                    dialogueIndex,
+                    speakerIndex: diff.index,
+                    speakerChunkIndex: diff.chunkIndex,
+                    speaker: diff.newValue,
+                    serie: frag
+                  }
+                }
+              });
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [diff.chunkIndex]: {
+                  series: {
+                    [diff.index]: {
+                      fragments: { $set: newFragments },
+                      wordGuidMap: { $set: newMap }
+                    } 
+                  }
+                }
+              });
+            }
             break;
           }
           case 'INSERT': {
