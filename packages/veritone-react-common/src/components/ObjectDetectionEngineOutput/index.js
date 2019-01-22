@@ -69,7 +69,10 @@ class ObjectDetectionEngineOutput extends Component {
           engines={engines}
         />
         {outputNullState || (
-          <div className={styles.objectDetectionContent}>
+          <div 
+            className={styles.objectDetectionContent}
+            data-veritone-component="object-detection-output-content"                      
+            >
             {data.map(objectGroup => {
               return (
                 <ObjectGroup

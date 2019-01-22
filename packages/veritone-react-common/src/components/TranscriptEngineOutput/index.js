@@ -299,7 +299,10 @@ export default class TranscriptEngineOutput extends Component {
 
     return (
       outputNullState || (
-        <div className={styles.content}>
+        <div 
+          className={styles.content}
+          data-veritone-component="transciption-engine-output-content"          
+          >
           {
             <SpeakerTranscriptContent
               parsedData={parsedData}
@@ -332,7 +335,10 @@ export default class TranscriptEngineOutput extends Component {
   render() {
     const { className } = this.props;
     return (
-      <div className={cx(styles.transcriptOutput, className)}>
+      <div
+        className={cx(styles.transcriptOutput, className)}
+        data-veritone-component="transciption-engine-output"
+        >
         {this.renderHeader()}
         {this.renderBody()}
       </div>
