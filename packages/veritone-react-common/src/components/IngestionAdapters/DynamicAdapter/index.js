@@ -328,7 +328,11 @@ class DynamicAdapter extends React.Component {
                 pageSize={this.props.pageSize}
                 readOnly={this.props.readOnly}
               />
-              {get(this.state, '_source.selectedSource.sourceType.isLive', false) && (
+              {get(
+                this.state,
+                '_source.selectedSource.sourceType.isLive',
+                false
+              ) && (
                 <div>
                   <TextField
                     type="number"

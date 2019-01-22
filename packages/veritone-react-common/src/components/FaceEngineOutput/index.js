@@ -244,7 +244,10 @@ class FaceEngineOutput extends Component {
       </Tabs>
     );
     return (
-      <div className={cx(styles.faceEngineOutput, className)}>
+      <div 
+        className={cx(styles.faceEngineOutput, className)}
+        data-veritone-component="face-engine-output"                  
+        >
         <EngineOutputHeader
           title="Faces"
           hideTitle={editMode}
@@ -374,6 +377,7 @@ class FaceEngineOutput extends Component {
               className={cx(styles.faceTabBody, {
                 [styles.editMode]: editMode
               })}
+              data-veritone-component="face-engine-output-faceentities"          
             >
               <FaceEntities
                 editMode={editMode}
@@ -400,6 +404,7 @@ class FaceEngineOutput extends Component {
               className={cx(styles.faceTabBody, {
                 [styles.editMode]: editMode
               })}
+              data-veritone-component="face-engine-output-facegrid"
             >
               <FaceGrid
                 faces={unrecognizedFaces}
