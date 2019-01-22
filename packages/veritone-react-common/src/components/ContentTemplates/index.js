@@ -43,15 +43,24 @@ export default class ContentTemplates extends React.Component {
     const showNullstate = !selectedTemplateSchemas.length;
 
     return (
-      <div className={styles.templatePage}>
-        <div className={styles['template-list-container']}>
+      <div 
+        className={styles.templatePage}
+        data-veritone-component="content-template-page"
+        >
+        <div 
+          className={styles['template-list-container']}
+          data-veritone-component="template-list-container"
+          >
           <TemplateList
             templates={this.props.templateData}
             addTemplate={this.props.onAddTemplate}
             isReadOnly={this.props.isReadOnly}
           />
         </div>
-        <div className={styles['content-templates']}>
+        <div 
+          className={styles['content-templates']}
+          data-veritone-component="content-template-container"
+          >
           {showNullstate ? (
             <ContentTemplatesNullState />
           ) : (
