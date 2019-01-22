@@ -15,7 +15,8 @@ import { createReducer } from './reducer';
 //     fetchingFailureMessage: testFetchingFailureMessage
 //   }
 // } = handleApiCall({
-//   types: [GET_TEST, GET_TEST_SUCCESS, GET_TEST_FAILURE]
+//   types: [GET_TEST, GET_TEST_SUCCESS, GET_TEST_FAILURE],
+//   stateSelector: state => state.myModule
 // });
 
 // export default reduceReducers(
@@ -158,51 +159,58 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
 }
 
 const selectors = {
-  fetchingStatus(key, localState, optionalRequestId) {
+  fetchingStatus(key, stateSelector, state, optionalRequestId) {
     const requestId =
-      optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
+      optionalRequestId ||
+      stateSelector(state).apiCallHandlers[key].activeRequestId;
 
     return get(
-      localState.apiCallHandlers,
+      stateSelector(state).apiCallHandlers,
       [key, 'fetchingStatusByRequestId', requestId],
       fetchingStatus.default
     );
   },
 
-  fetchingStatusByRequestId(key, localState) {
-    return get(localState.apiCallHandlers, [key, 'fetchingStatusByRequestId']);
+  fetchingStatusByRequestId(key, stateSelector, state) {
+    return get(stateSelector(state).apiCallHandlers, [
+      key,
+      'fetchingStatusByRequestId'
+    ]);
   },
 
-  fetchingFailureMessage(key, localState, optionalRequestId) {
+  fetchingFailureMessage(key, stateSelector, state, optionalRequestId) {
     const requestId =
-      optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
+      optionalRequestId ||
+      stateSelector(state).apiCallHandlers[key].activeRequestId;
 
     return get(
-      selectors.fetchingFailureMessagesByRequestId(key, localState),
+      selectors.fetchingFailureMessagesByRequestId(key, stateSelector, state),
       requestId,
       ''
     );
   },
 
-  fetchingFailureMessagesByRequestId(key, localState) {
+  fetchingFailureMessagesByRequestId(key, stateSelector, state) {
     return get(
-      localState.apiCallHandlers,
+      stateSelector(state).apiCallHandlers,
       [key, 'fetchingFailureMessagesByRequestId'],
       {}
     );
   }
 };
-
-const makeSelectors = key => mapValues(selectors, func => partial(func, key));
+const defaultStateSelector = s => s;
+const makeSelectors = (key, stateSelector = defaultStateSelector) =>
+  mapValues(selectors, func => partial(func, key, stateSelector));
 
 export default function handleApiCall({
-  types: [requestType, successType, failureType]
+  types: [requestType, successType, failureType],
+  stateSelector = defaultStateSelector
 }) {
   const key = guid();
 
   return {
     reducer: makeApiCallReducer(key, [requestType, successType, failureType]),
-    selectors: makeSelectors(key),
+    selectors: makeSelectors(key, stateSelector),
     _key: key
   };
 }

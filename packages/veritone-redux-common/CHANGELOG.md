@@ -81,3 +81,13 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.9.0
 * Add initial version of KeyBindings helper component/module, for handling an app's global keybinds in redux
+
+## 3.10.0
+* Add module functions to reset user password and update user profile
+
+## 3.11.0
+* Calls made with callGraphQLApi now fail on bad responses as well as graphql errors
+* add stateSelector to handleApiCall selectors so they can get data within an app's nested reducer
+
+## 3.11.1
+* revert "Calls made with callGraphQLApi now fail on bad responses as well as graphql errors"

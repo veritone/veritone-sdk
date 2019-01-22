@@ -14,6 +14,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import FileDownloadIcon from '@material-ui/icons/FileDownload';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import BuildIcon from '@material-ui/icons/Build';
+import Button from '@material-ui/core/Button';
 
 import AppBar from '../AppBar';
 import TopBar from './';
@@ -106,5 +107,18 @@ storiesOf('TopBar', module)
         { label: 'Do something', handler: action('Did something') },
         { label: 'Do something else', handler: action('Did something else') }
       ]}
+    />
+  ))
+  .add('render action button', () => (
+    <TopBar
+      backButton
+      onClickBackButton={action('back')}
+      leftText="Home"
+      // eslint-disable-next-line
+      renderActionButton={() => (
+        <Button variant="raised" color="primary">
+          Test action button
+        </Button>
+      )}
     />
   ));

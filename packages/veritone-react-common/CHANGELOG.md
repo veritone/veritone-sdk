@@ -150,3 +150,21 @@
 
 ## 6.3.1
 * Add recompose to excluded dependencies (fixes build issues)
+
+## 6.4.1
+* AppBar/ProfileMenu: add handlers for and button for editing user profile
+* BoundingPolyOverlay: support readOnly attribute for individual bounding boxes
+* RaisedTextField: add tool tip support for action buttons
+* redux-form-material-ui: fix helperText typo
+
+## 6.5.0
+* added StatusPill
+* TopBar
+** Added ability to render an action button on the bar's left side
+
+## 6.6.0
+* Add additionalMenuItems prop to AppBar/profile menu
+* Add autoSelect to BoundingPolyOverlay
+
+## 6.7.0
+* Add CopyPrompt component

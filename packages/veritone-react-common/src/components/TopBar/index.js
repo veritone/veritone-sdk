@@ -29,6 +29,8 @@ export default class TopBar extends React.Component {
     leftOffset: number,
     menuButton: bool,
     backButton: bool,
+    renderActionButton: func,
+    actionButtonContainerWidth: number,
     selected: bool,
     rightMenu: bool,
     rightMenuItems: arrayOf(
@@ -44,7 +46,8 @@ export default class TopBar extends React.Component {
   };
   static defaultProps = {
     elevation: 2,
-    leftOffset: 0
+    leftOffset: 0,
+    actionButtonContainerWidth: 245
   };
 
   state = {
@@ -80,6 +83,14 @@ export default class TopBar extends React.Component {
         square
         elevation={this.props.elevation}
       >
+        {this.props.renderActionButton && (
+          <div
+            className={styles.actionButtonContainer}
+            style={{ width: this.props.actionButtonContainerWidth }}
+          >
+            {this.props.renderActionButton()}
+          </div>
+        )}
         <div
           style={{ height: topBarHeight }}
           className={styles.leftButtonContainer}

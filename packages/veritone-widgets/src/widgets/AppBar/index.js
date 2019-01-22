@@ -32,9 +32,7 @@ class AppBar extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props._widgetId) {
-      this.props.fetchEnabledApps();
-    }
+    this.props.fetchEnabledApps();
   }
 
   veritoneAppDidAuthenticate = () => {
