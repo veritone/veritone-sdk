@@ -19,7 +19,6 @@ export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
 export const APPLY_SPEAKER_TOGGLE = `vtn/${namespace}/APPLY_SPEAKER_TOGGLE`;
 export const STORE_SPEAKER_TOGGLE = `vtn/${namespace}/STORE_SPEAKER_TOGGLE`;
-export const STORE_HAS_SPEAKER_DATA = `vtn/${namespace}/STORE_HAS_SPEAKER_DATA`;
 
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_SUCCESS = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_SUCCESS`;
@@ -73,6 +72,7 @@ export default createReducer(defaultState, {
       }
       return accumulator;
     }, {});
+    let hasSpeakerData = false;
     forEach(enginesRan, engineRun => {
       if (get(engineRun, 'category.exportFormats.length')) {
         if (isBulkExport) {
@@ -92,6 +92,9 @@ export default createReducer(defaultState, {
         }
         categoryLookup[engineRun.category.id] = engineRun.category;
         expandedCategories[engineRun.category.id] = false;
+        if (get(engineRun, 'category.categoryType') === 'speaker') {
+          hasSpeakerData = true;
+        }
       }
     });
     newOutputConfigurations = uniqWith(
@@ -120,7 +123,8 @@ export default createReducer(defaultState, {
       expandedCategories: expandedCategories,
       isBulkExport,
       fetchEngineRunsFailed: false,
-      includeMedia: false
+      includeMedia: false,
+      hasSpeakerData
     };
   },
   [FETCH_ENGINE_RUNS_FAILURE](state) {
@@ -177,12 +181,8 @@ export default createReducer(defaultState, {
             categoryId
           ]);
           const storedSpeakerToggle = state.hasSpeakerData
-            ? (
-                get(state, [
-                  'speakerToggleCache',
-                  categoryId
-                ]) || get(state, 'speakerToggleCache')
-              )
+            ? get(state, ['speakerToggleCache', categoryId]) ||
+              get(state, 'speakerToggleCache')
             : {};
           return {
             ...config,
@@ -195,8 +195,8 @@ export default createReducer(defaultState, {
                       ...storedSpeakerToggle
                     }
                   : {
-                    ...storedSpeakerToggle
-                  }
+                      ...storedSpeakerToggle
+                    }
               };
             })
           };
@@ -232,7 +232,7 @@ export default createReducer(defaultState, {
             formats: config.formats.map(format => {
               return {
                 ...format,
-                options: { 
+                options: {
                   ...format.options,
                   withSpeakerData: values
                 }
@@ -242,7 +242,7 @@ export default createReducer(defaultState, {
         }
         return config;
       })
-    }
+    };
   },
   [STORE_SPEAKER_TOGGLE](
     state,
@@ -257,17 +257,6 @@ export default createReducer(defaultState, {
         ...config
       }
     };
-  },
-  [STORE_HAS_SPEAKER_DATA](
-    state,
-    {
-      payload: { hasSpeakerData }
-    }
-  ) {
-    return {
-      ...state,
-      hasSpeakerData
-    }
   },
   [APPLY_SUBTITLE_CONFIGS](
     state,
@@ -418,11 +407,12 @@ export const getSubtitleConfig = (state, categoryId) =>
 export const getSpeakerToggle = (state, categoryId) => {
   // If the category speaker toggle is undefined, then
   // fallback to the default across all categories
-  const speakerToggleCache = get(local(state), ['speakerToggleCache', categoryId]) ||
+  const speakerToggleCache =
+    get(local(state), ['speakerToggleCache', categoryId]) ||
     get(local(state), 'speakerToggleCache');
   return speakerToggleCache;
 };
-export const hasSpeakerData = (state) => get(local(state), 'hasSpeakerData');
+export const hasSpeakerData = state => get(local(state), 'hasSpeakerData');
 export const isBulkExport = state => get(local(state), 'isBulkExport');
 export const selectedFormats = state =>
   get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
@@ -531,8 +521,9 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
     query,
     variables: {
       includeMedia: getIncludeMedia(getState()),
-      outputConfigurations: getOutputConfigurations(getState())
-        .map(config => pick(config, ['engineId', 'categoryId', 'formats'])),
+      outputConfigurations: getOutputConfigurations(getState()).map(config =>
+        pick(config, ['engineId', 'categoryId', 'formats'])
+      ),
       tdoData
     },
     dispatch,
@@ -595,15 +586,6 @@ export const storeSpeakerToggle = (categoryId, config) => {
     payload: {
       categoryId,
       config
-    }
-  };
-};
-
-export const setHasSpeakerData = hasSpeakerData => {
-  return {
-    type: STORE_HAS_SPEAKER_DATA,
-    payload: {
-      hasSpeakerData
     }
   };
 };

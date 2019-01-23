@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import Select from '@material-ui/core/Select';
@@ -20,9 +21,10 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 
 import styles from './styles.scss';
 
-const mockStore = configureMockStore();
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
-const testTDOs = [{ tdoId: 'fakeTDOId '}];
+const testTDOs = [{ tdoId: 'fakeTDOId ' }];
 
 const testSpeakerEngine = {
   id: 'speakerEngineId',
@@ -31,6 +33,7 @@ const testSpeakerEngine = {
     id: 'a856c447-1030-4fb0-917f-08179f949c4e',
     name: 'Test Speaker Category',
     iconClass: 'icon-speaker-separation',
+    categoryType: 'speaker',
     exportFormats: [
       {
         label: 'Test Format',
@@ -50,6 +53,7 @@ const testEngine = {
     id: 'testCategoryId',
     name: 'Test Category',
     iconClass: 'test-class',
+    categoryType: 'transcript',
     exportFormats: [
       {
         label: 'Test Format',
@@ -113,8 +117,7 @@ const defaultSpeakerStore = {
 describe('EngineCategoryConfigList', () => {
   let wrapper, store;
 
-  //TODO: fix this test. It is throwing an error when trying to mount the component.
-  xdescribe('when speaker data is available', () => {
+  describe('when speaker data is available', () => {
     beforeEach(() => {
       store = mockStore(defaultSpeakerStore);
 
@@ -122,16 +125,12 @@ describe('EngineCategoryConfigList', () => {
         <Provider store={store}>
           <EngineCategoryConfigList
             tdos={testTDOs}
-            outputConfigsByCategoryId={
-              engineOutputExportModule.outputConfigsByCategoryId(
-                store.getState()
-              )
-            }
-            expandedCategories={
-              engineOutputExportModule.expandedCategories(
-                store.getState()
-              )
-            }
+            outputConfigsByCategoryId={engineOutputExportModule.outputConfigsByCategoryId(
+              store.getState()
+            )}
+            expandedCategories={engineOutputExportModule.expandedCategories(
+              store.getState()
+            )}
             hasSpeakerData
           />
         </Provider>
@@ -143,10 +142,7 @@ describe('EngineCategoryConfigList', () => {
     });
 
     it('should not be displayed in the list', () => {
-      expect(
-        wrapper.find(EngineCategoryConfig)
-          .exists()
-      ).toEqual(false);
+      expect(wrapper.find(EngineCategoryConfig).exists()).toEqual(false);
     });
   });
 });
