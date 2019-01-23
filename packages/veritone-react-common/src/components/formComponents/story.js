@@ -1,7 +1,8 @@
 import React from 'react';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
+import { createLogger } from 'redux-logger';
 import { storiesOf } from '@storybook/react';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -27,12 +28,20 @@ import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
 import DateTimePicker from './DateTimePicker';
 import Switch from './Switch';
+import TimeRangePicker from './TimeRangePicker';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     form: formReducer
   }),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(
+      createLogger({
+        collapsed: true
+      })
+    )
+  )
 );
 
 const StoryForm = reduxForm({
@@ -370,6 +379,23 @@ storiesOf('Form Components', module)
             clearable
             showTimezone
           />
+        </StoryForm>
+      </Provider>
+    );
+  })
+  .add('TimeRangePicker', () => {
+    return (
+      <Provider store={store}>
+        <StoryForm
+          onSubmit={values => alert(JSON.stringify(values))}
+          initialValues={{
+            timeRange: {
+              start: '12:00',
+              end: '14:00'
+            }
+          }}
+        >
+          <Field component={TimeRangePicker} name="timeRange" />
         </StoryForm>
       </Provider>
     );

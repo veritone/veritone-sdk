@@ -15,9 +15,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Switch from '@material-ui/core/Switch';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
+import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
@@ -28,19 +30,28 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId),
+    transcriptCategoryType: engineOutputExportModule.transcriptCategoryType(state),
     initialSubtitleConfig: engineOutputExportModule.getSubtitleConfig(
       state,
       categoryId
-    )
+    ),
+    initialSpeakerToggle: engineOutputExportModule.getSpeakerToggle(
+      state,
+      categoryId
+    ),
+    hasSpeakerData: engineOutputExportModule.hasSpeakerData(state)
   }),
   {
-    applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs
+    applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs,
+    applySpeakerToggle: engineOutputExportModule.applySpeakerToggle,
+    storeSpeakerToggle: engineOutputExportModule.storeSpeakerToggle
   },
   null,
   { withRef: true }
 )
 export default class EngineCategoryConfig extends Component {
   static propTypes = {
+    transcriptCategoryType: string,
     category: shape({
       id: string.isRequired,
       iconClass: string.isRequired,
@@ -69,6 +80,11 @@ export default class EngineCategoryConfig extends Component {
       maxCharacterPerLine: number,
       newLineOnPunctuation: bool,
       linesPerScreen: number
+    }),
+    applySpeakerToggle: func,
+    storeSpeakerToggle: func,
+    initialSpeakerToggle: shape({
+      withSpeakerData: bool
     })
   };
 
@@ -95,14 +111,26 @@ export default class EngineCategoryConfig extends Component {
     });
   };
 
+  handleSpeakerToggle = (event, values) => {
+    this.props.applySpeakerToggle(this.props.category.id, values);
+    this.props.storeSpeakerToggle(this.props.category.id, {
+      [this.props.category.id]: {
+        withSpeakerData: values
+      }
+    });
+  };
+
   render() {
     const {
       category,
       engineCategoryConfigs,
       onExpandConfigs,
       expanded,
-      initialSubtitleConfig
+      initialSubtitleConfig,
+      initialSpeakerToggle,
+      transcriptCategoryType
     } = this.props;
+    const isTranscriptionCategory = category.categoryType === transcriptCategoryType;
 
     let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
@@ -117,6 +145,7 @@ export default class EngineCategoryConfig extends Component {
         });
       }
     });
+    const hasSpeakerData = get(this.props, 'hasSpeakerData');
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
@@ -160,11 +189,28 @@ export default class EngineCategoryConfig extends Component {
                 />
               );
             })}
+            {hasSpeakerData && isTranscriptionCategory && (
+              <ListItem className={styles.engineListItem}>
+                <div className={styles.customizeOutputBox}>
+                  <RecordVoiceOverIcon className={styles.customizeSettingsIcon} />
+                  <span className={styles.customizeSettingsText}>
+                    Include speaker separation results
+                  </span>
+                  <Switch
+                    className={styles.customizeButton}
+                    color="primary"
+                    checked={initialSpeakerToggle.withSpeakerData}
+                    onChange={this.handleSpeakerToggle}
+                    data-veritone-element="with-speaker-data"
+                  />
+                </div>
+              </ListItem>
+            )}
             {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
-                  <ClosedCaptionIcon className={styles.closedCaptionIcon} />
-                  <span className={styles.customizeSubtitleText}>
+                  <ClosedCaptionIcon className={styles.customizeSettingsIcon} />
+                  <span className={styles.customizeSettingsText}>
                     Subtitle formats have been selected, adjust the format and
                     display settings here
                   </span>
