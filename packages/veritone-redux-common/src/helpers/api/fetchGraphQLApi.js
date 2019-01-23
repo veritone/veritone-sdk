@@ -5,9 +5,7 @@ export default function fetchGraphQLApi({
   query,
   variables,
   operationName,
-  token,
-  dispatch,
-  getState
+  token
 }) {
   return fetch(endpoint, {
     method: 'post',
