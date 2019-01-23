@@ -1,7 +1,6 @@
 import React from 'react';
 import Today from '@material-ui/icons/Today';
 import dateFns from 'date-fns';
-import { isString } from 'lodash';
 import TextField from '@material-ui/core/TextField';
 import { instanceOf, func, shape, string, bool } from 'prop-types';
 
