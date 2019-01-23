@@ -43,3 +43,4 @@ export BoundingPolyOverlay from './components/BoundingPolyOverlay/Overlay';
 export OverlayPositioningProvider from './components/BoundingPolyOverlay/OverlayPositioningProvider';
 export { Interval, defaultIntervals } from 'helpers/date';
 export StatusPill from './components/StatusPill';
+export ModalHeader from './components/ModalHeader';
