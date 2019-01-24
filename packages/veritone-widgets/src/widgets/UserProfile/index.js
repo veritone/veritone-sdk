@@ -31,7 +31,8 @@ import ChangeNameModal from './Modals/ChangeName';
 import ResetPasswordModal from './Modals/ResetPassword';
 
 import styles from './styles.scss';
-const defaultAvatarImg = 'https://static.veritone.com/veritone-ui/default-avatar.png';
+const defaultAvatarImg =
+  'https://static.veritone.com/veritone-ui/default-avatar.png';
 
 @connect(
   state => ({

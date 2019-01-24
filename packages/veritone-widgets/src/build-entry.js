@@ -10,7 +10,7 @@ export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
 export filePickerReducer, * as filePickerModule from './redux/modules/filePicker';
 export filePickerSaga from './redux/modules/filePicker/filePickerSaga';
 export { EngineSelectionWidget } from './widgets/EngineSelection';
-export { TableWidget  } from './widgets/Table';
+export { TableWidget } from './widgets/Table';
 export {
   GlobalNotificationDialog,
   GlobalSnackBar
@@ -22,5 +22,4 @@ export EngineOutputExport, {
   EngineOutputExportWidget
 } from './widgets/EngineOutputExport';
 export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
-export { SchedulerWidget } from './widgets/Scheduler';
 export { UserProfileWidget } from './widgets/UserProfile';
