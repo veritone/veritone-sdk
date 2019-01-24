@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
-import { modules, helpers } from 'veritone-redux-common';
+import { modules, util, helpers } from 'veritone-redux-common';
 import { VeritoneSDKThemeProvider } from 'veritone-react-common';
 
 const { auth: authModule, config: configModule, user: userModule } = modules;
@@ -16,6 +16,7 @@ const {
   CALLBACK_ERROR_ARGUMENT
 } = promiseMiddleware;
 
+const Sagas = util.reactReduxSaga.Sagas;
 class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
@@ -108,33 +109,35 @@ class _VeritoneApp {
 
     ReactDOM.render(
       <VeritoneSDKThemeProvider theme={this._theme}>
-        <Provider store={this._store}>
-          <div>
-            {appModule.widgets(this._store.getState()).map(w => {
-              if (!w._elId) {
-                console.warn(
-                  'The widget',
-                  w,
-                  'needs to specify an elId that references an existing dom node.'
-                );
-                return null;
-              }
+        <Sagas middleware={this._store.sagaMiddleware}>
+          <Provider store={this._store}>
+            <div>
+              {appModule.widgets(this._store.getState()).map(w => {
+                if (!w._elId) {
+                  console.warn(
+                    'The widget',
+                    w,
+                    'needs to specify an elId that references an existing dom node.'
+                  );
+                  return null;
+                }
 
-              if (document.getElementById(w._elId)) {
-                return ReactDOM.createPortal(
-                  <w.Component
-                    {...w.props}
-                    // bind is OK because this isn't a component -- only renders
-                    // when mount() is called.
-                    // eslint-disable-next-line
-                    ref={this.setWidgetRef.bind(this, w)}
-                  />,
-                  document.getElementById(w._elId)
-                );
-              }
-            })}
-          </div>
-        </Provider>
+                if (document.getElementById(w._elId)) {
+                  return ReactDOM.createPortal(
+                    <w.Component
+                      {...w.props}
+                      // bind is OK because this isn't a component -- only renders
+                      // when mount() is called.
+                      // eslint-disable-next-line
+                      ref={this.setWidgetRef.bind(this, w)}
+                    />,
+                    document.getElementById(w._elId)
+                  );
+                }
+              })}
+            </div>
+          </Provider>
+        </Sagas>
       </VeritoneSDKThemeProvider>,
       this._containerEl
     );

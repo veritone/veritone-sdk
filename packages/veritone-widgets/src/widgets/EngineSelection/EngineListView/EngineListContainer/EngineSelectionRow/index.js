@@ -127,6 +127,7 @@ export default class EngineSelectionRow extends React.Component {
             <div className={styles.logos}>
               <div className={styles.logo}>
                 <img
+                  className={styles.icon}
                   src={deploymentModelLogo[this.props.engine.deploymentModel]}
                 />
               </div>

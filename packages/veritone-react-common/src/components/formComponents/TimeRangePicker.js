@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, func, shape } from 'prop-types';
+import { string, func, shape, bool } from 'prop-types';
 import dateFns from 'date-fns';
 import TextField from '@material-ui/core/TextField';
 
@@ -10,23 +10,27 @@ export default class TimeRangePicker extends React.Component {
     input: shape({
       value: shape({
         start: string,
-        end: string
+        end: string,
+        timeZone: string
       }).isRequired,
       onChange: func.isRequired
-    }).isRequired
+    }).isRequired,
+    readOnly: bool
   };
 
   handleChangeStart = ({ target: { value } }) => {
     this.props.input.onChange({
       start: value,
-      end: this.props.input.value.end
+      end: this.props.input.value.end,
+      timeZone: this.props.input.value.timeZone
     });
   };
 
   handleChangeEnd = ({ target: { value } }) => {
     this.props.input.onChange({
       start: this.props.input.value.start,
-      end: value
+      end: value,
+      timeZone: this.props.input.value.timeZone
     });
   };
 
@@ -51,10 +55,11 @@ export default class TimeRangePicker extends React.Component {
         <TimeSelector
           value={this.props.input.value.start}
           onChange={this.handleChangeStart}
+          readOnly={this.props.readOnly}
         />
         <TextField
           className={styles.dateTimeTZ}
-          value={this.getTimeZone()}
+          value={this.props.input.value.timeZone || this.getTimeZone()}
           InputProps={{
             disableUnderline: true
           }}
@@ -64,12 +69,14 @@ export default class TimeRangePicker extends React.Component {
         <TimeSelector
           value={this.props.input.value.end}
           onChange={this.handleChangeEnd}
+          readOnly={this.props.readOnly}
         />
         <TextField
           className={styles.dateTimeTZ}
-          value={this.getTimeZone()}
+          value={this.props.input.value.timeZone || this.getTimeZone()}
           InputProps={{
-            disableUnderline: true
+            disableUnderline: true,
+            readOnly: this.props.readOnly
           }}
           disabled
         />
@@ -78,11 +85,19 @@ export default class TimeRangePicker extends React.Component {
   }
 }
 
-const TimeSelector = ({ value, onChange }) => {
-  return <TextField type="time" value={value} onChange={onChange} />;
+const TimeSelector = ({ value, onChange, readOnly }) => {
+  return (
+    <TextField
+      type="time"
+      value={value}
+      onChange={onChange}
+      InputProps={{ readOnly }}
+    />
+  );
 };
 
 TimeSelector.propTypes = {
   value: string,
-  onChange: func
+  onChange: func,
+  readOnly: bool
 };

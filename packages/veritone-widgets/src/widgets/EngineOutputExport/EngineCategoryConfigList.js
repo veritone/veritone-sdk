@@ -25,7 +25,8 @@ import styles from './styles.scss';
       state
     ),
     expandedCategories: engineOutputExportModule.expandedCategories(state),
-    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state)
+    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state),
+    speakerCategoryType: engineOutputExportModule.speakerCategoryType(state)
   }),
   {
     fetchEngineRuns: engineOutputExportModule.fetchEngineRuns,
@@ -55,7 +56,8 @@ export default class EngineCategoryConfigList extends Component {
     expandedCategories: objectOf(bool),
     fetchEngineRuns: func,
     fetchingEngineRuns: bool,
-    toggleConfigExpand: func
+    toggleConfigExpand: func,
+    speakerCategoryType: string
   };
 
   componentDidMount() {
@@ -67,14 +69,25 @@ export default class EngineCategoryConfigList extends Component {
       fetchingEngineRuns,
       outputConfigsByCategoryId,
       expandedCategories,
-      toggleConfigExpand
+      toggleConfigExpand,
+      speakerCategoryType
     } = this.props;
+
+    // Temporary bypass of speaker category since we are planning
+    // to separate it from transcription output in the future
+    const modifiedOutputConfigsByCategoryId = Object.keys(
+      outputConfigsByCategoryId
+    ).filter(categoryId =>
+      outputConfigsByCategoryId[categoryId].find(
+        engine => engine.categoryType !== speakerCategoryType
+      )
+    );
 
     return (
       <div data-veritone-component="engine-category-config-list">
         {!fetchingEngineRuns ? (
           <List disablePadding>
-            {Object.keys(outputConfigsByCategoryId).map((key, index) => (
+            {modifiedOutputConfigsByCategoryId.map((key, index) => (
               <Fragment key={`engine-output-config-${key}`}>
                 <EngineCategoryConfig
                   categoryId={key}

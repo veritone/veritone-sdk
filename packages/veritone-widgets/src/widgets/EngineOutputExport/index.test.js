@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import Select from '@material-ui/core/Select';
@@ -12,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 
+import EngineCategoryConfigList from './EngineCategoryConfigList';
 import EngineCategoryConfig from './EngineCategoryConfig';
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
@@ -19,7 +21,28 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 
 import styles from './styles.scss';
 
-const mockStore = configureMockStore();
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
+
+const testTDOs = [{ tdoId: 'fakeTDOId ' }];
+
+const testSpeakerEngine = {
+  id: 'speakerEngineId',
+  name: 'Test Speaker Engine',
+  category: {
+    id: 'a856c447-1030-4fb0-917f-08179f949c4e',
+    name: 'Test Speaker Category',
+    iconClass: 'icon-speaker-separation',
+    categoryType: 'speaker',
+    exportFormats: [
+      {
+        label: 'Test Format',
+        format: 'test',
+        types: []
+      }
+    ]
+  }
+};
 
 const testEngine = {
   id: 'testEngineId',
@@ -30,6 +53,7 @@ const testEngine = {
     id: 'testCategoryId',
     name: 'Test Category',
     iconClass: 'test-class',
+    categoryType: 'transcript',
     exportFormats: [
       {
         label: 'Test Format',
@@ -48,6 +72,14 @@ const testOutputConfigs = [
   }
 ];
 
+const testSpeakerOutputConfigs = [
+  {
+    engineId: testSpeakerEngine.id,
+    categoryId: testSpeakerEngine.category.id,
+    formats: []
+  }
+];
+
 const defaultStore = {
   engineOutputExport: {
     enginesRan: {
@@ -62,6 +94,58 @@ const defaultStore = {
     }
   }
 };
+
+const defaultSpeakerStore = {
+  engineOutputExport: {
+    enginesRan: {
+      [testSpeakerEngine.id]: testSpeakerEngine
+    },
+    categoryLookup: {
+      [testSpeakerEngine.category.id]: testSpeakerEngine.category
+    },
+    outputConfigurations: testSpeakerOutputConfigs,
+    expandedCategories: {
+      [testSpeakerEngine.category.id]: false
+    },
+    speakerToggleCache: {
+      withSpeakerData: true
+    },
+    hasSpeakerData: true
+  }
+};
+
+describe('EngineCategoryConfigList', () => {
+  let wrapper, store;
+
+  describe('when speaker data is available', () => {
+    beforeEach(() => {
+      store = mockStore(defaultSpeakerStore);
+
+      wrapper = mount(
+        <Provider store={store}>
+          <EngineCategoryConfigList
+            tdos={testTDOs}
+            outputConfigsByCategoryId={engineOutputExportModule.outputConfigsByCategoryId(
+              store.getState()
+            )}
+            expandedCategories={engineOutputExportModule.expandedCategories(
+              store.getState()
+            )}
+            hasSpeakerData
+          />
+        </Provider>
+      );
+    });
+
+    afterEach(() => {
+      store = mockStore(defaultStore);
+    });
+
+    it('should not be displayed in the list', () => {
+      expect(wrapper.find(EngineCategoryConfig).exists()).toEqual(false);
+    });
+  });
+});
 
 describe('EngineCategoryConfig', () => {
   let wrapper, onExpandConfigs, store;

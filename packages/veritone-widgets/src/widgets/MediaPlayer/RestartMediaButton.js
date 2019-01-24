@@ -27,7 +27,7 @@ export default class RestartMediaButton extends Component {
           'video-react-icon-skip-previous'
         )}
         onClick={this.handleClick}
-        type='button'
+        type="button"
       />
     );
   }

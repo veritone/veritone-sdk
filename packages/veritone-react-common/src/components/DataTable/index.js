@@ -340,7 +340,7 @@ export const Column = ({
 
   return (
     <TableCell
-      {...rest}
+      {...omit(rest, ['transformActions'])}
       className={styles['table-cell']}
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',

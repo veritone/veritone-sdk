@@ -1,4 +1,4 @@
-import { forEach, get, uniqWith } from 'lodash';
+import { forEach, get, uniqWith, pick } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
 
@@ -17,6 +17,9 @@ export const UPDATE_SELECTED_FILE_TYPES = `vtn/${namespace}/UPDATE_SELECTED_FILE
 export const APPLY_SUBTITLE_CONFIGS = `vtn/${namespace}/APPLY_SUBTITLE_CONFIGS`;
 export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
+export const APPLY_SPEAKER_TOGGLE = `vtn/${namespace}/APPLY_SPEAKER_TOGGLE`;
+export const STORE_SPEAKER_TOGGLE = `vtn/${namespace}/STORE_SPEAKER_TOGGLE`;
+
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_SUCCESS = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_SUCCESS`;
 export const EXPORT_AND_DOWNLOAD_FAILURE = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_FAILURE`;
@@ -32,11 +35,17 @@ const defaultState = {
   categoryLookup: {},
   expandedCategories: {},
   subtitleConfigCache: {},
+  speakerToggleCache: {
+    withSpeakerData: true // Default value across all categories
+  },
+  hasSpeakerData: false,
   outputConfigurations: [],
   errorSnackBars: [],
   fetchEngineRunsFailed: false,
   exportAndDownloadFailed: false,
-  isBulkExport: false
+  isBulkExport: false,
+  transcriptCategoryType: 'transcript',
+  speakerCategoryType: 'speaker'
 };
 
 export default createReducer(defaultState, {
@@ -63,23 +72,29 @@ export default createReducer(defaultState, {
       }
       return accumulator;
     }, {});
+    let hasSpeakerData = false;
     forEach(enginesRan, engineRun => {
       if (get(engineRun, 'category.exportFormats.length')) {
         if (isBulkExport) {
           if (!categoryLookup[engineRun.category.id]) {
             newOutputConfigurations.push({
               categoryId: engineRun.category.id,
+              categoryType: engineRun.category.categoryType,
               formats: []
             });
           }
         } else {
           newOutputConfigurations.push({
             engineId: engineRun.id,
+            categoryType: engineRun.category.categoryType,
             formats: []
           });
         }
         categoryLookup[engineRun.category.id] = engineRun.category;
         expandedCategories[engineRun.category.id] = false;
+        if (get(engineRun, 'category.categoryType') === 'speaker') {
+          hasSpeakerData = true;
+        }
       }
     });
     newOutputConfigurations = uniqWith(
@@ -108,7 +123,8 @@ export default createReducer(defaultState, {
       expandedCategories: expandedCategories,
       isBulkExport,
       fetchEngineRunsFailed: false,
-      includeMedia: false
+      includeMedia: false,
+      hasSpeakerData
     };
   },
   [FETCH_ENGINE_RUNS_FAILURE](state) {
@@ -164,6 +180,10 @@ export default createReducer(defaultState, {
             'subtitleConfigCache',
             categoryId
           ]);
+          const storedSpeakerToggle = state.hasSpeakerData
+            ? get(state, ['speakerToggleCache', categoryId]) ||
+              get(state, 'speakerToggleCache')
+            : {};
           return {
             ...config,
             formats: selectedFileTypes.map(type => {
@@ -171,15 +191,71 @@ export default createReducer(defaultState, {
                 extension: type,
                 options: storedSubtitleConfig
                   ? {
-                      ...storedSubtitleConfig
+                      ...storedSubtitleConfig,
+                      ...storedSpeakerToggle
                     }
-                  : {}
+                  : {
+                      ...storedSpeakerToggle
+                    }
               };
             })
           };
         }
         return config;
       })
+    };
+  },
+  [APPLY_SPEAKER_TOGGLE](
+    state,
+    {
+      payload: { categoryId, values }
+    }
+  ) {
+    return {
+      ...state,
+      outputConfigurations: state.outputConfigurations.map(config => {
+        let engineCategoryId;
+        if (!config.categoryId && config.engineId) {
+          engineCategoryId = get(state, [
+            'enginesRan',
+            config.engineId,
+            'category',
+            'id'
+          ]);
+        }
+        if (
+          config.categoryId === categoryId ||
+          engineCategoryId === categoryId
+        ) {
+          return {
+            ...config,
+            formats: config.formats.map(format => {
+              return {
+                ...format,
+                options: {
+                  ...format.options,
+                  withSpeakerData: values
+                }
+              };
+            })
+          };
+        }
+        return config;
+      })
+    };
+  },
+  [STORE_SPEAKER_TOGGLE](
+    state,
+    {
+      payload: { categoryId, config }
+    }
+  ) {
+    return {
+      ...state,
+      speakerToggleCache: {
+        ...state.speakerToggleCache,
+        ...config
+      }
     };
   },
   [APPLY_SUBTITLE_CONFIGS](
@@ -285,7 +361,8 @@ function local(state) {
 export const getIncludeMedia = state => get(local(state), 'includeMedia');
 export const outputConfigsByCategoryId = state => {
   const outputConfigsByCategoryId = {};
-  forEach(get(local(state), 'outputConfigurations'), config => {
+  const outputConfigurations = get(local(state), 'outputConfigurations');
+  forEach(outputConfigurations, config => {
     if (config.categoryId) {
       if (!outputConfigsByCategoryId[config.categoryId]) {
         outputConfigsByCategoryId[config.categoryId] = [];
@@ -321,8 +398,21 @@ export const getOutputConfigurations = state =>
 export const errorSnackBars = state => get(local(state), 'errorSnackBars');
 export const fetchEngineRunsFailed = state =>
   get(local(state), 'fetchEngineRunsFailed');
+export const speakerCategoryType = state =>
+  get(local(state), 'speakerCategoryType');
+export const transcriptCategoryType = state =>
+  get(local(state), 'transcriptCategoryType');
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
+export const getSpeakerToggle = (state, categoryId) => {
+  // If the category speaker toggle is undefined, then
+  // fallback to the default across all categories
+  const speakerToggleCache =
+    get(local(state), ['speakerToggleCache', categoryId]) ||
+    get(local(state), 'speakerToggleCache');
+  return speakerToggleCache;
+};
+export const hasSpeakerData = state => get(local(state), 'hasSpeakerData');
 export const isBulkExport = state => get(local(state), 'isBulkExport');
 export const selectedFormats = state =>
   get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
@@ -345,6 +435,7 @@ export const fetchEngineRuns = tdos => async (dispatch, getState) => {
               category {
                 id
                 name
+                categoryType
                 iconClass
                 exportFormats {
                   format
@@ -430,7 +521,9 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
     query,
     variables: {
       includeMedia: getIncludeMedia(getState()),
-      outputConfigurations: getOutputConfigurations(getState()),
+      outputConfigurations: getOutputConfigurations(getState()).map(config =>
+        pick(config, ['engineId', 'categoryId', 'formats'])
+      ),
       tdoData
     },
     dispatch,
@@ -473,6 +566,26 @@ export const applySubtitleConfigs = (categoryId, values) => {
     payload: {
       categoryId,
       values
+    }
+  };
+};
+
+export const applySpeakerToggle = (categoryId, values) => {
+  return {
+    type: APPLY_SPEAKER_TOGGLE,
+    payload: {
+      categoryId,
+      values
+    }
+  };
+};
+
+export const storeSpeakerToggle = (categoryId, config) => {
+  return {
+    type: STORE_SPEAKER_TOGGLE,
+    payload: {
+      categoryId,
+      config
     }
   };
 };

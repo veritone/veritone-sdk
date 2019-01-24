@@ -25,6 +25,7 @@ export default class MenuColumn extends React.Component {
     additionalActions: arrayOf(string),
     excludeActions: arrayOf(string),
     transformLabel: func,
+    transformActions: func,
     style: objectOf(any),
     dataKey: string
   };
@@ -33,6 +34,7 @@ export default class MenuColumn extends React.Component {
     onSelectItem: noop,
     protectedActions: ['delete'],
     transformLabel: l => l,
+    transformActions: a => a,
     additionalActions: [],
     excludeActions: [],
     dataKey: ''
@@ -75,11 +77,14 @@ export default class MenuColumn extends React.Component {
     ].filter(a => !!a);
   }
 
-  renderMenuCell = (actions = [], ...rest) => {
+  renderMenuCell = (actions = [], data, ...rest) => {
     const allActions =
-      this.props.actions ||
+      this.props.transformActions(this.props.actions, data) ||
       difference(
-        [...actions, ...this.props.additionalActions],
+        [
+          ...this.props.transformActions(actions, data),
+          ...this.props.additionalActions
+        ],
         this.props.excludeActions
       );
 
@@ -109,7 +114,7 @@ export default class MenuColumn extends React.Component {
                 ) : (
                   <MenuItem
                     key={s}
-                    onClick={partial(this.handleClick, s, ...rest)}
+                    onClick={partial(this.handleClick, s, data, ...rest)}
                   >
                     {startCase(camelCase(this.props.transformLabel(s)))}
                   </MenuItem>
