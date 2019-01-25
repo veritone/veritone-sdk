@@ -154,13 +154,13 @@ class FaceEngineOutput extends Component {
     this.props.onSelectEntity(null);
   };
 
-  handleUserEditChange = evt => {
+  handleUserEditChange = engine => evt => {
     if (evt.target.value == 'restoreOriginal') {
-      this.props.onRestoreOriginalClick();
+      this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(evt.target.value === 'userEdited');
   };
 
   render() {
@@ -273,7 +273,7 @@ class FaceEngineOutput extends Component {
               <Select
                 autoWidth
                 value={showingUserEditedOutput ? 'userEdited' : 'original'}
-                onChange={this.handleUserEditChange}
+                onChange={this.handleUserEditChange(selectedEngine)}
                 className={styles.outputHeaderSelect}
                 MenuProps={{
                   anchorOrigin: {

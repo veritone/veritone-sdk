@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
-import { find, get } from 'lodash';
+import { find, get, startCase } from 'lodash';
 import cx from 'classnames';
 
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -125,13 +127,13 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
-  handleUserEditChange = evt => {
+  handleUserEditChange = engine => evt => {
     if (evt.target.value == 'restoreOriginal') {
-      this.props.onRestoreOriginalClick();
+      this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(evt.target.value === 'userEdited');
   };
 
   handleViewChange = event => {
@@ -147,79 +149,91 @@ export default class TranscriptEngineOutput extends Component {
     }
   };
 
-  renderResultOptions() {
-    const { showingUserEditedOutput } = this.props;
-    return (
-      <Select
-        autoWidth
-        value={showingUserEditedOutput ? 'userEdited' : 'original'}
-        onChange={this.handleUserEditChange}
-        className={styles.outputHeaderSelect}
-        MenuProps={{
-          anchorOrigin: {
-            horizontal: 'right',
-            vertical: 'bottom'
-          },
-          transformOrigin: {
-            horizontal: 'right',
-            vertical: 'top'
-          },
-          getContentAnchorEl: null
-        }}
-        // eslint-disable-next-line
-        renderValue={() =>
-          showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'
+  renderResultOptions(engines = []) {
+    return engines.filter(engine => engine.hasUserEdits).map(engine => (
+      <FormControl
+        key={`result-edit-type-selection-${engine.id}`}
+        className={styles.outputHeaderSelectContainer}>
+        <Select
+          autoWidth
+          className={styles.outputHeaderSelect}
+          value={engine.showingUserEditedOutput ? 'userEdited' : 'original'}
+          onChange={this.handleUserEditChange(engine)}
+          MenuProps={{
+            anchorOrigin: {
+              horizontal: 'right',
+              vertical: 'bottom'
+            },
+            transformOrigin: {
+              horizontal: 'right',
+              vertical: 'top'
+            },
+            getContentAnchorEl: null
+          }}
+          // eslint-disable-next-line
+          renderValue={() =>
+            engine.showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'
+          }
+        >
+          <MenuItem value="userEdited">
+            {engine.showingUserEditedOutput && (
+              <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
+                <DoneIcon />
+              </ListItemIcon>
+            )}
+            <ListItemText
+              classes={{
+                primary: cx(styles.selectMenuItem, {
+                  [styles.menuItemInset]: !engine.showingUserEditedOutput
+                })
+              }}
+              primary="User-Edited"
+            />
+          </MenuItem>
+          <MenuItem value="original">
+            {!engine.showingUserEditedOutput && (
+              <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
+                <DoneIcon />
+              </ListItemIcon>
+            )}
+            <ListItemText
+              classes={{
+                primary: cx(styles.selectMenuItem, {
+                  [styles.menuItemInset]: engine.showingUserEditedOutput
+                })
+              }}
+              primary="Original (View Only)"
+            />
+          </MenuItem>
+          <Divider light />
+          <MenuItem value="restoreOriginal">
+            <ListItemText
+              classes={{
+                root: styles.restoreOriginalMenuItem,
+                primary: cx(styles.selectMenuItem, styles.menuItemInset)
+              }}
+              primary="Restore Original"
+            />
+          </MenuItem>
+        </Select>
+        {
+          get(engine, 'category.categoryType') && (
+            <FormHelperText className={styles.outputHeaderHelperText}>
+              {startCase(engine.category.categoryType)}
+            </FormHelperText>
+          )
         }
-      >
-        <MenuItem value="userEdited">
-          {showingUserEditedOutput && (
-            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-              <DoneIcon />
-            </ListItemIcon>
-          )}
-          <ListItemText
-            classes={{
-              primary: cx(styles.selectMenuItem, {
-                [styles.menuItemInset]: !showingUserEditedOutput
-              })
-            }}
-            primary="User-Edited"
-          />
-        </MenuItem>
-        <MenuItem value="original">
-          {!showingUserEditedOutput && (
-            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-              <DoneIcon />
-            </ListItemIcon>
-          )}
-          <ListItemText
-            classes={{
-              primary: cx(styles.selectMenuItem, {
-                [styles.menuItemInset]: showingUserEditedOutput
-              })
-            }}
-            primary="Original (View Only)"
-          />
-        </MenuItem>
-        <Divider light />
-        <MenuItem value="restoreOriginal">
-          <ListItemText
-            classes={{
-              root: styles.restoreOriginalMenuItem,
-              primary: cx(styles.selectMenuItem, styles.menuItemInset)
-            }}
-            primary="Restore Original"
-          />
-        </MenuItem>
-      </Select>
-    );
+      </FormControl>
+    ));
   }
 
   renderHeader() {
     const {
       title,
       engines,
+      speakerEngines,
       selectedEngineId,
+      selectedSpeakerEngineId,
       editMode,
       onEngineChange,
       onCombineEngineChange,
@@ -229,13 +243,29 @@ export default class TranscriptEngineOutput extends Component {
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      speakerEngines,
-      selectedSpeakerEngineId,
       combineViewTypes,
       selectedCombineViewTypeId,
-      handleCombineViewTypeChange
+      handleCombineViewTypeChange,
+      showingUserEditedOutput,
+      showingUserEditedSpeakerOutput,
+      parsedData
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
+    const selectedSpeakerEngine = find(speakerEngines, { id: selectedSpeakerEngineId });
+    const renderResultOptionParameters = [
+      {
+        ...selectedEngine,
+        showingUserEditedOutput,
+        engineResults: parsedData.snippetSegments
+      }
+    ]
+    if (selectedSpeakerEngine && selectedCombineViewTypeId === 'speaker-view') {
+      renderResultOptionParameters.push({
+        ...selectedSpeakerEngine,
+        showingUserEditedOutput: showingUserEditedSpeakerOutput,
+        engineResults: parsedData.speakerSegments
+      });
+    }
       
     return (
       <EngineOutputHeader
@@ -260,10 +290,9 @@ export default class TranscriptEngineOutput extends Component {
         handleCombineViewTypeChange={handleCombineViewTypeChange}
       >
         <div className={styles.controllers}>
-          {!editMode &&
-            selectedEngine &&
-            selectedEngine.hasUserEdits &&
-            this.renderResultOptions()}
+          {!editMode
+            && this.renderResultOptions(renderResultOptionParameters)
+          }
         </div>
       </EngineOutputHeader>
     );

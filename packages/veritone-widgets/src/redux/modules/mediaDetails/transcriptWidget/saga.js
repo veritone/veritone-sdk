@@ -52,8 +52,7 @@ function* watchContentReset() {
   ) {
     yield call(TranscriptRedux.reset);
     yield put({
-      type: TranscriptRedux.UPDATE_EDIT_STATUS,
-      hasUserEdits: false
+      type: TranscriptRedux.UPDATE_EDIT_STATUS
     });
   });
 }
@@ -102,19 +101,6 @@ function* watchContentChange() {
   });
 }
 
-function* watchContentClearData() {
-  yield takeEvery(
-    action => action.type === TranscriptRedux.CLEAR_DATA,
-    function*(action) {
-      yield call(TranscriptRedux.clearData);
-      yield put({
-        type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasUserEdits: false
-      });
-    }
-  );
-}
-
 function* watchContentReceiveData() {
   yield takeEvery(
     action => action.type === TranscriptRedux.RECEIVE_DATA,
@@ -160,7 +146,6 @@ export default function* transcriptSaga() {
     fork(watchContentRedo),
     fork(watchContentReset),
     fork(watchContentChange),
-    fork(watchContentClearData),
     fork(watchContentReceiveData),
     fork(watchDiscardUnsavedChanges),
     fork(watchMediaDetailCancelEdit)

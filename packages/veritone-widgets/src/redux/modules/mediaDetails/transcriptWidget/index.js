@@ -26,7 +26,7 @@ export const REDO = transcriptNamespace + '_REDO';
 export const RESET = transcriptNamespace + '_RESET';
 export const CHANGE = transcriptNamespace + '_CHANGE';
 export const CLEAR_CURSOR_POSITION = transcriptNamespace + '_CLEAR_CURSOR_POSITION';
-export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
+export const CLEAR_HISTORY = transcriptNamespace + '_CLEAR_HISTORY';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const RECEIVE_SPEAKER_DATA = transcriptNamespace + '_RECEIVE_SPEAKER_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
@@ -38,6 +38,12 @@ export const SAVE_TRANSCRIPT_EDITS_SUCCESS =
   transcriptNamespace + '_SAVE_TRANSCRIPT_EDITS_SUCCESS';
 export const SAVE_TRANSCRIPT_EDITS_FAILURE =
   transcriptNamespace + '_SAVE_TRANSCRIPT_EDITS_FAILURE';
+export const SAVE_SPEAKER_EDITS =
+  transcriptNamespace + '_SAVE_SPEAKER_EDITS';
+export const SAVE_SPEAKER_EDITS_SUCCESS =
+  transcriptNamespace + '_SAVE_SPEAKER_EDITS_SUCCESS';
+export const SAVE_SPEAKER_EDITS_FAILURE = 
+  transcriptNamespace + '_SAVE_SPEAKER_EDITS_FAILURE';
 export const SAVE_BULK_EDIT_TEXT_ASSET =
   transcriptNamespace + '_SAVE_BULK_EDIT_TEXT_ASSET';
 export const SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS =
@@ -77,16 +83,18 @@ const initialState = {
     snippetSegments: [],
     speakerSegments: []
   },
-  data: [],
+  editableParsedData: {
+    lazyLoading: true,
+    snippetSegments: [],
+    speakerSegments: []
+  },
   history: [],
   revertedHistory: [],
-  past: [],
-  future: [],
-  present: null,
   isBulkEdit: false,
   showTranscriptBulkEditSnack: false,
   error: null,
   savingTranscript: false,
+  savingSpeaker: false,
   editModeEnabled: false,
   showConfirmationDialog: false,
   confirmationType: 'cancelEdits',
@@ -130,24 +138,13 @@ const transcriptReducer = createReducer(initialState, {
   },
 
   [RESET](state, action) {
-    const past = state.past || [];
-    let initialData;
-    let initialPresent;
-    if (past.length > 0) {
-      initialPresent = past[0];
-      // initialData = initialPresent.toJS();   // with immutable js
-      initialData = cloneDeep(initialPresent); // without immutable js
-    } else {
-      initialData = state.data;
-      initialPresent = state.present;
-    }
+    const initialData = state.parsedData;
 
     return {
       ...state,
-      data: initialData,
-      past: [],
-      future: [],
-      present: initialPresent
+      history: [],
+      revertedHistory: [],
+      editableParsedData: cloneDeep(initialData)
     };
   },
   [CLEAR_CURSOR_POSITION](state, action) {
@@ -164,8 +161,8 @@ const transcriptReducer = createReducer(initialState, {
     return newState;
   },
 
-  [CLEAR_DATA](state, action) {
-    return { ...state, data: [], past: [], future: [], present: null };
+  [CLEAR_HISTORY](state, action) {
+    return { ...state, history: [], revertedHistory: [] };
   },
 
   [RECEIVE_DATA](state, action) {
@@ -236,6 +233,32 @@ const transcriptReducer = createReducer(initialState, {
       ...state,
       error,
       savingTranscript: false
+    };
+  },
+  [SAVE_SPEAKER_EDITS](state) {
+    return {
+      ...state,
+      error: null,
+      savingSpeaker: true
+    };
+  },
+  [SAVE_SPEAKER_EDITS_SUCCESS](state) {
+    return {
+      ...state,
+      error: null,
+      savingSpeaker: false
+    };
+  },
+  [SAVE_SPEAKER_EDITS_FAILURE](
+    state,
+    {
+      payload: { error }
+    }
+  ) {
+    return {
+      ...state,
+      error,
+      savingSpeaker: false
     };
   },
   [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
@@ -888,7 +911,7 @@ export const redo = () => ({ type: REDO });
 export const reset = () => ({ type: RESET });
 export const clearCursorPosition = () => ({ type: CLEAR_CURSOR_POSITION });
 export const change = newData => ({ type: CHANGE, data: newData });
-export const clearData = () => ({ type: CLEAR_DATA });
+export const clearHistory = () => ({ type: CLEAR_HISTORY });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData });
 export const receiveSpeakerData = newSpeakerData => (
   {
@@ -934,7 +957,7 @@ export const editableParsedData = state => get(local(state), 'editableParsedData
 export const editableSpeakerData = state => get(local(state), 'editableSpeakerData');
 export const cursorPosition = state => get(local(state), 'cursorPosition');
 export const hasUserEdits = state => {
-  const history = get(local(state), 'past');
+  const history = get(local(state), 'history');
   return history && history.length > 0;
 };
 export const isBulkEdit = state => get(local(state), 'isBulkEdit');
@@ -943,6 +966,8 @@ export const getShowTranscriptBulkEditSnack = state =>
 export const getError = state => get(local(state), 'error');
 export const getSavingTranscriptEdits = state =>
   get(local(state), 'savingTranscript');
+export const getSavingSpeakerEdits = state =>
+  get(local(state), 'savingSpeaker');
 export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
 export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
@@ -1073,114 +1098,110 @@ const runBulkEditJob = (
 
 export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
   return async function action(dispatch, getState) {
+    const state = local(getState());
+
+    const hasTranscriptChanges = state.history
+      .reduce((acc, diff) => acc.concat(diff.transcriptChanges || []), []).length;
+    const hasSpeakerChanges = state.history
+      .reduce((acc, diff) => acc.concat(diff.speakerChanges || []), []).length;
+
+    // Save Transcript
+    const originalParsedData = state.parsedData
+    const parsedDataToSave = state.editableParsedData;
+    const unsanitizedSnippetSegments = get(parsedDataToSave, 'snippetSegments', []);
+    const unsanitizedSpeakerSegments = get(parsedDataToSave, 'speakerSegments');
+
+    // Sanitize asset data
+    const sanitizedSnippetSegments = unsanitizedSnippetSegments.map(segment => ({
+      engineId: segment.sourceEngineId,
+      assetId: segment.assetId,
+      series: segment.series.map(serie => pick(serie, ['words', 'startTimeMs', 'stopTimeMs']))
+    }));
+    const sanitizedSpeakerSegments = unsanitizedSpeakerSegments.map(segment => ({
+      engineId: segment.sourceEngineId,
+      assetId: segment.assetId,
+      series: segment.series.map(serie => pick(serie, ['speakerId', 'startTimeMs', 'stopTimeMs']))
+    }));
+
+    // Initiate "Bulk" Save mode (moving foward this is the only mode)
     dispatch({
-      type: SAVE_TRANSCRIPT_EDITS
+      type: SAVE_BULK_EDIT_TEXT_ASSET
     });
-    const bulkEditEnabled = isBulkEdit(getState());
-    const assetData = currentData(getState());
-    if (bulkEditEnabled) {
+
+    const bulkEditThreshold = 0.9;
+    const originalSnippetSegment = get(originalParsedData, 'snippetSegments[0]', []);
+    const snippetSegment = sanitizedSnippetSegments[0];
+    const speakerSegment = get(sanitizedSpeakerSegments, 'length') && sanitizedSpeakerSegments[0];
+    const selectedTranscriptEngineId = snippetSegment.engineId;
+    const selectedSpeakerEngineId = speakerSegment && speakerSegment.engineId;
+
+    const serieChangePercentage = get(snippetSegment, 'series.length', 0) / get(originalSnippetSegment, 'series.length', 1);
+    const shouldRunBulkEdit = serieChangePercentage < bulkEditThreshold;
+    const saveResponses = {};
+
+    if (!serieChangePercentage) {
       dispatch({
-        type: SAVE_BULK_EDIT_TEXT_ASSET
+        type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+        payload: {
+          error: 'Invalid transcripts detected. No data found.'
+        }
       });
-      let createBulkEditAssetResponse;
-      try {
-        createBulkEditAssetResponse = await saveAsset(
-          {
-            tdoId,
-            contentType: 'text/plain',
-            type: 'bulk-edit-transcript',
-            sourceData: {}
-          },
-          get(assetData, '[0].series[0].words[0].word', ''),
-          dispatch,
-          getState
-        );
-      } catch (e) {
-        console.error(e);
-        dispatch({
-          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-          payload: {
-            error: 'Failed to save bulk edit text asset.'
-          }
-        });
-        return;
-      }
+      return;
+    }
 
-      const bulkEditTextAsset = get(
-        createBulkEditAssetResponse,
-        'data.createAsset'
-      );
-      if (bulkEditTextAsset && bulkEditTextAsset.id) {
-        dispatch({
-          type: SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS,
-          payload: {
-            ...bulkEditTextAsset
-          }
-        });
-      }
-
-      let originalTranscriptAssetId;
-      // order of original transcript preference:
-      // vtn-standard => v-vlf => primary transcript
-      let vtnStandardAssetsResponse;
-      try {
-        vtnStandardAssetsResponse = await fetchAssets(
-          tdoId,
-          'vtn-standard',
-          dispatch,
-          getState
-        );
-      } catch (e) {
-        dispatch({
-          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-          payload: {
-            error: 'Failed to get vtn-standard transcript asset.'
-          }
-        });
-        return;
-      }
-      const vtnStandardAssets = get(
-        vtnStandardAssetsResponse,
-        'temporalDataObject.assets.records',
-        []
-      );
-      const vtnStandardAssetToUse = find(vtnStandardAssets, ['sourceData.engineId', selectedEngineId]);
-      originalTranscriptAssetId = get(vtnStandardAssetToUse, 'id');
-
-      if (!originalTranscriptAssetId) {
-        // vtn-standard doesn't exist, try for v-vlf
-        let vlfAssetsResponse;
+    if (hasTranscriptChanges) {
+      dispatch({
+        type: SAVE_TRANSCRIPT_EDITS
+      });
+      if (shouldRunBulkEdit) {
+        // Transcript has changed beyond the allowed threshold 
+        // and should be run thru levenstein for correction
+        let createBulkEditAssetResponse;
         try {
-          vlfAssetsResponse = await fetchAssets(
-            tdoId,
-            'v-vlf',
+          createBulkEditAssetResponse = await saveAsset(
+            {
+              tdoId,
+              contentType: 'application/json',
+              type: 'vtn-standard',
+              sourceData: {},
+              isUserEdited: true
+            },
+            snippetSegment,
             dispatch,
             getState
           );
-        } catch(e) {
+        } catch (e) {
+          console.error(e);
           dispatch({
             type: SAVE_TRANSCRIPT_EDITS_FAILURE,
             payload: {
-              error: 'Failed to get vlf transcript asset.'
+              error: 'Failed to save bulk edit text asset.'
             }
           });
           return;
         }
-        const vlfAssets = get(
-          vlfAssetsResponse,
-          'temporalDataObject.assets.records',
-          []
-        );
-        const vlfAssetToUse = find(vlfAssets, ['sourceData.engineId', selectedEngineId]);
-        originalTranscriptAssetId = get(vlfAssetToUse, 'id');
-      }
 
-      if (!originalTranscriptAssetId) {
-        // vlf doesn't exist, try for primary transcript (ttml)
-        let getPrimaryTranscriptAssetResponse;
+        const bulkEditTextAsset = get(
+          createBulkEditAssetResponse,
+          'data.createAsset'
+        );
+        if (bulkEditTextAsset && bulkEditTextAsset.id) {
+          dispatch({
+            type: SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS,
+            payload: {
+              ...bulkEditTextAsset
+            }
+          });
+        }
+
+        let originalTranscriptAssetId;
+        // order of original transcript preference:
+        // vtn-standard => v-vlf => primary transcript
+        let vtnStandardAssetsResponse;
         try {
-          getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
+          vtnStandardAssetsResponse = await fetchAssets(
             tdoId,
+            'vtn-standard',
             dispatch,
             getState
           );
@@ -1188,94 +1209,125 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
           dispatch({
             type: SAVE_TRANSCRIPT_EDITS_FAILURE,
             payload: {
-              error: 'Failed to get primary ttml transcript asset.'
+              error: 'Failed to get vtn-standard transcript asset.'
             }
           });
           return;
         }
-        originalTranscriptAssetId = get(
-          getPrimaryTranscriptAssetResponse,
-          'temporalDataObject.primaryAsset.id'
+        const vtnStandardAssets = get(
+          vtnStandardAssetsResponse,
+          'temporalDataObject.assets.records',
+          []
         );
-      }
+        const vtnStandardAssetToUse = find(vtnStandardAssets, ['sourceData.engineId', selectedTranscriptEngineId]);
+        originalTranscriptAssetId = get(vtnStandardAssetToUse, 'id');
 
-      if (!originalTranscriptAssetId) {
-        dispatch({
-          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-          payload: {
-            error:
-              'Original transcript asset not found. Failed to save bulk transcript edit.'
-          }
-        });
-        return;
-      }
-      let runBulkEditResponse;
-      try {
-        runBulkEditResponse = await runBulkEditJob(
-          tdoId,
-          originalTranscriptAssetId,
-          bulkEditTextAsset.id,
-          selectedEngineId,
-          dispatch,
-          getState
-        );
-      } catch (e) {
-        console.error(e);
-        dispatch({
-          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
-          payload: {
-            error:
-              'Failed to start bulk-edit-transcript job. Failed to save bulk transcript edit.'
-          }
-        });
-        return;
-      }
-      dispatch(setShowTranscriptBulkEditSnackState(true));
-      dispatch({
-        type: SAVE_TRANSCRIPT_EDITS_SUCCESS
-      });
-      return Promise.resolve(runBulkEditResponse);
-    } else {
-      const assetData = currentData(getState());
-      const createAssetCalls = [];
-      const contentType = 'application/json';
-      const type = 'vtn-standard';
-      forEach(assetData, jsonData => {
-        if (get(jsonData, 'series.length')) {
-          forEach(jsonData.series, asset => {
-            delete asset.guid;
-          });
-        }
-        // process vtn-standard asset
-        const sourceData = {
-          name: jsonData.sourceEngineName,
-          engineId: jsonData.sourceEngineId,
-          assetId: jsonData.assetId,
-          taskId: jsonData.taskId
-        };
-        createAssetCalls.push(
-          saveAsset(
-            {
+        if (!originalTranscriptAssetId) {
+          // vtn-standard doesn't exist, try for v-vlf
+          let vlfAssetsResponse;
+          try {
+            vlfAssetsResponse = await fetchAssets(
               tdoId,
-              contentType,
-              type,
-              sourceData,
-              isUserEdited: true
-            },
-            jsonData,
+              'v-vlf',
+              dispatch,
+              getState
+            );
+          } catch(e) {
+            dispatch({
+              type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+              payload: {
+                error: 'Failed to get vlf transcript asset.'
+              }
+            });
+            return;
+          }
+          const vlfAssets = get(
+            vlfAssetsResponse,
+            'temporalDataObject.assets.records',
+            []
+          );
+          const vlfAssetToUse = find(vlfAssets, ['sourceData.engineId', selectedTranscriptEngineId]);
+          originalTranscriptAssetId = get(vlfAssetToUse, 'id');
+        }
+
+        if (!originalTranscriptAssetId) {
+          // vlf doesn't exist, try for primary transcript (ttml)
+          let getPrimaryTranscriptAssetResponse;
+          try {
+            getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(
+              tdoId,
+              dispatch,
+              getState
+            );
+          } catch (e) {
+            dispatch({
+              type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+              payload: {
+                error: 'Failed to get primary ttml transcript asset.'
+              }
+            });
+            return;
+          }
+          originalTranscriptAssetId = get(
+            getPrimaryTranscriptAssetResponse,
+            'temporalDataObject.primaryAsset.id'
+          );
+        }
+
+        if (!originalTranscriptAssetId) {
+          dispatch({
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error:
+                'Original transcript asset not found. Failed to save bulk transcript edit.'
+            }
+          });
+          return;
+        }
+        let runBulkEditResponse;
+        try {
+          runBulkEditResponse = await runBulkEditJob(
+            tdoId,
+            originalTranscriptAssetId,
+            bulkEditTextAsset.id,
+            selectedTranscriptEngineId,
             dispatch,
             getState
-          )
-        );
-      });
-      return await Promise.all(createAssetCalls)
-        .then(values => {
+          );
+        } catch (e) {
+          console.error(e);
           dispatch({
-            type: SAVE_TRANSCRIPT_EDITS_SUCCESS
+            type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+            payload: {
+              error:
+                'Failed to start bulk-edit-transcript job. Failed to save bulk transcript edit.'
+            }
           });
-          return values;
-        })
-        .catch(() => {
+          return;
+        }
+        dispatch(setShowTranscriptBulkEditSnackState(true));
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_SUCCESS
+        });
+        saveResponses.transcript = runBulkEditResponse;
+      } else {
+        // Transcript has been altered but within tolerable range.
+        // Simply save the changes as vtn-standard
+        const transcriptSourceData = {
+          ...pick(snippetSegment, ['engineId', 'assetId'])
+        };
+        const saveTranscriptPromise = await saveAsset(
+          {
+            tdoId,
+            contentType: 'application/json',
+            type: 'vtn-standard',
+            sourceData: transcriptSourceData,
+            isUserEdited: true
+          },
+          snippetSegment,
+          dispatch,
+          getState
+        ).catch(values => {
           dispatch({
             type: SAVE_TRANSCRIPT_EDITS_FAILURE,
             payload: {
@@ -1283,7 +1335,53 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
             }
           });
         });
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_SUCCESS
+        });
+        saveResponses.transcript = saveTranscriptPromise;
+      }
     }
+
+    // Save Speaker Asset
+    if (hasSpeakerChanges && selectedSpeakerEngineId && speakerSegment) {
+      dispatch({
+        type: SAVE_SPEAKER_EDITS
+      });
+      const speakerSourceData = {
+        ...pick(speakerSegment, ['engineId', 'assetId']),
+      };
+      const saveSpeakerAssetResponse = await saveAsset(
+        {
+          tdoId,
+          contentType: 'application/json',
+          type: 'vtn-standard',
+          sourceData: speakerSourceData,
+          isUserEdited: true
+        },
+        speakerSegment,
+        dispatch,
+        getState
+      ).catch(values => {
+        dispatch({
+          type: SAVE_SPEAKER_EDITS_FAILURE,
+          payload: {
+            error: 'Failed to save speaker edits.'
+          }
+        });
+      })
+
+      dispatch({
+        type: SAVE_SPEAKER_EDITS_SUCCESS
+      });
+      saveResponses.speaker = saveSpeakerAssetResponse;
+    }
+
+    if (hasTranscriptChanges || hasSpeakerChanges) {
+      dispatch({
+        type: CLEAR_HISTORY
+      });
+    }
+    return Promise.resolve(saveResponses);
   };
 };
 

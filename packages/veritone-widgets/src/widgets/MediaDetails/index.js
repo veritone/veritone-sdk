@@ -781,34 +781,32 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  onRestoreOriginalClick = () => {
+  onRestoreOriginalClick = engine => () => {
     this.props.openConfirmModal(this.props.id, {
       title: 'Reset to Original',
       description:
         'Are you sure you want to reset to original version? All edited work will be lost.',
       cancelButtonLabel: 'Cancel',
       confirmButtonLabel: 'Reset',
-      confirmAction: this.onRestoreOriginalConfirm,
+      confirmAction: this.onRestoreOriginalConfirm(engine),
       cancelAction: this.onRestoreOriginalCancel
     });
   };
 
-  onRestoreOriginalConfirm = () => {
+  onRestoreOriginalConfirm = engine => () => {
     this.props.closeConfirmModal(this.props.id);
     const {
       id,
       tdo,
-      selectedEngineId,
-      selectedEngineCategory,
       selectedEngineResults
     } = this.props;
     const removeAllUserEdits = true;
     this.props.restoreOriginalEngineResults(
       id,
       tdo,
-      selectedEngineId,
-      selectedEngineCategory.categoryType,
-      selectedEngineResults,
+      engine.id,
+      engine.category.categoryType,
+      engine.engineResults || selectedEngineResults,
       removeAllUserEdits
     );
   };

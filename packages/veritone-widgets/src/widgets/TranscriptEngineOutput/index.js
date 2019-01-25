@@ -25,7 +25,7 @@ const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  (state, { tdo, selectedEngineId }) => ({
+  (state, { tdo, selectedEngineId, selectedCombineEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     parsedData: TranscriptRedux.parsedData(state),
     editableParsedData: TranscriptRedux.editableParsedData(state),
@@ -38,6 +38,11 @@ const saga = util.reactReduxSaga.saga;
       tdo.id,
       selectedEngineId
     ),
+    isDisplayingUserEditedSpeakerOutput: engineResultsModule.isDisplayingUserEditedOutput(
+      state,
+      tdo.id,
+      selectedCombineEngineId
+    ),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       tdo.id,
@@ -48,6 +53,7 @@ const saga = util.reactReduxSaga.saga;
     ),
     error: TranscriptRedux.getError(state),
     savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state),
+    savingSpeaker: TranscriptRedux.getSavingSpeakerEdits(state),
     editModeEnabled: TranscriptRedux.getEditModeEnabled(state),
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
@@ -225,6 +231,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     error: string,
     closeErrorSnackbar: func,
     savingTranscript: bool,
+    savingSpeaker: bool,
     toggleEditMode: func,
     editModeEnabled: bool,
     showConfirmationDialog: bool,
@@ -241,17 +248,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const nextData = get(nextProps, 'selectedEngineResults');
-    nextData &&
-      nextData.map(chunk => {
-        chunk.series &&
-          chunk.series.map(snippet => {
-            const words = snippet.words;
-            words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
-          });
-      });
-
     const nextSpeakerData = get(nextProps, 'speakerData');
-
     const prevProps = prevState.props;
 
     !isEqual(prevProps.selectedEngineResults, nextData) &&
@@ -295,14 +292,14 @@ export default class TranscriptEngineOutputContainer extends Component {
     }
   };
 
-  handleToggleEditedOutput = showUserEdited => {
+  handleToggleEditedOutput = engine => showUserEdited => {
     const tdo = this.props.tdo;
     this.props.clearEngineResultsByEngineId(
       tdo.id,
-      this.props.selectedEngineId
+      engine.id
     );
     this.props.fetchEngineResults({
-      engineId: this.props.selectedEngineId,
+      engineId: engine.id,
       tdo: tdo,
       startOffsetMs: 0,
       stopOffsetMs:
@@ -312,18 +309,40 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   onSaveEdits = () => {
-    const { tdo, selectedEngineId, fetchEngineResults } = this.props;
-    this.props.saveTranscriptEdit(tdo.id, selectedEngineId).then(res => {
-      fetchEngineResults({
-        engineId: selectedEngineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
-        ignoreUserEdited: false
-      });
-      this.props.toggleEditMode();
-      return res;
+    const { tdo, selectedEngineId, selectedCombineEngineId, fetchEngineResults } = this.props;
+    this.props.saveTranscriptEdit(tdo.id, selectedEngineId, selectedCombineEngineId).then(savePromises => {
+      // Fetch saved transcript/speaker data
+      const refreshPromises = [];
+      const transcriptResponse = savePromises.transcript;
+      const speakerResponse = savePromises.speaker;
+      if (transcriptResponse) {
+        refreshPromises.push(
+          fetchEngineResults({
+            engineId: selectedEngineId,
+            tdo: tdo,
+            startOffsetMs: 0,
+            stopOffsetMs:
+              Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+            ignoreUserEdited: false
+          })
+        );
+      }
+      if (speakerResponse) {
+        refreshPromises.push(
+          fetchEngineResults({
+            engineId: selectedCombineEngineId,
+            tdo: tdo,
+            startOffsetMs: 0,
+            stopOffsetMs:
+              Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+            ignoreUserEdited: false
+          })
+        );
+      }
+      Promise.all(refreshPromises).then(() => {
+        this.props.toggleEditMode();  
+      })
+      return refreshPromises;
     });
   };
 
@@ -470,6 +489,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           onEditButtonClick={this.props.toggleEditMode}
           onEditTypeChange={this.handleOnEditTypeChange}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          showingUserEditedSpeakerOutput={this.props.isDisplayingUserEditedSpeakerOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           speakerEngines={speakerEngines}
           selectedSpeakerEngineId={this.props.selectedCombineEngineId}
@@ -481,14 +501,14 @@ export default class TranscriptEngineOutputContainer extends Component {
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.checkEditState}
-              disabled={this.props.savingTranscript}
+              disabled={this.props.savingTranscript || this.props.savingSpeaker}
             >
               CANCEL
             </Button>
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.onSaveEdits}
-              disabled={!this.props.hasUserEdits || this.props.savingTranscript}
+              disabled={!this.props.hasUserEdits || this.props.savingTranscript || this.props.savingSpeaker}
               variant="contained"
               color="primary"
             >
