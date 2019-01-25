@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, isArray, pick } from 'lodash';
+import { arrayOf, bool, number, shape, string, func, any } from 'prop-types';
+import { isArray } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -15,40 +15,50 @@ import styles from './styles.scss';
 
 export default class SpeakerTranscriptContent extends Component {
   static propTypes = {
-    data: arrayOf(
-      shape({
+    parsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
-            guid: string,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string.isRequired,
             words: arrayOf(
               shape({
-                word: string,
+                word: string.isRequired,
                 confidence: number
               })
             )
           })
         )
-      })
-    ),
-    speakerData: arrayOf(
-      shape({
+      })),
+      speakerSegments: arrayOf(shape({
         startTimeMs: number,
         stopTimeMs: number,
         status: string,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
-            speakerId: string
+            guid: string.isRequired,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
           })
         )
-      })
-    ),
+      }))
+    }),
     className: string,
 
     editMode: bool,

@@ -54,13 +54,8 @@ export default class SpeakerPill extends Component {
     showMenuButton: false,
     anchorEl: null,
     applyAll: false,
-    speakerName: ''
+    speakerName: this.props.speakerSegment.speakerId
   };
-
-  componentDidMount() {
-    const { speakerSegment } = this.props;
-    this.setState({ speakerName: speakerSegment.speakerId });
-  }
 
   handlePillClick = (event) => {
     if (this.props.onClick) {

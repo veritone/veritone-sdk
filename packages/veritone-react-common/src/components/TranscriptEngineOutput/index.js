@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func, node, any } from 'prop-types';
 import { find, get, startCase } from 'lodash';
 import cx from 'classnames';
 
@@ -18,16 +18,16 @@ import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
   static propTypes = {
-    data: arrayOf(
-      shape({
+    parsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
         series: arrayOf(
           shape({
             startTimeMs: number.isRequired,
             stopTimeMs: number.isRequired,
-            guid: string,
+            guid: string.isRequired,
             words: arrayOf(
               shape({
                 word: string.isRequired,
@@ -36,22 +36,32 @@ export default class TranscriptEngineOutput extends Component {
             )
           })
         )
-      })
-    ),
-    speakerData: arrayOf(
-      shape({
+      })),
+      speakerSegments: arrayOf(shape({
         startTimeMs: number,
         stopTimeMs: number,
         status: string,
         series: arrayOf(
           shape({
+            guid: string.isRequired,
             startTimeMs: number.isRequired,
             stopTimeMs: number.isRequired,
-            speakerId: string.isRequired
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
           })
         )
-      })
-    ),
+      }))
+    }),
     selectedEngineId: string,
     selectedSpeakerEngineId: string,
     engines: arrayOf(
@@ -93,6 +103,7 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: number,
     outputNullState: node,
     showingUserEditedOutput: bool,
+    showingUserEditedSpeakerOutput: bool,
     onToggleUserEditedOutput: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
@@ -301,7 +312,6 @@ export default class TranscriptEngineOutput extends Component {
   renderBody() {
     const {
       parsedData,
-      data,
       cursorPosition,
       clearCursorPosition,
       onClick,
@@ -321,7 +331,6 @@ export default class TranscriptEngineOutput extends Component {
       outputNullState,
       selectedEngineId,
       selectedCombineViewTypeId,
-      speakerData
     } = this.props;
 
     const currentEditType = onEditTypeChange ? editType : this.state.editType;
@@ -335,8 +344,6 @@ export default class TranscriptEngineOutput extends Component {
           {
             <SpeakerTranscriptContent
               parsedData={parsedData}
-              data={data}
-              speakerData={speakerData}
               editMode={editMode}
               editType={currentEditType}
               mediaPlayerTimeMs={mediaPlayerTimeMs}

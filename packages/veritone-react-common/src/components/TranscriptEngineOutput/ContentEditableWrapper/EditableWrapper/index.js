@@ -73,6 +73,12 @@ export default class EditableWrapper extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return {
+      cursorPosition: getCursorPosition()
+    };
+  }
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { cursorPosition, clearCursorPosition } = this.props;
     const cursorPositionToBeUsed = cursorPosition || snapshot.cursorPosition;
@@ -88,12 +94,6 @@ export default class EditableWrapper extends Component {
         }
       }
     }
-  }
-
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    return {
-      cursorPosition: getCursorPosition()
-    };
   }
 
   editableInput = React.createRef();
@@ -144,8 +144,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentKeyUp = event => {
-    const { editMode, content } = this.props;
-    const wordGuidMap = content.wordGuidMap;
+    const { editMode } = this.props;
     if (event) {
       event.stopPropagation();
       const curCursorPos = getCursorPosition();
@@ -155,7 +154,6 @@ export default class EditableWrapper extends Component {
       const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
-      const contentEditableElement = event.target;
       // Parse content for changes and generate history diff
       if (event.type !== 'paste' && keyCode !== 13 && noCursorSelection) {
         !hasCommand

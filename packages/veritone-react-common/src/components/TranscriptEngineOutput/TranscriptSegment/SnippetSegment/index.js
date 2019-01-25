@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, bool, number, string, func } from 'prop-types';
+import { arrayOf, shape, number, string, func } from 'prop-types';
 import { orderBy, get } from 'lodash';
 import classNames from 'classnames';
 
 import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
-import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 

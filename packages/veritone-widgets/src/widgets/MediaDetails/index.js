@@ -727,17 +727,22 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDisplayingOriginalEngineResultForUserEdit = () => {
+    const {
+      selectedEngineId,
+      selectedEngineCategory,
+      isDisplayingUserEditedOutput
+    } = this.props;
     const editableCategoryTypes = ['face', 'transcript'];
-    const selectedEngine = find(this.props.selectedEngineCategory.engines, {
-      id: this.props.selectedEngineId
+    const selectedEngine = find(selectedEngineCategory.engines, {
+      id: selectedEngineId
     });
     if (
       includes(
         editableCategoryTypes,
-        this.props.selectedEngineCategory.categoryType
+        selectedEngineCategory.categoryType
       ) &&
       get(selectedEngine, 'hasUserEdits') &&
-      !this.props.isDisplayingUserEditedOutput
+      !isDisplayingUserEditedOutput
     ) {
       return true;
     }

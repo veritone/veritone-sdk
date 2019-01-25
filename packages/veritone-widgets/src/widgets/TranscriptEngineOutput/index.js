@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, pick } from 'lodash';
+import { number, bool, string, func, shape, arrayOf, node, any } from 'prop-types';
+import { get, isEqual, pick } from 'lodash';
 
 import { connect } from 'react-redux';
 import { modules, util } from 'veritone-redux-common';
@@ -123,6 +123,94 @@ export default class TranscriptEngineOutputContainer extends Component {
       })
     ),
     isFetchingEngineResults: bool,
+    parsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number
+              })
+            )
+          })
+        )
+      })),
+      speakerSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            guid: string.isRequired,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
+          })
+        )
+      }))
+    }),
+    editableParsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number
+              })
+            )
+          })
+        )
+      })),
+      speakerSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            guid: string.isRequired,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
+          })
+        )
+      }))
+    }),
     currentData: arrayOf(
       shape({
         startTimeMs: number,
@@ -220,6 +308,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     fetchEngineResults: func,
     isDisplayingUserEditedOutput: bool,
+    isDisplayingUserEditedSpeakerOutput: bool,
     clearEngineResultsByEngineId: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
@@ -339,7 +428,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           })
         );
       }
-      Promise.all(refreshPromises).then(() => {
+      Promise.all(refreshPromises).finally(() => {
         this.props.toggleEditMode();  
       })
       return refreshPromises;

@@ -2,7 +2,6 @@ import {
   get,
   isEqual,
   cloneDeep,
-  forEach,
   find,
   isArray,
   pick,
@@ -103,11 +102,6 @@ const initialState = {
 
 const transcriptReducer = createReducer(initialState, {
   [UNDO](state, action) {
-    const editableData = get(state, 'editableParsedData.snippetSegments');
-    const editableSpeakerData = get(state, 'editableParsedData.speakerSegments');
-    let newEditableData = editableData;
-    let newEditableSpeakerData = editableSpeakerData;
-
     const historyDiff = state.history.length
       ? state.history.slice(-1)[0]
       : undefined;
@@ -181,7 +175,7 @@ const transcriptReducer = createReducer(initialState, {
           const words = get(entry, 'words', []);
           const orderedWords = orderBy(words, ['confidence'], ['desc']);
           const word = get(orderedWords, '[0].word');
-          return word && ignoredWords.indexOf(word) === -1;
+          return word && !ignoredWords.includes(word);
         });
         return {
           ...chunk,
@@ -789,8 +783,8 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
 
 // This returns the immutability helper version of
 // newEditableSpeakerData after a fragment insert/deletion 
-function updateTrailingSpeakerData(newEditableSpeakerData, diff, isRemove) {
-  const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
+function updateTrailingSpeakerData(speakerData, diff, isRemove) {
+  let newEditableSpeakerData = speakerData;
   const fragmentValue = isRemove
     ? (diff.oldValue || diff.newValue )
     : (diff.newValue || diff.oldValue );
@@ -1439,8 +1433,6 @@ function parseData(data, speakerData) {
 
     isArray(series) && series.forEach((speaker, speakerIndex) => {
       const nextSpeaker = chunk.series[speakerIndex + 1];
-      const speakerStartTime = speaker.startTimeMs;
-      const speakerStopTime = speaker.stopTimeMs;
       const { fragments, wordGuidMap } = allocateSpeakerTranscripts(
         totalTranscriptFragments,
         speaker,

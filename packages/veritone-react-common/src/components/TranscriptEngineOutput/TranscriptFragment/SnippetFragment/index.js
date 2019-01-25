@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { string, number, func, bool } from 'prop-types';
+import React from 'react';
+import { string, func, bool } from 'prop-types';
 
 import classNames from 'classnames';
 
@@ -25,9 +25,7 @@ SnippetFragment.propTypes = {
   value: string,
   active: bool,
   onClick: func,
-  className: string,
-  startTimeMs: number.isRequired,
-  stopTimeMs: number.isRequired
+  className: string
 };
 
 export default SnippetFragment;

@@ -1,5 +1,4 @@
-import { get, isEqual } from 'lodash';
-import { delay } from 'redux-saga';
+import { isEqual } from 'lodash';
 import {
   fork,
   all,
@@ -15,25 +14,11 @@ import { DISCARD_UNSAVED_CHANGES, CANCEL_EDIT } from '../index';
 const CHANGE_WITH_DEBOUNCE =
   TranscriptRedux.transcriptNamespace + '_CHANGE_WITH_DEBOUNCE';
 
-function* getState() {
-  const globalState = yield select();
-  return get(globalState, TranscriptRedux.transcriptNamespace);
-}
-
 function* watchContentUndo() {
   yield takeEvery(action => action.type === TranscriptRedux.UNDO, function*(
     action
   ) {
     yield call(TranscriptRedux.undo);
-
-    // const state = getState();
-    // const past = get(state, 'past');
-    // if (state && past.length === 0) {
-    //   yield put({
-    //     type: TranscriptRedux.UPDATE_EDIT_STATUS,
-    //     hasUserEdits: false
-    //   });
-    // }
   });
 }
 
@@ -42,7 +27,6 @@ function* watchContentRedo() {
     action
   ) {
     yield call(TranscriptRedux.redo);
-    // yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: true });
   });
 }
 
@@ -57,22 +41,6 @@ function* watchContentReset() {
   });
 }
 
-let unsavedData, unsavedCursorPosition;
-const deferTime = 500;
-function* pushChanges() {
-  if (unsavedData) {
-    const historyDiff = unsavedData;
-    const cursorPosition = unsavedCursorPosition;
-
-    yield put({
-      type: TranscriptRedux.CHANGE,
-      historyDiff,
-      cursorPosition
-    });
-    unsavedData = unsavedCursorPosition = undefined;
-  }
-}
-
 function* watchContentChange() {
   yield takeEvery(action => action.type === CHANGE_WITH_DEBOUNCE, function*(
     action
@@ -82,22 +50,6 @@ function* watchContentChange() {
       historyDiff: action.data,
       cursorPosition: action.cursorPosition
     });
-
-    // yield put({
-    //   type: TranscriptRedux.UPDATE_EDIT_STATUS,
-    //   hasUserEdits: true
-    // });
-
-    // unsavedData = action.data;
-    // unsavedCursorPosition = action.cursorPosition;
-    // if (action.data.onBlur) {
-    //   yield call(pushChanges);
-    // } else {
-    //   yield call(function*() {
-    //     yield call(delay, deferTime);
-    //     yield call(pushChanges);
-    //   }, action);
-    // }
   });
 }
 
