@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, number, shape, string, func, node, any } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
 import { find, get, startCase } from 'lodash';
 import cx from 'classnames';
 

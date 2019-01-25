@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { number, bool, string, func, shape, arrayOf, node, any } from 'prop-types';
+import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
 import { get, isEqual, pick } from 'lodash';
 
 import { connect } from 'react-redux';

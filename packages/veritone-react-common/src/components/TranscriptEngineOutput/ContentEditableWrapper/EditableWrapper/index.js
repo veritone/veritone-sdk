@@ -388,7 +388,8 @@ export default class EditableWrapper extends Component {
 }
 
 function hasCommandModifier(e) {
-  const isOSX = true; //UserAgent.isPlatform('Mac OS X');
+  const platform = navigator.platform;
+  const isOSX = platform.includes('Mac');
   return e && isOSX
     ? !!e.metaKey && !e.altKey
     : isCtrlKeyCommand(e);
