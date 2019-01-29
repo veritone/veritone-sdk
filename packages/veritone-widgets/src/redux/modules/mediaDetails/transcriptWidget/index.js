@@ -761,6 +761,25 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 series: { $splice: [[diff.index, 1]] }
               }
             });
+            // Update trailing speaker indices
+            const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
+            isArray(currentSpeakers) && currentSpeakers.slice(diff.index, currentSpeakers.length).forEach((speaker, speakerIndex) => {
+              isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
+                newEditableSpeakerData = update(newEditableSpeakerData, {
+                  [diff.chunkIndex]: {
+                    series: {
+                      [diff.index + speakerIndex]: {
+                        wordGuidMap: {
+                          [fragment.guid]: {
+                            speakerIndex: { $set: (diff.index + speakerIndex) }
+                          }
+                        }
+                      }
+                    }
+                  }
+                })
+              });
+            });
             break;
           }
         }

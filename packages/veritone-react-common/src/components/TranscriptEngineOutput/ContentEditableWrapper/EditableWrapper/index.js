@@ -81,7 +81,7 @@ export default class EditableWrapper extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { cursorPosition, clearCursorPosition } = this.props;
-    const cursorPositionToBeUsed = cursorPosition || snapshot.cursorPosition;
+    const cursorPositionToBeUsed = cursorPosition || (snapshot && snapshot.cursorPosition);
     if (cursorPositionToBeUsed) {
       const spanChildren = get(this, 'editableInput.current.htmlEl.children', []);
       const spanArray = Array.from(spanChildren);
@@ -106,7 +106,7 @@ export default class EditableWrapper extends Component {
   savedEvent = undefined;
 
   triggerDebouncedOnChange = event => {
-    event.persist();
+    event && event.persist && event.persist();
     this.savedEvent = event;
     this.debouncedOnChange();
   };
@@ -148,9 +148,7 @@ export default class EditableWrapper extends Component {
     if (event) {
       event.stopPropagation();
       const curCursorPos = getCursorPosition();
-      const noCursorSelection = curCursorPos.start && curCursorPos.end &&
-        curCursorPos.start.guid === curCursorPos.end.guid &&
-        curCursorPos.start.offset === curCursorPos.end.offset;
+      const noCursorSelection = !hasCursorSelection(curCursorPos);
       const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
@@ -180,9 +178,7 @@ export default class EditableWrapper extends Component {
       // event.preventDefault();   // This prevents editable text from being updated
       event.stopPropagation();
       const curCursorPos = getCursorPosition();
-      const noCursorSelection = curCursorPos.start && curCursorPos.end &&
-        curCursorPos.start.guid === curCursorPos.end.guid &&
-        curCursorPos.start.offset === curCursorPos.end.offset;
+      const noCursorSelection = !hasCursorSelection(curCursorPos);
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const keyCode = event.keyCode;
@@ -229,6 +225,7 @@ export default class EditableWrapper extends Component {
             return;
           } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
+            event.preventDefault(); // Don't delete any text
             const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
             return;
@@ -262,15 +259,17 @@ export default class EditableWrapper extends Component {
         }
 
         if (hasCommand || hasControl) { // Command/Control Key
-          // TODO: Implement Undo/Redo
           if (keyCode === 90) { // Z button
             if (hasShiftKey(event)) {
-              // MAC
+              // MAC/LINUX
               redo && redo();
             } else {
-              // MAC
+              // MAC & WINDOWS/LINUX
               undo && undo();
             }
+          } else if (keyCode === 89) { // Y button
+            // WINDOWS
+            redo && redo();
           }
           return; 
         }
@@ -409,19 +408,22 @@ function hasControlModifier(e) {
 
 // This is relative to the current element
 function getCursorPosition() {
-  const range = window.getSelection().getRangeAt(0);
-  const start = {
-    offset: range.startOffset,
-    guid: range.startContainer.parentElement.getAttribute('word-guid')
-  };
-  const end = {
-    offset: range.endOffset,
-    guid: range.endContainer.parentElement.getAttribute('word-guid')
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount) {
+    const range = selection.getRangeAt(0);
+    const start = {
+      offset: range.startOffset,
+      guid: range.startContainer.parentElement.getAttribute('word-guid')
+    };
+    const end = {
+      offset: range.endOffset,
+      guid: range.endContainer.parentElement.getAttribute('word-guid')
+    }
+    return {
+      start,
+      end
+    };
   }
-  return {
-    start,
-    end
-  };
 }
 
 function setCursorPosition(elem, offset = 0) {
@@ -434,6 +436,14 @@ function setCursorPosition(elem, offset = 0) {
     sel && sel.removeAllRanges && sel.removeAllRanges();
     sel && sel.addRange && sel.addRange(range);
   }
+}
+
+function hasCursorSelection(cursorPosition) {
+  if (cursorPosition) {
+    return cursorPosition.start && cursorPosition.end
+      && cursorPosition.start.offset !== cursorPosition.end.offset;
+  }
+  return false;
 }
 
 function parseHtmlForText(htmlString) {
