@@ -149,10 +149,7 @@ export default class SpeakerPill extends Component {
     };
     const extractLabel = speakerId => {
       if (isString(speakerId) && speakerId.length > 2) {
-        return speakerId.split(' ')
-          .map(part => part.slice(0, 1))
-          .join('')
-          .toUpperCase();
+        return speakerId;
       }
       return 'Speaker ' + speakerId;
     };

@@ -1117,12 +1117,7 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       series: segment.series.map(serie => pick(serie, ['speakerId', 'startTimeMs', 'stopTimeMs']))
     }));
 
-    // Initiate "Bulk" Save mode (moving foward this is the only mode)
-    dispatch({
-      type: SAVE_BULK_EDIT_TEXT_ASSET
-    });
-
-    const bulkEditThreshold = 0.9;
+    const bulkEditThreshold = 0;
     const originalSnippetSegment = get(originalParsedData, 'snippetSegments[0]', []);
     const snippetSegment = sanitizedSnippetSegments[0];
     const speakerSegment = get(sanitizedSpeakerSegments, 'length') && sanitizedSpeakerSegments[0];
@@ -1150,6 +1145,9 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       if (shouldRunBulkEdit) {
         // Transcript has changed beyond the allowed threshold 
         // and should be run thru levenstein for correction
+        dispatch({
+          type: SAVE_BULK_EDIT_TEXT_ASSET
+        });
         let createBulkEditAssetResponse;
         try {
           createBulkEditAssetResponse = await saveAsset(
