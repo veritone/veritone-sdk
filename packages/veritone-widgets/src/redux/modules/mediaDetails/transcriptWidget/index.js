@@ -865,27 +865,29 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
               ],
               []
             );
-            newFragments.slice(diff.dialogueIndex, newFragments.length).forEach((frag, index) => {
-              newEditableSpeakerData = update(newEditableSpeakerData, {
-                [speakerChunkIndex]: {
-                  series: {
-                    [speakerIndex]: {
-                      fragments: {
-                        [diff.index + index]: {
-                          index: { $set: diff.index + index}
-                        }
-                      },
-                      wordGuidMap: {
-                        [frag.guid]: {
-                          dialogueIndex: { $set: diff.dialogueIndex + index },
-                          index: { $set: diff.index + index }
+            if (diff.dialogueIndex !== newFragments.length) {
+              newFragments.slice(diff.dialogueIndex - newFragments.length).forEach((frag, index) => {
+                newEditableSpeakerData = update(newEditableSpeakerData, {
+                  [speakerChunkIndex]: {
+                    series: {
+                      [speakerIndex]: {
+                        fragments: {
+                          [diff.dialogueIndex + index]: {
+                            index: { $set: diff.index + index}
+                          }
+                        },
+                        wordGuidMap: {
+                          [frag.guid]: {
+                            dialogueIndex: { $set: diff.dialogueIndex + index },
+                            index: { $set: diff.index + index }
+                          }
                         }
                       }
                     }
                   }
-                }
-              })
-            });
+                })
+              });
+            }
             wasUpdated = true;
           } else if (wasUpdated) {
             // Update indices in the speakers further down
