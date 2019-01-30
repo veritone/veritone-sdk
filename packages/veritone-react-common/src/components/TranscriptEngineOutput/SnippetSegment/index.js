@@ -3,7 +3,7 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import { orderBy, get } from 'lodash';
 import classNames from 'classnames';
 
-import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
+import SnippetFragment from '../SnippetFragment';
 
 import styles from './styles.scss';
 

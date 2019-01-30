@@ -7,9 +7,9 @@ import classNames from 'classnames';
 import Grid from '@material-ui/core/Grid';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
-import SnippetSegment from '../TranscriptSegment/SnippetSegment';
+import SnippetSegment from '../SnippetSegment';
 import SpeakerPill from '../SpeakerPill';
-import EditableWrapper from '../ContentEditableWrapper/EditableWrapper';
+import EditableWrapper from '../EditableWrapper';
 
 import styles from './styles.scss';
 

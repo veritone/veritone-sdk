@@ -11,7 +11,6 @@ import transcriptSaga, {
 import {
   AlertDialog,
   TranscriptEngineOutput,
-  TranscriptEditMode,
   EngineOutputNullState
 } from 'veritone-react-common';
 import Button from '@material-ui/core/Button/Button';
@@ -330,7 +329,6 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   state = {
-    editType: TranscriptEditMode.SNIPPET,
     confirmEditType: null,
     props: this.props
   };

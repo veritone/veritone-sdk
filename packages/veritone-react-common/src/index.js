@@ -43,9 +43,6 @@ export {
 
 export AlertDialog from './components/share-components/AlertDialog';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
-export {
-  Edit as TranscriptEditMode
-} from './components/TranscriptEngineOutput/TranscriptContent';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';

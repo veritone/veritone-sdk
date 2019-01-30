@@ -296,7 +296,6 @@ export default class EditableWrapper extends Component {
   handleContentPaste = event => {
     const { editMode, content, onChange } = this.props;
     const wordGuidMap = content.wordGuidMap;
-    const oldCursor = getCursorPosition();
     
     if (event) {
       event.preventDefault();
@@ -312,10 +311,6 @@ export default class EditableWrapper extends Component {
 
     const contentEditableElement = get(event, 'target.parentElement');
     const spanChildren = contentEditableElement.children;
-    const targetElem = Array.from(spanChildren)
-      .find(c => 
-        c.getAttribute('word-guid') === oldCursor.start.guid
-      );
     const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, stringToPaste);
 
     const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
