@@ -96,14 +96,9 @@ export default class EditableWrapper extends Component {
     const cursorPositionToBeUsed = cursorPosition || (snapshot && snapshot.cursorPosition);
     if (cursorPositionToBeUsed) {
       const spanChildren = get(this, 'editableInput.current.htmlEl.children', []);
-      const spanArray = Array.from(spanChildren);
-      const targetIndex = spanArray.findIndex(span => span.getAttribute('word-guid') === cursorPositionToBeUsed.start.guid);
-      if (targetIndex !== -1) {
-        const targetSpan = spanChildren.item(targetIndex);
-        setCursorPosition(targetSpan.firstChild, cursorPositionToBeUsed.start.offset);
-        if (cursorPosition) {
-          clearCursorPosition();
-        }
+      setCursorPosition(spanChildren, cursorPositionToBeUsed);
+      if (cursorPosition) {
+        clearCursorPosition();
       }
     }
   }
@@ -202,7 +197,8 @@ export default class EditableWrapper extends Component {
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
       const keyCode = event.keyCode;
-      const targetElem = Array.from(event.target.children)
+      const spanChildren = event.target.children;
+      const targetElem = Array.from(spanChildren)
         .find(c => 
           c.getAttribute('word-guid') === curCursorPos.start.guid
         );
@@ -241,7 +237,7 @@ export default class EditableWrapper extends Component {
 
             const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
             hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
-            setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
+            setCursorPosition(spanChildren, cursorPos);
             return;
           } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
@@ -315,16 +311,16 @@ export default class EditableWrapper extends Component {
     }
 
     const contentEditableElement = get(event, 'target.parentElement');
-    const spanArray = contentEditableElement.children;
-    const targetElem = Array.from(spanArray)
+    const spanChildren = contentEditableElement.children;
+    const targetElem = Array.from(spanChildren)
       .find(c => 
         c.getAttribute('word-guid') === oldCursor.start.guid
       );
-    const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, stringToPaste);
+    const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, stringToPaste);
 
     const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
     hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
-    setCursorPosition(targetElem.firstChild, cursorPos.end.offset);
+    setCursorPosition(spanChildren, cursorPos);
   };
 
   handleContentDrag = event => {
@@ -446,16 +442,39 @@ function getCursorPosition() {
   }
 }
 
-function setCursorPosition(elem, offset = 0) {
-  if (elem) {
-    const sel = window.getSelection();
-    const range = document.createRange();
-    const availableOffset = Math.min(elem.textContent.length, offset);
-    range && range.setStart && range.setStart(elem, availableOffset);
-    range.collapse(true);
-    sel && sel.removeAllRanges && sel.removeAllRanges();
-    sel && sel.addRange && sel.addRange(range);
+function setCursorPosition(spanChildren = [], cursorPosition = {}) {
+  const spanArray = Array.from(spanChildren);
+  const { start, end } = cursorPosition;
+  if (start && end) {
+    const startTarget = spanArray.find(c => c.getAttribute('word-guid') === start.guid);
+    const endTarget = spanArray.find(c => c.getAttribute('word-guid') === end.guid);
+    const startNode = startTarget && startTarget.firstChild;
+    const endNode = endTarget && endTarget.firstChild;
+    if (startNode && endNode) {
+      const sel = window.getSelection();
+      const range = document.createRange();
+      const startOffset = start.offset > startNode.textContent.length
+        ? startNode.textContent.length
+        : start.offset;
+      const endOffset = end.offset > endNode.textContent.length
+        ? endNode.textContent.length
+        : end.offset;
+      startNode && range && range.setStart && range.setStart(startNode, startOffset);
+      endNode && range && range.setEnd && range.setEnd(endNode, endOffset);
+      sel && sel.removeAllRanges && sel.removeAllRanges();
+      sel && sel.addRange && sel.addRange(range);
+
+    }
   }
+  // if (elem) {
+  //   const sel = window.getSelection();
+  //   const range = document.createRange();
+  //   const availableOffset = Math.min(elem.textContent.length, offset);
+  //   range && range.setStart && range.setStart(elem, availableOffset);
+  //   range.collapse(true);
+  //   sel && sel.removeAllRanges && sel.removeAllRanges();
+  //   sel && sel.addRange && sel.addRange(range);
+  // }
 }
 
 function hasCursorSelection(cursorPosition) {
