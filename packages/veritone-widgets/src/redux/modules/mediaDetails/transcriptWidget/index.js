@@ -438,7 +438,7 @@ function revertHistoryDiff(state, historyDiff) {
       acc.concat(chunk.series.map((serie, index) => ({ ...serie, index, chunkIndex }))),
       []
     );
-    // TODO
+
     isArray(historyDiff.speakerChanges)
       && historyDiff.speakerChanges.slice().reverse().forEach(diff => {
         const action = diff.action;
@@ -483,6 +483,7 @@ function revertHistoryDiff(state, historyDiff) {
                 series: { $splice: [[diff.index, 1]] }
               }
             });
+            newEditableSpeakerData = updateTrailingSpeakerIndices(newEditableSpeakerData, diff);
             break;
           }
           case 'DELETE': {
@@ -512,6 +513,7 @@ function revertHistoryDiff(state, historyDiff) {
                 }]] }
               }
             });
+            newEditableSpeakerData = updateTrailingSpeakerIndices(newEditableSpeakerData, diff);
             break;
           }
         }
@@ -753,6 +755,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 }]] }
               }
             });
+            newEditableSpeakerData = updateTrailingSpeakerIndices(newEditableSpeakerData, diff);
             break;
           }
           case 'DELETE': {
@@ -761,25 +764,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 series: { $splice: [[diff.index, 1]] }
               }
             });
-            // Update trailing speaker indices
-            const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
-            isArray(currentSpeakers) && currentSpeakers.slice(diff.index, currentSpeakers.length).forEach((speaker, speakerIndex) => {
-              isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
-                newEditableSpeakerData = update(newEditableSpeakerData, {
-                  [diff.chunkIndex]: {
-                    series: {
-                      [diff.index + speakerIndex]: {
-                        wordGuidMap: {
-                          [fragment.guid]: {
-                            speakerIndex: { $set: (diff.index + speakerIndex) }
-                          }
-                        }
-                      }
-                    }
-                  }
-                })
-              });
-            });
+            newEditableSpeakerData = updateTrailingSpeakerIndices(newEditableSpeakerData, diff);
             break;
           }
         }
@@ -801,7 +786,33 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
 }
 
 // This returns the immutability helper version of
-// newEditableSpeakerData after a fragment insert/deletion 
+// newEditableSpeakerData after a SPEAKER insert/deletion
+function updateTrailingSpeakerIndices(speakerData, diff) {
+  // Update trailing speaker indices
+  let newEditableSpeakerData = speakerData;
+  const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
+  isArray(currentSpeakers) && currentSpeakers.slice(diff.index - currentSpeakers.length).forEach((speaker, speakerIndex) => {
+    isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
+      newEditableSpeakerData = update(newEditableSpeakerData, {
+        [diff.chunkIndex]: {
+          series: {
+            [diff.index + speakerIndex]: {
+              wordGuidMap: {
+                [fragment.guid]: {
+                  speakerIndex: { $set: (diff.index + speakerIndex) }
+                }
+              }
+            }
+          }
+        }
+      })
+    });
+  });
+  return newEditableSpeakerData;
+}
+
+// This returns the immutability helper version of
+// newEditableSpeakerData after a FRAGMENT insert/deletion 
 function updateTrailingSpeakerData(speakerData, diff, isRemove) {
   let newEditableSpeakerData = speakerData;
   const fragmentValue = isRemove
