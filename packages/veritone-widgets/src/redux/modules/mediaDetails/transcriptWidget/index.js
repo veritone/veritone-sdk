@@ -791,23 +791,25 @@ function updateTrailingSpeakerIndices(speakerData, diff) {
   // Update trailing speaker indices
   let newEditableSpeakerData = speakerData;
   const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
-  isArray(currentSpeakers) && currentSpeakers.slice(diff.index - currentSpeakers.length).forEach((speaker, speakerIndex) => {
-    isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
-      newEditableSpeakerData = update(newEditableSpeakerData, {
-        [diff.chunkIndex]: {
-          series: {
-            [diff.index + speakerIndex]: {
-              wordGuidMap: {
-                [fragment.guid]: {
-                  speakerIndex: { $set: (diff.index + speakerIndex) }
+  if (diff.index !== currentSpeakers.length) {
+    isArray(currentSpeakers) && currentSpeakers.slice(diff.index - currentSpeakers.length).forEach((speaker, speakerIndex) => {
+      isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
+        newEditableSpeakerData = update(newEditableSpeakerData, {
+          [diff.chunkIndex]: {
+            series: {
+              [diff.index + speakerIndex]: {
+                wordGuidMap: {
+                  [fragment.guid]: {
+                    speakerIndex: { $set: (diff.index + speakerIndex) }
+                  }
                 }
               }
             }
           }
-        }
-      })
+        })
+      });
     });
-  });
+  }
   return newEditableSpeakerData;
 }
 
