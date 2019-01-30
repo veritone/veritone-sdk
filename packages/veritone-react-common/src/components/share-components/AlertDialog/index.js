@@ -59,6 +59,7 @@ export default class AlertDialog extends Component {
     } = this.props;
     const forwardingProps = { ...this.props };
     const omittedProps = [
+      'titleLabel',
       'onCancel',
       'onApprove',
       'cancelValue',

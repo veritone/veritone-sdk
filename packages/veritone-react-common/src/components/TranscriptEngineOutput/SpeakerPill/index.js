@@ -209,94 +209,100 @@ export default class SpeakerPill extends Component {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={this.handleMenuClose}>
-          {
-            speakerId ? (
-              <ListItem
-                className={styles.speakerMenuItem}
-                dense
-                button
-                disableRipple
-                onClick={this.handleClickApplyAll}>
-                <Checkbox
-                  color="primary"
-                  disableRipple
-                  checked={applyAll} />
-                <ListItemText primary={`Apply to all "${speakerLabel}"`} />
-              </ListItem>
-            ) : null
-          }
-          <ListItem
-            className={styles.speakerMenuItem}
-            dense
-            >
-            <FormControl className={styles.speakerInputContainer}>
-              <InputLabel
-                className={styles.speakerInputLabel}
-                htmlFor={`name-input-${speakerKey}`}>
-                Speaker Name
-              </InputLabel>
-              <Input
-                className={styles.speakerInput}
-                id={`name-input-${speakerKey}`}
-                type="text"
-                onChange={this.handleNameInputChange}
-                value={speakerName}
-                fullWidth
-                endAdornment={
-                  speakerName !== speakerId ? (
-                    <Button
-                      disabled={!speakerName}
-                      disableRipple
-                      color="primary"
-                      size="small"
-                      onClick={this.handleAddClick}>
-                      Add
-                    </Button>
-                  ) : (
-                    <Button
-                      disabled={!speakerName}
-                      disableRipple
-                      color="primary"
-                      size="small"
-                      onClick={this.handleRemoveClick}>
-                      Remove
-                    </Button>
-                  )
-                } />
-            </FormControl>
-          </ListItem>
-          <ListItem
-            className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
-            dense>
-            <span
-              className={styles.speakerMenuAvailableHeader}>
-              Available Speakers
-            </span>
-          </ListItem>
-          <div
-            className={ styles.availableSpeakersScroller }>
+          <form onSubmit={
+            speakerName !== speakerId
+              ? this.handleAddClick
+              : this.handleRemoveClick
+          }>
             {
-              otherSpeakers.map(id => {
-                return (
-                  <ListItem
-                    key={`available-speaker-${id}`}
-                    className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
-                    dense button
-                    onClick={this.handleAvailableSpeakerClick(id)}>
-                    
-                    <ListItemIcon>
-                      {
-                        speakerName === id ? (
-                            <CheckIcon className={ styles.speakerCheckIcon } />
-                        ) : <div />
-                      }
-                    </ListItemIcon>
-                    <ListItemText>{extractLabel(id)}</ListItemText>
-                  </ListItem>
-                )
-              })
+              speakerId ? (
+                <ListItem
+                  className={styles.speakerMenuItem}
+                  dense
+                  button
+                  disableRipple
+                  onClick={this.handleClickApplyAll}>
+                  <Checkbox
+                    color="primary"
+                    disableRipple
+                    checked={applyAll} />
+                  <ListItemText primary={`Apply to all "${speakerLabel}"`} />
+                </ListItem>
+              ) : null
             }
-          </div>
+            <ListItem
+              className={styles.speakerMenuItem}
+              dense
+              >
+              <FormControl className={styles.speakerInputContainer}>
+                <InputLabel
+                  className={styles.speakerInputLabel}
+                  htmlFor={`name-input-${speakerKey}`}>
+                  Speaker Name
+                </InputLabel>
+                <Input
+                  className={styles.speakerInput}
+                  id={`name-input-${speakerKey}`}
+                  type="text"
+                  onChange={this.handleNameInputChange}
+                  value={speakerName}
+                  fullWidth
+                  endAdornment={
+                    speakerName !== speakerId ? (
+                      <Button
+                        disabled={!speakerName}
+                        disableRipple
+                        color="primary"
+                        size="small"
+                        onClick={this.handleAddClick}>
+                        Add
+                      </Button>
+                    ) : (
+                      <Button
+                        disabled={!speakerName}
+                        disableRipple
+                        color="primary"
+                        size="small"
+                        onClick={this.handleRemoveClick}>
+                        Remove
+                      </Button>
+                    )
+                  } />
+              </FormControl>
+            </ListItem>
+            <ListItem
+              className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
+              dense>
+              <span
+                className={styles.speakerMenuAvailableHeader}>
+                Available Speakers
+              </span>
+            </ListItem>
+            <div
+              className={ styles.availableSpeakersScroller }>
+              {
+                otherSpeakers.map(id => {
+                  return (
+                    <ListItem
+                      key={`available-speaker-${id}`}
+                      className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
+                      dense button
+                      onClick={this.handleAvailableSpeakerClick(id)}>
+                      
+                      <ListItemIcon>
+                        {
+                          speakerName === id ? (
+                              <CheckIcon className={ styles.speakerCheckIcon } />
+                          ) : <div />
+                        }
+                      </ListItemIcon>
+                      <ListItemText>{extractLabel(id)}</ListItemText>
+                    </ListItem>
+                  )
+                })
+              }
+            </div>
+          </form>
         </Menu>
       </div>
     );
