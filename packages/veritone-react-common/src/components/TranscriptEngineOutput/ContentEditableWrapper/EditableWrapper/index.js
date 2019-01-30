@@ -74,6 +74,18 @@ export default class EditableWrapper extends Component {
   };
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
+    // TODO: need some way to preserve edits before media player re-renders component
+    // Possibly trigger generateTranscriptDiffHistory directly? (performance hit tho..)
+    // const { content, onChange } = this.props;
+    // const wordGuidMap = content.wordGuidMap;
+    // const contentEditableElement = get(this, 'editableInput.current.htmlEl');
+    // if (contentEditableElement) {
+    //   this.triggerDebouncedOnChange({ target: contentEditableElement });
+    //   // const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
+    //   // if (hasChange) {
+    //   //   onChange && hasChange && onChange(null, historyDiff, cursorPos);
+    //   // }
+    // }
     return {
       cursorPosition: getCursorPosition()
     };
@@ -149,6 +161,14 @@ export default class EditableWrapper extends Component {
       event.stopPropagation();
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
+
+      // TODO: Need to detect something here... forgot
+      // const targetElem = Array.from(event.target.children)
+      //   .find(c => 
+      //     c.getAttribute('word-guid') === curCursorPos.start.guid
+      //   );
+      // const wordObj = wordGuidMap[curCursorPos.start.guid];
+
       const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
