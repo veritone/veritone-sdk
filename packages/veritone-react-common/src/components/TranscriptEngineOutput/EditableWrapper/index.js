@@ -74,18 +74,6 @@ export default class EditableWrapper extends Component {
   };
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    // TODO: need some way to preserve edits before media player re-renders component
-    // Possibly trigger generateTranscriptDiffHistory directly? (performance hit tho..)
-    // const { content, onChange } = this.props;
-    // const wordGuidMap = content.wordGuidMap;
-    // const contentEditableElement = get(this, 'editableInput.current.htmlEl');
-    // if (contentEditableElement) {
-    //   this.triggerDebouncedOnChange({ target: contentEditableElement });
-    //   // const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
-    //   // if (hasChange) {
-    //   //   onChange && hasChange && onChange(null, historyDiff, cursorPos);
-    //   // }
-    // }
     return {
       cursorPosition: getCursorPosition()
     };
@@ -105,10 +93,6 @@ export default class EditableWrapper extends Component {
 
   editableInput = React.createRef();
 
-  debounceOptions = {
-    'leading': false,
-    'trailing': true
-  };
   debounceTimeMs = 1000;
   savedEvent = undefined;
 
@@ -132,7 +116,6 @@ export default class EditableWrapper extends Component {
       const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
       onChange && hasChange && onChange(event, historyDiff, cursorPos);
       this.savedEvent = undefined;
-
     }
   }
 
@@ -336,9 +319,7 @@ export default class EditableWrapper extends Component {
       className,
       content,
       editMode,
-      contentClassName,
-      startMediaPlayHeadMs,
-      stopMediaPlayHeadMs
+      contentClassName
     } = this.props;
 
     const keyboardEventProps = {
@@ -362,9 +343,6 @@ export default class EditableWrapper extends Component {
         ? entry.guid
         : `snippet-fragment-${startTime}-${stopTime}`;
       let value = '';
-      const active = !(
-        stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
-      );
       if (selectedWord) {
         textareaToDecodeCharacters.innerHTML = selectedWord;
         value = textareaToDecodeCharacters.value;
@@ -374,9 +352,7 @@ export default class EditableWrapper extends Component {
         <span
           key={fragmentKey}
           word-guid={entry.guid}
-          className={classNames(styles.transcriptSnippet, className, styles.edit, {
-            [styles.highlight]: active
-          })}
+          className={classNames(styles.transcriptSnippet, className, styles.edit)}
         >
           {value}
         </span>
