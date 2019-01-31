@@ -271,7 +271,11 @@ export default class SentimentEngineOutput extends Component {
         >
         {/* Draw Y axis this part is not scrollable */}
         <div className={styles.yAxis}>
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer 
+            width="100%" 
+            height="100%" 
+            minHeight="300px"
+          >
             <AreaChart
               data={chartData}
               margin={{ top: 10, right: 30, left: 0, bottom: 40 }}
@@ -298,6 +302,7 @@ export default class SentimentEngineOutput extends Component {
           <ResponsiveContainer
             width={(100 * scaleX).toString() + '%'}
             height="100%"
+            minHeight="300px"
           >
             <AreaChart
               data={chartData}
