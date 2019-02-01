@@ -179,3 +179,16 @@ const MyPage = () => (
 * Revert saga changes from 6.3.0 until a better solution is found.
 * Add UserProfile widget for user profile editing
 * Update AppBar to support user profile editing with the UserProfile widget
+
+## 7.0.0
+* Remove ContentTemplate
+* Remove ContentTemplateForm
+* Remove SourceManagementForm
+* Remove SourceList
+* Remove SDOTable
+* Remove IngestionJobsList
+* Remove SchedulerWidget
+* Add UserProfileWidget
+* Updates to engineOutputExport module and widget
+* Update veritone icons css file version
+* AppBar: always fetch enabled apps, even outside of a widget
