@@ -15300,6 +15300,38 @@ vendors@^1.0.0:
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.2.tgz#7fcb5eef9f5623b156bcea89ec37d63676f21801"
   integrity sha512-w/hry/368nO21AN9QljsaIhb9ZiZtZARoVH5f3CsFbawdLdayCgKRPup7CggujvySMxx0I91NOyxdVENohprLQ==
 
+veritone-react-common@^6.2.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/veritone-react-common/-/veritone-react-common-6.7.0.tgz#32ac86477549e45dfa611a35f4d3437cc3d239ee"
+  integrity sha512-LfCicNhkg/xS2OItNa6/PbitNNmKjj+y5iQGs1DAk+EY/wCt1LdLfJUG9+voc8XnfXhe7IlnZa2eqgxOsIkJww==
+  dependencies:
+    "@material-ui/core" "^1.0.0"
+    "@material-ui/icons" "^1.0.0"
+    classnames "^2.2.5"
+    clipboard "^2.0.4"
+    date-fns "^1.29.0"
+    google-maps "^3.3.0"
+    lodash "^4.17.4"
+    memoize-one "^4.0.0"
+    mime-types "^2.1.17"
+    pluralize "^7.0.0"
+    prop-types "^15.6.0"
+    react "^16.3.0"
+    react-addons-css-transition-group "^15.6.2"
+    react-dnd "^2.5.4"
+    react-dnd-html5-backend "^2.5.4"
+    react-dnd-test-backend "^2.5.4"
+    react-dom "^16.3.0"
+    react-dotdotdot "^1.2.3"
+    react-infinite-calendar "^2.3.1"
+    react-jss "^8.6.1"
+    react-redux "^5.0.6"
+    react-rnd "^7.4.0"
+    react-transition-group "^2.2.1"
+    recompose "^0.30.0"
+    redux "^4.0.0"
+    redux-form "^7.1.2"
+
 verror@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/verror/-/verror-1.10.0.tgz#3a105ca17053af55d6e270c1f8288682e18da400"
