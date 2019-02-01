@@ -168,3 +168,18 @@
 
 ## 6.7.0
 * Add CopyPrompt component
+
+## 7.0.0
+* OverlayPositioningProvider: add contentClassName prop for styling inner contents
+* remove ContentTemplates
+* MenuColumn: add transformActions prop which allows modifying menu items
+* FullScreenDialog: add className prop
+* Remove IngestionJobs
+* Remove SDOTable
+* Remove Scheduler
+* Remove SourceConfiguration
+* Remove SourceManagementForm
+* Remove SourceTypeField
+* DateTimePicker: add readOnly prop
+* TimeRangePicker: add support for time zones; add readOnly prop
+* Update veritone-icons css file
