@@ -423,6 +423,9 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleUpdateMediaPlayerTime = startTime => {
+    if (!this.mediaPlayer) {
+      return;
+    }
     this.mediaPlayer.seek(startTime / 1000);
     if (this.mediaPlayer.getState().player.paused) {
       // play/pause to refresh frame
@@ -926,6 +929,10 @@ class MediaDetailsWidget extends React.Component {
       get(tdo, 'primaryAsset.contentType') ||
         get(tdo, 'details.veritoneFile.mimetype')
     );
+    const isMedia = /^(audio|video)\/.*/.test(
+      get(tdo, 'primaryAsset.contentType') ||
+        get(tdo, 'details.veritoneFile.mimetype')
+    );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
@@ -1344,6 +1351,13 @@ class MediaDetailsWidget extends React.Component {
                           type="contain"
                         />
                       )}
+                    {!isImage &&
+                      !isMedia && (
+                        <Icon
+                          className="icon-description"
+                          classes={{ root: styles.fileIcon }}
+                        />
+                      )}
                     {isImage &&
                       !!this.getPrimaryAssetUri() && (
                         <Image
@@ -1353,7 +1367,7 @@ class MediaDetailsWidget extends React.Component {
                           type="contain"
                         />
                       )}
-                    {!isImage &&
+                    {isMedia &&
                       (!!this.getPrimaryAssetUri() ||
                         !!get(this.props, 'tdo.streams.length')) && (
                         <MediaPlayer
