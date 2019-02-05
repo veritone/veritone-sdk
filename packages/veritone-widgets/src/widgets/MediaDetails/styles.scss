@@ -209,9 +209,7 @@
     .mediaView {
       flex: auto;
 
-      .fileIcon {
-        color: $blue-1;
-        font-size: 10em;
+      .fileIconContainer {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -220,6 +218,10 @@
         border-width: 1px;
         border-style: solid;
         border-color: $faint-black;
+        .fileIcon {
+          color: $blue-1;
+          font-size: 9em;
+        }
       }
 
       .sourceLabel {

@@ -12,6 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import PictureAsPdf from '@material-ui/icons/PictureAsPdf';
+import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -925,6 +927,10 @@ class MediaDetailsWidget extends React.Component {
       engineCategorySelectorItems
     } = this.getCombineAggregations();
 
+    const isPdf = /^.*\/.*pdf$/.test(
+      get(tdo, 'primaryAsset.contentType') ||
+        get(tdo, 'details.veritoneFile.mimetype')
+    );
     const isImage = /^image\/.*/.test(
       get(tdo, 'primaryAsset.contentType') ||
         get(tdo, 'details.veritoneFile.mimetype')
@@ -1353,11 +1359,19 @@ class MediaDetailsWidget extends React.Component {
                       )}
                     {!isImage &&
                       !isMedia &&
+                      !isPdf &&
                       !!this.getPrimaryAssetUri() && (
-                        <Icon
-                          className="icon-description"
-                          classes={{ root: styles.fileIcon }}
-                        />
+                        <div className={styles.fileIconContainer}>
+                          <InsertDriveFile className={styles.fileIcon} />
+                        </div>
+                      )}
+                    {!isImage &&
+                      !isMedia &&
+                      isPdf &&
+                      !!this.getPrimaryAssetUri() &&(
+                        <div className={styles.fileIconContainer}>
+                          <PictureAsPdf className={styles.fileIcon}/>
+                        </div>
                       )}
                     {isImage &&
                       !!this.getPrimaryAssetUri() && (
