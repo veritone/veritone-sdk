@@ -1352,7 +1352,8 @@ class MediaDetailsWidget extends React.Component {
                         />
                       )}
                     {!isImage &&
-                      !isMedia && (
+                      !isMedia &&
+                      !!this.getPrimaryAssetUri() && (
                         <Icon
                           className="icon-description"
                           classes={{ root: styles.fileIcon }}
