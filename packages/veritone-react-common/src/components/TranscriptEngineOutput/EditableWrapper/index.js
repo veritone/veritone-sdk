@@ -332,8 +332,9 @@ export default class EditableWrapper extends Component {
       onChange: this.handleContentChange
     };
     const textareaToDecodeCharacters = document.createElement('textarea');
+    const totalFragments = content.series.length;
 
-    const contentComponents = content.series.map(entry => {
+    const contentComponents = content.series.map((entry, index) => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
       const words = entry.words || [];
@@ -346,6 +347,8 @@ export default class EditableWrapper extends Component {
       if (selectedWord) {
         textareaToDecodeCharacters.innerHTML = selectedWord;
         value = textareaToDecodeCharacters.value;
+        // Add spaces to valid fragments (except the last)
+        value = (value && (index !== totalFragments - 1)) ? value + ' ' : value;
       }
 
       return (
@@ -437,15 +440,6 @@ function setCursorPosition(spanChildren = [], cursorPosition = {}) {
 
     }
   }
-  // if (elem) {
-  //   const sel = window.getSelection();
-  //   const range = document.createRange();
-  //   const availableOffset = Math.min(elem.textContent.length, offset);
-  //   range && range.setStart && range.setStart(elem, availableOffset);
-  //   range.collapse(true);
-  //   sel && sel.removeAllRanges && sel.removeAllRanges();
-  //   sel && sel.addRange && sel.addRange(range);
-  // }
 }
 
 function hasCursorSelection(cursorPosition) {
@@ -600,7 +594,7 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
         const span = spanArray[i];
         if (span.getAttribute) {
           const spanGuid = span.getAttribute('word-guid');
-          const newWord = span.innerText;
+          const newWord = span.innerText.trim();
           if (spanGuid && wordGuidMap[spanGuid]) {
             const chunkIndex = wordGuidMap[spanGuid].chunkIndex;
             foundMap[spanGuid] = true;
