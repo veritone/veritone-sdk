@@ -159,7 +159,11 @@ export default class SpeakerPill extends Component {
     const colorClass = isHighlighted ? styles.highlight : '';
     const speakerPillLabel = extractPillLabel(speakerId);
     const speakerLabel = extractLabel(speakerId);
-    const otherSpeakers = availableSpeakers.filter(id => speakerId !== id);
+    const otherSpeakers = (speakerName && speakerName !== speakerId)
+      ? availableSpeakers.filter(id => 
+        speakerId !== id 
+        && id.toLowerCase().startsWith(speakerName.toLowerCase())
+      ) : availableSpeakers.filter(id => speakerId !== id);
     
 
     return (
@@ -226,7 +230,10 @@ export default class SpeakerPill extends Component {
                     color="primary"
                     disableRipple
                     checked={applyAll} />
-                  <ListItemText primary={`Apply to all "${speakerLabel}"`} />
+                  <ListItemText
+                    className={styles.speakerApplyAllText}
+                    primary={`Apply to all "${speakerLabel}"`}
+                  />
                 </ListItem>
               ) : null
             }
