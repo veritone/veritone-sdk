@@ -39,10 +39,6 @@
   &:hover {
     color: $blue-1;
   }
-
-  &::after {
-    content: ' ';
-  }
 }
 
 .read {

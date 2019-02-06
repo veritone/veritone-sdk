@@ -34,6 +34,13 @@ $speakerItemHeight: 64px;
   font-size: 18px !important;
 }
 
+.deleteIconContainer {
+  $iconDimension: 34px !important;
+  height: $iconDimension;
+  width: $iconDimension;
+  margin-top: 16px !important;
+}
+
 .speakerMenu {
   padding: 0 !important;
 }
@@ -49,7 +56,7 @@ $speakerItemHeight: 64px;
 
 .speakerInputContainer {
   display: block !important;
-  margin: 0 16px !important;
+  margin: 0 0 0 16px !important;
   min-width: 280px !important;
   &:focus {
     outline: none;

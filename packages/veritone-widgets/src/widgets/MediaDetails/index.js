@@ -737,7 +737,7 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory,
       isDisplayingUserEditedOutput
     } = this.props;
-    const editableCategoryTypes = ['face', 'transcript'];
+    const editableCategoryTypes = ['face'];
     const selectedEngine = find(selectedEngineCategory.engines, {
       id: selectedEngineId
     });

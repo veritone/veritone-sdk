@@ -183,7 +183,7 @@ export default class TranscriptEngineOutput extends Component {
           }}
           // eslint-disable-next-line
           renderValue={() =>
-            engine.showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'
+            engine.showingUserEditedOutput ? 'User-Edited' : 'Original'
           }
         >
           <MenuItem value="userEdited">
@@ -213,7 +213,7 @@ export default class TranscriptEngineOutput extends Component {
                   [styles.menuItemInset]: engine.showingUserEditedOutput
                 })
               }}
-              primary="Original (View Only)"
+              primary="Original"
             />
           </MenuItem>
           <Divider light />

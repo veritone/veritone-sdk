@@ -7,6 +7,7 @@ import Chip from '@material-ui/core/Chip';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import Menu from '@material-ui/core/Menu';
@@ -54,7 +55,7 @@ export default class SpeakerPill extends Component {
     showMenuButton: false,
     anchorEl: null,
     applyAll: false,
-    speakerName: this.props.speakerSegment.speakerId
+    speakerName: ''
   };
 
   handlePillClick = (event) => {
@@ -101,11 +102,11 @@ export default class SpeakerPill extends Component {
 
     const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, speakerName)
 
-    hasChange, editMode && onChange && onChange(event, historyDiff);
+    hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
   };
 
-  handleRemoveClick = event => {
+  handleClearClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll } = this.state;
     const { speakerId } = speakerSegment;
@@ -113,9 +114,16 @@ export default class SpeakerPill extends Component {
 
     const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, '')
 
-    hasChange, editMode && onChange && onChange(event, historyDiff);
+    hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
   };
+
+  handleDeleteClick = event => {
+    const { editMode, speakerData, speakerSegment, onChange } = this.props;
+    const { hasChange, historyDiff } = generateSpeakerDeleteDiffHistory(speakerData, speakerSegment);
+    hasChange && editMode && onChange && onChange(event, historyDiff);
+    this.handleMenuClose();
+  }
 
   render() {
     const {
@@ -216,7 +224,7 @@ export default class SpeakerPill extends Component {
           <form onSubmit={
             speakerName !== speakerId
               ? this.handleAddClick
-              : this.handleRemoveClick
+              : this.handleClearClick
           }>
             {
               speakerId ? (
@@ -244,7 +252,8 @@ export default class SpeakerPill extends Component {
               <FormControl className={styles.speakerInputContainer}>
                 <InputLabel
                   className={styles.speakerInputLabel}
-                  htmlFor={`name-input-${speakerKey}`}>
+                  htmlFor={`name-input-${speakerKey}`}
+                  shrink>
                   Speaker Name
                 </InputLabel>
                 <Input
@@ -253,11 +262,12 @@ export default class SpeakerPill extends Component {
                   type="text"
                   onChange={this.handleNameInputChange}
                   value={speakerName}
+                  label="Speaker Name"
+                  placeholder={speakerId}
                   fullWidth
                   endAdornment={
-                    speakerName !== speakerId ? (
+                    (speakerName && speakerName !== speakerId) ? (
                       <Button
-                        disabled={!speakerName}
                         disableRipple
                         color="primary"
                         size="small"
@@ -266,16 +276,26 @@ export default class SpeakerPill extends Component {
                       </Button>
                     ) : (
                       <Button
-                        disabled={!speakerName}
                         disableRipple
                         color="primary"
                         size="small"
-                        onClick={this.handleRemoveClick}>
-                        Remove
+                        onClick={this.handleClearClick}>
+                        Clear
                       </Button>
                     )
                   } />
               </FormControl>
+              <Tooltip
+                title="Delete Speaker"
+                placement="top-end"
+                disableHoverListener={!speakerId}>
+                <IconButton
+                  className={ styles.deleteIconContainer }
+                  disableRipple
+                  onClick={this.handleDeleteClick}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
             </ListItem>
             <ListItem
               className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
@@ -315,6 +335,30 @@ export default class SpeakerPill extends Component {
     );
   }
 };
+
+function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
+  const speakerChanges = [];
+  const { guid, speakerId } = speakerSegment;
+
+  isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
+    let index;
+    isArray(chunk.series) &&
+      (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
+      speakerChanges.push({
+        chunkIndex,
+        index,
+        action: 'DELETE',
+        oldValue: speakerSegment
+      });
+  });
+
+  return {
+    hasChange: speakerChanges.length,
+    historyDiff: {
+      speakerChanges
+    }
+  };
+}
 
 function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName) {
   const speakerChanges = [];
