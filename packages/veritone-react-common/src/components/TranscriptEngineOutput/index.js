@@ -86,8 +86,6 @@ export default class TranscriptEngineOutput extends Component {
     undo: func,
     redo: func,
     onChange: func,
-    editType: string,
-    onEditTypeChange: func,
 
     onClick: func,
     onScroll: func,
@@ -135,7 +133,103 @@ export default class TranscriptEngineOutput extends Component {
     title: 'Transcription',
     editMode: false,
     mediaPlayerTimeMs: 0,
-    mediaPlayerTimeIntervalMs: 1000
+    mediaPlayerTimeIntervalMs: 1000,
+    hotKeyCategories: [{
+      commands: [{
+        label: 'Play/Pause',
+        hotkeys: [{
+          keys: ['TAB']
+        }]
+      }, {
+        label: 'Undo',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['cmd', 'Z']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['ctrl', 'Z']
+        }]
+      }, {
+        label: 'Redo',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['cmd', 'shift', 'Z']
+        }, {
+          platform: 'Win',
+          operator: '+',
+          keys: ['ctrl', 'Y']
+        }, {
+          platform: 'Lin',
+          operator: '+',
+          keys: ['ctrl', 'shift', 'Z']
+        }]
+      }, {
+        label: 'Save Edits',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['cmd', 'S']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['ctrl', 'S']
+        }]
+      }, {
+        label: 'Exit Edit Mode',
+        hotkeys: [{
+          keys: ['esc']
+        }]
+      }]
+    }, {
+      commands: [{
+        label: 'Skip Words',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['option/alt', '←|→']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['ctrl', '←|→']
+        }]
+      }, {
+        label: 'Highlight Next/Previous Word',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['shift', 'option/alt', '←|→']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['shift', 'ctrl', '←|→']
+        }]
+      }, {
+        label: 'Go to top of results',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['cmd', '↑']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['ctrl', '↑']
+        }]
+      }, {
+        label: 'Go to bottom of results',
+        hotkeys: [{
+          platform: 'Mac',
+          operator: '+',
+          keys: ['cmd', '↓']
+        }, {
+          platform: 'Win|Lin',
+          operator: '+',
+          keys: ['ctrl', '↓']
+        }]
+      }]
+    }]
   };
 
   handleUserEditChange = engine => evt => {
@@ -149,15 +243,6 @@ export default class TranscriptEngineOutput extends Component {
 
   handleViewChange = event => {
     this.setState({ viewType: event.target.value });
-  };
-
-  handleEditChange = event => {
-    const onEditChangeCallback = this.props.onEditTypeChange;
-    if (onEditChangeCallback) {
-      onEditChangeCallback({ type: event.target.value });
-    } else {
-      this.setState({ editType: event.target.value });
-    }
   };
 
   renderResultOptions(engines = []) {
@@ -259,7 +344,8 @@ export default class TranscriptEngineOutput extends Component {
       handleCombineViewTypeChange,
       showingUserEditedOutput,
       showingUserEditedSpeakerOutput,
-      parsedData
+      parsedData,
+      hotKeyCategories
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
     const selectedSpeakerEngine = find(speakerEngines, { id: selectedSpeakerEngineId });
@@ -299,6 +385,7 @@ export default class TranscriptEngineOutput extends Component {
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
+        hotKeyCategories={hotKeyCategories}
       >
         <div className={styles.controllers}>
           {!editMode
@@ -320,8 +407,6 @@ export default class TranscriptEngineOutput extends Component {
       undo,
       redo,
       onChange,
-      editType,
-      onEditTypeChange,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs,
@@ -333,8 +418,6 @@ export default class TranscriptEngineOutput extends Component {
       selectedCombineViewTypeId,
     } = this.props;
 
-    const currentEditType = onEditTypeChange ? editType : this.state.editType;
-
     return (
       outputNullState || (
         <div 
@@ -345,7 +428,6 @@ export default class TranscriptEngineOutput extends Component {
             <SpeakerTranscriptContent
               parsedData={parsedData}
               editMode={editMode}
-              editType={currentEditType}
               mediaPlayerTimeMs={mediaPlayerTimeMs}
               mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
               estimatedDisplayTimeMs={estimatedDisplayTimeMs}

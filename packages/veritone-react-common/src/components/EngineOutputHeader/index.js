@@ -18,8 +18,12 @@ import Grow from '@material-ui/core/Grow';
 import { Manager, Target, Popper } from 'react-popper';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import KeyboardIcon from '@material-ui/icons/Keyboard';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
+import Tooltip from '@material-ui/core/Tooltip';
+
+import HotKeyModal from '../HotKeyModal';
 
 import styles from './styles.scss';
 
@@ -68,8 +72,17 @@ class EngineOutputHeader extends Component {
   };
 
   state = {
-    isMoreMenuOpen: false
-  };
+    isMoreMenuOpen: false,
+    isHotKeyModalOpen: false
+  }
+
+  handleOpenHotKeyModal = () => {
+    this.setState({ isHotKeyModalOpen: true });
+  }
+
+  handleCloseHotKeyModal = () => {
+    this.setState({ isHotKeyModalOpen: false });
+  }
 
   handleEngineChange = evt => {
     if (
@@ -123,9 +136,10 @@ class EngineOutputHeader extends Component {
       disableEditButton,
       disableEngineSelect,
       combineViewTypes,
-      selectedCombineViewTypeId
+      selectedCombineViewTypeId,
+      hotKeyCategories
     } = this.props;
-    const { isMoreMenuOpen } = this.state;
+    const { isMoreMenuOpen, isHotKeyModalOpen } = this.state;
 
     const updatedMoreMenuItems = moreMenuItems.map(item => {
       return cloneElement(item, {
@@ -274,6 +288,21 @@ class EngineOutputHeader extends Component {
               <Icon className="icon-mode_edit2" />
             </IconButton>
           )}
+          {hideTitle && hotKeyCategories && (
+            <Tooltip
+              title="Show Hot Keys"
+              placement="top-end">
+              <IconButton
+                aria-label="Hot Key Shortcuts"
+                onClick={this.handleOpenHotKeyModal}
+                classes={{
+                  root: styles.actionIconButton
+                }}
+              >
+                <KeyboardIcon />
+              </IconButton>
+            </Tooltip>
+          )}
           {!!get(moreMenuItems, 'length') && (
             <Manager>
               <Target>
@@ -324,6 +353,12 @@ class EngineOutputHeader extends Component {
               <Icon className="icon-max-view" />
             </IconButton>
           )}
+        {hotKeyCategories && (
+          <HotKeyModal
+            onClose={this.handleCloseHotKeyModal}
+            open={isHotKeyModalOpen}
+            hotKeyCategories={hotKeyCategories} />
+        )}
       </div>
     );
   }
