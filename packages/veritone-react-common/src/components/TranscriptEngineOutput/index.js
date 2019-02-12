@@ -1,16 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
-import { find, get, startCase } from 'lodash';
+import { find, get } from 'lodash';
 import cx from 'classnames';
-
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Divider from '@material-ui/core/Divider';
-import DoneIcon from '@material-ui/icons/Done';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import SpeakerTranscriptContent from './SpeakerTranscriptContent';
@@ -133,104 +124,105 @@ export default class TranscriptEngineOutput extends Component {
     title: 'Transcription',
     editMode: false,
     mediaPlayerTimeMs: 0,
-    mediaPlayerTimeIntervalMs: 1000,
-    hotKeyCategories: [{
-      commands: [{
-        label: 'Play/Pause',
-        hotkeys: [{
-          keys: ['TAB']
-        }]
-      }, {
-        label: 'Undo',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['cmd', 'Z']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['ctrl', 'Z']
-        }]
-      }, {
-        label: 'Redo',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['cmd', 'shift', 'Z']
-        }, {
-          platform: 'Win',
-          operator: '+',
-          keys: ['ctrl', 'Y']
-        }, {
-          platform: 'Lin',
-          operator: '+',
-          keys: ['ctrl', 'shift', 'Z']
-        }]
-      }, {
-        label: 'Save Edits',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['cmd', 'S']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['ctrl', 'S']
-        }]
-      }, {
-        label: 'Exit Edit Mode',
-        hotkeys: [{
-          keys: ['esc']
-        }]
+    mediaPlayerTimeIntervalMs: 1000
+  };
+
+  hotKeyCategories = [{
+    commands: [{
+      label: 'Play/Pause',
+      hotkeys: [{
+        keys: ['TAB']
       }]
     }, {
-      commands: [{
-        label: 'Skip Words',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['option/alt', '←|→']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['ctrl', '←|→']
-        }]
+      label: 'Undo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'Z']
       }, {
-        label: 'Highlight Next/Previous Word',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['shift', 'option/alt', '←|→']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['shift', 'ctrl', '←|→']
-        }]
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'Z']
+      }]
+    }, {
+      label: 'Redo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'shift', 'Z']
       }, {
-        label: 'Go to top of results',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['cmd', '↑']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['ctrl', '↑']
-        }]
+        platform: 'Win',
+        operator: '+',
+        keys: ['ctrl', 'Y']
       }, {
-        label: 'Go to bottom of results',
-        hotkeys: [{
-          platform: 'Mac',
-          operator: '+',
-          keys: ['cmd', '↓']
-        }, {
-          platform: 'Win|Lin',
-          operator: '+',
-          keys: ['ctrl', '↓']
-        }]
+        platform: 'Lin',
+        operator: '+',
+        keys: ['ctrl', 'shift', 'Z']
+      }]
+    }, {
+      label: 'Save Edits',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'S']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'S']
+      }]
+    }, {
+      label: 'Exit Edit Mode',
+      hotkeys: [{
+        keys: ['esc']
       }]
     }]
-  };
+  }, {
+    commands: [{
+      label: 'Skip Words',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '←|→']
+      }]
+    }, {
+      label: 'Highlight Next/Previous Word',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['shift', 'option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['shift', 'ctrl', '←|→']
+      }]
+    }, {
+      label: 'Go to top of results',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', '↑']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '↑']
+      }]
+    }, {
+      label: 'Go to bottom of results',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', '↓']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '↓']
+      }]
+    }]
+  }]
 
   handleUserEditChange = engine => viewType => () => {
     if (viewType == 'restoreOriginal') {
@@ -266,8 +258,7 @@ export default class TranscriptEngineOutput extends Component {
       handleCombineViewTypeChange,
       showingUserEditedOutput,
       showingUserEditedSpeakerOutput,
-      parsedData,
-      hotKeyCategories
+      parsedData
     } = this.props;
 
     let selectedEngineWithData = {
@@ -309,9 +300,7 @@ export default class TranscriptEngineOutput extends Component {
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
-        hotKeyCategories={hotKeyCategories}
-      >
-      </EngineOutputHeader>
+        hotKeyCategories={this.hotKeyCategories} />
     );
   }
 

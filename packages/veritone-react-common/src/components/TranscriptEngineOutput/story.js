@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { bool, func } from 'prop-types';
+import { bool } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
 import { boolean, number, select } from '@storybook/addon-knobs/react';

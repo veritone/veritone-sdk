@@ -9,11 +9,9 @@ import {
   func
 } from 'prop-types';
 import cx from 'classnames';
-import { isEmpty, get, isArray, find } from 'lodash';
-import Select from '@material-ui/core/Select';
+import { isEmpty, get, isArray } from 'lodash';
 import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
@@ -25,10 +23,7 @@ import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
 import Tooltip from '@material-ui/core/Tooltip';
 import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
@@ -76,7 +71,32 @@ class EngineOutputHeader extends Component {
       })
     ),
     selectedCombineViewTypeId: string,
-    handleCombineViewTypeChange: func
+    handleCombineViewTypeChange: func,
+    onUserEditChange: func,
+    hotKeyCategories: arrayOf(shape({
+      commands: arrayOf(shape({
+        label: string,
+        hotkeys: arrayOf(shape({
+          platform: string,
+          operator: string,
+          keys: arrayOf(string).isRequired
+        }))
+      }))
+    })),
+    selectedEngineWithData: shape({
+      id: string,
+      showingUserEditedOutput: bool,
+      engineResults: arrayOf(shape({
+        assetId: string.isRequired
+      }))
+    }),
+    selectedCombineEngineWithData: shape({
+      id: string,
+      showingUserEditedOutput: bool,
+      engineResults: arrayOf(shape({
+        assetId: string.isRequired
+      }))
+    })
   };
 
   static defaultProps = {
@@ -93,6 +113,12 @@ class EngineOutputHeader extends Component {
   }
 
   menuAnchorRefs = {}
+
+  setMenuAnchorRef = categoryType => node => {
+    if (categoryType) {
+      this.menuAnchorRefs[categoryType] = node;
+    }
+  }
 
   resetSubMenus = () => {
     const { isMainMenuOpen } = this.state;
@@ -251,9 +277,7 @@ class EngineOutputHeader extends Component {
               <Manager>
                 <Target>
                   <Input
-                    inputRef={node => {
-                      this.menuAnchorRefs[combineEngineCategory.categoryType] = node;
-                    }}
+                    inputRef={this.setMenuAnchorRef(combineEngineCategory.categoryType)}
                     disabled={disableEngineSelect}
                     aria-owns={isMainMenuOpen[combineEngineCategory.categoryType] ? 'menu-list-grow' : undefined}
                     className={styles.engineSelect}
@@ -291,7 +315,7 @@ class EngineOutputHeader extends Component {
                                 classes={{
                                   primary: styles.selectMenuItem
                                 }}
-                                primary="Engines"
+                                primary="Available Engines"
                               />
                               {get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
                             </MenuItem>
@@ -436,9 +460,7 @@ class EngineOutputHeader extends Component {
               <Manager>
                 <Target>
                   <Input
-                    inputRef={node => {
-                      this.menuAnchorRefs[engineCategory.categoryType] = node;
-                    }}
+                    inputRef={this.setMenuAnchorRef(engineCategory.categoryType)}
                     disabled={disableEngineSelect}
                     aria-owns={isMainMenuOpen[engineCategory.categoryType] ? 'menu-list-grow' : undefined}
                     className={styles.engineSelect}
@@ -478,7 +500,7 @@ class EngineOutputHeader extends Component {
                                 classes={{
                                   primary: styles.selectMenuItem
                                 }}
-                                primary="Engines"
+                                primary="Available Engines"
                               />
                               {get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
                             </MenuItem>

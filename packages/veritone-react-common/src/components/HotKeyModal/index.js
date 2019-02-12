@@ -4,9 +4,11 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+
+import { guid } from 'helpers/guid';
+
 import styles from './styles.scss';
 
 export default class HotKeyModal extends React.Component {
@@ -52,7 +54,7 @@ export default class HotKeyModal extends React.Component {
             spacing={24}
             container>
             {
-              hotKeyCategories.map((hotKeyCategory, catIndex) => {
+              hotKeyCategories.map(hotKeyCategory => {
                 const categoryTitleItem = (
                   <Grid
                     key={`hotkey-category-title-${hotKeyCategory.label}`}
@@ -129,7 +131,7 @@ export default class HotKeyModal extends React.Component {
                 );
                 return (
                   <Grid
-                    key={`hotkey-category-${hotKeyCategory.label}-${catIndex}`}
+                    key={`hotkey-category-${(hotKeyCategory.label || guid())}`}
                     xs={6}
                     item>
                     {categoryItems}

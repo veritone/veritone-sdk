@@ -3,10 +3,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import DoneIcon from '@material-ui/icons/Done';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import {
   shape,
   number,

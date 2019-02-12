@@ -339,7 +339,7 @@ export default class SpeakerPill extends Component {
 
 function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
   const speakerChanges = [];
-  const { guid, speakerId } = speakerSegment;
+  const { guid } = speakerSegment;
 
   isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
     let index;
