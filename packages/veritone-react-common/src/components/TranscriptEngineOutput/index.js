@@ -232,96 +232,18 @@ export default class TranscriptEngineOutput extends Component {
     }]
   };
 
-  handleUserEditChange = engine => evt => {
-    if (evt.target.value == 'restoreOriginal') {
+  handleUserEditChange = engine => viewType => () => {
+    if (viewType == 'restoreOriginal') {
       this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(engine)(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(viewType === 'userEdited');
   };
 
   handleViewChange = event => {
     this.setState({ viewType: event.target.value });
   };
-
-  renderResultOptions(engines = []) {
-    return engines.filter(engine => engine.hasUserEdits).map(engine => (
-      <FormControl
-        key={`result-edit-type-selection-${engine.id}`}
-        className={styles.outputHeaderSelectContainer}>
-        <Select
-          autoWidth
-          className={styles.outputHeaderSelect}
-          value={engine.showingUserEditedOutput ? 'userEdited' : 'original'}
-          onChange={this.handleUserEditChange(engine)}
-          MenuProps={{
-            anchorOrigin: {
-              horizontal: 'right',
-              vertical: 'bottom'
-            },
-            transformOrigin: {
-              horizontal: 'right',
-              vertical: 'top'
-            },
-            getContentAnchorEl: null
-          }}
-          // eslint-disable-next-line
-          renderValue={() =>
-            engine.showingUserEditedOutput ? 'User-Edited' : 'Original'
-          }
-        >
-          <MenuItem value="userEdited">
-            {engine.showingUserEditedOutput && (
-              <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-                <DoneIcon />
-              </ListItemIcon>
-            )}
-            <ListItemText
-              classes={{
-                primary: cx(styles.selectMenuItem, {
-                  [styles.menuItemInset]: !engine.showingUserEditedOutput
-                })
-              }}
-              primary="User-Edited"
-            />
-          </MenuItem>
-          <MenuItem value="original">
-            {!engine.showingUserEditedOutput && (
-              <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-                <DoneIcon />
-              </ListItemIcon>
-            )}
-            <ListItemText
-              classes={{
-                primary: cx(styles.selectMenuItem, {
-                  [styles.menuItemInset]: engine.showingUserEditedOutput
-                })
-              }}
-              primary="Original"
-            />
-          </MenuItem>
-          <Divider light />
-          <MenuItem value="restoreOriginal">
-            <ListItemText
-              classes={{
-                root: styles.restoreOriginalMenuItem,
-                primary: cx(styles.selectMenuItem, styles.menuItemInset)
-              }}
-              primary="Restore Original"
-            />
-          </MenuItem>
-        </Select>
-        {
-          get(engine, 'category.categoryType') && (
-            <FormHelperText className={styles.outputHeaderHelperText}>
-              {startCase(engine.category.categoryType)}
-            </FormHelperText>
-          )
-        }
-      </FormControl>
-    ));
-  }
 
   renderHeader() {
     const {
@@ -347,21 +269,20 @@ export default class TranscriptEngineOutput extends Component {
       parsedData,
       hotKeyCategories
     } = this.props;
-    const selectedEngine = find(engines, { id: selectedEngineId });
-    const selectedSpeakerEngine = find(speakerEngines, { id: selectedSpeakerEngineId });
-    const renderResultOptionParameters = [
-      {
-        ...selectedEngine,
-        showingUserEditedOutput,
-        engineResults: parsedData.snippetSegments
-      }
-    ]
-    if (selectedSpeakerEngine && selectedCombineViewTypeId === 'speaker-view') {
-      renderResultOptionParameters.push({
-        ...selectedSpeakerEngine,
+
+    let selectedEngineWithData = {
+      ...find(engines, { id: selectedEngineId }),
+      showingUserEditedOutput,
+      engineResults: parsedData.snippetSegments
+    };
+    let selectedSpeakerEngineWithData = find(speakerEngines, { id: selectedSpeakerEngineId });
+
+    if (selectedSpeakerEngineWithData && selectedCombineViewTypeId === 'speaker-view') {
+      selectedSpeakerEngineWithData = {
+        ...selectedSpeakerEngineWithData,
         showingUserEditedOutput: showingUserEditedSpeakerOutput,
         engineResults: parsedData.speakerSegments
-      });
+      };
     }
       
     return (
@@ -369,9 +290,13 @@ export default class TranscriptEngineOutput extends Component {
         title={title}
         hideTitle={editMode}
         engines={engines}
+        selectedEngineWithData={selectedEngineWithData}
         selectedEngineId={selectedEngineId}
+        selectedCombineEngineWithData={selectedSpeakerEngineWithData}
+        selectedCombineEngineId={selectedSpeakerEngineId}
         onEngineChange={onEngineChange}
         onCombineEngineChange={onCombineEngineChange}
+        onUserEditChange={this.handleUserEditChange}
         onExpandClick={onExpandClick}
         className={headerClassName}
         showMoreMenuButton={!editMode && get(moreMenuItems, 'length')}
@@ -381,17 +306,11 @@ export default class TranscriptEngineOutput extends Component {
         disableEditButton={disableEditButton}
         disableEngineSelect={!!editMode}
         combineEngines={speakerEngines}
-        selectedCombineEngineId={selectedSpeakerEngineId}
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
         hotKeyCategories={hotKeyCategories}
       >
-        <div className={styles.controllers}>
-          {!editMode
-            && this.renderResultOptions(renderResultOptionParameters)
-          }
-        </div>
       </EngineOutputHeader>
     );
   }

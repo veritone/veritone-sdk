@@ -87,11 +87,11 @@ const defaultMDPState = {
     combineType: 'speaker',
     withType: 'transcript',
     viewTypes: [{
-      name: 'Speaker Separation',
+      name: 'Show Engine Output',
       id: 'speaker-view',
       combine: true
     }, {
-      name: 'Transcript',
+      name: 'Hide Engine Output',
       id: 'transcript-view'
     }],
     quickExportOptions: {

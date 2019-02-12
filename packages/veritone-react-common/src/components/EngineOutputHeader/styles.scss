@@ -33,8 +33,15 @@
     min-width: 120px;
     margin-left: 20px;
 
+    .categoryIcon {
+      font-size: 20px;
+      margin: 6px;
+    }
+
     .engineSelect {
       @include mui-text('body1');
+      white-space: nowrap;
+      padding: 0;
     }
   }
 
@@ -70,4 +77,35 @@
 
 .moreMenuPopperContent {
   z-index: 1;
+}
+
+.mainMenu {
+  min-width: 300px;
+}
+
+.engineList {
+  max-height: calc(48px * 3);
+  overflow-y: auto !important;
+}
+
+.selectMenuItem {
+  font-size: 14px !important;
+
+  &.menuItemInset {
+    margin-left: 40px;
+  }
+}
+
+.restoreOriginalMenuItem {
+  padding: 0 !important;
+}
+
+.subMenuCheckIcon {
+  margin-right: 0 !important;
+}
+
+.mainMenuText {
+  max-width: 200px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
