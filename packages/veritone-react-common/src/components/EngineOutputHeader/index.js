@@ -195,6 +195,10 @@ class EngineOutputHeader extends Component {
   };
 
   handleMainMenuClick = categoryType => () => {
+    const { disableEngineSelect } = this.props;
+    if (disableEngineSelect) {
+      return;
+    }
     this.setState(prevState => ({
       ...prevState,
       isMainMenuOpen: {
