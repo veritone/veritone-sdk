@@ -104,8 +104,15 @@
   margin-right: 0 !important;
 }
 
+.dropdownIcon {
+  margin-top: 4px;
+  color: $light-black;
+}
+
 .mainMenuText {
   max-width: 200px;
   overflow-x: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none;
 }

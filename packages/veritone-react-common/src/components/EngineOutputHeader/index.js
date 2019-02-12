@@ -24,6 +24,7 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
 import Tooltip from '@material-ui/core/Tooltip';
+import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -249,23 +250,24 @@ class EngineOutputHeader extends Component {
             >
               <Manager>
                 <Target>
-                  <Button
-                    buttonRef={node => {
+                  <Input
+                    inputRef={node => {
                       this.menuAnchorRefs[combineEngineCategory.categoryType] = node;
                     }}
                     disabled={disableEngineSelect}
                     aria-owns={isMainMenuOpen[combineEngineCategory.categoryType] ? 'menu-list-grow' : undefined}
                     className={styles.engineSelect}
                     onClick={this.handleMainMenuClick(combineEngineCategory.categoryType)}
-                    data-veritone-component="engine-output-header-select">
-                    <Icon className={combineEngineCategory.iconClass}
-                      classes={{ root: styles.categoryIcon }}
-                    />
-                    <span className={styles.mainMenuText}>
-                      {(selectedCombineEngine && selectedCombineEngine.name) || combineEngines[0].name}
-                    </span>
-                    <ArrowDropDownIcon />
-                  </Button>
+                    data-veritone-component="engine-output-header-select"
+                    value={(selectedCombineEngine && selectedCombineEngine.name) || combineEngines[0].name}
+                    readOnly
+                    inputProps={{ className: styles.mainMenuText }}
+                    startAdornment={(
+                      <Icon className={combineEngineCategory.iconClass}
+                        classes={{ root: styles.categoryIcon }}
+                      />
+                    )}
+                    endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
                 </Target>
                 {selectedCombineEngine && isMainMenuOpen[combineEngineCategory.categoryType] && (
                   <Popper
@@ -433,23 +435,26 @@ class EngineOutputHeader extends Component {
             >
               <Manager>
                 <Target>
-                  <Button
-                    buttonRef={node => {
+                  <Input
+                    inputRef={node => {
                       this.menuAnchorRefs[engineCategory.categoryType] = node;
                     }}
                     disabled={disableEngineSelect}
                     aria-owns={isMainMenuOpen[engineCategory.categoryType] ? 'menu-list-grow' : undefined}
                     className={styles.engineSelect}
                     onClick={this.handleMainMenuClick(engineCategory.categoryType)}
-                    data-veritone-component="engine-output-header-select">
-                    <Icon className={engineCategory.iconClass}
-                      classes={{ root: styles.categoryIcon }}
-                    />
-                    <span className={styles.mainMenuText}>
-                      {(selectedEngine && selectedEngine.name) || engines[0].name}
-                    </span>
-                    <ArrowDropDownIcon />
-                  </Button>
+                    data-veritone-component="engine-output-header-select"
+                    value={(selectedEngine && selectedEngine.name) || engines[0].name}
+                    readOnly
+                    inputProps={{
+                      className: styles.mainMenuText
+                    }}
+                    startAdornment={(
+                      <Icon className={engineCategory.iconClass}
+                        classes={{ root: styles.categoryIcon }}
+                      />
+                    )}
+                    endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
                 </Target>
                 {selectedEngine && isMainMenuOpen[engineCategory.categoryType] && (
                   <Popper
