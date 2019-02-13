@@ -597,7 +597,6 @@ class EngineOutputHeader extends Component {
                                       primary="Original"
                                     />
                                   </MenuItem>
-                                  <Divider />
                                   <MenuItem
                                     button
                                     onClick={this.handleOnUserEditChange(selectedEngineWithData)('restoreOriginal')}
