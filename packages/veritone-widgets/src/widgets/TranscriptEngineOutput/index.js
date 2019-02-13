@@ -456,28 +456,28 @@ export default class TranscriptEngineOutputContainer extends Component {
         operator: '+',
         keys: ['shift', 'ctrl', '←|→']
       }]
-    }, {
-      label: 'Go to top of results',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', '↑']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', '↑']
-      }]
-    }, {
-      label: 'Go to bottom of results',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', '↓']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', '↓']
-      }]
+    // }, {
+    //   label: 'Go to top of results',
+    //   hotkeys: [{
+    //     platform: 'Mac',
+    //     operator: '+',
+    //     keys: ['cmd', '↑']
+    //   }, {
+    //     platform: 'Win|Lin',
+    //     operator: '+',
+    //     keys: ['ctrl', '↑']
+    //   }]
+    // }, {
+    //   label: 'Go to bottom of results',
+    //   hotkeys: [{
+    //     platform: 'Mac',
+    //     operator: '+',
+    //     keys: ['cmd', '↓']
+    //   }, {
+    //     platform: 'Win|Lin',
+    //     operator: '+',
+    //     keys: ['ctrl', '↓']
+    //   }]
     }]
   }];
 

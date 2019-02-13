@@ -177,8 +177,6 @@ export default class EditableWrapper extends Component {
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       const contentEditableElement = event.target;
-      // event.preventDefault();   // This prevents editable text from being updated
-      event.stopPropagation();
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
       const hasCommand = hasCommandModifier(event);
@@ -215,6 +213,7 @@ export default class EditableWrapper extends Component {
         // }
 
         if (keyCode === 8 || keyCode === 46) {
+          event.stopPropagation();
           // Handle BACKSPACE & DELETE
           if (!noCursorSelection) {
             // If there is a selection, handle deletes by setting empty strings
@@ -252,6 +251,7 @@ export default class EditableWrapper extends Component {
 
         if (keyCode === 13) {
           // Handle return key
+          event.stopPropagation();
           event.preventDefault();
           if (hasSpeakerData && noCursorSelection) {
             // Split current speaker pill by current snippet end time
@@ -263,6 +263,7 @@ export default class EditableWrapper extends Component {
 
         if (hasCommand || hasControl) { // Command/Control Key
           if (keyCode === 90) { // Z button
+            event.stopPropagation();
             if (hasShiftKey(event)) {
               // MAC/LINUX
               redo && redo();
@@ -271,6 +272,7 @@ export default class EditableWrapper extends Component {
               undo && undo();
             }
           } else if (keyCode === 89) { // Y button
+            event.stopPropagation();
             // WINDOWS
             redo && redo();
           }
