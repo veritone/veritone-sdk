@@ -424,7 +424,10 @@ function setCursorPosition(spanChildren = [], cursorPosition = {}) {
 function hasCursorSelection(cursorPosition) {
   if (cursorPosition) {
     return cursorPosition.start && cursorPosition.end
-      && cursorPosition.start.offset !== cursorPosition.end.offset;
+      && (
+        cursorPosition.start.guid !== cursorPosition.end.guid
+          || cursorPosition.start.offset !== cursorPosition.end.offset
+      );
   }
   return false;
 }
@@ -636,6 +639,7 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 ...pick(oldEntry, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
               });
               latestDeleteTime = undefined;
+              break;  // Bail out to optimize - no more changes!
             }
           }
         }
@@ -712,11 +716,6 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   if (startIndex !== endIndex) {
     startSpan.innerText = startSpan.innerText.slice(0, startPos.offset) + textToInsert;
     endSpan.innerText = endSpan.innerText.slice(endPos.offset, endSpan.innerText.length + 1);
-
-    // Check if everything was deleted, if so - retain first snippet
-    if (!startSpan.innerText && !endSpan.innerText && startIndex === 0 && endIndex === spanArray.length - 1) {
-      startSpan.innerText = '.';
-    }
   } else {
     startSpan.innerText = startSpan.innerText.slice(0, startPos.offset) + textToInsert + endSpan.innerText.slice(endPos.offset, endSpan.innerText.length);
   }
