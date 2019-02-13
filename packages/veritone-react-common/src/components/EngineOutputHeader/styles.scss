@@ -34,6 +34,7 @@
     margin-left: 20px;
 
     .categoryIcon {
+      cursor: pointer;
       font-size: 20px;
       margin: 6px;
     }
@@ -90,6 +91,9 @@
 
 .selectMenuItem {
   font-size: 14px !important;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
 
   &.menuItemInset {
     margin-left: 40px;
@@ -108,6 +112,7 @@
 .dropdownIcon {
   margin-top: 4px;
   color: $light-black;
+  cursor: pointer;
 }
 
 .mainMenuText {

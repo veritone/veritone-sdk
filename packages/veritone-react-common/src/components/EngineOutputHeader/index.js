@@ -350,6 +350,7 @@ class EngineOutputHeader extends Component {
                                         })
                                       }} 
                                       primary={e.name}
+                                      title={e.name}
                                     />
                                   </MenuItem>
                                 );
@@ -535,6 +536,7 @@ class EngineOutputHeader extends Component {
                                         })
                                       }} 
                                       primary={e.name}
+                                      title={e.name}
                                     />
                                   </MenuItem>
                                 );
