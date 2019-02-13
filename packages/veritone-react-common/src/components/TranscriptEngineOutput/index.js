@@ -117,7 +117,18 @@ export default class TranscriptEngineOutput extends Component {
         offset: number
       })
     }),
-    clearCursorPosition: func
+    clearCursorPosition: func,
+    hotKeyCategories: arrayOf(shape({
+      label: string,
+      commands: arrayOf(shape({
+        label: string.isRequired,
+        hotkeys: arrayOf(shape({
+          platform: string,
+          operator: string,
+          keys: arrayOf(string).isRequired
+        })).isRequired
+      })).isRequired
+    }))
   };
 
   static defaultProps = {
@@ -126,103 +137,6 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
-
-  hotKeyCategories = [{
-    commands: [{
-      label: 'Play/Pause',
-      hotkeys: [{
-        keys: ['TAB']
-      }]
-    }, {
-      label: 'Undo',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', 'Z']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', 'Z']
-      }]
-    }, {
-      label: 'Redo',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', 'shift', 'Z']
-      }, {
-        platform: 'Win',
-        operator: '+',
-        keys: ['ctrl', 'Y']
-      }, {
-        platform: 'Lin',
-        operator: '+',
-        keys: ['ctrl', 'shift', 'Z']
-      }]
-    }, {
-      label: 'Save Edits',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', 'S']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', 'S']
-      }]
-    }, {
-      label: 'Exit Edit Mode',
-      hotkeys: [{
-        keys: ['esc']
-      }]
-    }]
-  }, {
-    commands: [{
-      label: 'Skip Words',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['option/alt', '←|→']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', '←|→']
-      }]
-    }, {
-      label: 'Highlight Next/Previous Word',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['shift', 'option/alt', '←|→']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['shift', 'ctrl', '←|→']
-      }]
-    }, {
-      label: 'Go to top of results',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', '↑']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', '↑']
-      }]
-    }, {
-      label: 'Go to bottom of results',
-      hotkeys: [{
-        platform: 'Mac',
-        operator: '+',
-        keys: ['cmd', '↓']
-      }, {
-        platform: 'Win|Lin',
-        operator: '+',
-        keys: ['ctrl', '↓']
-      }]
-    }]
-  }]
 
   handleUserEditChange = engine => viewType => () => {
     if (viewType == 'restoreOriginal') {
@@ -258,7 +172,8 @@ export default class TranscriptEngineOutput extends Component {
       handleCombineViewTypeChange,
       showingUserEditedOutput,
       showingUserEditedSpeakerOutput,
-      parsedData
+      parsedData,
+      hotKeyCategories
     } = this.props;
 
     let selectedEngineWithData = {
@@ -300,7 +215,7 @@ export default class TranscriptEngineOutput extends Component {
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
-        hotKeyCategories={this.hotKeyCategories} />
+        hotKeyCategories={hotKeyCategories} />
     );
   }
 

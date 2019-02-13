@@ -456,6 +456,16 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
+  handleToggleMediaPlayerPlayback = () => {
+    if (!this.mediaPlayer) {
+      return;
+    }
+    if (this.mediaPlayer.getState().player.paused) {
+      return this.mediaPlayer.play();
+    } 
+    this.mediaPlayer.pause();
+  }
+
   handleUpdateMediaPlayerTime = startTime => {
     if (!this.mediaPlayer) {
       return;
@@ -1498,6 +1508,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedCombineEngineId={selectedCombineEngineId}
                         selectedCombineViewTypeId={selectedCombineViewTypeId}
                         onClick={this.handleUpdateMediaPlayerTime}
+                        togglePlayback={this.handleToggleMediaPlayerPlayback}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
                         bulkEditEnabled={bulkEditEnabled}

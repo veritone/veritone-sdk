@@ -13,9 +13,13 @@ import {
   orderBy,
   debounce
 } from 'lodash';
-// import UserAgent from 'useragent';
 
 import { guid } from 'helpers/guid';
+import {
+  hasCommandModifier,
+  hasControlModifier,
+  hasShiftKey
+} from 'helpers/dom';
 
 import styles from './styles.scss';
 
@@ -376,26 +380,7 @@ export default class EditableWrapper extends Component {
   }
 }
 
-function hasCommandModifier(e) {
-  const platform = navigator.platform;
-  const isOSX = platform.includes('Mac');
-  return e && isOSX
-    ? !!e.metaKey && !e.altKey
-    : isCtrlKeyCommand(e);
-}
-
-function isCtrlKeyCommand(e) {
-  return !!e.ctrlKey && !e.altKey;
-}
-
-function hasShiftKey(e) {
-  return e && e.shiftKey;
-}
-
-function hasControlModifier(e) {
-  return  e && !!e.ctrlKey && !e.altKey;
-}
-
+// TODO: Should refactor this to use a more reusable cursor position func
 // This is relative to the current element
 function getCursorPosition() {
   const selection = window.getSelection();

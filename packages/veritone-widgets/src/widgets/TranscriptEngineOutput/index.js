@@ -11,8 +11,11 @@ import transcriptSaga, {
 import {
   AlertDialog,
   TranscriptEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  hasCommandModifier,
+  hasControlModifier
 } from 'veritone-react-common';
+
 import Button from '@material-ui/core/Button/Button';
 import styles from '../MediaDetails/styles.scss';
 import Snackbar from '@material-ui/core/Snackbar/Snackbar';
@@ -325,7 +328,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     showConfirmationDialog: bool,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
-    confirmationType: string
+    confirmationType: string,
+    togglePlayback: func
   };
 
   state = {
@@ -347,6 +351,27 @@ export default class TranscriptEngineOutputContainer extends Component {
     return { ...prevState, props: nextProps };
   }
 
+  componentDidMount() {
+    const {
+      editModeEnabled
+    } = this.props;
+    if (editModeEnabled) {
+      this.setHotKeyListeners();
+    }
+  }
+
+  componentDidUpdate() {
+    const {
+      editModeEnabled
+    } = this.props;
+
+    if (editModeEnabled) {
+      this.setHotKeyListeners();
+    } else {
+      this.unsetHotKeyListeners();
+    }
+  }
+
   componentWillUnmount() {
     const {
       editModeEnabled,
@@ -356,7 +381,105 @@ export default class TranscriptEngineOutputContainer extends Component {
     if (editModeEnabled) {
       toggleEditMode();
     }
+    this.unsetHotKeyListeners();
   }
+
+  hotKeyCategories = [{
+    commands: [{
+      label: 'Play/Pause',
+      hotkeys: [{
+        keys: ['TAB']
+      }]
+    }, {
+      label: 'Undo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'Z']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'Z']
+      }]
+    }, {
+      label: 'Redo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'shift', 'Z']
+      }, {
+        platform: 'Win',
+        operator: '+',
+        keys: ['ctrl', 'Y']
+      }, {
+        platform: 'Lin',
+        operator: '+',
+        keys: ['ctrl', 'shift', 'Z']
+      }]
+    }, {
+      label: 'Save Edits',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'S']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'S']
+      }]
+    }, {
+      label: 'Exit Edit Mode',
+      hotkeys: [{
+        keys: ['esc']
+      }]
+    }]
+  }, {
+    commands: [{
+      label: 'Skip Words',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '←|→']
+      }]
+    }, {
+      label: 'Highlight Next/Previous Word',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['shift', 'option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['shift', 'ctrl', '←|→']
+      }]
+    }, {
+      label: 'Go to top of results',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', '↑']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '↑']
+      }]
+    }, {
+      label: 'Go to bottom of results',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', '↓']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '↓']
+      }]
+    }]
+  }];
 
   handleContentChanged = (event, historyDiff, cursorPosition) => {
     this.props.change(historyDiff, cursorPosition);
@@ -508,6 +631,41 @@ export default class TranscriptEngineOutputContainer extends Component {
     return outputNullState;
   };
 
+  setHotKeyListeners = () => {
+    window.addEventListener('keydown', this.hoyKeyEvents);
+  }
+
+  unsetHotKeyListeners = () => {
+    window.removeEventListener('keydown', this.hoyKeyEvents);
+  }
+
+  hoyKeyEvents = event => {
+    const hasCommand = hasCommandModifier(event);
+    const hasControl = hasControlModifier(event);
+    const {
+      togglePlayback,
+      hasUserEdits,
+      savingTranscript,
+      savingSpeaker
+    } = this.props;
+    if (event.keyCode === 9) {
+      event.preventDefault();
+      event.stopPropagation();
+      togglePlayback();
+    } else if (event.keyCode === 27) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.checkEditState();
+    } else if ((hasCommand || hasControl) && event.keyCode === 83) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!hasUserEdits || savingTranscript || savingSpeaker) {
+        return;
+      }
+      this.onSaveEdits();
+    }
+  }
+
   render() {
     const transcriptEngineProps = pick(this.props, [
       'title',
@@ -535,7 +693,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'onCombineEngineChange',
       'combineViewTypes',
       'selectedCombineViewTypeId',
-      'clearCursorPosition'
+      'clearCursorPosition',
+      'togglePlayback'
     ]);
 
     const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
@@ -582,6 +741,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           selectedSpeakerEngineId={this.props.selectedCombineEngineId}
           handleCombineViewTypeChange={this.props.setSelectedCombineViewTypeId}
           outputNullState={outputNullState}
+          hotKeyCategories={this.hotKeyCategories}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
