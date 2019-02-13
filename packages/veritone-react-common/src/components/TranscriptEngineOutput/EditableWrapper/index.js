@@ -143,14 +143,6 @@ export default class EditableWrapper extends Component {
       event.stopPropagation();
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
-
-      // TODO: Need to detect something here... forgot
-      // const targetElem = Array.from(event.target.children)
-      //   .find(c => 
-      //     c.getAttribute('word-guid') === curCursorPos.start.guid
-      //   );
-      // const wordObj = wordGuidMap[curCursorPos.start.guid];
-
       const keyCode = event.keyCode;
       const hasCommand = hasCommandModifier(event);
       const hasControl = hasControlModifier(event);
@@ -467,11 +459,13 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
         ['desc']
       )[0].word;
       const serieDuration = wordObj.serie.stopTimeMs - wordObj.serie.startTimeMs;
-      const cursorOffset = get(cursorPosition, 'start.offset');
+      const cursorOffset = Math.min(
+        get(cursorPosition, 'start.offset', 0),
+        serieText.length
+      );
       const splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
       const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'words']);
 
-      // TODO: handle returns on beginning/end of fragment
       const leftTextSplit = serieText.slice(0, cursorOffset);
       if (leftTextSplit !== serieText) {
         transcriptChanges.push({
