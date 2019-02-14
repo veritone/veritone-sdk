@@ -178,13 +178,11 @@ export default class EditableWrapper extends Component {
       content,
       speakerData,
       undo,
-      redo,
-      onChange
+      redo
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
-      const contentEditableElement = event.target;
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
       const hasCommand = hasCommandModifier(event);
