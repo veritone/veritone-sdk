@@ -95,6 +95,8 @@ export default class SpeakerPill extends Component {
   };
 
   handleAddClick = event => {
+    event.preventDefault();
+    event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll, speakerName } = this.state;
     const { speakerId } = speakerSegment;
@@ -107,6 +109,8 @@ export default class SpeakerPill extends Component {
   };
 
   handleClearClick = event => {
+    event.preventDefault();
+    event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll } = this.state;
     const { speakerId } = speakerSegment;
@@ -123,6 +127,12 @@ export default class SpeakerPill extends Component {
     const { hasChange, historyDiff } = generateSpeakerDeleteDiffHistory(speakerData, speakerSegment);
     hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
+  }
+
+  autoFocusRef = node => {
+    if (node && node.focus) {
+      setTimeout(() => { node.focus() }, 100);
+    }
   }
 
   render() {
@@ -258,6 +268,7 @@ export default class SpeakerPill extends Component {
                   Speaker Name
                 </InputLabel>
                 <Input
+                  inputRef={this.autoFocusRef}
                   className={styles.speakerInput}
                   id={`name-input-${speakerKey}`}
                   type="text"
