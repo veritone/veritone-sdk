@@ -494,7 +494,7 @@ function revertHistoryDiff(state, historyDiff) {
             const subFragments = totalTranscriptFragments
               .filter(frag => frag.startTimeMs >= diff.oldValue.startTimeMs);
             const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index]);
-            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.newValue, nextSpeaker, diff.index, diff.chunkIndex);
+            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.oldValue, nextSpeaker, diff.index, diff.chunkIndex);
             newEditableSpeakerData = update(newEditableSpeakerData, {
               [diff.chunkIndex]: {
                 series: { $splice: [[diff.index, 0, {
@@ -536,7 +536,6 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
         const action = diff.action;
         const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
         switch (action) {
-          // Checked
           case 'UPDATE': {
             const setValue = {
               ...chunkToEdit.series[diff.index],
