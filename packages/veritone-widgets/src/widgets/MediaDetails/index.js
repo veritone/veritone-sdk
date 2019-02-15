@@ -664,7 +664,6 @@ class MediaDetailsWidget extends React.Component {
     const element = document.createElement('a');
     element.href = get(this.props.tdo, 'primaryAsset.signedUri', '');
     element.download = get(this.props, 'tdo.details.veritoneFile.filename');
-    element.target = '_blank';
     element.click();
   };
 
