@@ -345,8 +345,7 @@ function revertHistoryDiff(state, historyDiff) {
                               fragments: {
                                 [guidMatch.dialogueIndex]: {
                                   $set: {
-                                    ...oldValue,
-                                    ...pick(diff, ['index', 'chunkIndex'])
+                                    ...oldValue
                                   }
                                 }
                               },
