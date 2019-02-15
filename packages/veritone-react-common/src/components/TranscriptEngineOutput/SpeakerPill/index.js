@@ -159,6 +159,7 @@ export default class SpeakerPill extends Component {
     const extractPillLabel = speakerId => {
       if (isString(speakerId) && speakerId.length > 2) {
         return speakerId.split(' ')
+          .slice(0, 3)
           .map(part => part.slice(0, 1))
           .join('')
           .toUpperCase();
@@ -187,7 +188,7 @@ export default class SpeakerPill extends Component {
 
     return (
       <div
-        className={ this.props.className }
+        className={ classNames(this.props.className, styles.speakerPillContainer) }
         onMouseEnter={ this.handleMouseEnter }
         onMouseLeave={ this.handleMouseLeave }>
         <Tooltip

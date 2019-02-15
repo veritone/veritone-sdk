@@ -81,7 +81,6 @@ export default class EditableWrapper extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    this.queuedDiffs = [];
     const { cursorPosition, clearCursorPosition } = this.props;
     const cursorPositionToBeUsed = cursorPosition || (snapshot && snapshot.cursorPosition);
     if (cursorPositionToBeUsed) {
@@ -94,7 +93,6 @@ export default class EditableWrapper extends Component {
   }
 
   editableInput = React.createRef();
-  queuedDiffs = [];
 
   debounceTimeMs = 1000;
   savedEvent = undefined;
@@ -117,21 +115,7 @@ export default class EditableWrapper extends Component {
       const contentEditableElement = event.target;
       const wordGuidMap = content.wordGuidMap;
       const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
-
-      let totalChanges = hasChange;
-      let combineHistoryDiff = historyDiff;
-      if (this.queuedDiffs.length) {
-        const combineDiff = this.queuedDiffs.reduce((acc, diff) => ({
-          transcriptChanges: acc.transcriptChanges.concat(diff.historyDiff.transcriptChanges || []),
-          speakerChanges: acc.speakerChanges.concat(diff.historyDiff.speakerChanges || [])
-        }), { transcriptChanges: [], speakerChanges: [] });
-        combineHistoryDiff = {
-          transcriptChanges: combineHistoryDiff.transcriptChanges.concat(combineDiff.transcriptChanges),
-          speakerChanges: combineHistoryDiff.speakerChanges.concat(combineDiff.speakerChanges),
-        };
-        totalChanges = combineHistoryDiff.transcriptChanges.length || combineHistoryDiff.speakerChanges.length;
-      }
-      onChange && totalChanges && onChange(event, combineHistoryDiff, cursorPos);
+      onChange && hasChange && onChange(event, historyDiff, cursorPos);
       this.savedEvent = undefined;
     }
   }
@@ -173,7 +157,8 @@ export default class EditableWrapper extends Component {
     const {
       editMode,
       content,
-      speakerData
+      speakerData,
+      onChange
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
@@ -208,9 +193,8 @@ export default class EditableWrapper extends Component {
           } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
             event.preventDefault(); // Don't delete any text
-            const diffToQueue = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
-            this.queuedDiffs.push(diffToQueue);
-            this.triggerDebouncedOnChange(event);
+            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
+            onChange && editMode && hasChange && onChange(event, historyDiff, cursorPos);
             return;
           }
         }
@@ -236,9 +220,8 @@ export default class EditableWrapper extends Component {
           event.preventDefault();
           if (hasSpeakerData && noCursorSelection) {
             // Split current speaker pill by current snippet end time
-            const diffToQueue = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'ENTER');
-            this.queuedDiffs.push(diffToQueue);
-            this.triggerDebouncedOnChange(event);
+            const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'ENTER');
+            onChange && editMode && hasChange && onChange(event, historyDiff, cursorPos);
           }
           return;
         }
