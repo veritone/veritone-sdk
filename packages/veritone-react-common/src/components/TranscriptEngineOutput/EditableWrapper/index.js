@@ -17,8 +17,7 @@ import {
 import { guid } from 'helpers/guid';
 import {
   hasCommandModifier,
-  hasControlModifier,
-  hasShiftKey
+  hasControlModifier
 } from 'helpers/dom';
 
 import styles from './styles.scss';
@@ -54,8 +53,6 @@ export default class EditableWrapper extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
-    undo: func,
-    redo: func,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number,
     cursorPosition: shape({
@@ -176,17 +173,13 @@ export default class EditableWrapper extends Component {
     const {
       editMode,
       content,
-      speakerData,
-      undo,
-      redo
+      speakerData
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
     if (event) {
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
-      const hasCommand = hasCommandModifier(event);
-      const hasControl = hasControlModifier(event);
       const keyCode = event.keyCode;
       const spanChildren = event.target.children;
       const targetElem = Array.from(spanChildren)
@@ -248,24 +241,6 @@ export default class EditableWrapper extends Component {
             this.triggerDebouncedOnChange(event);
           }
           return;
-        }
-
-        if (hasCommand || hasControl) { // Command/Control Key
-          if (keyCode === 90) { // Z button
-            event.stopPropagation();
-            if (hasShiftKey(event)) {
-              // MAC/LINUX
-              redo && redo();
-            } else {
-              // MAC & WINDOWS/LINUX
-              undo && undo();
-            }
-          } else if (keyCode === 89) { // Y button
-            event.stopPropagation();
-            // WINDOWS
-            redo && redo();
-          }
-          return; 
         }
       }
     }
@@ -655,7 +630,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
         chunkIndex: deletedFrag.chunkIndex,
         index: deletedFrag.index,
         action: 'DELETE',
-        oldValue: deletedFrag.serie
+        oldValue: deletedFrag.serie,
+        ...pick(deletedFrag.serie, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
       });
     });
   }

@@ -13,7 +13,8 @@ import {
   TranscriptEngineOutput,
   EngineOutputNullState,
   hasCommandModifier,
-  hasControlModifier
+  hasControlModifier,
+  hasShiftKey
 } from 'veritone-react-common';
 
 import Button from '@material-ui/core/Button/Button';
@@ -642,27 +643,46 @@ export default class TranscriptEngineOutputContainer extends Component {
   hoyKeyEvents = event => {
     const hasCommand = hasCommandModifier(event);
     const hasControl = hasControlModifier(event);
+    const keyCode = event.keyCode;
     const {
       togglePlayback,
       hasUserEdits,
       savingTranscript,
-      savingSpeaker
+      savingSpeaker,
+      redo,
+      undo
     } = this.props;
-    if (event.keyCode === 9) {
+    if (keyCode === 9) {  // TAB
       event.preventDefault();
       event.stopPropagation();
       togglePlayback();
-    } else if (event.keyCode === 27) {
+    } else if (keyCode === 27) {  // ESC
       event.preventDefault();
       event.stopPropagation();
       this.checkEditState();
-    } else if ((hasCommand || hasControl) && event.keyCode === 83) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (!hasUserEdits || savingTranscript || savingSpeaker) {
-        return;
+    } else if (hasCommand || hasControl) {  // CMD/CTRL
+      if (keyCode === 83) { // S
+        event.preventDefault();
+        event.stopPropagation();
+        if (!hasUserEdits || savingTranscript || savingSpeaker) {
+          return;
+        }
+        this.onSaveEdits();
+      } else if (keyCode === 90) { // Z button
+        event.stopPropagation();
+        if (hasShiftKey(event)) {
+          // MAC/LINUX
+          redo && redo();
+        } else {
+          // MAC & WINDOWS/LINUX
+          undo && undo();
+        }
+      } else if (keyCode === 89) { // Y button
+        event.stopPropagation();
+        // WINDOWS
+        redo && redo();
       }
-      this.onSaveEdits();
+      return; 
     }
   }
 
@@ -677,8 +697,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       'editMode',
       'cursorPosition',
       'onClick',
-      'undo',
-      'redo',
       'onScroll',
       'onExpandClick',
       'onRestoreOriginalClick',
