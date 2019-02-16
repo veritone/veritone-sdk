@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
+import PersonIcon from '@material-ui/icons/Person';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import Menu from '@material-ui/core/Menu';
 import ListItem from '@material-ui/core/ListItem';
@@ -211,7 +212,13 @@ export default class SpeakerPill extends Component {
                 className={ classNames(styles.nullSpeakerIcon, colorClass) }
                   disableRipple
                   onClick={ this.handlePillClick }>
-                  <PersonAddIcon />
+                  {
+                    editMode ? (
+                      <PersonAddIcon />
+                    ) : (
+                      <PersonIcon />
+                    )
+                  }
                 </IconButton>
               )
             }
