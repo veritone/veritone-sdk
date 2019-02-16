@@ -218,10 +218,6 @@ export default class SpeakerTranscriptContent extends Component {
     } else {
       if (editMode) {
         const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
-          const segmentDataWithChunkIndices = segmentData;
-          segmentDataWithChunkIndices.series = segmentDataWithChunkIndices.series.map(frag => {
-            return { ...frag, chunkIndex };
-          })
           const segmentStartTime = segmentData.startTimeMs;
           const segmentStopTime = segmentData.stopTimeMs;
           const segmentContent = (

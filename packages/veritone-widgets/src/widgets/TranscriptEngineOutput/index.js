@@ -390,7 +390,16 @@ export default class TranscriptEngineOutputContainer extends Component {
       label: 'Play/Pause',
       hotkeys: [{
         keys: ['TAB']
-      }]
+      }],
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 9;
+      },
+      eventFunc: event => {
+        const { togglePlayback } = this.props;
+        event.preventDefault();
+        event.stopPropagation();
+        togglePlayback && togglePlayback();
+      }
     }, {
       label: 'Undo',
       hotkeys: [{
@@ -401,7 +410,18 @@ export default class TranscriptEngineOutputContainer extends Component {
         platform: 'Win|Lin',
         operator: '+',
         keys: ['ctrl', 'Z']
-      }]
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        const hasShift = hasShiftKey(event);
+        return (hasCommand || hasControl) && !hasShift && get(event, 'keyCode') === 90;
+      },
+      eventFunc: event => {
+        const { undo } = this.props;
+        event.stopPropagation();
+        undo && undo();
+      }
     }, {
       label: 'Redo',
       hotkeys: [{
@@ -416,7 +436,25 @@ export default class TranscriptEngineOutputContainer extends Component {
         platform: 'Lin',
         operator: '+',
         keys: ['ctrl', 'shift', 'Z']
-      }]
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        const hasShift = hasShiftKey(event);
+        const keyCode = get(event, 'keyCode');
+        if (hasCommand || hasControl) {
+          if (keyCode === 90 && hasShift) { // MAC/LINUX
+            return true;
+          } else if (keyCode === 89) {  // WINDOWS
+            return true;
+          }
+        }
+      },
+      eventFunc: event => {
+        const { redo } = this.props;
+        event.stopPropagation();
+        redo && redo();
+      }
     }, {
       label: 'Save Edits',
       hotkeys: [{
@@ -427,12 +465,38 @@ export default class TranscriptEngineOutputContainer extends Component {
         platform: 'Win|Lin',
         operator: '+',
         keys: ['ctrl', 'S']
-      }]
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        return (hasCommand || hasControl) && get(event, 'keyCode') === 83;
+      },
+      eventFunc: event => {
+        const {
+          hasUserEdits,
+          savingTranscript,
+          savingSpeaker
+        } = this.props;
+        event.preventDefault();
+        event.stopPropagation();
+        if (!hasUserEdits || savingTranscript || savingSpeaker) {
+          return;
+        }
+        this.onSaveEdits();
+      }
     }, {
       label: 'Exit Edit Mode',
       hotkeys: [{
         keys: ['esc']
-      }]
+      }],
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 27;
+      },
+      eventFunc: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.checkEditState();
+      }
     }]
   }, {
     commands: [{
@@ -641,49 +705,14 @@ export default class TranscriptEngineOutputContainer extends Component {
   }
 
   hoyKeyEvents = event => {
-    const hasCommand = hasCommandModifier(event);
-    const hasControl = hasControlModifier(event);
-    const keyCode = event.keyCode;
-    const {
-      togglePlayback,
-      hasUserEdits,
-      savingTranscript,
-      savingSpeaker,
-      redo,
-      undo
-    } = this.props;
-    if (keyCode === 9) {  // TAB
-      event.preventDefault();
-      event.stopPropagation();
-      togglePlayback();
-    } else if (keyCode === 27) {  // ESC
-      event.preventDefault();
-      event.stopPropagation();
-      this.checkEditState();
-    } else if (hasCommand || hasControl) {  // CMD/CTRL
-      if (keyCode === 83) { // S
-        event.preventDefault();
-        event.stopPropagation();
-        if (!hasUserEdits || savingTranscript || savingSpeaker) {
-          return;
-        }
-        this.onSaveEdits();
-      } else if (keyCode === 90) { // Z button
-        event.stopPropagation();
-        if (hasShiftKey(event)) {
-          // MAC/LINUX
-          redo && redo();
-        } else {
-          // MAC & WINDOWS/LINUX
-          undo && undo();
-        }
-      } else if (keyCode === 89) { // Y button
-        event.stopPropagation();
-        // WINDOWS
-        redo && redo();
-      }
-      return; 
-    }
+    this.hotKeyCategories.forEach(category => {
+      category.commands.forEach(command => {
+        command.triggerFunc
+          && command.triggerFunc(event)
+          && command.eventFunc
+          && command.eventFunc(event);
+      });
+    });
   }
 
   render() {

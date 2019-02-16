@@ -306,15 +306,15 @@ function revertHistoryDiff(state, historyDiff) {
   if (historyDiff) {
     isArray(historyDiff.transcriptChanges)
       && historyDiff.transcriptChanges.slice().reverse().forEach(diff => {
-        const chunkToEdit = editableData[diff.chunkIndex];
+        const chunkToEdit = newEditableData[diff.chunkIndex];
         const action = diff.action;
         const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
-        const oldValue = {
-          ...chunkToEdit.series[diff.index],
-          ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
-        };
         switch (action) {
           case 'UPDATE': {
+            const oldValue = {
+              ...chunkToEdit.series[diff.index],
+              ...pick(diff.oldValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
+            };
             newEditableData = update(newEditableData, {
               [diff.chunkIndex]: {
                 series: {
@@ -378,7 +378,7 @@ function revertHistoryDiff(state, historyDiff) {
                 wordGuidMap: {
                   [guid]: {
                     $set : {
-                      ...oldValue,
+                      serie: oldValue,
                       ...pick(diff, ['chunkIndex', 'index'])
                     }
                   }
@@ -532,12 +532,12 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
     isArray(editableData)
       && isArray(historyDiff.transcriptChanges)
       && historyDiff.transcriptChanges.forEach(diff => {
-        const chunkToEdit = editableData[diff.chunkIndex];
+        const chunkToEdit = newEditableData[diff.chunkIndex];
         const action = diff.action;
         const guid = get(diff, 'oldValue.guid') || get(diff, 'newValue.guid');
         switch (action) {
           case 'UPDATE': {
-            const setValue = {
+            const newValue = {
               ...chunkToEdit.series[diff.index],
               ...pick(diff.newValue, ['guid', 'startTimeMs', 'stopTimeMs', 'words'])
             };
@@ -545,13 +545,13 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
               [diff.chunkIndex]: {
                 series: {
                   [diff.index]: {
-                    $set: setValue
+                    $set: newValue
                   }
                 },
                 wordGuidMap: {
                   [guid]: {
                     serie: {
-                      $set: setValue
+                      $set: newValue
                     }
                   }
                 }
@@ -571,7 +571,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                               fragments: {
                                 [guidMatch.dialogueIndex]: {
                                   $set: {
-                                    ...setValue
+                                    ...newValue
                                   }
                                 }
                               },
@@ -579,7 +579,7 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                                 [guid]: {
                                   serie: {
                                     $set: {
-                                      ...setValue,
+                                      ...newValue,
                                       ...pick(diff, ['index', 'chunkIndex'])
                                     }
                                   }
@@ -603,19 +603,21 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
             });
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
-            series.slice(diff.index - series.length).forEach((serie, index) => {
-              newEditableData = update(newEditableData, {
-                [diff.chunkIndex]: {
-                  wordGuidMap: {
-                    [serie.guid]: {
-                      index: {
-                        $set: diff.index + index
+            if (diff.index !== series.length) {
+              series.slice(diff.index - series.length).forEach((serie, index) => {
+                newEditableData = update(newEditableData, {
+                  [diff.chunkIndex]: {
+                    wordGuidMap: {
+                      [serie.guid]: {
+                        index: {
+                          $set: diff.index + index
+                        }
                       }
                     }
                   }
-                }
+                });
               });
-            });
+            }
             //Update speaker map if available
             newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, true);
             break;
@@ -639,19 +641,21 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
             });
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
-            series.slice(diff.index - series.length).forEach((serie, index) => {
-              newEditableData = update(newEditableData, {
-                [diff.chunkIndex]: {
-                  wordGuidMap: {
-                    [serie.guid]: {
-                      index: {
-                        $set: diff.index + index
+            if (diff.index !== series.length) {
+              series.slice(diff.index - series.length).forEach((serie, index) => {
+                newEditableData = update(newEditableData, {
+                  [diff.chunkIndex]: {
+                    wordGuidMap: {
+                      [serie.guid]: {
+                        index: {
+                          $set: diff.index + index
+                        }
                       }
                     }
                   }
-                }
+                });
               });
-            });
+            }
             newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, false);
             break;
           }

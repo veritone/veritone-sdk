@@ -167,13 +167,16 @@ export default class EditableWrapper extends Component {
       const noCursorSelection = !hasCursorSelection(curCursorPos);
       const keyCode = event.keyCode;
       const spanChildren = event.target.children;
-      const targetElem = Array.from(spanChildren)
-        .find(c => 
-          c.getAttribute('word-guid') === curCursorPos.start.guid
-        );
+      const spanArray = Array.from(spanChildren);
+      const startElem = spanArray.find(c => 
+        c.getAttribute('word-guid') === curCursorPos.start.guid
+      );
+      const endElem = spanArray.find(c => 
+        c.getAttribute('word-guid') === curCursorPos.end.guid
+      );
       const wordObj = wordGuidMap[curCursorPos.start.guid];
 
-      if (targetElem) {
+      if (startElem) {
         // UP & DOWN & RIGHT & LEFT
         if (keyCode === 38 || keyCode === 40 || keyCode === 39 || keyCode === 37) {
           event.stopPropagation();
@@ -186,7 +189,6 @@ export default class EditableWrapper extends Component {
           if (!noCursorSelection) {
             // If there is a selection, handle deletes by setting empty strings
             event.preventDefault();
-            const spanArray = Array.from(event.target.children);
             const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
             setCursorPosition(spanChildren, oldCursorPosition);
             return;
@@ -202,14 +204,14 @@ export default class EditableWrapper extends Component {
         // Backspace on 1 char left
         const backspaceOneCharLeft = keyCode === 8
           && curCursorPos.end.offset === 1 
-          && targetElem.innerText.length === 1;
+          && startElem.innerText.length === 1;
         const deleteOneCharLeft = keyCode === 46
           && curCursorPos.end.offset === 0
-          && targetElem.innerText.length === 1;
+          && startElem.innerText.length === 1;
 
         if (backspaceOneCharLeft || deleteOneCharLeft) {
           event.preventDefault();
-          targetElem.innerText = '';
+          startElem.innerText = '';
           editMode && this.triggerDebouncedOnChange(event);
           return;
         }
@@ -224,6 +226,28 @@ export default class EditableWrapper extends Component {
             onChange && editMode && hasChange && onChange(event, historyDiff, cursorPos);
           }
           return;
+        }
+
+        // Special case where user selects everything and types (erasing all snippets)
+        // Need to retain first snippet to prevent typing in non-snippet text
+        const isEraseAll = curCursorPos.start.offset === 0
+          && curCursorPos.end.offset >= endElem.innerText.length;
+        const hasModifier = hasCommandModifier(event) || hasControlModifier(event);
+        const isNotModifier = (48 <= keyCode && keyCode <= 90)
+          || (96 <= keyCode && keyCode <= 111)
+          || (186 <= keyCode && keyCode <= 222);
+        if (!noCursorSelection && isEraseAll && isNotModifier && !hasModifier) {
+          if (curCursorPos.start.guid === curCursorPos.end.guid) {
+            startElem.innerText = '.';
+            const newPos = {
+              ...curCursorPos,
+              end: { ...curCursorPos.start }
+            };
+            setCursorPosition(spanChildren, newPos);
+            return;
+          }
+          const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
+          setCursorPosition(spanChildren, oldCursorPosition);
         }
       }
     }
@@ -397,7 +421,7 @@ function parseHtmlForText(htmlString) {
       const elem = spanArray[key];
       const nodeName = elem.nodeName && elem.nodeName.toLowerCase();
       if (nodeName === 'span') {
-        cumulativeString += ` ${elem.innerText}`;
+        cumulativeString += `${elem.innerText}`;
       }
     }
   }
@@ -594,7 +618,6 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
                 ...pick(oldEntry, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
               });
               latestDeleteTime = undefined;
-              break;  // Bail out to optimize - no more changes!
             }
           }
         }
@@ -664,7 +687,10 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   if (isUndefined(startIndex)) {
     startIndex = cursorStartMap.index;
   }
-  const endIndex = cursorEndMap.dialogueIndex || cursorEndMap.index;
+  let endIndex = cursorEndMap.dialogueIndex;
+  if (isUndefined(endIndex)) {
+    endIndex = cursorEndMap.index;
+  }
   const startSpan = spanArray[startIndex];
   const endSpan = spanArray[endIndex];
 
