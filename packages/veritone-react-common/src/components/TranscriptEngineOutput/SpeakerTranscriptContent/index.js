@@ -153,6 +153,7 @@ export default class SpeakerTranscriptContent extends Component {
                 xl={1}
               >
                 <SpeakerPill
+                  speakerIndex={speakerIndex}
                   editMode={editMode}
                   speakerSegment={speakerSerie}
                   speakerData={speakerSegments}

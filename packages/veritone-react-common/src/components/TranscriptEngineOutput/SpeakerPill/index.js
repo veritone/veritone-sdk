@@ -24,6 +24,7 @@ import styles from './styles.scss';
 
 export default class SpeakerPill extends Component {
   static propTypes = {
+    speakerIndex: number,
     className: string,
     speakerSegment: shape({
       speakerId: string,
@@ -137,6 +138,7 @@ export default class SpeakerPill extends Component {
 
   render() {
     const {
+      speakerIndex,
       editMode,
       speakerSegment,
       availableSpeakers,
@@ -184,7 +186,6 @@ export default class SpeakerPill extends Component {
         speakerId !== id 
         && id.toLowerCase().startsWith(speakerName.toLowerCase())
       ) : availableSpeakers.filter(id => speakerId !== id);
-    
 
     return (
       <div
@@ -298,17 +299,19 @@ export default class SpeakerPill extends Component {
                     )
                   } />
               </FormControl>
-              <Tooltip
-                title="Delete Speaker"
-                placement="top-end"
-                disableHoverListener={!speakerId}>
-                <IconButton
-                  className={ styles.deleteIconContainer }
-                  disableRipple
-                  onClick={this.handleDeleteClick}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              { speakerIndex > 0 && (
+                <Tooltip
+                  title="Delete Speaker"
+                  placement="top-end"
+                  disableHoverListener={!speakerId}>
+                  <IconButton
+                    className={ styles.deleteIconContainer }
+                    disableRipple
+                    onClick={this.handleDeleteClick}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             </ListItem>
             <ListItem
               className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
@@ -350,24 +353,43 @@ export default class SpeakerPill extends Component {
 };
 
 function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
+  const transcriptChanges = [];
   const speakerChanges = [];
   const { guid } = speakerSegment;
 
   isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
     let index;
-    isArray(chunk.series) &&
-      (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
+    if (isArray(chunk.series) 
+      && (index = findIndex(chunk.series, ['guid', guid])) !== -1
+      && index  // Don't allow deleting first one
+    ) {
       speakerChanges.push({
         chunkIndex,
         index,
         action: 'DELETE',
         oldValue: speakerSegment
       });
+      const previousSpeaker = speakerData[chunkIndex].series[index - 1];
+      speakerChanges.push({
+        chunkIndex,
+        index: index - 1,
+        action: 'UPDATE',
+        oldValue: previousSpeaker,
+        newValue: {
+          ...previousSpeaker,
+          stopTimeMs: speakerSegment.stopTimeMs
+        }
+      });
+    }
   });
 
+  speakerChanges.sort(sortByAction);
+  transcriptChanges.sort(sortByAction);
+
   return {
-    hasChange: speakerChanges.length,
+    hasChange: transcriptChanges.length || speakerChanges.length,
     historyDiff: {
+      transcriptChanges,
       speakerChanges
     }
   };
@@ -410,10 +432,28 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
     });
   }
 
+  speakerChanges.sort(sortByAction);
+
   return {
     hasChange: speakerChanges.length,
     historyDiff: {
       speakerChanges
     }
   };
+}
+
+// Sort actions to be Update, Insert, Delete
+//  and for matched actions, we sort in descending index order
+function sortByAction(a, b) {
+  if (a.action && b.action) {
+    if (a.action > b.action) {
+      return -1;
+    } else if (a.action < b.action) {
+      return 1;
+    } else if (a.action === b.action) {
+      return b.index - a.index;
+    }
+    return 0;
+  }
+  return 0;
 }
