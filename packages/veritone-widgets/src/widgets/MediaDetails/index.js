@@ -90,7 +90,7 @@ const programLiveImageNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
+    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       mediaId,
@@ -240,7 +240,7 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    isFetchingEngineResults: bool,
+    isFetchingSpecificEngineResult: func,
     selectedEngineResults: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
@@ -652,7 +652,7 @@ class MediaDetailsWidget extends React.Component {
     const hasEngineResults = this.hasSelectedEngineResults();
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
-      this.props.isFetchingEngineResults ||
+      this.props.isFetchingSpecificEngineResult(selectedEngineId) ||
       this.props.isRestoringOriginalEngineResult ||
       this.props.isFetchingEntities
     ) {

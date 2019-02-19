@@ -61,7 +61,7 @@ const saga = util.reactReduxSaga.saga;
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
     combineCategory: TranscriptRedux.combineCategory(state),
-    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
+    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(state)
   }),
   {
     undo: TranscriptRedux.undo,
@@ -125,7 +125,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         )
       })
     ),
-    isFetchingEngineResults: bool,
+    isFetchingSpecificEngineResult: func,
     parsedData: shape({
       lazyLoading: bool,
       snippetSegments: arrayOf(shape({
@@ -671,7 +671,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       combineCategory,
       combineEngines,
       outputNullState,
-      isFetchingEngineResults
+      isFetchingSpecificEngineResult
     } = this.props;
     const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
@@ -679,7 +679,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
       let combineStatus = combineEngineTask.status;
-      if (isFetchingEngineResults) {
+      if (isFetchingSpecificEngineResult(selectedCombineEngineId)) {
         combineStatus = 'fetching';
       } else if (!speakerData && combineStatus === 'complete') {
         combineStatus = 'no_data';
