@@ -387,19 +387,21 @@ function revertHistoryDiff(state, historyDiff) {
             });
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
-            series.slice(diff.index - series.length).forEach((serie, index) => {
-              newEditableData = update(newEditableData, {
-                [diff.chunkIndex]: {
-                  wordGuidMap: {
-                    [serie.guid]: {
-                      index: {
-                        $set: diff.index + index
+            if (diff.index !== series.length) {
+              series.slice(diff.index - series.length).forEach((serie, index) => {
+                newEditableData = update(newEditableData, {
+                  [diff.chunkIndex]: {
+                    wordGuidMap: {
+                      [serie.guid]: {
+                        index: {
+                          $set: diff.index + index
+                        }
                       }
                     }
                   }
-                }
+                });
               });
-            });
+            }
             // Update speaker data if available
             newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, false);
             break;
@@ -413,19 +415,21 @@ function revertHistoryDiff(state, historyDiff) {
             });
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
-            series.slice(diff.index - series.length).forEach((serie, index) => {
-              newEditableData = update(newEditableData, {
-                [diff.chunkIndex]: {
-                  wordGuidMap: {
-                    [serie.guid]: {
-                      index: {
-                        $set: diff.index + index
+            if (diff.index !== series.length) {
+              series.slice(diff.index - series.length).forEach((serie, index) => {
+                newEditableData = update(newEditableData, {
+                  [diff.chunkIndex]: {
+                    wordGuidMap: {
+                      [serie.guid]: {
+                        index: {
+                          $set: diff.index + index
+                        }
                       }
                     }
                   }
-                }
+                });
               });
-            });
+            }
             // Update speaker data if available
             newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, true);
             break;

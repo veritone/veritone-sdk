@@ -461,7 +461,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: leftTextSplit
+              word: leftTextSplit.trim()
             }]
           },
           ...pick(wordObj, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
@@ -480,7 +480,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: rightTextSplit
+              word: rightTextSplit.trim()
             }]
           }
         });
