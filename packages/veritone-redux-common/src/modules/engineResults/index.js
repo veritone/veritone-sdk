@@ -76,7 +76,6 @@ export default createReducer(defaultState, {
         }
       }
     }
-    const engineFlagsByIds = {};
     // store results mapping
     const tdoEngineResultsMappedByEngineId = {
       ...state.tdoEngineResultsMappedByEngineId
@@ -88,7 +87,6 @@ export default createReducer(defaultState, {
         engineId =>
           resultsGroupedByRequestEngineId[engineId]
             .forEach(result => {
-              engineFlagsByIds[result.requestEngineId] = false;
               delete result.requestEngineId;
               delete result.tdoId;
             }));
@@ -97,6 +95,13 @@ export default createReducer(defaultState, {
         ...resultsGroupedByRequestEngineId
       };
     });
+
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
+      return {
+        ...acc,
+        [id]: false
+      }
+    }, {});
 
     return {
       ...state,

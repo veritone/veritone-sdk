@@ -65,7 +65,8 @@ export default class EditableWrapper extends Component {
         offset: number
       })
     }),
-    clearCursorPosition: func
+    clearCursorPosition: func,
+    setIncomingChanges: func
   };
 
   static defaultProps = {
@@ -98,8 +99,10 @@ export default class EditableWrapper extends Component {
   savedEvent = undefined;
 
   triggerDebouncedOnChange = event => {
+    const { setIncomingChanges } = this.props;
     event && event.persist && event.persist();
     this.savedEvent = event;
+    setIncomingChanges && setIncomingChanges(true);
     this.debouncedOnChange();
   };
 
@@ -110,12 +113,13 @@ export default class EditableWrapper extends Component {
 
   handleDebounceOnChange = () => {
     const event = this.savedEvent;
-    const { content, onChange } = this.props;
+    const { content, onChange, setIncomingChanges } = this.props;
     if (event && event.target) {
       const contentEditableElement = event.target;
       const wordGuidMap = content.wordGuidMap;
       const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap);
       onChange && hasChange && onChange(event, historyDiff, cursorPos);
+      setIncomingChanges && setIncomingChanges(false);
       this.savedEvent = undefined;
     }
   }

@@ -87,7 +87,8 @@ export default class SpeakerTranscriptContent extends Component {
         offset: number
       })
     }),
-    clearCursorPosition: func
+    clearCursorPosition: func,
+    setIncomingChanges: func
   };
 
   static defaultProps = {
@@ -115,6 +116,7 @@ export default class SpeakerTranscriptContent extends Component {
       clearCursorPosition,
       undo,
       redo,
+      setIncomingChanges
     } = this.props;
     const speakerData = parsedData.speakerSegments;
 
@@ -188,6 +190,7 @@ export default class SpeakerTranscriptContent extends Component {
                         classNames={classNames(styles.contentSegment)}
                         cursorPosition={cursorPosition}
                         clearCursorPosition={clearCursorPosition}
+                        setIncomingChanges={setIncomingChanges}
                       />
                     ) :
                     (

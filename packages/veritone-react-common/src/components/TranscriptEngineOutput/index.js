@@ -126,7 +126,8 @@ export default class TranscriptEngineOutput extends Component {
           keys: arrayOf(string).isRequired
         })).isRequired
       })).isRequired
-    }))
+    })),
+    setIncomingChanges: func
   };
 
   static defaultProps = {
@@ -235,6 +236,7 @@ export default class TranscriptEngineOutput extends Component {
       outputNullState,
       selectedEngineId,
       selectedCombineViewTypeId,
+      setIncomingChanges
     } = this.props;
 
     return (
@@ -260,6 +262,7 @@ export default class TranscriptEngineOutput extends Component {
               selectedEngineId={selectedEngineId}
               className={contentClassName}
               selectedCombineViewTypeId={selectedCombineViewTypeId}
+              setIncomingChanges={setIncomingChanges}
             />
           }
         </div>

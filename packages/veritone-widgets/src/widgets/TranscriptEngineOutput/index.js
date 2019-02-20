@@ -335,7 +335,8 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   state = {
     confirmEditType: null,
-    props: this.props
+    props: this.props,
+    hasIncomingChanges: false
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -477,9 +478,12 @@ export default class TranscriptEngineOutputContainer extends Component {
           savingTranscript,
           savingSpeaker
         } = this.props;
+        const {
+          hasIncomingChanges
+        } = this.state;
         event.preventDefault();
         event.stopPropagation();
-        if (!hasUserEdits || savingTranscript || savingSpeaker) {
+        if (!hasUserEdits || savingTranscript || savingSpeaker || hasIncomingChanges) {
           return;
         }
         this.onSaveEdits();
@@ -715,6 +719,10 @@ export default class TranscriptEngineOutputContainer extends Component {
     });
   }
 
+  setIncomingChanges = hasUnpersistedChanges => {
+    this.setState({ hasIncomingChanges: hasUnpersistedChanges });
+  }
+
   render() {
     const transcriptEngineProps = pick(this.props, [
       'title',
@@ -766,6 +774,10 @@ export default class TranscriptEngineOutputContainer extends Component {
     const activeData = this.props.editModeEnabled ?
       this.props.editableParsedData :
       this.props.parsedData;
+    const saveDisabled = !this.props.hasUserEdits
+      || this.props.savingTranscript
+      || this.props.savingSpeaker
+      || this.state.hasIncomingChanges;
 
     return (
       <Fragment>
@@ -789,6 +801,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           handleCombineViewTypeChange={this.props.setSelectedCombineViewTypeId}
           outputNullState={outputNullState}
           hotKeyCategories={this.hotKeyCategories}
+          setIncomingChanges={this.setIncomingChanges}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
@@ -802,7 +815,7 @@ export default class TranscriptEngineOutputContainer extends Component {
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.onSaveEdits}
-              disabled={!this.props.hasUserEdits || this.props.savingTranscript || this.props.savingSpeaker}
+              disabled={saveDisabled}
               variant="contained"
               color="primary"
             >
