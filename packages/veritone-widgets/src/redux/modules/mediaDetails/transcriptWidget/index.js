@@ -1139,6 +1139,9 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       dispatch({
         type: SAVE_TRANSCRIPT_EDITS
       });
+      // TODO: If we ever enable this code path again,
+      // we will need to migrate the bulk-edit engine to V2F 
+      // and update this code accordingly
       if (shouldRunBulkEdit) {
         // Transcript has changed beyond the allowed threshold 
         // and should be run thru levenstein for correction
