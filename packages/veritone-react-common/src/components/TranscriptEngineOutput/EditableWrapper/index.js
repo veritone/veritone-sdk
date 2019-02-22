@@ -637,11 +637,15 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
     deletedList.sort((a, b) => b.index - a.index);
     deletedList.forEach(deletedFrag => {
       transcriptChanges.push({
-        chunkIndex: deletedFrag.chunkIndex,
-        index: deletedFrag.index,
         action: 'DELETE',
         oldValue: deletedFrag.serie,
-        ...pick(deletedFrag.serie, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
+        ...pick(deletedFrag, [
+          'index',
+          'chunkIndex',
+          'speakerIndex',
+          'speakerChunkIndex',
+          'dialogueIndex'
+        ])
       });
     });
   }
