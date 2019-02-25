@@ -183,7 +183,6 @@ class MediaDetailsWidget extends React.Component {
     onBack: func,
     isNextActive: bool,
     isBackActive: bool,
-    refreshIntervalMs: number,
     onRunProcess: func,
     onClose: func,
     className: string,
