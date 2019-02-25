@@ -179,6 +179,10 @@ class MediaDetailsWidget extends React.Component {
     }),
     // property to configure experimental autorefresh in saga
     // eslint-disable-next-line react/no-unused-prop-types
+    onNext: func,
+    onBack: func,
+    isNextActive: bool,
+    isBackActive: bool,
     refreshIntervalMs: number,
     onRunProcess: func,
     onClose: func,
@@ -894,6 +898,18 @@ class MediaDetailsWidget extends React.Component {
     };
   };
 
+  onNextFile = () => {
+    if (this.props.isNextActive) {
+      this.props.onNext();
+    }
+  }
+
+  onBackFile = () => {
+    if (this.props.isBackActive) {
+      this.props.onBack();
+    }
+  }
+
   render() {
     let {
       engineCategories,
@@ -918,7 +934,9 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit
+      cancelEdit,
+      isNextActive,
+      isBackActive,
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1016,10 +1034,11 @@ class MediaDetailsWidget extends React.Component {
           {!isExpandedMode &&
             !isEditModeEnabled && (
               <div>
-                <div 
+                <div
                   className={styles.pageHeader}
-                  data-veritone-component="mdp-page-header" 
+                  data-veritone-component="mdp-page-header"
                   >
+                  <div className={styles.pageHeaderActionButtons}>
                   {get(
                     this.props,
                     'tdo.details.veritoneFile.filename.length',
@@ -1067,9 +1086,42 @@ class MediaDetailsWidget extends React.Component {
                       {!isLoadingTdo && 'No Filename'}
                     </div>
                   )}
-                  <div 
+                    <IconButton
+                      className={styles.pageHeaderActionButton}
+                      aria-label="Previous file"
+                      onClick={this.onBackFile}
+                      style={isBackActive ? { color: 'white' } : {}}
+                    >
+                      <Tooltip
+                          id="tooltip-back-media"
+                          title="Previous file"
+                      >
+                        <Icon
+                          classes={{ root: styles.iconClass }}
+                          className="icon-keyboard_arrow_left"
+                        />
+                      </Tooltip>
+                    </IconButton>
+                    <IconButton
+                      className={styles.pageHeaderActionButton}
+                      aria-label="Next file"
+                      onClick={this.onNextFile}
+                      style={isNextActive ? { color: 'white' } : {}}
+                    >
+                      <Tooltip
+                        id="tooltip-next-media"
+                        title="Next file"
+                      >
+                        <Icon
+                          classes={{ root: styles.iconClass }}
+                          className="icon-keyboard_arrow_right"
+                        />
+                      </Tooltip>
+                    </IconButton>
+                  </div>
+                  <div
                     className={styles.pageHeaderActionButtons}
-                    data-veritone-component="mdp-page-header-actions" 
+                    data-veritone-component="mdp-page-header-actions"
                     >
                     {get(this.props, 'tdo.id') && (
                       <IconButton
@@ -1099,7 +1151,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.downloadFile}
                         disabled={!this.isDownloadAllowed()}
                         aria-label="Download"
-                        data-veritone-component="mdp-download-button" 
+                        data-veritone-component="mdp-download-button"
                       >
                         <Tooltip
                           id="tooltip-download"
@@ -1122,7 +1174,7 @@ class MediaDetailsWidget extends React.Component {
                         className={styles.pageHeaderActionButton}
                         onClick={this.toggleInfoPanel}
                         aria-label="Info Panel"
-                        data-veritone-component="mdp-show-metadata-button" 
+                        data-veritone-component="mdp-show-metadata-button"
 
                       >
                         <Tooltip
@@ -1152,7 +1204,7 @@ class MediaDetailsWidget extends React.Component {
                                 aria-haspopup="true"
                                 aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                                 onClick={this.toggleIsMenuOpen}
-                                data-veritone-component="mdp-more-option-button" 
+                                data-veritone-component="mdp-more-option-button"
                               >
                                 <Tooltip
                                   id="tooltip-show-overflow-menu"
@@ -1229,7 +1281,7 @@ class MediaDetailsWidget extends React.Component {
                       className={styles.pageCloseButton}
                       onClick={this.props.onClose}
                       aria-label="Close"
-                      data-veritone-component="mdp_header_close_button"                       
+                      data-veritone-component="mdp_header_close_button"
                     >
                       <Icon
                         className="icon-close-exit"
@@ -1265,7 +1317,7 @@ class MediaDetailsWidget extends React.Component {
                       flexContainer: styles.mediaDetailsPageTabSelector,
                       indicator: styles.tabIndicator
                     }}
-                    data-veritone-component="mdp-tabs-selector" 
+                    data-veritone-component="mdp-tabs-selector"
                   >
                     <Tab
                       label="Media Details"
@@ -1277,7 +1329,7 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp-media-deatails-tab" 
+                      data-veritone-component="mdp-media-deatails-tab"
                     />
                     <Tab
                       label="Content Templates"
@@ -1289,15 +1341,15 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp-content-templates-tab" 
+                      data-veritone-component="mdp-content-templates-tab"
                     />
                   </Tabs>
                 )}
                 {selectedEngineCategory &&
                   this.state.selectedTabValue === 'mediaDetails' && (
-                    <div 
+                    <div
                       className={styles.engineActionHeader}
-                      data-veritone-component="mdp-engine-action-header"                      
+                      data-veritone-component="mdp-engine-action-header"
                       >
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
@@ -1321,7 +1373,7 @@ class MediaDetailsWidget extends React.Component {
                     className={styles.backButtonEditMode}
                     onClick={this.toggleExpandedMode}
                     aria-label="Back"
-                    data-veritone-component="mdp-back-button-edit-mode" 
+                    data-veritone-component="mdp-back-button-edit-mode"
 
                   >
                     <Icon
@@ -1359,21 +1411,21 @@ class MediaDetailsWidget extends React.Component {
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
                 }
-                data-veritone-component="mdp-edit-header" 
+                data-veritone-component="mdp-edit-header"
               />
             )}
 
           {this.state.selectedTabValue === 'mediaDetails' && (
-            <div 
+            <div
               className={styles.mediaScreen}
-              data-veritone-component="mdp-media-screen" 
+              data-veritone-component="mdp-media-screen"
               >
               {get(tdo, 'id') &&
                 !(
                   get(selectedEngineCategory, 'categoryType') ===
                     'correlation' && isExpandedMode
                 ) && (
-                  <div 
+                  <div
                     className={styles.mediaView}
                     data-veritone-component="mdp-media-view"
                     >
@@ -1432,8 +1484,8 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 )}
               {selectedEngineId && (
-                <div 
-                  data-veritone-component="mdp-category-view" 
+                <div
+                  data-veritone-component="mdp-category-view"
                   className={styles.engineCategoryView}
                   >
                   {selectedEngineCategory &&
