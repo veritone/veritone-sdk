@@ -702,7 +702,9 @@ class SearchBarContainer extends React.Component {
                   ))}
                 </div>
               }
-              title={ openModal.title }
+              title={(
+                <span data-veritone-element={`search-category-label-${openModal.dataTag}`} >{openModal.title}</span>
+               )}
               subheader={ openModal.subtitle }
               style={ { marginTop: 0, marginRight: 0 } }
             />
