@@ -80,7 +80,7 @@ const transcript = {
   showPill: true
 };
 const doc = {
-  id: 'document-category-id',
+  id: 'ba2a423e-99c9-4422-b3a5-0b188d8388ab',
   name: 'Document',
   iconClass: 'icon-description',
   tooltip: 'Search by Text',
@@ -179,8 +179,7 @@ const engineCategoryMapping = {
     title: 'Search by Keyword',
     subtitle: 'Search by keyword within our database of transcripts.'
   },
-  // TODO: Replace w/ real category id
-  'document-category-id': {
+  'ba2a423e-99c9-4422-b3a5-0b188d8388ab': {
     modal: DocumentSearchModal,
     getLabel: DocumentDisplay,
     generateCondition: DocumentConditionGenerator,
