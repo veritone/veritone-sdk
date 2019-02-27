@@ -11,5 +11,10 @@
   .speakerStartTimeLabel {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.54);
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
   }
 }

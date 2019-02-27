@@ -43,9 +43,6 @@ export {
 
 export AlertDialog from './components/share-components/AlertDialog';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
-export {
-  Edit as TranscriptEditMode
-} from './components/TranscriptEngineOutput/TranscriptContent';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
@@ -89,5 +86,7 @@ export ContentTemplate from './components/ContentTemplates';
 export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
+export { hasCommandModifier, hasShiftKey, hasControlModifier } from 'helpers/dom';
 export SharingConfiguration from './components/SharingConfiguration';
 export LibraryForm from './components/LibraryForm';
+export HotKeyModal from './components/HotKeyModal';

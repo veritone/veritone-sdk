@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, pick } from 'lodash';
+import { get, isEqual, pick } from 'lodash';
 
 import { connect } from 'react-redux';
 import { modules, util } from 'veritone-redux-common';
@@ -11,9 +11,12 @@ import transcriptSaga, {
 import {
   AlertDialog,
   TranscriptEngineOutput,
-  TranscriptEditMode,
-  EngineOutputNullState
+  EngineOutputNullState,
+  hasCommandModifier,
+  hasControlModifier,
+  hasShiftKey
 } from 'veritone-react-common';
+
 import Button from '@material-ui/core/Button/Button';
 import styles from '../MediaDetails/styles.scss';
 import Snackbar from '@material-ui/core/Snackbar/Snackbar';
@@ -25,44 +28,49 @@ const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  (state, { tdo, selectedEngineId }) => ({
-    selectedCombineEngineId: TranscriptRedux.getSelectedCombineEngineId(state),
-    selectedCombineViewTypeId: TranscriptRedux.selectedCombineViewTypeId(state),
+  (state, { tdo, selectedEngineId, selectedCombineEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
+    parsedData: TranscriptRedux.parsedData(state),
+    editableParsedData: TranscriptRedux.editableParsedData(state),
     currentData: TranscriptRedux.currentData(state),
+    editableData: TranscriptRedux.editableData(state),
+    editableSpeakerData: TranscriptRedux.editableSpeakerData(state),
+    cursorPosition: TranscriptRedux.cursorPosition(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       tdo.id,
       selectedEngineId
+    ),
+    isDisplayingUserEditedSpeakerOutput: engineResultsModule.isDisplayingUserEditedOutput(
+      state,
+      tdo.id,
+      selectedCombineEngineId
     ),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       tdo.id,
       selectedEngineId
     ),
-    selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
-      state,
-      tdo.id,
-      TranscriptRedux.getSelectedCombineEngineId(state)
-    ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
     ),
     error: TranscriptRedux.getError(state),
     savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state),
+    savingSpeaker: TranscriptRedux.getSavingSpeakerEdits(state),
     editModeEnabled: TranscriptRedux.getEditModeEnabled(state),
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
     confirmationType: TranscriptRedux.getConfirmationType(state),
     combineCategory: TranscriptRedux.combineCategory(state),
-    combineViewTypes: TranscriptRedux.getCombineViewTypes(state),
-    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state)
+    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(state)
   }),
   {
-    //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
-    //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
+    undo: TranscriptRedux.undo,
+    redo: TranscriptRedux.redo,
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
+    clearCursorPosition: TranscriptRedux.clearCursorPosition,
     receiveData: TranscriptRedux.receiveData,
+    receiveSpeakerData: TranscriptRedux.receiveSpeakerData,
     fetchEngineResults: engineResultsModule.fetchEngineResults,
     clearEngineResultsByEngineId:
       engineResultsModule.clearEngineResultsByEngineId,
@@ -73,9 +81,7 @@ const saga = util.reactReduxSaga.saga;
     closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar,
     toggleEditMode: TranscriptRedux.toggleEditMode,
     openConfirmationDialog: TranscriptRedux.openConfirmationDialog,
-    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog,
-    setSelectedCombineEngineId: TranscriptRedux.setSelectedCombineEngineId,
-    setSelectedCombineViewTypeId: TranscriptRedux.setSelectedCombineViewTypeId
+    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog
   },
   null,
   { withRef: true }
@@ -119,24 +125,131 @@ export default class TranscriptEngineOutputContainer extends Component {
         )
       })
     ),
-    isFetchingEngineResults: bool,
-    selectedCombineEngineResults: arrayOf(
+    isFetchingSpecificEngineResult: func,
+    parsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number
+              })
+            )
+          })
+        )
+      })),
+      speakerSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            guid: string.isRequired,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
+          })
+        )
+      }))
+    }),
+    editableParsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number
+              })
+            )
+          })
+        )
+      })),
+      speakerSegments: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            guid: string.isRequired,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired,
+            fragments: arrayOf(shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            }))
+          })
+        )
+      }))
+    }),
+    currentData: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(shape({}))
+      })
+    ),
+    speakerData: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
         series: arrayOf(
           shape({
             startTimeMs: number.isRequired,
             stopTimeMs: number.isRequired,
-            speakerId: string
+            speakerId: string.isRequired
           })
         )
       })
     ),
-    currentData: arrayOf(
+    editableData: arrayOf(
       shape({
         startTimeMs: number,
         stopTimeMs: number,
         series: arrayOf(shape({}))
+      })
+    ),
+    editableSpeakerData: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
+          })
+        )
       })
     ),
 
@@ -163,7 +276,6 @@ export default class TranscriptEngineOutputContainer extends Component {
     ),
     combineCategory: string,
     selectedCombineEngineId: string,
-    setSelectedCombineEngineId: func,
     selectedCombineViewTypeId: string,
     setSelectedCombineViewTypeId: func,
     title: string,
@@ -177,6 +289,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     onClick: func,
     onScroll: func,
     onEngineChange: func,
+    onCombineEngineChange: func,
     onExpandClick: func,
     onRestoreOriginalClick: func,
 
@@ -187,8 +300,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
 
-    //undo: func,     //Uncomment when needed to enable undo option
-    //redo: func,     //Uncomment when needed to enable redo option
+    undo: func,
+    redo: func,
     reset: func.isRequired,
     change: func.isRequired,
     receiveData: func.isRequired,
@@ -198,6 +311,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     fetchEngineResults: func,
     isDisplayingUserEditedOutput: bool,
+    isDisplayingUserEditedSpeakerOutput: bool,
     clearEngineResultsByEngineId: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
@@ -209,108 +323,235 @@ export default class TranscriptEngineOutputContainer extends Component {
     error: string,
     closeErrorSnackbar: func,
     savingTranscript: bool,
+    savingSpeaker: bool,
     toggleEditMode: func,
     editModeEnabled: bool,
     showConfirmationDialog: bool,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
-    confirmationType: string
+    confirmationType: string,
+    togglePlayback: func
   };
 
   state = {
-    editType: TranscriptEditMode.SNIPPET,
     confirmEditType: null,
-    props: this.props
+    props: this.props,
+    hasIncomingChanges: false
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const nextData = get(nextProps, 'selectedEngineResults');
-    nextData &&
-      nextData.map(chunk => {
-        chunk.series &&
-          chunk.series.map(snippet => {
-            const words = snippet.words;
-            words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
-          });
-      });
-
+    const nextSpeakerData = get(nextProps, 'speakerData');
     const prevProps = prevState.props;
+
     !isEqual(prevProps.selectedEngineResults, nextData) &&
       prevProps.receiveData(nextData);
+
+    !isEqual(prevProps.speakerData, nextSpeakerData) &&
+      prevProps.receiveSpeakerData(nextSpeakerData);
+
     return { ...prevState, props: nextProps };
   }
 
   componentDidMount() {
     const {
-      tdo,
-      combineEngines,
-      combineCategory,
-      selectedCombineEngineId,
-      setSelectedCombineEngineId,
-      fetchEngineResults,
-      setSelectedCombineViewTypeId
+      editModeEnabled
     } = this.props;
-    const speakerEngines = get(combineEngines, combineCategory);
+    if (editModeEnabled) {
+      this.setHotKeyListeners();
+    }
+  }
 
-    if (
-      !selectedCombineEngineId &&
-      speakerEngines &&
-      speakerEngines.length
-    ) {
-      const speakerEngineId = speakerEngines[0].id;
-      fetchEngineResults({
-        engineId: speakerEngineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      }).then(response => {
-        setSelectedCombineEngineId(speakerEngineId);
-        setSelectedCombineViewTypeId('speaker-view');
-        return response;
-      });
+  componentDidUpdate() {
+    const {
+      editModeEnabled
+    } = this.props;
+
+    if (editModeEnabled) {
+      this.setHotKeyListeners();
+    } else {
+      this.unsetHotKeyListeners();
     }
   }
 
   componentWillUnmount() {
     const {
       editModeEnabled,
-      toggleEditMode,
-      selectedCombineEngineId,
-      setSelectedCombineEngineId,
-      selectedCombineViewTypeId,
-      setSelectedCombineViewTypeId
+      toggleEditMode
     } = this.props;
 
     if (editModeEnabled) {
       toggleEditMode();
     }
-    if (selectedCombineEngineId) {
-      setSelectedCombineEngineId(null);
-    }
-    if (selectedCombineViewTypeId) {
-      setSelectedCombineViewTypeId('transcript');
-    }
+    this.unsetHotKeyListeners();
   }
 
-  handleSpeakerEngineChange = engineId => {
-    const tdo = this.props.tdo;
-    if (engineId !== this.props.selectedCombineEngineId) {
-      this.props.fetchEngineResults({
-        engineId: engineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      }).then(response => {
-        this.props.setSelectedCombineEngineId(engineId);
-        return response;
-      });
-    }
-  }
+  hotKeyCategories = [{
+    commands: [{
+      label: 'Play/Pause',
+      hotkeys: [{
+        keys: ['TAB']
+      }],
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 9;
+      },
+      eventFunc: event => {
+        const { togglePlayback } = this.props;
+        event.preventDefault();
+        event.stopPropagation();
+        togglePlayback && togglePlayback();
+      }
+    }, {
+      label: 'Undo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'Z']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'Z']
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        const hasShift = hasShiftKey(event);
+        return (hasCommand || hasControl) && !hasShift && get(event, 'keyCode') === 90;
+      },
+      eventFunc: event => {
+        const { undo } = this.props;
+        event.stopPropagation();
+        undo && undo();
+      }
+    }, {
+      label: 'Redo',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'shift', 'Z']
+      }, {
+        platform: 'Win',
+        operator: '+',
+        keys: ['ctrl', 'Y']
+      }, {
+        platform: 'Lin',
+        operator: '+',
+        keys: ['ctrl', 'shift', 'Z']
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        const hasShift = hasShiftKey(event);
+        const keyCode = get(event, 'keyCode');
+        if (hasCommand || hasControl) {
+          if (keyCode === 90 && hasShift) { // MAC/LINUX
+            return true;
+          } else if (keyCode === 89) {  // WINDOWS
+            return true;
+          }
+        }
+      },
+      eventFunc: event => {
+        const { redo } = this.props;
+        event.stopPropagation();
+        redo && redo();
+      }
+    }, {
+      label: 'Save Edits',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['cmd', 'S']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', 'S']
+      }],
+      triggerFunc: event => {
+        const hasCommand = hasCommandModifier(event);
+        const hasControl = hasControlModifier(event);
+        return (hasCommand || hasControl) && get(event, 'keyCode') === 83;
+      },
+      eventFunc: event => {
+        const {
+          hasUserEdits,
+          savingTranscript,
+          savingSpeaker
+        } = this.props;
+        const {
+          hasIncomingChanges
+        } = this.state;
+        event.preventDefault();
+        event.stopPropagation();
+        if (!hasUserEdits || savingTranscript || savingSpeaker || hasIncomingChanges) {
+          return;
+        }
+        this.onSaveEdits();
+      }
+    }, {
+      label: 'Exit Edit Mode',
+      hotkeys: [{
+        keys: ['esc']
+      }],
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 27;
+      },
+      eventFunc: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.checkEditState();
+      }
+    }]
+  }, {
+    commands: [{
+      label: 'Skip Words',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['ctrl', '←|→']
+      }]
+    }, {
+      label: 'Highlight Next/Previous Word',
+      hotkeys: [{
+        platform: 'Mac',
+        operator: '+',
+        keys: ['shift', 'option/alt', '←|→']
+      }, {
+        platform: 'Win|Lin',
+        operator: '+',
+        keys: ['shift', 'ctrl', '←|→']
+      }]
+    // }, {
+    //   label: 'Go to top of results',
+    //   hotkeys: [{
+    //     platform: 'Mac',
+    //     operator: '+',
+    //     keys: ['cmd', '↑']
+    //   }, {
+    //     platform: 'Win|Lin',
+    //     operator: '+',
+    //     keys: ['ctrl', '↑']
+    //   }]
+    // }, {
+    //   label: 'Go to bottom of results',
+    //   hotkeys: [{
+    //     platform: 'Mac',
+    //     operator: '+',
+    //     keys: ['cmd', '↓']
+    //   }, {
+    //     platform: 'Win|Lin',
+    //     operator: '+',
+    //     keys: ['ctrl', '↓']
+    //   }]
+    }]
+  }];
 
-  handleContentChanged = value => {
-    this.props.change(value);
+  handleContentChanged = (event, historyDiff, cursorPosition) => {
+    this.props.change(historyDiff, cursorPosition);
   };
 
   handleOnEditTypeChange = value => {
@@ -330,14 +571,14 @@ export default class TranscriptEngineOutputContainer extends Component {
     }
   };
 
-  handleToggleEditedOutput = showUserEdited => {
+  handleToggleEditedOutput = engine => showUserEdited => {
     const tdo = this.props.tdo;
     this.props.clearEngineResultsByEngineId(
       tdo.id,
-      this.props.selectedEngineId
+      engine.id
     );
     this.props.fetchEngineResults({
-      engineId: this.props.selectedEngineId,
+      engineId: engine.id,
       tdo: tdo,
       startOffsetMs: 0,
       stopOffsetMs:
@@ -347,18 +588,40 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   onSaveEdits = () => {
-    const { tdo, selectedEngineId, fetchEngineResults } = this.props;
-    this.props.saveTranscriptEdit(tdo.id, selectedEngineId).then(res => {
-      fetchEngineResults({
-        engineId: selectedEngineId,
-        tdo: tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
-        ignoreUserEdited: false
-      });
-      this.props.toggleEditMode();
-      return res;
+    const { tdo, selectedEngineId, selectedCombineEngineId, fetchEngineResults } = this.props;
+    this.props.saveTranscriptEdit(tdo.id, selectedEngineId, selectedCombineEngineId).then(savePromises => {
+      // Fetch saved transcript/speaker data
+      const refreshPromises = [];
+      const transcriptResponse = savePromises.transcript;
+      const speakerResponse = savePromises.speaker;
+      if (transcriptResponse) {
+        refreshPromises.push(
+          fetchEngineResults({
+            engineId: selectedEngineId,
+            tdo: tdo,
+            startOffsetMs: 0,
+            stopOffsetMs:
+              Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+            ignoreUserEdited: false
+          })
+        );
+      }
+      if (speakerResponse) {
+        refreshPromises.push(
+          fetchEngineResults({
+            engineId: selectedCombineEngineId,
+            tdo: tdo,
+            startOffsetMs: 0,
+            stopOffsetMs:
+              Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+            ignoreUserEdited: false
+          })
+        );
+      }
+      Promise.all(refreshPromises).finally(() => {
+        this.props.toggleEditMode();  
+      })
+      return refreshPromises;
     });
   };
 
@@ -407,12 +670,12 @@ export default class TranscriptEngineOutputContainer extends Component {
   determineSpeakerNullstate = () => {
     const {
       selectedCombineEngineId,
-      selectedCombineEngineResults,
+      speakerData,
       selectedCombineViewTypeId,
       combineCategory,
       combineEngines,
       outputNullState,
-      isFetchingEngineResults
+      isFetchingSpecificEngineResult
     } = this.props;
     const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
@@ -420,11 +683,11 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
       let combineStatus = combineEngineTask.status;
-      if (isFetchingEngineResults) {
+      if (isFetchingSpecificEngineResult(selectedCombineEngineId)) {
         combineStatus = 'fetching';
-      } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
+      } else if (!speakerData && combineStatus === 'complete') {
         combineStatus = 'no_data';
-      } else if (selectedCombineEngineResults && combineStatus === 'complete') {
+      } else if (speakerData && combineStatus === 'complete') {
         return outputNullState;
       }
       return outputNullState || (
@@ -437,6 +700,29 @@ export default class TranscriptEngineOutputContainer extends Component {
     return outputNullState;
   };
 
+  setHotKeyListeners = () => {
+    window.addEventListener('keydown', this.hoyKeyEvents);
+  }
+
+  unsetHotKeyListeners = () => {
+    window.removeEventListener('keydown', this.hoyKeyEvents);
+  }
+
+  hoyKeyEvents = event => {
+    this.hotKeyCategories.forEach(category => {
+      category.commands.forEach(command => {
+        command.triggerFunc
+          && command.triggerFunc(event)
+          && command.eventFunc
+          && command.eventFunc(event);
+      });
+    });
+  }
+
+  setIncomingChanges = hasUnpersistedChanges => {
+    this.setState({ hasIncomingChanges: hasUnpersistedChanges });
+  }
+
   render() {
     const transcriptEngineProps = pick(this.props, [
       'title',
@@ -446,6 +732,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       'headerClassName',
       'contentClassName',
       'editMode',
+      'cursorPosition',
       'onClick',
       'onScroll',
       'onExpandClick',
@@ -458,8 +745,11 @@ export default class TranscriptEngineOutputContainer extends Component {
       'moreMenuItems',
       'disableEditButton',
       'onEngineChange',
+      'onCombineEngineChange',
       'combineViewTypes',
-      'selectedCombineViewTypeId'
+      'selectedCombineViewTypeId',
+      'clearCursorPosition',
+      'togglePlayback'
     ]);
 
     const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
@@ -481,15 +771,22 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     const speakerEngines = get(this.props, ['combineEngines', this.props.combineCategory], []);
 
+    const activeData = this.props.editModeEnabled ?
+      this.props.editableParsedData :
+      this.props.parsedData;
+    const saveDisabled = !this.props.hasUserEdits
+      || this.props.savingTranscript
+      || this.props.savingSpeaker
+      || this.state.hasIncomingChanges;
+
     return (
       <Fragment>
         <TranscriptEngineOutput
-          data={this.props.currentData}
+          parsedData={activeData}
           {...transcriptEngineProps}
           bulkEditEnabled={bulkEditEnabled}
           editMode={this.props.editModeEnabled}
           onChange={this.handleContentChanged}
-          onCombineEngineChange={this.handleSpeakerEngineChange}
           editType={this.state.editType}
           showEditButton={
             this.props.showEditButton && !this.props.editModeEnabled
@@ -497,26 +794,28 @@ export default class TranscriptEngineOutputContainer extends Component {
           onEditButtonClick={this.props.toggleEditMode}
           onEditTypeChange={this.handleOnEditTypeChange}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          showingUserEditedSpeakerOutput={this.props.isDisplayingUserEditedSpeakerOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           speakerEngines={speakerEngines}
-          speakerData={this.props.selectedCombineEngineResults}
           selectedSpeakerEngineId={this.props.selectedCombineEngineId}
           handleCombineViewTypeChange={this.props.setSelectedCombineViewTypeId}
           outputNullState={outputNullState}
+          hotKeyCategories={this.hotKeyCategories}
+          setIncomingChanges={this.setIncomingChanges}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.checkEditState}
-              disabled={this.props.savingTranscript}
+              disabled={this.props.savingTranscript || this.props.savingSpeaker}
             >
               CANCEL
             </Button>
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.onSaveEdits}
-              disabled={!this.props.hasUserEdits || this.props.savingTranscript}
+              disabled={saveDisabled}
               variant="contained"
               color="primary"
             >
