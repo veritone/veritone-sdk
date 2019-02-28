@@ -55,7 +55,8 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  PDFViewer
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
@@ -795,7 +796,6 @@ class MediaDetailsWidget extends React.Component {
             {`Bulk edit transcript will run in the background and may take some time to finish.`}
           </span>
         }
-
       />
     );
   };
@@ -1070,10 +1070,10 @@ class MediaDetailsWidget extends React.Component {
           {!isExpandedMode &&
             !isEditModeEnabled && (
               <div>
-                <div 
+                <div
                   className={styles.pageHeader}
-                  data-veritone-component="mdp-page-header" 
-                  >
+                  data-veritone-component="mdp-page-header"
+                >
                   {get(
                     this.props,
                     'tdo.details.veritoneFile.filename.length',
@@ -1121,10 +1121,10 @@ class MediaDetailsWidget extends React.Component {
                       {!isLoadingTdo && 'No Filename'}
                     </div>
                   )}
-                  <div 
+                  <div
                     className={styles.pageHeaderActionButtons}
-                    data-veritone-component="mdp-page-header-actions" 
-                    >
+                    data-veritone-component="mdp-page-header-actions"
+                  >
                     {get(this.props, 'tdo.id') && (
                       <IconButton
                         className={styles.pageHeaderActionButton}
@@ -1153,7 +1153,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.downloadFile}
                         disabled={!this.isDownloadAllowed()}
                         aria-label="Download"
-                        data-veritone-component="mdp-download-button" 
+                        data-veritone-component="mdp-download-button"
                       >
                         <Tooltip
                           id="tooltip-download"
@@ -1176,8 +1176,7 @@ class MediaDetailsWidget extends React.Component {
                         className={styles.pageHeaderActionButton}
                         onClick={this.toggleInfoPanel}
                         aria-label="Info Panel"
-                        data-veritone-component="mdp-show-metadata-button" 
-
+                        data-veritone-component="mdp-show-metadata-button"
                       >
                         <Tooltip
                           id="tooltip-show-metadata"
@@ -1206,7 +1205,7 @@ class MediaDetailsWidget extends React.Component {
                                 aria-haspopup="true"
                                 aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                                 onClick={this.toggleIsMenuOpen}
-                                data-veritone-component="mdp-more-option-button" 
+                                data-veritone-component="mdp-more-option-button"
                               >
                                 <Tooltip
                                   id="tooltip-show-overflow-menu"
@@ -1283,7 +1282,7 @@ class MediaDetailsWidget extends React.Component {
                       className={styles.pageCloseButton}
                       onClick={this.props.onClose}
                       aria-label="Close"
-                      data-veritone-component="mdp_header_close_button"                       
+                      data-veritone-component="mdp_header_close_button"
                     >
                       <Icon
                         className="icon-close-exit"
@@ -1319,7 +1318,7 @@ class MediaDetailsWidget extends React.Component {
                       flexContainer: styles.mediaDetailsPageTabSelector,
                       indicator: styles.tabIndicator
                     }}
-                    data-veritone-component="mdp-tabs-selector" 
+                    data-veritone-component="mdp-tabs-selector"
                   >
                     <Tab
                       label="Media Details"
@@ -1331,7 +1330,7 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp-media-deatails-tab" 
+                      data-veritone-component="mdp-media-deatails-tab"
                     />
                     <Tab
                       label="Content Templates"
@@ -1343,16 +1342,16 @@ class MediaDetailsWidget extends React.Component {
                             ? 500
                             : 400
                       }}
-                      data-veritone-component="mdp-content-templates-tab" 
+                      data-veritone-component="mdp-content-templates-tab"
                     />
                   </Tabs>
                 )}
                 {selectedEngineCategory &&
                   this.state.selectedTabValue === 'mediaDetails' && (
-                    <div 
+                    <div
                       className={styles.engineActionHeader}
-                      data-veritone-component="mdp-engine-action-header"                      
-                      >
+                      data-veritone-component="mdp-engine-action-header"
+                    >
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={engineCategorySelectorItems}
@@ -1375,8 +1374,7 @@ class MediaDetailsWidget extends React.Component {
                     className={styles.backButtonEditMode}
                     onClick={this.toggleExpandedMode}
                     aria-label="Back"
-                    data-veritone-component="mdp-back-button-edit-mode" 
-
+                    data-veritone-component="mdp-back-button-edit-mode"
                   >
                     <Icon
                       className="icon-arrow-back"
@@ -1413,24 +1411,24 @@ class MediaDetailsWidget extends React.Component {
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
                 }
-                data-veritone-component="mdp-edit-header" 
+                data-veritone-component="mdp-edit-header"
               />
             )}
 
           {this.state.selectedTabValue === 'mediaDetails' && (
-            <div 
+            <div
               className={styles.mediaScreen}
-              data-veritone-component="mdp-media-screen" 
-              >
+              data-veritone-component="mdp-media-screen"
+            >
               {get(tdo, 'id') &&
                 !(
                   get(selectedEngineCategory, 'categoryType') ===
                     'correlation' && isExpandedMode
                 ) && (
-                  <div 
+                  <div
                     className={styles.mediaView}
                     data-veritone-component="mdp-media-view"
-                    >
+                  >
                     {!this.getPrimaryAssetUri() &&
                       !get(this.props, 'tdo.streams.length') && (
                         <Image
@@ -1451,10 +1449,13 @@ class MediaDetailsWidget extends React.Component {
                     {!isImage &&
                       !isMedia &&
                       isPdf &&
-                      !!this.getPrimaryAssetUri() &&(
-                        <div className={styles.fileIconContainer}>
-                          <PictureAsPdf className={styles.fileIcon}/>
-                        </div>
+                      !!this.getPrimaryAssetUri() && (
+                        //TODOJB update dimensions, define loading and error states
+                        <PDFViewer
+                          file={this.getPrimaryAssetUri()}
+                          height={600}
+                          width={600}
+                        />
                       )}
                     {isImage &&
                       !!this.getPrimaryAssetUri() && (
@@ -1486,10 +1487,10 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 )}
               {selectedEngineId && (
-                <div 
-                  data-veritone-component="mdp-category-view" 
+                <div
+                  data-veritone-component="mdp-category-view"
                   className={styles.engineCategoryView}
-                  >
+                >
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
