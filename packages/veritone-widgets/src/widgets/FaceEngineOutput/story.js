@@ -3,12 +3,11 @@ import { storiesOf } from '@storybook/react';
 import { withKnobs, number as knobNumber } from '@storybook/addon-knobs';
 import { Provider } from 'react-redux';
 import { util } from 'veritone-redux-common';
-import configureStore from '../../redux/configureStore';
+import VeritoneApp from '../../shared/VeritoneApp';
 
 import FaceEngineOutput from '.';
 
 const Sagas = util.reactReduxSaga.Sagas;
-const store = configureStore();
 
 const faceObjects = [
   {
@@ -169,6 +168,9 @@ const engines = [
     name: 'Semblance'
   }
 ];
+
+const app = VeritoneApp();
+const store = app._store;
 
 storiesOf('FaceEngineOutput', module)
   .addDecorator(withKnobs)
