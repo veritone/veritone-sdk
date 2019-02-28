@@ -766,6 +766,7 @@ export class SampleSearchBar extends React.Component {
               presetSDOSchema={ this.props.presetSDOSchema }
               presetSDOAttribute={ this.props.presetSDOAttribute }
               sourceFilters={ this.props.sourceFilters }
+              defaultJoinOperator={ this.props.defaultJoinOperator }
             />
           </MuiThemeProvider>
         </JssProvider>
