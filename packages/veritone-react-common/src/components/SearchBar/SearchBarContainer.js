@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, func, object, string } from 'prop-types';
+import { arrayOf, func, object, string, oneOf } from 'prop-types';
 import { SearchBar } from '.';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -40,7 +40,8 @@ class SearchBarContainer extends React.Component {
     searchParameters: arrayOf(object),
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
-    enabledEngineCategories: arrayOf(object)
+    enabledEngineCategories: arrayOf(object),
+    defaultJoinOperator: oneOf(['and', 'or'])
   };
 
   state = {
@@ -157,7 +158,7 @@ class SearchBarContainer extends React.Component {
 
   addJoiningOperator = (operator, index) => {
     this.props.addOrModifySearchParameter({
-      value: operator || 'and',
+      value: operator || this.props.defaultJoinOperator,
       conditionType: 'join'
     }, index);
   };
@@ -702,7 +703,9 @@ class SearchBarContainer extends React.Component {
                   ))}
                 </div>
               }
-              title={ openModal.title }
+              title={(
+                <span data-veritone-element={`search-category-label-${openModal.dataTag}`} >{openModal.title}</span>
+               )}
               subheader={ openModal.subtitle }
               style={ { marginTop: 0, marginRight: 0 } }
             />

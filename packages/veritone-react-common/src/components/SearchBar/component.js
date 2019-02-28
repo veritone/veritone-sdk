@@ -177,7 +177,8 @@ const engineCategoryMapping = {
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator,
     title: 'Search by Keyword',
-    subtitle: 'Search by keyword within our database of transcripts.'
+    subtitle: 'Search by keyword within our database of transcripts.',
+    dataTag: 'transcript'
   },
   'ba2a423e-99c9-4422-b3a5-0b188d8388ab': {
     modal: DocumentSearchModal,
@@ -191,69 +192,79 @@ const engineCategoryMapping = {
     getLabel: SentimentDisplay,
     generateCondition: SentimentConditionGenerator,
     title: 'Search by Sentiment',
-    subtitle: 'Search by positive and negative sentiment in text transcripts.'
+    subtitle: 'Search by positive and negative sentiment in text transcripts.',
+    dataTag: 'sentiment'
   },
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
     getLabel: RecognizedTextDisplay,
     generateCondition: RecognizedTextConditionGenerator,
     title: 'Search by Recognized Text',
-    subtitle: 'Searches within our database for recognized text.'
+    subtitle: 'Searches within our database for recognized text.',
+    dataTag: 'ocr'
   },
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
     modal: FaceSearchModal,
     getLabel: FaceDisplay,
     generateCondition: FaceConditionGenerator,
     title: 'Search by Face',
-    subtitle: 'Search by known images of people within our database.'
+    subtitle: 'Search by known images of people within our database.',
+    dataTag: 'face'
   },
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
     modal: ObjectSearchModal,
     getLabel: ObjectDisplay,
     generateCondition: ObjectConditionGenerator,
     title: 'Search by Object',
-    subtitle: 'Search by objects within our database.'
+    subtitle: 'Search by objects within our database.',
+    dataTag: 'object'
   },
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': {
     modal: FingerprintSearchModal,
     getLabel: FingerprintDisplay,
     generateCondition: FingerprintConditionGenerator,
     title: 'Search by Fingerprint',
-    subtitle: 'Locate a certain song or advertisement inside of audio files.'
+    subtitle: 'Locate a certain song or advertisement inside of audio files.',
+    dataTag: 'fingerprint'
   },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
     getLabel: LogoDisplay,
     generateCondition: LogoConditionGenerator,
     title: 'Search by Logo',
-    subtitle: 'Search by logos within our database.'
+    subtitle: 'Search by logos within our database.',
+    dataTag: 'logo'
   },
   'tag-search-id': {
     modal: TagSearchModal,
     getLabel: TagDisplay,
     generateCondition: TagConditionGenerator,
     title: 'Search by Tag',
-    subtitle: 'Search by tags within our database.'
+    subtitle: 'Search by tags within our database.',
+    dataTag: 'tag'
   },
   'sdo-search-id': {
     modal: StructuredDataModal,
     getLabel: StructuredDataDisplay,
     title: 'Search by Structured Data',
-    subtitle: 'Search by third party structured data.'
+    subtitle: 'Search by third party structured data.',
+    dataTag: 'sdo'
   },
   'time-search-id': {
     modal: TimeSearchModal,
     getLabel: TimeDisplay,
     generateCondition: TimeConditionGenerator,
     title: 'Search by Time',
-    subtitle: 'Search by day of week and time within our database.'
+    subtitle: 'Search by day of week and time within our database.',
+    dataTag: 'time'
   },
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': {
     modal: GeolocationModal,
     getLabel: GeolocationDisplay,
     generateCondition: GeolocationGenerator,
     title: 'Search by Geolocation',
-    subtitle: 'Locate by City, ZIP Code or DMA.'
+    subtitle: 'Locate by City, ZIP Code or DMA.',
+    dataTag: 'geo'
   }
 };
 
@@ -786,6 +797,7 @@ export class SampleSearchBar extends React.Component {
               presetSDOSchema={ this.props.presetSDOSchema }
               presetSDOAttribute={ this.props.presetSDOAttribute }
               sourceFilters={ this.props.sourceFilters }
+              defaultJoinOperator={ this.props.defaultJoinOperator }
             />
           </MuiThemeProvider>
         </JssProvider>
