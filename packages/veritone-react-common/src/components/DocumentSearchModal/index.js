@@ -75,7 +75,7 @@ DocumentSearchModal.defaultProps = {
 const DocumentConditionGenerator = modalState => {
   return {
     operator: 'query_string',
-    field: 'transcript.transcript',  // TODO: Replace w/ real ES field
+    field: 'text-document.text',
     value: modalState.search && modalState.search.toLowerCase() || ''
   };
 };
