@@ -9,6 +9,11 @@ import {
   TranscriptConditionGenerator
 } from '../TranscriptSearchModal';
 import {
+  DocumentSearchModal,
+  DocumentDisplay,
+  DocumentConditionGenerator
+} from '../DocumentSearchModal';
+import {
   SentimentSearchModal,
   SentimentDisplay,
   SentimentConditionGenerator
@@ -71,6 +76,14 @@ const transcript = {
   name: 'Transcript',
   iconClass: 'icon-transcription',
   tooltip: 'Search by Keyword',
+  enablePill: true,
+  showPill: true
+};
+const doc = {
+  id: 'ba2a423e-99c9-4422-b3a5-0b188d8388ab',
+  name: 'Document',
+  iconClass: 'icon-description',
+  tooltip: 'Search by Text',
   enablePill: true,
   showPill: true
 };
@@ -156,7 +169,7 @@ const geolocation = {
 }
 
 const appBarColor = '#ff2200';
-const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
+const enabledEngineCategories = [transcript, doc, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -166,6 +179,13 @@ const engineCategoryMapping = {
     title: 'Search by Keyword',
     subtitle: 'Search by keyword within our database of transcripts.',
     dataTag: 'transcript'
+  },
+  'ba2a423e-99c9-4422-b3a5-0b188d8388ab': {
+    modal: DocumentSearchModal,
+    getLabel: DocumentDisplay,
+    generateCondition: DocumentConditionGenerator,
+    title: 'Text Search',
+    subtitle: 'Explore and locate words inside text documents.'
   },
   'f2554098-f14b-4d81-9be1-41d0f992a22f': {
     modal: SentimentSearchModal,
