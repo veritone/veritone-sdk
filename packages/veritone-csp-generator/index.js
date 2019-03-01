@@ -408,6 +408,11 @@ const TranscriptConditionGenerator = modalState => {
   return V2QueryStringParser('transcript.transcript', modalState.search);
 };
 
+// most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
+const DocumentConditionGenerator = modalState => {
+  return V2QueryStringParser('text-document.text', modalState.search);
+};
+
 const GeolocationGenerator = modalState => {
   return {
     operator: 'geo_distance',
@@ -421,6 +426,7 @@ const GeolocationGenerator = modalState => {
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': TranscriptConditionGenerator,
+  'ba2a423e-99c9-4422-b3a5-0b188d8388ab': DocumentConditionGenerator,
   'f2554098-f14b-4d81-9be1-41d0f992a22f': SentimentConditionGenerator,
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': RecognizedTextConditionGenerator,
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': FaceConditionGenerator,
