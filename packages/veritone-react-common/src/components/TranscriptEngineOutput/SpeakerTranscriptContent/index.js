@@ -123,7 +123,7 @@ export default class SpeakerTranscriptContent extends Component {
     const availableSpeakerSet = new Set();
     isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
       isArray(chunk.series) && chunk.series.forEach((serie, index) => {
-        availableSpeakerSet.add(serie.speakerId);
+        serie.speakerId && availableSpeakerSet.add(serie.speakerId);
       });
     });
     const availableSpeakers = Array.from(availableSpeakerSet);

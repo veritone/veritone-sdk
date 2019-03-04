@@ -170,6 +170,20 @@ export default class EditableWrapper extends Component {
       const curCursorPos = getCursorPosition();
       const noCursorSelection = !hasCursorSelection(curCursorPos);
       const keyCode = event.keyCode;
+
+      if (
+        keyCode === 38 ||  // UP
+        keyCode === 40 ||  // DOWN
+        keyCode === 39 ||  // RIGHT
+        keyCode === 37 ||  // LEFT
+        keyCode === 91 ||  // CMD
+        keyCode === 17 ||  // CTRL
+        keyCode === 18     // OPTION/ALT
+       ) {
+        event.stopPropagation();
+        return;
+      }
+      
       const spanChildren = event.target.children;
       const spanArray = Array.from(spanChildren);
       const startElem = spanArray.find(c => 
@@ -181,11 +195,6 @@ export default class EditableWrapper extends Component {
       const wordObj = wordGuidMap[curCursorPos.start.guid];
 
       if (startElem) {
-        // UP & DOWN & RIGHT & LEFT
-        if (keyCode === 38 || keyCode === 40 || keyCode === 39 || keyCode === 37) {
-          event.stopPropagation();
-          return;
-        }
 
         // Handle BACKSPACE & DELETE
         if (keyCode === 8 || keyCode === 46) {

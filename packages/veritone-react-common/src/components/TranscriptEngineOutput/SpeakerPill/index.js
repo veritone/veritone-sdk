@@ -184,7 +184,8 @@ export default class SpeakerPill extends Component {
     const speakerLabel = extractLabel(speakerId);
     const otherSpeakers = (speakerName && speakerName !== speakerId)
       ? availableSpeakers.filter(id => 
-        speakerId !== id 
+        id
+        && speakerId !== id 
         && id.toLowerCase().startsWith(speakerName.toLowerCase())
       ) : availableSpeakers.filter(id => speakerId !== id);
 
