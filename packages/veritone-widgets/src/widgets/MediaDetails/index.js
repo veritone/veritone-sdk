@@ -988,6 +988,8 @@ class MediaDetailsWidget extends React.Component {
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
       cancelEdit,
+      onBack,
+      onNext,
       isNextActive,
       isBackActive,
     } = this.props;
@@ -1139,38 +1141,42 @@ class MediaDetailsWidget extends React.Component {
                       {!isLoadingTdo && 'No Filename'}
                     </div>
                   )}
-                    <IconButton
-                      className={styles.pageHeaderActionButton}
-                      aria-label="Previous file"
-                      onClick={this.onBackFile}
-                      style={isBackActive ? { color: 'white' } : {}}
-                    >
-                      <Tooltip
-                          id="tooltip-back-media"
-                          title="Previous file"
+                    { onBack && (
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        aria-label="Previous file"
+                        onClick={this.onBackFile}
+                        style={isBackActive ? { color: 'white' } : {}}
                       >
-                        <Icon
-                          classes={{ root: styles.iconClass }}
-                          className="icon-keyboard_arrow_left"
-                        />
-                      </Tooltip>
-                    </IconButton>
-                    <IconButton
-                      className={styles.pageHeaderActionButton}
-                      aria-label="Next file"
-                      onClick={this.onNextFile}
-                      style={isNextActive ? { color: 'white' } : {}}
-                    >
-                      <Tooltip
-                        id="tooltip-next-media"
-                        title="Next file"
+                        <Tooltip
+                            id="tooltip-back-media"
+                            title="Previous file"
+                        >
+                          <Icon
+                            classes={{ root: styles.iconClass }}
+                            className="icon-keyboard_arrow_left"
+                          />
+                        </Tooltip>
+                      </IconButton>
+                    )}
+                    { onNext && (
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        aria-label="Next file"
+                        onClick={this.onNextFile}
+                        style={isNextActive ? { color: 'white' } : {}}
                       >
-                        <Icon
-                          classes={{ root: styles.iconClass }}
-                          className="icon-keyboard_arrow_right"
-                        />
-                      </Tooltip>
-                    </IconButton>
+                        <Tooltip
+                          id="tooltip-next-media"
+                          title="Next file"
+                        >
+                          <Icon
+                            classes={{ root: styles.iconClass }}
+                            className="icon-keyboard_arrow_right"
+                          />
+                        </Tooltip>
+                      </IconButton>
+                    )}
                   </div>
                   <div
                     className={styles.pageHeaderActionButtons}
