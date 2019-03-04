@@ -12,15 +12,26 @@ export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID = `vtn/${namespace}/CLEAR_ENGINE_
 
 export const defaultState = {
   tdoEngineResultsMappedByEngineId: {},
+  isFetchingSpecificEngineResult: {},
   isFetchingEngineResults: false,
   fetchEngineResultsError: null
 };
 
 export default createReducer(defaultState, {
   [FETCH_ENGINE_RESULTS](state, action) {
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
+      return {
+        ...acc,
+        [id]: true
+      }
+    }, {});
     return {
       ...state,
-      isFetchingEngineResults: true
+      isFetchingEngineResults: true,
+      isFetchingSpecificEngineResult: {
+        ...state.isFetchingSpecificEngineResult,
+        ...engineFlagsByIds
+      }
     };
   },
   [FETCH_ENGINE_RESULTS_SUCCESS](state, action) {
@@ -42,6 +53,7 @@ export default createReducer(defaultState, {
         tdoId: result.tdoId
       };
     });
+
     // handle legacy user edited transcript that is return by API along with the original
     if (some(results, { requestEngineId: 'manual', userEdited: true })) {
       const requestEngineIds = uniq(
@@ -84,17 +96,38 @@ export default createReducer(defaultState, {
       };
     });
 
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
+      return {
+        ...acc,
+        [id]: false
+      }
+    }, {});
+
     return {
       ...state,
       isFetchingEngineResults: false,
+      isFetchingSpecificEngineResult: {
+        ...state.isFetchingSpecificEngineResult,
+        ...engineFlagsByIds
+      },
       fetchEngineResultsError: null,
       tdoEngineResultsMappedByEngineId
     };
   },
   [FETCH_ENGINE_RESULTS_FAILURE](state, action) {
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
+      return {
+        ...acc,
+        [id]: false
+      }
+    }, {});
     return {
       ...state,
       isFetchingEngineResults: false,
+      isFetchingSpecificEngineResult: {
+        ...state.isFetchingSpecificEngineResult,
+        ...engineFlagsByIds
+      },
       fetchEngineResultsError:
         get(action, 'payload[0].message') || 'Error fetching engine results'
     };
@@ -120,6 +153,9 @@ export const engineResultsByEngineId = (state, tdoId, engineId) =>
 
 export const isFetchingEngineResults = state =>
   local(state).isFetchingEngineResults;
+
+export const isFetchingSpecificEngineResult = (state) => engineId =>
+  get(local(state), ['isFetchingSpecificEngineResult', engineId], false);
 
 export const isDisplayingUserEditedOutput = (state, tdoId, engineId) => {
   const results = engineResultsByEngineId(state, tdoId, engineId);

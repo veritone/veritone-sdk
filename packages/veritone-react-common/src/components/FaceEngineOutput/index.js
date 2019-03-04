@@ -3,10 +3,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import DoneIcon from '@material-ui/icons/Done';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import {
   shape,
   number,
@@ -154,13 +150,13 @@ class FaceEngineOutput extends Component {
     this.props.onSelectEntity(null);
   };
 
-  handleUserEditChange = evt => {
-    if (evt.target.value == 'restoreOriginal') {
-      this.props.onRestoreOriginalClick();
+  handleUserEditChange = engine => viewType => () => {
+    if (viewType == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(viewType === 'userEdited');
   };
 
   render() {
@@ -224,7 +220,10 @@ class FaceEngineOutput extends Component {
       },
       0
     );
-    const selectedEngine = find(engines, { id: selectedEngineId });
+    const selectedEngineWithData = {
+      ...find(engines, { id: selectedEngineId }),
+      showingUserEditedOutput
+    };
     const faceTabs = (
       <Tabs
         value={activeTab}
@@ -253,11 +252,13 @@ class FaceEngineOutput extends Component {
           hideTitle={editMode}
           engines={engines}
           selectedEngineId={selectedEngineId}
+          selectedEngineWithData={selectedEngineWithData}
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
+          onUserEditChange={this.handleUserEditChange}
           disableEditButton={
             disableEditButton ||
             (recognizedFaceCount < 1 && get(unrecognizedFaces, 'length') < 1)
@@ -267,78 +268,6 @@ class FaceEngineOutput extends Component {
           {editMode && (
             <div className={styles.faceTabHeaderContainer}>{faceTabs}</div>
           )}
-          {!editMode &&
-            selectedEngine &&
-            selectedEngine.hasUserEdits && (
-              <Select
-                autoWidth
-                value={showingUserEditedOutput ? 'userEdited' : 'original'}
-                onChange={this.handleUserEditChange}
-                className={styles.outputHeaderSelect}
-                MenuProps={{
-                  anchorOrigin: {
-                    horizontal: 'right',
-                    vertical: 'bottom'
-                  },
-                  transformOrigin: {
-                    horizontal: 'right',
-                    vertical: 'top'
-                  },
-                  getContentAnchorEl: null
-                }}
-                // eslint-disable-next-line
-                renderValue={() =>
-                  showingUserEditedOutput
-                    ? 'User-Edited'
-                    : 'Original (View Only)'
-                }
-              >
-                <MenuItem value="userEdited">
-                  {showingUserEditedOutput && (
-                    <ListItemIcon
-                      classes={{ root: styles.userEditListItemIcon }}
-                    >
-                      <DoneIcon />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText
-                    classes={{
-                      primary: cx(styles.selectMenuItem, {
-                        [styles.menuItemInset]: !showingUserEditedOutput
-                      })
-                    }}
-                    primary="User-Edited"
-                  />
-                </MenuItem>
-                <MenuItem value="original">
-                  {!showingUserEditedOutput && (
-                    <ListItemIcon
-                      classes={{ root: styles.userEditListItemIcon }}
-                    >
-                      <DoneIcon />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText
-                    classes={{
-                      primary: cx(styles.selectMenuItem, {
-                        [styles.menuItemInset]: showingUserEditedOutput
-                      })
-                    }}
-                    primary="Original (View Only)"
-                  />
-                </MenuItem>
-                <Divider light />
-                <MenuItem value="restoreOriginal">
-                  <ListItemText
-                    classes={{
-                      root: styles.restoreOriginalMenuItem,
-                      primary: cx(styles.selectMenuItem, styles.menuItemInset)
-                    }}
-                    primary="Restore Original"
-                  />
-                </MenuItem>
-              </Select>
-            )}
           <Select
             autoWidth
             value={viewMode}

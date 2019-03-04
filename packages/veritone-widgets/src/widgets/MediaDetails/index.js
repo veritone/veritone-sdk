@@ -90,17 +90,25 @@ const programLiveImageNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
+    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       mediaId,
       mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
+      state,
+      mediaId,
+      mediaDetailsModule.getSelectedCombineEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
       id
     ),
     selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, id),
+    selectedCombineEngineId: mediaDetailsModule.getSelectedCombineEngineId(state, id),
+    selectedCombineViewTypeId: mediaDetailsModule.getSelectedCombineViewTypeId(state, id),
+    combineViewTypes: mediaDetailsModule.getCombineViewTypes(state, id),
     contentTemplates: mediaDetailsModule.getContentTemplates(state, id),
     tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(state, id),
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
@@ -152,6 +160,8 @@ const programLiveImageNullState =
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
+    setCombineEngineId: mediaDetailsModule.setCombineEngineId,
+    setSelectedCombineViewTypeId: mediaDetailsModule.setSelectedCombineViewTypeId,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
@@ -233,7 +243,7 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    isFetchingEngineResults: bool,
+    isFetchingSpecificEngineResult: func,
     selectedEngineResults: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
@@ -266,6 +276,18 @@ class MediaDetailsWidget extends React.Component {
         )
       })
     ),
+    selectedCombineEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
+          })
+        )
+      })
+    ),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -282,7 +304,11 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     selectedEngineId: string,
+    selectedCombineEngineId: string,
+    selectedCombineViewTypeId: string,
     setEngineId: func,
+    setCombineEngineId: func,
+    setSelectedCombineViewTypeId: func,
     toggleInfoPanel: func,
     isEditModeEnabled: bool,
     isInfoPanelOpen: bool,
@@ -375,6 +401,12 @@ class MediaDetailsWidget extends React.Component {
         withType: string
       })
     ),
+    combineViewTypes: arrayOf(
+      shape({
+        name: string.isRequired,
+        id: string.isRequired
+      })
+    ),
     createQuickExport: func.isRequired,
     onExport: func,
     exportClosedCaptionsEnabled: bool,
@@ -426,6 +458,16 @@ class MediaDetailsWidget extends React.Component {
       );
     }
   };
+
+  handleToggleMediaPlayerPlayback = () => {
+    if (!this.mediaPlayer) {
+      return;
+    }
+    if (this.mediaPlayer.getState().player.paused) {
+      return this.mediaPlayer.play();
+    } 
+    this.mediaPlayer.pause();
+  }
 
   handleUpdateMediaPlayerTime = startTime => {
     if (!this.mediaPlayer) {
@@ -529,6 +571,14 @@ class MediaDetailsWidget extends React.Component {
     this.props.setEngineId(this.props.id, engineId);
   };
 
+  handleSelectCombineEngine = engineId => {
+    this.props.setCombineEngineId(this.props.id, engineId);
+  }
+
+  handleSelectCombineViewType = viewTypeId => {
+    this.props.setSelectedCombineViewTypeId(this.props.id, viewTypeId);
+  }
+
   handleTabChange = (evt, selectedTabValue) => {
     if (selectedTabValue === 'contentTemplates') {
       this.props.loadContentTemplates(this.props.id);
@@ -605,7 +655,7 @@ class MediaDetailsWidget extends React.Component {
     const hasEngineResults = this.hasSelectedEngineResults();
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
-      this.props.isFetchingEngineResults ||
+      this.props.isFetchingSpecificEngineResult(selectedEngineId) ||
       this.props.isRestoringOriginalEngineResult ||
       this.props.isFetchingEntities
     ) {
@@ -667,7 +717,6 @@ class MediaDetailsWidget extends React.Component {
     const element = document.createElement('a');
     element.href = get(this.props.tdo, 'primaryAsset.signedUri', '');
     element.download = get(this.props, 'tdo.details.veritoneFile.filename');
-    element.target = '_blank';
     element.click();
   };
 
@@ -695,17 +744,22 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDisplayingOriginalEngineResultForUserEdit = () => {
-    const editableCategoryTypes = ['face', 'transcript'];
-    const selectedEngine = find(this.props.selectedEngineCategory.engines, {
-      id: this.props.selectedEngineId
+    const {
+      selectedEngineId,
+      selectedEngineCategory,
+      isDisplayingUserEditedOutput
+    } = this.props;
+    const editableCategoryTypes = ['face'];
+    const selectedEngine = find(selectedEngineCategory.engines, {
+      id: selectedEngineId
     });
     if (
       includes(
         editableCategoryTypes,
-        this.props.selectedEngineCategory.categoryType
+        selectedEngineCategory.categoryType
       ) &&
       get(selectedEngine, 'hasUserEdits') &&
-      !this.props.isDisplayingUserEditedOutput
+      !isDisplayingUserEditedOutput
     ) {
       return true;
     }
@@ -749,34 +803,32 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  onRestoreOriginalClick = () => {
+  onRestoreOriginalClick = engine => () => {
     this.props.openConfirmModal(this.props.id, {
       title: 'Reset to Original',
       description:
         'Are you sure you want to reset to original version? All edited work will be lost.',
       cancelButtonLabel: 'Cancel',
       confirmButtonLabel: 'Reset',
-      confirmAction: this.onRestoreOriginalConfirm,
+      confirmAction: this.onRestoreOriginalConfirm(engine),
       cancelAction: this.onRestoreOriginalCancel
     });
   };
 
-  onRestoreOriginalConfirm = () => {
+  onRestoreOriginalConfirm = engine => () => {
     this.props.closeConfirmModal(this.props.id);
     const {
       id,
       tdo,
-      selectedEngineId,
-      selectedEngineCategory,
       selectedEngineResults
     } = this.props;
     const removeAllUserEdits = true;
     this.props.restoreOriginalEngineResults(
       id,
       tdo,
-      selectedEngineId,
-      selectedEngineCategory.categoryType,
-      selectedEngineResults,
+      engine.id,
+      engine.category.categoryType,
+      engine.engineResults || selectedEngineResults,
       removeAllUserEdits
     );
   };
@@ -789,17 +841,18 @@ class MediaDetailsWidget extends React.Component {
     const {
       tdo,
       selectedEngineId,
+      selectedCombineEngineId,
       selectedEngineCategory,
       createQuickExport,
       categoryCombinationMapper,
       engineCategories
     } = this.props;
     let formatOptions = {};
-    let selectedCombineEngineId, selectedCombineCategoryId;
-    const hasCombineEngineOutput = find(categoryCombinationMapper, [
-      'withType',
-      selectedEngineCategory.categoryType
-    ]);
+    let selectedCombineCategoryId;
+    const hasCombineEngineOutput = find(
+      categoryCombinationMapper, 
+      ['withType', selectedEngineCategory.categoryType]
+    );
     if (hasCombineEngineOutput) {
       const combineCategory = find(engineCategories, [
         'categoryType',
@@ -807,8 +860,6 @@ class MediaDetailsWidget extends React.Component {
       ]);
       if (combineCategory) {
         selectedCombineCategoryId = combineCategory.id;
-        selectedCombineEngineId = get(combineCategory, 'engines[0].id');
-
         if (hasCombineEngineOutput.quickExportOptions) {
           formatOptions = {
             ...formatOptions,
@@ -914,7 +965,10 @@ class MediaDetailsWidget extends React.Component {
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
+      selectedCombineEngineId,
+      selectedCombineViewTypeId,
       selectedEngineResults,
+      selectedCombineEngineResults,
       className,
       isInfoPanelOpen,
       isExpandedMode,
@@ -1498,13 +1552,20 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         combineEngines={combineEngines}
                         onEngineChange={this.handleSelectEngine}
+                        onCombineEngineChange={this.handleSelectCombineEngine}
+                        setSelectedCombineViewTypeId={this.handleSelectCombineViewType}
                         selectedEngineId={selectedEngineId}
+                        selectedCombineEngineId={selectedCombineEngineId}
+                        selectedCombineViewTypeId={selectedCombineViewTypeId}
                         onClick={this.handleUpdateMediaPlayerTime}
+                        togglePlayback={this.handleToggleMediaPlayerPlayback}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
                         bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
+                        combineViewTypes={this.props.combineViewTypes}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        speakerData={selectedCombineEngineResults}
                       />
                     )}
                   {selectedEngineCategory &&
