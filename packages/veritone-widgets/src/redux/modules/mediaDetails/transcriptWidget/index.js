@@ -977,7 +977,7 @@ export const getCombineViewTypes = state => {
   if (selectedCombineEngineId) {
     viewTypes.unshift({
       name: 'Speaker Separation',
-      id: 'speaker-view'
+      id: 'show-speaker-view'
     });
   }
   return viewTypes;

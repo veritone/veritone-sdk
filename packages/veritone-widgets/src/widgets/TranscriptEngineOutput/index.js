@@ -681,7 +681,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     const combineEngineTask = speakerEngines
       .find(engine => engine.id === selectedCombineEngineId);
 
-    if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
+    if (combineEngineTask && selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
       let combineStatus = combineEngineTask.status;
       if (isFetchingSpecificEngineResult(selectedCombineEngineId)) {
         combineStatus = 'fetching';
@@ -752,7 +752,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       'togglePlayback'
     ]);
 
-    const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
+    const bulkEditEnabled = this.props.selectedCombineViewTypeId && this.props.selectedCombineViewTypeId.includes('show') ?
       false : this.props.bulkEditEnabled;
 
     const outputNullState = this.determineSpeakerNullstate();

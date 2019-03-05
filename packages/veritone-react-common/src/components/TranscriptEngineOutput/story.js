@@ -382,7 +382,7 @@ const speakerTags = [
 ];
 
 const mockViewTypes = [
-  'speaker-view',
+  'show-speaker-view',
   'transcript-view'
 ];
 

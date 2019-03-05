@@ -88,7 +88,7 @@ const defaultMDPState = {
     withType: 'transcript',
     viewTypes: [{
       name: 'Show Engine Output',
-      id: 'speaker-view',
+      id: 'show-speaker-view',
       combine: true
     }, {
       name: 'Hide Engine Output',

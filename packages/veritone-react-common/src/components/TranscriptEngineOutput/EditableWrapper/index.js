@@ -544,8 +544,8 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
     }
   }
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   return {
     hasChange: speakerChanges.length,
@@ -659,8 +659,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
     });
   }
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   let cursorPos;
   if (speakerChanges.length || transcriptChanges.length) {
@@ -679,16 +679,9 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
 
 // Sort actions to be Update, Insert, Delete
 //  and for matched actions, we sort in descending index order
-function sortByAction(a, b) {
+function sortByIndex(a, b) {
   if (a.action && b.action) {
-    if (a.action > b.action) {
-      return -1;
-    } else if (a.action < b.action) {
-      return 1;
-    } else if (a.action === b.action) {
-      return b.index - a.index;
-    }
-    return 0;
+    return b.index - a.index;
   }
   return 0;
 }

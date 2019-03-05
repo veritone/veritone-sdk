@@ -391,8 +391,8 @@ function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
     }
   });
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   return {
     hasChange: transcriptChanges.length || speakerChanges.length,
@@ -440,7 +440,7 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
     });
   }
 
-  speakerChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
 
   return {
     hasChange: speakerChanges.length,
@@ -452,16 +452,9 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
 
 // Sort actions to be Update, Insert, Delete
 //  and for matched actions, we sort in descending index order
-function sortByAction(a, b) {
+function sortByIndex(a, b) {
   if (a.action && b.action) {
-    if (a.action > b.action) {
-      return -1;
-    } else if (a.action < b.action) {
-      return 1;
-    } else if (a.action === b.action) {
-      return b.index - a.index;
-    }
-    return 0;
+    return b.index - a.index;
   }
   return 0;
 }

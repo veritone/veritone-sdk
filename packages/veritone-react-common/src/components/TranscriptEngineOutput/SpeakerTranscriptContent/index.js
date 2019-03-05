@@ -135,7 +135,7 @@ export default class SpeakerTranscriptContent extends Component {
     const speakerSegments = parsedData.speakerSegments;
 
 
-    if (selectedCombineViewTypeId === 'speaker-view') {
+    if (selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
       const speakerSnippetSegments = speakerSegments.map((speakerSegment, speakerChunkIndex) => {
         const speakerSeries = speakerSegment.series.map((speakerSerie, speakerIndex) => {
           const speakerStartTime = speakerSerie.startTimeMs;
