@@ -56,7 +56,8 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput,
   EngineOutputNullState,
-  PDFViewer
+  PDFViewer,
+  NullState
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
@@ -81,6 +82,8 @@ const saga = util.reactReduxSaga.saga;
 
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
+const enginesNullState =
+  '//static.veritone.com/veritone-ui/engines-nullstate.png';
 
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
@@ -1654,6 +1657,33 @@ class MediaDetailsWidget extends React.Component {
                     )}
                 </div>
               )}
+              {get(tdo, 'id') &&
+                !selectedEngineId && (
+                  <div
+                    data-veritone-component="mdp-engine-nullstate"
+                    className={styles.engineCategoryView}
+                  >
+                    <NullState
+                      imgProps={{
+                        src: enginesNullState,
+                        alt: enginesNullState,
+                        style: {
+                          marginBottom: '30px'
+                        }
+                      }}
+                      titleText="No Engines Found"
+                      btnProps={{
+                        onClick: this.handleRunProcess,
+                        text: 'Run Cognitive Engine'
+                      }}
+                      className={styles.engineNullState}
+                    >
+                      <div className={styles.engineNullStateTitleText}>
+                        You have no engine data available for this file.
+                      </div>
+                    </NullState>
+                  </div>
+                )}
             </div>
           )}
 

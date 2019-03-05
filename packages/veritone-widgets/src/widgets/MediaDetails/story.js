@@ -1,11 +1,16 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { text } from '@storybook/addon-knobs';
+
 import BaseStory from '../../shared/BaseStory';
 import MediaDetailsPage from './';
 
 storiesOf('MediaDetailsPage', module).add('Base', () => {
   const props = {
-    mediaId: 360471470,
+    mediaId: text('TDO ID (set before toggling to widget)', 360471470),
+    onRunProcess: function() {
+      alert('Fake run process');
+    },
     onClose: function() {
       console.log('Widget for Media Details onClose clicked.');
     }
