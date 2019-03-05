@@ -728,7 +728,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    const hasCombineViews = this.props.combineViewTypes;
+    const hasCombineViews = get(this.props, 'combineViewTypes.length');
     if (
       !this.isEditableEngineResults() ||
       !this.hasSelectedEngineResults() ||
