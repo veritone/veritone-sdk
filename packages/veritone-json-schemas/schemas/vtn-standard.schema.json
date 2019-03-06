@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://veritone.com/vtn-standard.schema.json",
+  "title": "vtn-standard",
+  "description": "Standard engine output at Veritone",
+  "type": "object",
+  "definitions": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "schemaId": {
+          "type": "string",
+          "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
+          "example": "http://veritone.com/vtn-standard.schema.json"
+        },
+        "sourceEngineId": {
+          "type": "string",
+          "description": "<GUID> of the engine (provided by Veritone)",
+          "example": "fe261482-af8d-4709-aefb-ff1c19b61eb9"
+        },
+        "sourceEngineName": {
+          "type": "string",
+          "description": "Engine name used to generate output (provided by Veritone) // TO DO: Verify if this is internal or external engine name",
+          "example": "capio"
+        },
+        "taskPayload": {
+          "type": "object",
+          "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone) // TO DO: LINK TO DOCS EXPLAINING TASK PAYLOAD",
+          "example": {
+            "detectionThreshold": 0.7,
+            "processingFPS": 30
+          }
+        },
+        "taskId": {
+          "type": "string",
+          "description": "<GUID> of the task (provided by Veritone)",
+          "example": "6b9cd86e-de5c-4795-b605-a9b3b29fa3cf"
+        },
+        "generatedDateUTC": {
+          "type": "string",
+          "description": "DateTime (ISO8601) of when the engine result was generated (provided by Veritone if not included)",
+          "format": "date-time",
+          "example": "2017-12-08T17:19:02Z"
+        },
+        "externalSourceId": {
+          "type": "string",
+          "description": "Vendor specific referenceId to this engine result (optional)",
+          "example": "1"
+        },
+        "validationContracts": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#definitions/indexingTypes"
+            }
+          ]
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence of the result expressed as a range of 0.0 to 1.0"
+    },
+    "indexingTypes": {
+      "type": "string",
+      "enum": [
+        "audio-fingerprint",
+        "ocr",
+        "face",
+        "object"
+      ]
+    },
+    "objectCategory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "class": {
+            "type": "string",
+            "description": "The class of the object recognized",
+            "example": "For example, if the label of an object was dog, the class of the object could be animal"
+          },
+          "@id": {
+            "type": "string",
+            "description": "Private id variable used by the engine to refer to its internal dataset",
+            "example": "1"
+          }
+        },
+        "required": ["class"]
+      },
+      "description": "Optional category for object recognition"
+    },
+    "objectResult": {
+      "type": "object",
+      "properties": {
+        "boundingPoly": {
+          "$ref": "#/definitions/boundingPoly"
+        },
+        "confidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "entityId": {
+          "type": "number"
+        },
+        "entityIdentifierId": {
+          "type": "number"
+        },
+        "libraryId": {
+          "type": "number"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/indexingTypes"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "if": {
+        "properties": { "type": { "pattern": "object"} }
+      },
+      "then": {
+        "properties": {
+          "objectCategory": {
+            "$ref": "#/definitions/objectCategory"
+         }
+        }
+      }
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/results/objectResult"
+          },
+          {
+            "properties": {
+              "startTimeMs": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "The start time relative to the start of the media asset in milliseconds.",
+                "example": 0
+              },
+              "stopTimeMs": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "The stop time relative to the start of the media asset in milliseconds.",
+                "example": 3000
+              }
+            },
+            "required": [
+              "startTimeMs",
+              "stopTimeMs"
+            ]
+          }
+        ]
+      }
+    },
+    "point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the x axis (1.0 would be right of the axis)"
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "description": "A point describing the 2d coordinates from the top left corner of the source."
+    },
+    "boundingPoly": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/point"
+      },
+      "required": ["x", "y"]
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#/definitions/objectResult"
+      }
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {
+            "properties": {
+              "object": {
+                "$ref": "#/definitions/objectResult"
+              },
+              "startTimeMs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "stopTimeMs": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "startTimeMs",
+              "stopTimeMs"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
