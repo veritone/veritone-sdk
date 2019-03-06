@@ -7,7 +7,7 @@ import MediaDetailsPage from './';
 
 storiesOf('MediaDetailsPage', module).add('Base', () => {
   const props = {
-    mediaId: text('TDO ID (set before toggling to widget)', 360471470),
+    mediaId: text('TDO ID (set before toggling to widget)', 390244252),
     onRunProcess: function() {
       alert('Fake run process');
     },

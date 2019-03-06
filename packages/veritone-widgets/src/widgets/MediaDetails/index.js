@@ -522,6 +522,10 @@ class MediaDetailsWidget extends React.Component {
     return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
+  getPreviewUrl = () => {
+    return get(this.props, 'tdo.previewUrl');
+  };
+
   isEditableEngineResults = () => {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
@@ -986,18 +990,26 @@ class MediaDetailsWidget extends React.Component {
       engineCategorySelectorItems
     } = this.getCombineAggregations();
 
-    const isPdf = /^.*\/.*pdf$/.test(
+    const tdoMimeType =
       get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
+      get(tdo, 'details.veritoneFile.mimetype');
+
+    const isText = includes(
+      [
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/pdf',
+        'message/rfc822',
+        'application/vnd.ms-outlook',
+        'text/plain',
+        'text/plain; charset=utf-8',
+        'application/vnd.ms-powerpoint',
+        'application/rtf'
+      ],
+      tdoMimeType
     );
-    const isImage = /^image\/.*/.test(
-      get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
-    );
-    const isMedia = /^(audio|video)\/.*/.test(
-      get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
-    );
+    const isImage = /^image\/.*/.test(tdoMimeType);
+    const isMedia = /^(audio|video)\/.*/.test(tdoMimeType);
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
@@ -1443,19 +1455,19 @@ class MediaDetailsWidget extends React.Component {
                       )}
                     {!isImage &&
                       !isMedia &&
-                      !isPdf &&
-                      !!this.getPrimaryAssetUri() && (
+                      ((!isText && !!this.getPrimaryAssetUri()) ||
+                        (isText && !this.getPreviewUrl())) && (
                         <div className={styles.fileIconContainer}>
                           <InsertDriveFile className={styles.fileIcon} />
                         </div>
                       )}
                     {!isImage &&
                       !isMedia &&
-                      isPdf &&
-                      !!this.getPrimaryAssetUri() && (
+                      isText &&
+                      this.getPreviewUrl() && (
                         //TODOJB update dimensions, define loading and error states
                         <PDFViewer
-                          file={this.getPrimaryAssetUri()}
+                          file={this.getPreviewUrl()}
                           height={600}
                           width={600}
                         />
