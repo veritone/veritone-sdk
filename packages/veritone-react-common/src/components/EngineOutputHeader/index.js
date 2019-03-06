@@ -157,11 +157,22 @@ class EngineOutputHeader extends Component {
   };
 
   handleCombineEngineChange = engine => () => {
+    const {
+      onCombineEngineChange,
+      handleCombineViewTypeChange,
+      selectedCombineEngineId,
+      selectedCombineViewTypeId,
+      combineViewTypes
+    } = this.props;
+    const showViewType = combineViewTypes.find(type => type.id && type.id.includes('show'));
     if (
-      this.props.onCombineEngineChange &&
-      this.props.selectedCombineEngineId !== engine.id 
+      onCombineEngineChange &&
+      selectedCombineEngineId !== engine.id 
     ) {
-      this.props.onCombineEngineChange(engine.id);
+      if (showViewType && showViewType.id !== selectedCombineViewTypeId) {
+        handleCombineViewTypeChange(showViewType.id);
+      }
+      onCombineEngineChange(engine.id);
       this.resetSubMenus();
     }
   }
@@ -356,11 +367,9 @@ class EngineOutputHeader extends Component {
                                 );
                               })}
                             </Collapse>
-                            { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
-                              <Divider />
-                            )}
-                            { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
+                            { selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show') && selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
                               <div>
+                                <Divider />
                                 <MenuItem
                                   button
                                   onClick={this.handleSubMenuClick(combineEngineCategory.categoryType)('version')}
@@ -543,10 +552,8 @@ class EngineOutputHeader extends Component {
                               })}
                             </Collapse>
                             { selectedEngineWithData && selectedEngineWithData.hasUserEdits && (
-                              <Divider />
-                            )}
-                            { selectedEngineWithData && selectedEngineWithData.hasUserEdits && (
                               <div>
+                                <Divider />
                                 <MenuItem
                                   button
                                   onClick={this.handleSubMenuClick(engineCategory.categoryType)('version')}
