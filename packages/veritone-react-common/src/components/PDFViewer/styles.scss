@@ -1,14 +1,22 @@
+@import 'src/styles/modules/variables';
+
+.pdfViewer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: solid 1px $faint-black;
+}
+
+.pdfViewerContainer {
+  flex: 1;
+}
+
 .pdfPage {
   display: flex;
   justify-content: center;
-  padding: 4px;
-  background-color: gray;
 }
 
-.pdfHeader {
-  height: 40px;
-  background-color: gray;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.toolbar {
+  border-bottom: solid 1px $faint-black;
 }
