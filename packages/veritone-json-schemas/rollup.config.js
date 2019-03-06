@@ -8,14 +8,12 @@ const extensions = [
   '.js'
 ];
 
-const name = 'RollupTypeScriptBabel';
-
 export default {
   input: './src/index.js',
   external: [],
   plugins: [
     json({
-      include: ['schemas/**', 'node_modules/ajv/**'],
+      include: ['schemas/**', 'node_modules/ajv/**/*'],
       preferConst: true,
       indent: '  ',
       compact: true,
