@@ -1,19 +1,32 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://veritone.com/vtn-standard.object.schema.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/object.json",
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
   "type": "object",
   "definitions": {
     "objectResult": {
-      "$ref": "vtn-standard.schema.json#/definitions/objectResult"
+      "$ref": "master.json#/definitions/objectResult"
     }
   },
   "properties": {
     "object": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/objectResult"
+        "type": "object",
+        "allOf": [
+          {
+            "properties": {
+              "object": {
+                "$ref": "#/definitions/objectResult"
+              },
+              "type": {
+                "type": "string",
+                "pattern": "object"
+              }
+            }
+          }
+        ]
       }
     },
     "series": {
@@ -33,6 +46,10 @@
               "stopTimeMs": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "pattern": "object"
               }
             },
             "required": ["startTimeMs", "stopTimeMs"]

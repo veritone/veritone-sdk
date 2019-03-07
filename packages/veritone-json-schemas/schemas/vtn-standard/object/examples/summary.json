@@ -1,9 +1,9 @@
 {
-  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
   "validationContracts": [
     "object"
   ],
-  "object": {
+  "object": [{
     "type": "object",
     "label": "dog",
     "confidence": 0.9,
@@ -25,5 +25,5 @@
         "y": 0.1
       }
     ]
-  }
+  }]
 }

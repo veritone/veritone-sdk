@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://veritone.com/vtn-standard.schema.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/master.json",
   "title": "vtn-standard",
   "description": "Standard engine output at Veritone",
   "type": "object",
@@ -11,7 +11,7 @@
         "schemaId": {
           "type": "string",
           "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
-          "example": "http://veritone.com/vtn-standard.schema.json"
+          "example": "https://docs.veritone.com/schemas/vtn-standard/master.json"
         },
         "sourceEngineId": {
           "type": "string",
@@ -127,7 +127,7 @@
         "properties": {
           "objectCategory": {
             "$ref": "#/definitions/objectCategory"
-         }
+          }
         }
       }
     },
@@ -137,7 +137,7 @@
         "type": "object",
         "allOf": [
           {
-            "$ref": "#/definitions/results/objectResult"
+            "$ref": "#/definitions/objectResult"
           },
           {
             "properties": {
@@ -190,42 +190,6 @@
         "$ref": "#/definitions/point"
       },
       "required": ["x", "y"]
-    }
-  },
-  "properties": {
-    "object": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "$ref": "#/definitions/objectResult"
-      }
-    },
-    "series": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "allOf": [
-          {
-            "properties": {
-              "object": {
-                "$ref": "#/definitions/objectResult"
-              },
-              "startTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "stopTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              }
-            },
-            "required": [
-              "startTimeMs",
-              "stopTimeMs"
-            ]
-          }
-        ]
-      }
     }
   }
 }

@@ -14,7 +14,8 @@
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build; mkdir dist",
     "build": "NODE_ENV=production rollup -c",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "yarn run build",
+    "test": "export NODE_ENV=test && jest ./src/index.test.js"
   },
   "dependencies": {
     "ajv": "^6.10.0",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "jest": "^24.1.0",
     "rimraf": "^2.6.2",
     "rollup": "^1.4.1",
     "rollup-plugin-babel": "^4.3.2",
