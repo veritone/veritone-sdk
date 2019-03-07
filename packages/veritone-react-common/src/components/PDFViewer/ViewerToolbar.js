@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { number, ref, func } from 'prop-types';
+import { string, number, ref, func } from 'prop-types';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -11,8 +11,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import CloseIcon from '@material-ui/icons/Close';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Input from '@material-ui/core/Input';
 import { get, isFinite } from 'lodash';
+import screenfull from 'screenfull';
 
 import styles from './styles.scss';
 
@@ -24,7 +26,9 @@ class ViewerToolBar extends PureComponent {
     numPages: number,
     listRef: ref,
     userScale: number,
-    onUserScale: func
+    onUserScale: func,
+    onSearchTextChange: func,
+    searchText: string
   };
   static defaultProps = {
     userScale: 1
@@ -43,7 +47,7 @@ class ViewerToolBar extends PureComponent {
     ) {
       let targetIndex = Math.min(desiredPageIndex, this.props.numPages - 1);
       targetIndex = Math.max(targetIndex, 0);
-      this.props.listRef.current.scrollToItem(targetIndex, 'center');
+      this.props.listRef.current.scrollToItem(targetIndex, 'start');
     }
   };
 
@@ -61,8 +65,21 @@ class ViewerToolBar extends PureComponent {
     }
   };
 
+  //TODOJB figure out best way to do this
+  enterFullScreen = () => {
+    if (screenfull.enabled && get(this.props.listRef, 'current._outerRef')) {
+      screenfull.request(this.props.listRef.current._outerRef);
+    }
+  };
+
+  handleSearchTextChange = e => {
+    if (this.props.onSearchTextChange) {
+      this.props.onSearchTextChange(e.target.value);
+    }
+  };
+
   render() {
-    const { currentPageIndex, numPages, userScale } = this.props;
+    const { currentPageIndex, numPages, userScale, searchText } = this.props;
     return (
       <Toolbar
         classes={{
@@ -73,6 +90,7 @@ class ViewerToolBar extends PureComponent {
         <IconButton>
           <SearchIcon />
         </IconButton>
+        <Input value={searchText} onChange={this.handleSearchTextChange} />
         <IconButton onClick={this.pageDown}>
           <ArrowDownwardIcon />
         </IconButton>
@@ -90,7 +108,7 @@ class ViewerToolBar extends PureComponent {
         </IconButton>
         <Typography>Scale: {Math.round(userScale * 100)}%</Typography>
         <IconButton>
-          <ZoomOutMapIcon />
+          <ZoomOutMapIcon onClick={this.enterFullScreen} />
         </IconButton>
       </Toolbar>
     );

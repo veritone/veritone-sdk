@@ -14,7 +14,9 @@ class SimplePDFViewer extends PureComponent {
     file: string.isRequired,
     onItemsRendered: func,
     listRef: ref,
-    userScale: number
+    userScale: number,
+    onDocumentLoad: func,
+    customTextRenderer: func
   };
   static defaultProps = {
     userScale: 1
@@ -29,6 +31,9 @@ class SimplePDFViewer extends PureComponent {
   onDocumentLoad = pdf => {
     this.setState({ numPages: pdf.numPages, pdf });
     pdf.getPage(1).then(this.handlePageDimensions);
+    if (this.props.onDocumentLoad) {
+      this.props.onDocumentLoad(pdf);
+    }
   };
 
   handlePageDimensions = page => {
@@ -53,8 +58,10 @@ class SimplePDFViewer extends PureComponent {
     visibleStopIndex
   }) => {
     if (this.props.onItemsRendered) {
+      // note: when multiple pages are visible, it is not as clear which one should be the "current" page
+      // we could figure out which page is in the center of the screen if we get scrollbar percentage
       this.props.onItemsRendered({
-        currentPageIndex: visibleStartIndex,
+        currentPageIndex: visibleStopIndex,
         numPages: this.state.numPages
       });
     }
@@ -65,7 +72,7 @@ class SimplePDFViewer extends PureComponent {
       <ContainerDimensions>
         {({ width, height }) => {
           const { numPages, originalPageDimensions } = this.state;
-          const { file, listRef, userScale } = this.props;
+          const { file, listRef, userScale, customTextRenderer } = this.props;
           const scale = originalPageDimensions
             ? (userScale * width - 20) / originalPageDimensions.width
             : null;
@@ -91,6 +98,7 @@ class SimplePDFViewer extends PureComponent {
                           pageIndex={index}
                           scale={scale}
                           renderAnnotationLayer={false}
+                          customTextRenderer={customTextRenderer}
                         />
                       </div>
                     )}

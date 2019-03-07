@@ -12,8 +12,14 @@
   flex: 1;
 }
 
+// TODOJB on zoom out, need to center content
+// with justify-content: center & zoomed in, canvas extends too far to the left
 .pdfPage {
   display: flex;
+}
+
+//TODOJB on fullscreen, increase scale
+:fullscreen .pdfPage {
   justify-content: center;
 }
 

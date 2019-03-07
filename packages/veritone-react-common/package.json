@@ -39,6 +39,7 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.0",
     "redux-form": "^7.1.2",
+    "screenfull": "^4.0.1",
     "shaka-player": "^2.3.5",
     "video-react": "^0.10.5"
   },
