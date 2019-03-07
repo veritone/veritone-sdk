@@ -205,7 +205,7 @@ export default class EditableWrapper extends Component {
             const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
             setCursorPosition(spanChildren, oldCursorPosition);
             return;
-          } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
+          } else if (keyCode === 8 && wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
             event.preventDefault(); // Don't delete any text
             const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
@@ -322,7 +322,6 @@ export default class EditableWrapper extends Component {
       onChange: this.handleContentChange
     };
     const textareaToDecodeCharacters = document.createElement('textarea');
-    const totalFragments = content.series.length;
 
     const contentComponents = content.series.map((entry, index) => {
       const startTime = entry.startTimeMs;
@@ -338,7 +337,7 @@ export default class EditableWrapper extends Component {
         textareaToDecodeCharacters.innerHTML = selectedWord;
         value = textareaToDecodeCharacters.value;
         // Add spaces to valid fragments (except the last)
-        value = (value && (index !== totalFragments - 1)) ? value + ' ' : value;
+        value = (value && index) ? ' ' + value : value;
       }
 
       return (
@@ -448,21 +447,28 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
   const wordObj = wordGuidMap && wordGuidMap[targetGuid];
   if (wordObj) {
     if (keyType === 'ENTER') {
-      const serieText = orderBy(
+      let serieText = orderBy(
         get(wordObj, 'serie.words'),
         ['confidence'],
         ['desc']
       )[0].word;
+      if (wordObj.dialogueIndex !== 0 && wordObj.index !== 0) {
+        serieText = ' ' + serieText;
+      }
       const serieDuration = wordObj.serie.stopTimeMs - wordObj.serie.startTimeMs;
       const cursorOffset = Math.min(
         get(cursorPosition, 'start.offset', 0),
         serieText.length
       );
-      const splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
+      let splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
       const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'words']);
 
-      const leftTextSplit = serieText.slice(0, cursorOffset);
-      if (leftTextSplit !== serieText) {
+      if (wordObj.dialogueIndex !== 0 && wordObj.index !== 0 && cursorOffset === 1) {
+        splitTime = wordObj.serie.startTimeMs;
+      }
+
+      const leftTextSplit = serieText.slice(0, cursorOffset).trim();
+      if (leftTextSplit && leftTextSplit !== serieText.trim()) {
         transcriptChanges.push({
           index: wordObj.index,
           chunkIndex: wordObj.chunkIndex,
@@ -474,14 +480,14 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: leftTextSplit.trim()
+              word: leftTextSplit
             }]
           },
           ...pick(wordObj, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
         });
       }
-      const rightTextSplit = serieText.slice(cursorOffset, serieText.length);
-      if (rightTextSplit) {
+      const rightTextSplit = serieText.slice(cursorOffset, serieText.length).trim();
+      if (rightTextSplit && rightTextSplit !== serieText.trim()) {
         transcriptChanges.push({
           index: wordObj.index + 1,
           chunkIndex: wordObj.chunkIndex,
@@ -493,7 +499,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: rightTextSplit.trim()
+              word: rightTextSplit
             }]
           }
         });
