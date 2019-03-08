@@ -2381,11 +2381,6 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-batch-processor@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/batch-processor/-/batch-processor-1.0.0.tgz#75c95c32b748e0850d10c2b168f6bdbe9891ace8"
-  integrity sha1-dclcMrdI4IUNEMKxaPa9vpiRrOg=
-
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"
@@ -4145,13 +4140,6 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30, electron-to-chromium@
 elegant-spinner@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/elegant-spinner/-/elegant-spinner-1.0.1.tgz#db043521c95d7e303fd8f345bedc3349cfb0729e"
-
-element-resize-detector@^1.1.10:
-  version "1.1.15"
-  resolved "https://registry.yarnpkg.com/element-resize-detector/-/element-resize-detector-1.1.15.tgz#48eba1a2eaa26969a4c998d972171128c971d8d2"
-  integrity sha512-16/5avDegXlUxytGgaumhjyQoM6hpp5j3+L79sYq5hlXfTNRy5WMMuTVWkZU3egp/CokCmTmvf18P3KeB57Iog==
-  dependencies:
-    batch-processor "^1.0.0"
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -10800,15 +10788,6 @@ react-color@^2.11.4:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-container-dimensions@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/react-container-dimensions/-/react-container-dimensions-1.4.1.tgz#73a8b497f09c6b55a18a79b18a57a8327138f343"
-  integrity sha512-f5WXYpsL0vAuT9hD6bSTqRYOJXFbU9JzjSZfscNT77PbdCUReLv2/aSvYBgkXyALtOBVdS/nwO5RVZgBxxWDnw==
-  dependencies:
-    element-resize-detector "^1.1.10"
-    invariant "^2.2.2"
-    prop-types "^15.5.8"
-
 react-contenteditable@^2.0.7:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/react-contenteditable/-/react-contenteditable-2.1.5.tgz#d68a04f86c43f3b75a6647ef71b5b6c52ceead93"
@@ -11127,6 +11106,11 @@ react-treebeard@^2.1.0:
     radium "^0.19.0"
     shallowequal "^0.2.2"
     velocity-react "^1.3.1"
+
+react-virtualized-auto-sizer@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.2.tgz#a61dd4f756458bbf63bd895a92379f9b70f803bd"
+  integrity sha512-MYXhTY1BZpdJFjUovvYHVBmkq79szK/k7V3MO+36gJkWGkrXKtyr4vCPtpphaTLRAdDNoYEYFZWE8LjN+PIHNg==
 
 react-virtualized@^9.18.5:
   version "9.19.1"

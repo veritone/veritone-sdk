@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
-import { string, number, ref, func } from 'prop-types';
+import { string, number, func, shape, object } from 'prop-types';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
@@ -11,6 +12,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import CloseIcon from '@material-ui/icons/Close';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
 import { get, isFinite } from 'lodash';
@@ -22,32 +24,47 @@ const SCALE_CONSTANT = 1.25;
 
 class ViewerToolBar extends PureComponent {
   static propTypes = {
-    currentPageIndex: number,
+    currentPageNumber: number,
     numPages: number,
-    listRef: ref,
     userScale: number,
-    onUserScale: func,
+    onScale: func,
     onSearchTextChange: func,
-    searchText: string
+    searchText: string,
+    viewerRef: shape({ current: object }),
+    currentSearchMatch: number,
+    totalSearchMatches: number,
+    onPrevSearchMatch: func,
+    onNextSearchMatch: func,
+    onScrollToPage: func
   };
   static defaultProps = {
-    userScale: 1
+    userScale: 1,
+    searchText: '',
+    currentSearchMatch: null,
+    totalSearchMatches: null,
+    currentPageNumber: 1
   };
 
+  state = {
+    pageNumberInput: '',
+    isSearchOpen: false
+  };
+
+  componentWillUnmount() {
+    if (screenfull.enabled) {
+      screenfull.off();
+    }
+  }
+
   pageDown = () => {
-    this.scrollToPage(this.props.currentPageIndex + 1);
+    if (this.props.onScrollToPage) {
+      this.props.onScrollToPage(this.props.currentPageNumber + 1);
+    }
   };
+
   pageUp = () => {
-    this.scrollToPage(this.props.currentPageIndex - 1);
-  };
-  scrollToPage = desiredPageIndex => {
-    if (
-      get(this.props.listRef, 'current.scrollToItem') &&
-      isFinite(desiredPageIndex)
-    ) {
-      let targetIndex = Math.min(desiredPageIndex, this.props.numPages - 1);
-      targetIndex = Math.max(targetIndex, 0);
-      this.props.listRef.current.scrollToItem(targetIndex, 'start');
+    if (this.props.onScrollToPage) {
+      this.props.onScrollToPage(this.props.currentPageNumber - 1);
     }
   };
 
@@ -59,16 +76,23 @@ class ViewerToolBar extends PureComponent {
     const newScale = this.props.userScale / SCALE_CONSTANT;
     this.setZoom(newScale);
   };
-  setZoom = zoomScale => {
-    if (isFinite(zoomScale) && this.props.onUserScale) {
-      this.props.onUserScale(zoomScale);
+  setZoom = userScale => {
+    if (isFinite(userScale) && this.props.onScale) {
+      this.props.onScale({ userScale, overrideScale: null });
     }
   };
 
-  //TODOJB figure out best way to do this
-  enterFullScreen = () => {
-    if (screenfull.enabled && get(this.props.listRef, 'current._outerRef')) {
-      screenfull.request(this.props.listRef.current._outerRef);
+  fitWidth = () => {
+    this.setZoom(1);
+  };
+
+  toggleFullScreen = () => {
+    if (screenfull.enabled && get(this.props.viewerRef, 'current')) {
+      if (screenfull.isFullscreen) {
+        screenfull.exit();
+      } else {
+        screenfull.request(this.props.viewerRef.current);
+      }
     }
   };
 
@@ -78,39 +102,186 @@ class ViewerToolBar extends PureComponent {
     }
   };
 
+  handlePageChange = ev => {
+    if (ev.key === 'Enter') {
+      const requestedPage = ev.target.value;
+      if (requestedPage >= 1 && requestedPage <= this.props.numPages) {
+        if (this.props.onScrollToPage) {
+          this.props.onScrollToPage(requestedPage);
+        }
+        this.setState({ pageNumberInput: '' });
+      }
+    }
+  };
+
+  handlePageInput = e => {
+    this.setState({ pageNumberInput: e.target.value });
+  };
+
+  handlePageInputBlur = () => {
+    this.setState({ pageNumberInput: '' });
+  };
+
+  toggleSearchBar = () => {
+    this.setState(prevState => {
+      const isSearchOpen = !prevState.isSearchOpen;
+      if (!isSearchOpen && this.props.onSearchTextChange) {
+        this.props.onSearchTextChange('');
+      }
+      return { isSearchOpen };
+    });
+  };
+
+  handleSearchClose = () => {
+    if (this.props.onSearchTextChange) {
+      this.props.onSearchTextChange('');
+    }
+    this.setState({ isSearchOpen: false });
+  };
+
+  handlePrevSearchMatch = () => {
+    if (this.props.onPrevSearchMatch) {
+      this.props.onPrevSearchMatch();
+    }
+  };
+
+  handleNextSearchMatch = () => {
+    if (this.props.onNextSearchMatch) {
+      this.props.onNextSearchMatch();
+    }
+  };
+
+  handleSearchKeyDown = ev => {
+    if (ev.key === 'Enter') {
+      if (ev.shiftKey) {
+        this.handlePrevSearchMatch();
+      } else {
+        this.handleNextSearchMatch();
+      }
+    } else if (ev.key === 'Escape') {
+      this.handleSearchClose();
+    }
+  };
+
   render() {
-    const { currentPageIndex, numPages, userScale, searchText } = this.props;
+    const {
+      currentPageNumber,
+      numPages,
+      userScale,
+      searchText,
+      currentSearchMatch,
+      totalSearchMatches
+    } = this.props;
+    const buttonStyle = {
+      height: '36px',
+      width: '36px'
+    };
     return (
-      <Toolbar
-        classes={{
-          root: styles.toolbar
-        }}
-        style={{ minHeight: '48px', height: '48px' }}
-      >
-        <IconButton>
-          <SearchIcon />
-        </IconButton>
-        <Input value={searchText} onChange={this.handleSearchTextChange} />
-        <IconButton onClick={this.pageDown}>
-          <ArrowDownwardIcon />
-        </IconButton>
-        <IconButton>
-          <ArrowUpwardIcon onClick={this.pageUp} />
-        </IconButton>
-        <Typography>
-          {currentPageIndex + 1}/{numPages}
-        </Typography>
-        <IconButton onClick={this.zoomOut}>
-          <RemoveCircleOutlineIcon />
-        </IconButton>
-        <IconButton onClick={this.zoomIn}>
-          <AddCircleOutlineIcon />
-        </IconButton>
-        <Typography>Scale: {Math.round(userScale * 100)}%</Typography>
-        <IconButton>
-          <ZoomOutMapIcon onClick={this.enterFullScreen} />
-        </IconButton>
-      </Toolbar>
+      <div>
+        <Toolbar
+          classes={{
+            root: styles.toolbar
+          }}
+          style={{ minHeight: '48px', height: '48px' }}
+        >
+          <Tooltip title="Find in Document">
+            <IconButton style={buttonStyle} onClick={this.toggleSearchBar}>
+              <SearchIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Page Down">
+            <IconButton style={buttonStyle} onClick={this.pageDown}>
+              <ArrowDownwardIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Page Up">
+            <IconButton style={buttonStyle}>
+              <ArrowUpwardIcon onClick={this.pageUp} />
+            </IconButton>
+          </Tooltip>
+          <Input
+            classes={{
+              root: styles.pageNumberInputRoot,
+              input: styles.pageNumberInput
+            }}
+            placeholder={String(currentPageNumber)}
+            value={this.state.pageNumberInput}
+            onChange={this.handlePageInput}
+            onKeyPress={this.handlePageChange}
+            onBlur={this.handlePageInputBlur}
+            disableUnderline
+          />
+          <Typography style={{ fontSize: '16px' }}>/ {numPages}</Typography>
+          <Tooltip title="Fit to Width">
+            <IconButton style={buttonStyle} onClick={this.fitWidth}>
+              <FullscreenIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom Out">
+            <IconButton style={buttonStyle} onClick={this.zoomOut}>
+              <RemoveCircleOutlineIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom In">
+            <IconButton style={buttonStyle} onClick={this.zoomIn}>
+              <AddCircleOutlineIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Fullscreen">
+            <IconButton style={buttonStyle}>
+              <ZoomOutMapIcon onClick={this.toggleFullScreen} />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+        {this.state.isSearchOpen && (
+          <Toolbar
+            classes={{
+              root: styles.toolbar
+            }}
+            style={{ minHeight: '48px', height: '48px' }}
+          >
+            <Input
+              value={searchText}
+              className={styles.searchInput}
+              onChange={this.handleSearchTextChange}
+              onKeyDown={this.handleSearchKeyDown}
+              autoFocus
+            />
+            {totalSearchMatches && (
+              <Typography>
+                {currentSearchMatch} of {totalSearchMatches}
+              </Typography>
+            )}
+            <Tooltip title="Previous">
+              <div>
+                <IconButton
+                  style={buttonStyle}
+                  onClick={this.handlePrevSearchMatch}
+                  disabled={!totalSearchMatches}
+                >
+                  <ExpandLessIcon />
+                </IconButton>
+              </div>
+            </Tooltip>
+            <Tooltip title="Next">
+              <div>
+                <IconButton
+                  style={buttonStyle}
+                  onClick={this.handleNextSearchMatch}
+                  disabled={!totalSearchMatches}
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </div>
+            </Tooltip>
+            <Tooltip title="Close">
+              <IconButton style={buttonStyle} onClick={this.handleSearchClose}>
+                <CloseIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+        )}
+      </div>
     );
   }
 }

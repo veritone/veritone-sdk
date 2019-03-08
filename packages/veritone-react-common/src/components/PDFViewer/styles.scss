@@ -12,17 +12,39 @@
   flex: 1;
 }
 
-// TODOJB on zoom out, need to center content
-// with justify-content: center & zoomed in, canvas extends too far to the left
 .pdfPage {
   display: flex;
-}
-
-//TODOJB on fullscreen, increase scale
-:fullscreen .pdfPage {
-  justify-content: center;
+  :global(.react-pdf__Page__canvas) {
+    margin: 0 auto;
+  }
+  :global(.react-pdf__Page__textContent[style]) {
+    mix-blend-mode: multiply;
+    margin: 0 auto;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: unset !important;
+  }
 }
 
 .toolbar {
   border-bottom: solid 1px $faint-black;
+  background-color: white;
+}
+
+.highlight {
+  color: transparent;
+}
+
+.pageNumberInputRoot {
+  width: 48px;
+  padding-right: 8px;
+}
+
+.pageNumberInput {
+  text-align: end;
+}
+
+.searchInput {
+  flex: 1;
 }

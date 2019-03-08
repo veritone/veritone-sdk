@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import { string, number, func, ref } from 'prop-types';
+import { string, number, func, shape, object } from 'prop-types';
 import { Document, Page, setOptions } from 'react-pdf';
 import { FixedSizeList } from 'react-window';
-import ContainerDimensions from 'react-container-dimensions';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import styles from './styles.scss';
 
 setOptions({
@@ -13,13 +13,18 @@ class SimplePDFViewer extends PureComponent {
   static propTypes = {
     file: string.isRequired,
     onItemsRendered: func,
-    listRef: ref,
     userScale: number,
+    overrideScale: number,
     onDocumentLoad: func,
-    customTextRenderer: func
+    customTextRenderer: func,
+    initialPageOffset: number,
+    listRef: shape({ current: object }),
+    listOuterRef: shape({ current: object })
   };
   static defaultProps = {
-    userScale: 1
+    userScale: 1,
+    overrideScale: null,
+    initialPageOffset: 1
   };
   state = {
     currentPageIndex: null,
@@ -58,8 +63,6 @@ class SimplePDFViewer extends PureComponent {
     visibleStopIndex
   }) => {
     if (this.props.onItemsRendered) {
-      // note: when multiple pages are visible, it is not as clear which one should be the "current" page
-      // we could figure out which page is in the center of the screen if we get scrollbar percentage
       this.props.onItemsRendered({
         currentPageIndex: visibleStopIndex,
         numPages: this.state.numPages
@@ -69,46 +72,61 @@ class SimplePDFViewer extends PureComponent {
 
   render() {
     return (
-      <ContainerDimensions>
+      <AutoSizer>
         {({ width, height }) => {
           const { numPages, originalPageDimensions } = this.state;
-          const { file, listRef, userScale, customTextRenderer } = this.props;
-          const scale = originalPageDimensions
-            ? (userScale * width - 20) / originalPageDimensions.width
-            : null;
+          const {
+            file,
+            userScale,
+            customTextRenderer,
+            listRef,
+            listOuterRef,
+            overrideScale,
+            initialPageOffset
+          } = this.props;
+          const scale =
+            overrideScale ||
+            (originalPageDimensions
+              ? (userScale * width - 20) / originalPageDimensions.width
+              : null);
           const itemHeight = originalPageDimensions
             ? originalPageDimensions.height * scale
             : null;
           return (
-            <Document file={file} onLoadSuccess={this.onDocumentLoad}>
+            <Document
+              file={file}
+              onLoadSuccess={this.onDocumentLoad}
+              loading=""
+            >
               {originalPageDimensions && (
-                <div>
-                  <FixedSizeList
-                    ref={listRef}
-                    height={height}
-                    width={width}
-                    itemCount={numPages}
-                    itemSize={itemHeight}
-                    onItemsRendered={this.onItemsRendered}
-                  >
-                    {({ style, index }) => (
-                      <div style={style} key={`page_${index}`}>
-                        <Page
-                          className={styles.pdfPage}
-                          pageIndex={index}
-                          scale={scale}
-                          renderAnnotationLayer={false}
-                          customTextRenderer={customTextRenderer}
-                        />
-                      </div>
-                    )}
-                  </FixedSizeList>
-                </div>
+                <FixedSizeList
+                  ref={listRef}
+                  outerRef={listOuterRef}
+                  height={height}
+                  width={width}
+                  itemCount={numPages}
+                  itemSize={itemHeight}
+                  onItemsRendered={this.onItemsRendered}
+                  initialScrollOffset={(initialPageOffset - 1) * itemHeight}
+                >
+                  {({ style, index }) => (
+                    <div style={style} key={`page_${index}`}>
+                      <Page
+                        className={styles.pdfPage}
+                        pageIndex={index}
+                        scale={scale}
+                        renderAnnotationLayer={false}
+                        customTextRenderer={customTextRenderer}
+                        loading=""
+                      />
+                    </div>
+                  )}
+                </FixedSizeList>
               )}
             </Document>
           );
         }}
-      </ContainerDimensions>
+      </AutoSizer>
     );
   }
 }

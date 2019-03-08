@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
-import { string } from 'prop-types';
+import { number, string } from 'prop-types';
 import cx from 'classnames';
+import { get, reduce, findLast, escapeRegExp } from 'lodash';
 
 import SimplePDFViewer from './SimplePDFViewer';
 import ViewerToolBar from './ViewerToolbar';
 import styles from './styles.scss';
+
+const MIN_SEARCH_LENGTH = 3;
 
 const highlightPattern = (text, pattern) => {
   const splitText = text.split(pattern);
@@ -16,66 +19,250 @@ const highlightPattern = (text, pattern) => {
   return splitText.reduce(
     (arr, element, index) =>
       matches[index]
-        ? [...arr, element, <mark>{matches[index]}</mark>]
+        ? [
+            ...arr,
+            element,
+            <mark className={styles.highlight}>{matches[index]}</mark>
+          ]
         : [...arr, element],
     []
   );
 };
-const makeTextRenderer = searchText => ({ str, itemIndex }) =>
-  highlightPattern(str, searchText);
+
 class PDFViewer extends PureComponent {
   static propTypes = {
     file: string.isRequired,
-    className: string
+    className: string,
+    initialPageOffset: number,
+    initialSearchText: string
+  };
+  static defaultProps = {
+    initialPageOffset: 1,
+    initialSearchText: ''
   };
   state = {
-    currentPageIndex: null,
+    currentPageNumber: this.props.initialPageOffset,
     numPages: null,
+    viewerRef: React.createRef(),
     listRef: React.createRef(),
+    listOuterRef: React.createRef(),
     userScale: 1,
+    overrideScale: null,
     pdf: null,
-    searchText: null
+    searchText: this.props.initialSearchText,
+    pagesText: null,
+    currentSearchMatch: null,
+    totalSearchMatches: null
   };
 
-  handleUserScale = userScale => {
-    this.setState({ userScale });
+  componentDidUpdate(prevProps, prevState) {
+    //scroll back to page that was visible before scaling
+    if (prevState.userScale !== this.state.userScale) {
+      this.scrollToPage(prevState.currentPageNumber);
+    }
+  }
+
+  makeTextRenderer = searchText => ({ str, itemIndex }) => {
+    return highlightPattern(str, searchText);
   };
 
-  handleItemsRendered = ({ currentPageIndex, numPages }) => {
-    if (currentPageIndex !== this.state.currentPageIndex) {
-      this.setState({ currentPageIndex, numPages });
+  handleScale = ({ userScale, overrideScale }) => {
+    this.setState({ userScale, overrideScale });
+    this.scrollToPage(this.state.currentPageNumber);
+  };
+
+  handleItemsRendered = ({ numPages }) => {
+    const listOuterRef = get(this.state, 'listOuterRef.current');
+    if (listOuterRef) {
+      const pxPerPage = listOuterRef.scrollHeight / numPages;
+      const centerPoint =
+        listOuterRef.scrollTop + listOuterRef.clientHeight / 2;
+      const currentPageNumber = Math.floor(centerPoint / pxPerPage) + 1;
+      if (currentPageNumber !== this.state.currentPageNumber) {
+        this.setState({ currentPageNumber, numPages });
+      }
     }
   };
 
   handleDocumentLoad = pdf => {
-    this.setState({ pdf });
+    this.setState({ pdf, numPages: pdf.numPages });
+    return this.fetchAllPageText({ pdf }).then(pagesText => {
+      this.setState({ pagesText }, () => {
+        this.handleSearchTextChange(this.state.searchText);
+      });
+      return pagesText;
+    });
   };
 
-  //TODOJB optimize: min 2 or 3 characters
+  scrollToPage = desiredPageNum => {
+    if (
+      get(this.state.listRef, 'current.scrollToItem') &&
+      isFinite(desiredPageNum)
+    ) {
+      let targetIndex = Math.min(desiredPageNum, this.state.numPages);
+      targetIndex = Math.max(targetIndex, 0);
+      this.state.listRef.current.scrollToItem(targetIndex - 1, 'center');
+    }
+  };
+
+  fetchAllPageText({ pdf, index = 1, results = [] }) {
+    if (index > pdf.numPages) {
+      return results;
+    }
+    return this.getSinglePageText({ pdf, index }).then(text => {
+      results.push(text);
+      return this.fetchAllPageText({ pdf, index: index + 1, results });
+    });
+  }
+  getSinglePageText({ pdf, index = 1 }) {
+    return pdf
+      .getPage(index)
+      .then(page => {
+        return page.getTextContent();
+      })
+      .then(content => {
+        return reduce(
+          content.items,
+          (result, item) => {
+            return result + item.str + ' ';
+          },
+          ''
+        );
+      });
+  }
+
+  searchDocument(searchText, pages) {
+    if (!searchText || searchText.length < MIN_SEARCH_LENGTH) {
+      return {
+        totalCount: 0,
+        pages: []
+      };
+    }
+    const pattern = new RegExp(escapeRegExp(searchText), 'ig');
+    return reduce(
+      pages,
+      (results, pageText, pageIndex) => {
+        const matches = pageText.match(pattern);
+        if (matches && matches.length) {
+          results.pages.push({
+            pageIndex: pageIndex + 1,
+            startMatchIndex: results.totalCount + 1,
+            matchesOnPage: matches.length
+          });
+          results.totalCount += matches.length;
+        }
+        return results;
+      },
+      { totalCount: 0, pages: [] }
+    );
+  }
+
+  handlePrevSearchMatch = () => {
+    if (this.state.totalSearchMatches > 0) {
+      this.setState(prevState => {
+        const newMatchIndex =
+          prevState.currentSearchMatch <= 1
+            ? prevState.totalSearchMatches
+            : prevState.currentSearchMatch - 1;
+        const pageForSearchMatch = this.getPageForSearchMatch(
+          prevState.searchMatches.pages,
+          newMatchIndex
+        );
+        if (pageForSearchMatch !== prevState.currentPageNumber) {
+          this.scrollToPage(pageForSearchMatch);
+        }
+        return {
+          currentSearchMatch: newMatchIndex
+        };
+      });
+    }
+  };
+
+  handleNextSearchMatch = () => {
+    if (this.state.totalSearchMatches > 0) {
+      this.setState(prevState => {
+        // loop around at end of matches
+        const newMatchIndex =
+          prevState.currentSearchMatch >= prevState.totalSearchMatches
+            ? 1
+            : prevState.currentSearchMatch + 1;
+        const pageForSearchMatch = this.getPageForSearchMatch(
+          prevState.searchMatches.pages,
+          newMatchIndex
+        );
+        if (pageForSearchMatch !== prevState.currentPageNumber) {
+          this.scrollToPage(pageForSearchMatch);
+        }
+        return {
+          currentSearchMatch: newMatchIndex
+        };
+      });
+    }
+  };
+
+  getPageForSearchMatch = (searchMatchPages, matchIndex) => {
+    const match = findLast(
+      searchMatchPages,
+      match => matchIndex >= match.startMatchIndex
+    );
+    if (match) {
+      return match.pageIndex;
+    }
+  };
+
   handleSearchTextChange = searchText => {
-    const customTextRenderer = makeTextRenderer(searchText);
+    const customTextRenderer =
+      searchText && searchText.length >= MIN_SEARCH_LENGTH
+        ? this.makeTextRenderer(new RegExp(escapeRegExp(searchText), 'i'))
+        : null;
     this.setState({ searchText, customTextRenderer });
+
+    const searchMatches = this.searchDocument(searchText, this.state.pagesText);
+    const totalSearchMatches = searchMatches.totalCount;
+    if (totalSearchMatches > 0) {
+      this.setState({
+        currentSearchMatch: 1,
+        totalSearchMatches,
+        searchMatches
+      });
+    } else {
+      this.setState({ currentSearchMatch: null, totalSearchMatches: null });
+    }
   };
 
   render() {
     const {
-      currentPageIndex,
+      currentPageNumber,
       numPages,
+      viewerRef,
       listRef,
+      listOuterRef,
       userScale,
+      overrideScale,
       searchText,
-      customTextRenderer
+      customTextRenderer,
+      currentSearchMatch,
+      totalSearchMatches
     } = this.state;
     return (
-      <div className={cx(styles.pdfViewer, this.props.className)}>
+      <div
+        ref={viewerRef}
+        className={cx(styles.pdfViewer, this.props.className)}
+      >
         <ViewerToolBar
-          currentPageIndex={currentPageIndex}
+          currentPageNumber={currentPageNumber}
           numPages={numPages}
           listRef={listRef}
-          onUserScale={this.handleUserScale}
+          viewerRef={viewerRef}
+          onScale={this.handleScale}
           userScale={userScale}
           searchText={searchText}
           onSearchTextChange={this.handleSearchTextChange}
+          onPrevSearchMatch={this.handlePrevSearchMatch}
+          onNextSearchMatch={this.handleNextSearchMatch}
+          currentSearchMatch={currentSearchMatch}
+          totalSearchMatches={totalSearchMatches}
+          onScrollToPage={this.scrollToPage}
         />
         <div className={styles.pdfViewerContainer}>
           <SimplePDFViewer
@@ -83,8 +270,11 @@ class PDFViewer extends PureComponent {
             onItemsRendered={this.handleItemsRendered}
             onDocumentLoad={this.handleDocumentLoad}
             listRef={listRef}
+            listOuterRef={listOuterRef}
             userScale={userScale}
+            overrideScale={overrideScale}
             customTextRenderer={customTextRenderer}
+            initialPageOffset={this.props.initialPageOffset}
           />
         </div>
       </div>
