@@ -25,7 +25,6 @@ import styles from './styles.scss';
 
 export default class SpeakerPill extends Component {
   static propTypes = {
-    speakerIndex: number,
     className: string,
     speakerSegment: shape({
       speakerId: string,
@@ -145,12 +144,12 @@ export default class SpeakerPill extends Component {
 
   render() {
     const {
-      speakerIndex,
       editMode,
       speakerSegment,
       availableSpeakers,
       startMediaPlayHeadMs,
-      stopMediaPlayHeadMs
+      stopMediaPlayHeadMs,
+      speakerData
     } = this.props;
     const {
       speakerId,
@@ -188,6 +187,12 @@ export default class SpeakerPill extends Component {
     const colorClass = isHighlighted ? styles.highlight : '';
     const speakerPillLabel = extractPillLabel(speakerId);
     const speakerLabel = extractLabel(speakerId);
+    let speakerIndex;
+    speakerData.forEach(seg => seg.series.forEach((s, i) => {
+      if (s.guid === guid) {
+        speakerIndex = i;
+      }
+    }));
     const otherSpeakers = (speakerName && speakerName !== speakerId)
       ? availableSpeakers.filter(id => 
         id
