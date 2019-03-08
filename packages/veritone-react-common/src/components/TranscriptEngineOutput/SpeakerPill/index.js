@@ -93,12 +93,18 @@ export default class SpeakerPill extends Component {
   };
 
   handleAvailableSpeakerClick = id => () => {
-    this.setState({ speakerName: id });
+    const { speakerSegment } = this.props;
+    const { speakerId } = speakerSegment;
+    this.setState({ speakerName: id }, () => {
+      id !== speakerId
+        ? this.handleAddClick()
+        : this.handleClearClick()
+    });
   };
 
   handleAddClick = event => {
-    event.preventDefault();
-    event.stopPropagation();
+    event && event.preventDefault();
+    event && event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll, speakerName } = this.state;
     const { speakerId } = speakerSegment;
@@ -111,8 +117,8 @@ export default class SpeakerPill extends Component {
   };
 
   handleClearClick = event => {
-    event.preventDefault();
-    event.stopPropagation();
+    event && event.preventDefault();
+    event && event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll } = this.state;
     const { speakerId } = speakerSegment;

@@ -431,12 +431,50 @@ class MediaDetailsWidget extends React.Component {
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
+    this.setHotKeyListeners();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
       this.handleDisableEditBtn(false);
     }
+  }
+
+  componentWillUnmount() {
+    this.unsetHotKeyListeners();
+  }
+
+  hotKeyCategories = [{
+    commands: [{
+      // Toggle Play/Pause
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 9;
+      },
+      eventFunc: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.handleToggleMediaPlayerPlayback && this.handleToggleMediaPlayerPlayback();
+      }
+    }]
+  }];
+
+  setHotKeyListeners = () => {
+    window.addEventListener('keydown', this.hotKeyEvents);
+  }
+
+  unsetHotKeyListeners = () => {
+    window.removeEventListener('keydown', this.hotKeyEvents);
+  }
+
+  hotKeyEvents = event => {
+    this.hotKeyCategories.forEach(category => {
+      category.commands.forEach(command => {
+        command.triggerFunc
+          && command.triggerFunc(event)
+          && command.eventFunc
+          && command.eventFunc(event);
+      });
+    });
   }
 
   handleMediaPlayerStateChange(state) {

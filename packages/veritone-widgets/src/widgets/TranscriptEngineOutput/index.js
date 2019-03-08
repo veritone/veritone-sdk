@@ -391,16 +391,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       label: 'Play/Pause',
       hotkeys: [{
         keys: ['TAB']
-      }],
-      triggerFunc: event => {
-        return get(event, 'keyCode') === 9;
-      },
-      eventFunc: event => {
-        const { togglePlayback } = this.props;
-        event.preventDefault();
-        event.stopPropagation();
-        togglePlayback && togglePlayback();
-      }
+      }]  // Functionality moved up to parent MDP component
     }, {
       label: 'Undo',
       hotkeys: [{
@@ -701,14 +692,14 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   setHotKeyListeners = () => {
-    window.addEventListener('keydown', this.hoyKeyEvents);
+    window.addEventListener('keydown', this.hotKeyEvents);
   }
 
   unsetHotKeyListeners = () => {
-    window.removeEventListener('keydown', this.hoyKeyEvents);
+    window.removeEventListener('keydown', this.hotKeyEvents);
   }
 
-  hoyKeyEvents = event => {
+  hotKeyEvents = event => {
     this.hotKeyCategories.forEach(category => {
       category.commands.forEach(command => {
         command.triggerFunc
