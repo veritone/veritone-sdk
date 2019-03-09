@@ -51,7 +51,7 @@
           "type": "array",
           "items": [
             {
-              "$ref": "#definitions/indexingTypes"
+              "$ref": "#/definitions/indexingTypes"
             }
           ]
         }
@@ -69,7 +69,8 @@
         "audio-fingerprint",
         "ocr",
         "face",
-        "object"
+        "object",
+        "transcript"
       ]
     },
     "objectCategory": {
@@ -88,7 +89,9 @@
             "example": "1"
           }
         },
-        "required": ["class"]
+        "required": [
+          "class"
+        ]
       },
       "description": "Optional category for object recognition"
     },
@@ -121,7 +124,11 @@
         "type"
       ],
       "if": {
-        "properties": { "type": { "pattern": "object"} }
+        "properties": {
+          "type": {
+            "pattern": "object"
+          }
+        }
       },
       "then": {
         "properties": {
@@ -130,6 +137,20 @@
           }
         }
       }
+    },
+    "word": {
+      "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
+      "type": "string"
+    },
+    "utteranceLength": {
+      "description": "Number of consecutive time-slices the utterance spans. example: of->thrones----->of->their-->own-> utteranceLength: thrones: 2; their,own: 1",
+      "type": "integer",
+      "minimum": 1,
+      "example": 2
+    },
+    "language": {
+      "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
+      "type": "string"
     },
     "series": {
       "type": "array",
@@ -189,7 +210,10 @@
       "items": {
         "$ref": "#/definitions/point"
       },
-      "required": ["x", "y"]
+      "required": [
+        "x",
+        "y"
+      ]
     }
   }
 }

@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
+  "title": "vtn-standard.object",
+  "description": "Standard engine output for Object at Veritone",
+  "type": "object",
+  "definitions": {
+    "words": {
+      "type": "array",
+      "if": {
+        "minItems": 2
+      },
+      "then": {
+        "items": {
+          "allOf": [
+            {
+              "properties": {
+                "word": {
+                  "$ref": "master.json#/definitions/word"
+                },
+                "confidence": {
+                  "$ref": "master.json#/definitions/confidence"
+                },
+                "utteranceLength": {
+                  "$ref": "master.json#/definitions/utteranceLength"
+                }
+              },
+              "required": [
+                "word",
+                "confidence",
+                "utteranceLength"
+              ]
+            }
+          ],
+          "uniqueItems": true
+        },
+        "requireBestPath": true
+      },
+      "else": {
+        "items": {
+          "allOf": [
+            {
+              "properties": {
+                "word": {
+                  "$ref": "master.json#/definitions/word"
+                },
+                "confidence": {
+                  "$ref": "master.json#/definitions/confidence"
+                }
+              }
+            }
+          ],
+          "required": [
+            "word"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "series": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {
+            "properties": {
+              "words": {
+                "$ref": "#/definitions/words"
+              },
+              "startTimeMs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "stopTimeMs": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "startTimeMs",
+              "stopTimeMs",
+              "words"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "master.json#/definitions/header"
+    }
+  ],
+  "allOf": [
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "transcript"
+          }
+        }
+      }
+    }
+  ]
+}

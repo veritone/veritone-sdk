@@ -52,10 +52,31 @@
                 "pattern": "object"
               }
             },
-            "required": ["startTimeMs", "stopTimeMs"]
+            "required": [
+              "startTimeMs",
+              "stopTimeMs"
+            ]
           }
         ]
       }
     }
-  }
+  },
+  "anyOf": [
+    {
+      "$ref": "master.json#/definitions/header"
+    }
+  ],
+  "allOf": [
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "object"
+          }
+        }
+      }
+    }
+  ]
 }
