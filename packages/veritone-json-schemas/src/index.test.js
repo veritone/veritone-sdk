@@ -17,7 +17,9 @@ import * as transcriptLatticeWithMissingUtterance from '../schemas/vtn-standard/
 import * as transcriptLatticeWithNoBestPath from '../schemas/vtn-standard/transcript/invalid-examples/lattice.no.best.path.json';
 import * as transcriptLatticeWithUtteranceBelowOne from '../schemas/vtn-standard/transcript/invalid-examples/lattice.utterance.below.one.json';
 import * as transcriptBasicWithBrokenHeader from '../schemas/vtn-standard/transcript/invalid-examples/basic.broken.header.json';
-
+import * as transcriptBasicWithBrokenLanguage from '../schemas/vtn-standard/transcript/invalid-examples/basic.invalid.language.json';
+import * as transcriptBasicWithBrokenLanguageSeries from '../schemas/vtn-standard/transcript/invalid-examples/basic.invalid.series.language.json';
+import * as transcriptNegativeStartTime from '../schemas/vtn-standard/transcript/invalid-examples/basic.negative.startTime.json';
 
 
 test('it should verify that a valid object summary output passes validation', () => {
@@ -72,6 +74,17 @@ test('it should verify that a lattice transcript output with an invalid utteranc
   expect(verifyTranscript(transcriptLatticeWithUtteranceBelowOne)).not.toBe(true);
 });
 
+test('it should verify that a lattice transcript output with an invalid language value DOES NOT pass validation', () => {
+  expect(verifyTranscript(transcriptBasicWithBrokenLanguage)).not.toBe(true);
+});
+
+test('it should verify that a lattice transcript output with an invalid language value in a series DOES NOT pass validation', () => {
+  expect(verifyTranscript(transcriptBasicWithBrokenLanguageSeries)).not.toBe(true);
+});
+
+test('it should verify that a basic transcript output with a negative startTime in a series DOES NOT pass validation', () => {
+  expect(verifyTranscript(transcriptNegativeStartTime)).not.toBe(true);
+});
 
 test('it should verify that a transcript with lattices output passes validation', () => {
   expect(verifyTranscript(transcriptLattice)).toEqual(true);
