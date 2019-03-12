@@ -22,7 +22,9 @@ const highlightPattern = (text, pattern) => {
         ? [
             ...arr,
             element,
-            <mark className={styles.highlight}>{matches[index]}</mark>
+            <mark key={index} className={styles.highlight}>
+              {matches[index]}
+            </mark>
           ]
         : [...arr, element],
     []
@@ -42,6 +44,7 @@ class PDFViewer extends PureComponent {
   };
   state = {
     currentPageNumber: this.props.initialPageOffset,
+    isSearchOpen: !!this.props.initialSearchText,
     numPages: null,
     viewerRef: React.createRef(),
     listRef: React.createRef(),
@@ -230,6 +233,16 @@ class PDFViewer extends PureComponent {
     }
   };
 
+  toggleSearchBar = () => {
+    this.setState(prevState => {
+      const isSearchOpen = !prevState.isSearchOpen;
+      if (!isSearchOpen) {
+        this.handleSearchTextChange('');
+      }
+      return { isSearchOpen };
+    });
+  };
+
   render() {
     const {
       currentPageNumber,
@@ -242,7 +255,8 @@ class PDFViewer extends PureComponent {
       searchText,
       customTextRenderer,
       currentSearchMatch,
-      totalSearchMatches
+      totalSearchMatches,
+      isSearchOpen
     } = this.state;
     return (
       <div
@@ -263,6 +277,8 @@ class PDFViewer extends PureComponent {
           currentSearchMatch={currentSearchMatch}
           totalSearchMatches={totalSearchMatches}
           onScrollToPage={this.scrollToPage}
+          isSearchOpen={isSearchOpen}
+          onToggleSearchBar={this.toggleSearchBar}
         />
         <div className={styles.pdfViewerContainer}>
           <SimplePDFViewer

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { string, number, func, shape, object } from 'prop-types';
+import { bool, string, number, func, shape, object } from 'prop-types';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -31,23 +31,25 @@ class ViewerToolBar extends PureComponent {
     onSearchTextChange: func,
     searchText: string,
     viewerRef: shape({ current: object }),
+    isSearchOpen: bool,
     currentSearchMatch: number,
     totalSearchMatches: number,
     onPrevSearchMatch: func,
     onNextSearchMatch: func,
-    onScrollToPage: func
+    onScrollToPage: func,
+    onToggleSearchBar: func
   };
   static defaultProps = {
     userScale: 1,
     searchText: '',
     currentSearchMatch: null,
     totalSearchMatches: null,
-    currentPageNumber: 1
+    currentPageNumber: 1,
+    isSearchOpen: false
   };
 
   state = {
-    pageNumberInput: '',
-    isSearchOpen: false
+    pageNumberInput: ''
   };
 
   componentWillUnmount() {
@@ -123,20 +125,9 @@ class ViewerToolBar extends PureComponent {
   };
 
   toggleSearchBar = () => {
-    this.setState(prevState => {
-      const isSearchOpen = !prevState.isSearchOpen;
-      if (!isSearchOpen && this.props.onSearchTextChange) {
-        this.props.onSearchTextChange('');
-      }
-      return { isSearchOpen };
-    });
-  };
-
-  handleSearchClose = () => {
-    if (this.props.onSearchTextChange) {
-      this.props.onSearchTextChange('');
+    if (this.props.onToggleSearchBar) {
+      this.props.onToggleSearchBar();
     }
-    this.setState({ isSearchOpen: false });
   };
 
   handlePrevSearchMatch = () => {
@@ -159,7 +150,7 @@ class ViewerToolBar extends PureComponent {
         this.handleNextSearchMatch();
       }
     } else if (ev.key === 'Escape') {
-      this.handleSearchClose();
+      this.toggleSearchBar();
     }
   };
 
@@ -170,8 +161,10 @@ class ViewerToolBar extends PureComponent {
       userScale,
       searchText,
       currentSearchMatch,
-      totalSearchMatches
+      totalSearchMatches,
+      isSearchOpen
     } = this.props;
+    const { pageNumberInput } = this.state;
     const buttonStyle = {
       height: '36px',
       width: '36px'
@@ -199,19 +192,24 @@ class ViewerToolBar extends PureComponent {
               <ArrowUpwardIcon onClick={this.pageUp} />
             </IconButton>
           </Tooltip>
-          <Input
-            classes={{
-              root: styles.pageNumberInputRoot,
-              input: styles.pageNumberInput
-            }}
-            placeholder={String(currentPageNumber)}
-            value={this.state.pageNumberInput}
-            onChange={this.handlePageInput}
-            onKeyPress={this.handlePageChange}
-            onBlur={this.handlePageInputBlur}
-            disableUnderline
-          />
-          <Typography style={{ fontSize: '16px' }}>/ {numPages}</Typography>
+          <Tooltip title="Go to Page">
+            <Input
+              classes={{
+                root: styles.pageNumberInputRoot,
+                input: styles.pageNumberInput
+              }}
+              style={{ fontSize: '16px' }}
+              placeholder={String(currentPageNumber)}
+              value={pageNumberInput}
+              onChange={this.handlePageInput}
+              onKeyPress={this.handlePageChange}
+              onBlur={this.handlePageInputBlur}
+              disableUnderline
+            />
+          </Tooltip>
+          <Typography style={{ fontSize: '16px', paddingRight: '16px' }}>
+            / {numPages}
+          </Typography>
           <Tooltip title="Fit to Width">
             <IconButton style={buttonStyle} onClick={this.fitWidth}>
               <FullscreenIcon />
@@ -233,7 +231,7 @@ class ViewerToolBar extends PureComponent {
             </IconButton>
           </Tooltip>
         </Toolbar>
-        {this.state.isSearchOpen && (
+        {isSearchOpen && (
           <Toolbar
             classes={{
               root: styles.toolbar
@@ -275,7 +273,7 @@ class ViewerToolBar extends PureComponent {
               </div>
             </Tooltip>
             <Tooltip title="Close">
-              <IconButton style={buttonStyle} onClick={this.handleSearchClose}>
+              <IconButton style={buttonStyle} onClick={this.toggleSearchBar}>
                 <CloseIcon />
               </IconButton>
             </Tooltip>

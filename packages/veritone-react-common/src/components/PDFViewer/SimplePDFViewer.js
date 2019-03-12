@@ -87,10 +87,10 @@ class SimplePDFViewer extends PureComponent {
           const scale =
             overrideScale ||
             (originalPageDimensions
-              ? (userScale * width - 20) / originalPageDimensions.width
+              ? (userScale * width - 30) / originalPageDimensions.width
               : null);
           const itemHeight = originalPageDimensions
-            ? originalPageDimensions.height * scale
+            ? originalPageDimensions.height * scale + 20
             : null;
           return (
             <Document
@@ -110,10 +110,14 @@ class SimplePDFViewer extends PureComponent {
                   initialScrollOffset={(initialPageOffset - 1) * itemHeight}
                 >
                   {({ style, index }) => (
-                    <div style={style} key={`page_${index}`}>
+                    <div
+                      style={style}
+                      className={styles.pageContainer}
+                      key={`page_${index + 1}`}
+                    >
                       <Page
                         className={styles.pdfPage}
-                        pageIndex={index}
+                        pageNumber={index + 1}
                         scale={scale}
                         renderAnnotationLayer={false}
                         customTextRenderer={customTextRenderer}

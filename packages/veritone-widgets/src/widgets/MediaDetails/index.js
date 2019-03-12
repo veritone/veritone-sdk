@@ -1465,11 +1465,9 @@ class MediaDetailsWidget extends React.Component {
                       !isMedia &&
                       isText &&
                       this.getPreviewUrl() && (
-                        //TODOJB update dimensions, define loading and error states
                         <PDFViewer
                           file={this.getPreviewUrl()}
-                          height={600}
-                          width={600}
+                          className={styles.pdfViewer}
                         />
                       )}
                     {isImage &&
