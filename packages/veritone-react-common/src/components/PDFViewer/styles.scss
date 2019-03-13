@@ -19,7 +19,7 @@
 
 .pdfPage {
   display: flex;
-  margin: 10px 5px;
+  margin-top: 5px;
   :global(.react-pdf__Page__canvas) {
     margin: 0 auto;
   }

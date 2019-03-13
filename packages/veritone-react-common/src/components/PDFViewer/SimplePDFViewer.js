@@ -1,13 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { string, number, func, shape, object } from 'prop-types';
 import { Document, Page, setOptions } from 'react-pdf';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, shouldComponentUpdate } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import styles from './styles.scss';
 
 setOptions({
   workerSrc: '//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.305/pdf.worker.js'
 });
+const SCROLLBAR_MARGIN = 20;
+const PAGE_MARGIN = 10;
 
 class SimplePDFViewer extends PureComponent {
   static propTypes = {
@@ -19,12 +21,14 @@ class SimplePDFViewer extends PureComponent {
     customTextRenderer: func,
     initialPageOffset: number,
     listRef: shape({ current: object }),
-    listOuterRef: shape({ current: object })
+    listOuterRef: shape({ current: object }),
+    searchText: string
   };
   static defaultProps = {
     userScale: 1,
     overrideScale: null,
-    initialPageOffset: 1
+    initialPageOffset: 1,
+    searchText: ''
   };
   state = {
     currentPageIndex: null,
@@ -82,15 +86,17 @@ class SimplePDFViewer extends PureComponent {
             listRef,
             listOuterRef,
             overrideScale,
-            initialPageOffset
+            initialPageOffset,
+            searchText
           } = this.props;
           const scale =
             overrideScale ||
             (originalPageDimensions
-              ? (userScale * width - 30) / originalPageDimensions.width
+              ? (userScale * width - (SCROLLBAR_MARGIN + PAGE_MARGIN)) /
+                originalPageDimensions.width
               : null);
           const itemHeight = originalPageDimensions
-            ? originalPageDimensions.height * scale + 20
+            ? originalPageDimensions.height * scale + PAGE_MARGIN
             : null;
           return (
             <Document
@@ -106,31 +112,52 @@ class SimplePDFViewer extends PureComponent {
                   width={width}
                   itemCount={numPages}
                   itemSize={itemHeight}
+                  itemData={{ scale, customTextRenderer, searchText }}
                   onItemsRendered={this.onItemsRendered}
                   initialScrollOffset={(initialPageOffset - 1) * itemHeight}
                 >
-                  {({ style, index }) => (
-                    <div
-                      style={style}
-                      className={styles.pageContainer}
-                      key={`page_${index + 1}`}
-                    >
-                      <Page
-                        className={styles.pdfPage}
-                        pageNumber={index + 1}
-                        scale={scale}
-                        renderAnnotationLayer={false}
-                        customTextRenderer={customTextRenderer}
-                        loading=""
-                      />
-                    </div>
-                  )}
+                  {PageRow}
                 </FixedSizeList>
               )}
             </Document>
           );
         }}
       </AutoSizer>
+    );
+  }
+}
+
+class PageRow extends Component {
+  static propTypes = {
+    index: number,
+    style: shape(),
+    data: shape({
+      scale: number,
+      searchText: string,
+      customTextRenderer: func
+    })
+  };
+
+  shouldComponentUpdate = shouldComponentUpdate.bind(this);
+
+  render() {
+    const { index, style, data } = this.props;
+    const { scale, customTextRenderer, searchText } = data;
+    const key = customTextRenderer
+      ? `custom_${searchText}`
+      : `default_${index}`;
+    return (
+      <div style={style} className={styles.pageContainer} key={`page_${index}`}>
+        <Page
+          key={key}
+          className={styles.pdfPage}
+          pageNumber={index + 1}
+          scale={scale}
+          renderAnnotationLayer={false}
+          customTextRenderer={customTextRenderer}
+          loading=""
+        />
+      </div>
     );
   }
 }

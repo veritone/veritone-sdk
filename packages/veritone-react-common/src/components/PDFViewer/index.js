@@ -88,7 +88,10 @@ class PDFViewer extends PureComponent {
   };
 
   handleDocumentLoad = pdf => {
-    this.setState({ pdf, numPages: pdf.numPages });
+    this.setState({
+      pdf,
+      numPages: pdf.numPages
+    });
     return this.fetchAllPageText({ pdf }).then(pagesText => {
       this.setState({ pagesText }, () => {
         this.handleSearchTextChange(this.state.searchText);
@@ -234,13 +237,10 @@ class PDFViewer extends PureComponent {
   };
 
   toggleSearchBar = () => {
-    this.setState(prevState => {
-      const isSearchOpen = !prevState.isSearchOpen;
-      if (!isSearchOpen) {
-        this.handleSearchTextChange('');
-      }
-      return { isSearchOpen };
-    });
+    if (this.state.isSearchOpen) {
+      this.handleSearchTextChange('');
+    }
+    this.setState(prevState => ({ isSearchOpen: !prevState.isSearchOpen }));
   };
 
   render() {
@@ -291,6 +291,7 @@ class PDFViewer extends PureComponent {
             overrideScale={overrideScale}
             customTextRenderer={customTextRenderer}
             initialPageOffset={this.props.initialPageOffset}
+            searchText={searchText}
           />
         </div>
       </div>
