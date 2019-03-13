@@ -1,7 +1,16 @@
 import React, { PureComponent } from 'react';
 import { number, string } from 'prop-types';
 import cx from 'classnames';
-import { get, reduce, findLast, escapeRegExp } from 'lodash';
+import {
+  get,
+  reduce,
+  findLast,
+  escapeRegExp,
+  map,
+  join,
+  filter,
+  forEach
+} from 'lodash';
 
 import SimplePDFViewer from './SimplePDFViewer';
 import ViewerToolBar from './ViewerToolbar';
@@ -9,26 +18,54 @@ import styles from './styles.scss';
 
 const MIN_SEARCH_LENGTH = 3;
 
-const highlightPattern = (text, pattern) => {
-  const splitText = text.split(pattern);
-
-  if (splitText.length <= 1) {
+const highlightPattern = (text, highlights) => {
+  if (!text || !get(highlights, 'length')) {
     return text;
   }
-  const matches = text.match(pattern);
-  return splitText.reduce(
-    (arr, element, index) =>
-      matches[index]
-        ? [
-            ...arr,
-            element,
-            <mark key={index} className={styles.highlight}>
-              {matches[index]}
-            </mark>
-          ]
-        : [...arr, element],
-    []
-  );
+  const slicePoints = [
+    {
+      start: 0,
+      end: highlights[0].start,
+      highlight: false,
+      special: false
+    }
+  ];
+  forEach(highlights, (highlight, index) => {
+    const nextHighlight = highlights[index + 1];
+    const plainSliceEnd = nextHighlight ? nextHighlight.start : text.length;
+    slicePoints.push({
+      start: highlight.start,
+      end: highlight.end,
+      highlight: true,
+      special: highlight.special
+    });
+    slicePoints.push({
+      start: highlight.end,
+      end: plainSliceEnd,
+      highlight: false,
+      special: false
+    });
+  });
+
+  const filteredSlices = filter(slicePoints, slice => {
+    return slice.start !== slice.end;
+  });
+
+  return map(filteredSlices, ({ start, end, highlight, special }, index) => {
+    const sliceText = text.slice(start, end);
+    if (highlight) {
+      return (
+        <mark
+          key={index}
+          className={special ? styles.specialHighlight : styles.highlight}
+        >
+          {sliceText}
+        </mark>
+      );
+    } else {
+      return sliceText;
+    }
+  });
 };
 
 class PDFViewer extends PureComponent {
@@ -55,7 +92,7 @@ class PDFViewer extends PureComponent {
     searchText: this.props.initialSearchText,
     pagesText: null,
     currentSearchMatch: null,
-    totalSearchMatches: null
+    searchMatches: []
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -65,8 +102,44 @@ class PDFViewer extends PureComponent {
     }
   }
 
-  makeTextRenderer = searchText => ({ str, itemIndex }) => {
-    return highlightPattern(str, searchText);
+  makeTextRenderer = pageNumber => props => {
+    const { str, itemIndex } = props;
+    if (this.state.searchMatches.length) {
+      const currentSearchMatchIndex = this.state.currentSearchMatch - 1;
+      const highlights = reduce(
+        this.state.searchMatches,
+        (highlightResults, match, matchIndex) => {
+          if (match.pageNumber !== pageNumber) {
+            return highlightResults;
+          }
+          const pageText = this.state.pagesText[pageNumber - 1];
+          const segmentData = get(pageText, ['segments', itemIndex]);
+          const segmentPageEndOffset =
+            segmentData.pageStartOffset + segmentData.segmentLength;
+          if (
+            segmentData.pageStartOffset < match.matchEndOffset &&
+            match.matchStartOffset < segmentPageEndOffset
+          ) {
+            const highlight = {
+              start: Math.max(
+                match.matchStartOffset - segmentData.pageStartOffset,
+                0
+              ),
+              end: Math.min(
+                match.matchEndOffset - segmentData.pageStartOffset,
+                str.length
+              ),
+              special: matchIndex === currentSearchMatchIndex
+            };
+            highlightResults.push(highlight);
+          }
+          return highlightResults;
+        },
+        []
+      );
+      return highlightPattern(str, highlights);
+    }
+    return str;
   };
 
   handleScale = ({ userScale, overrideScale }) => {
@@ -127,13 +200,22 @@ class PDFViewer extends PureComponent {
         return page.getTextContent();
       })
       .then(content => {
-        return reduce(
-          content.items,
-          (result, item) => {
-            return result + item.str + ' ';
-          },
-          ''
-        );
+        const items = get(content, 'items', []);
+        const pageText = join(map(items, 'str'), '');
+        let runningOffset = 0;
+        const segments = map(items, (item, index, arr) => {
+          const segment = {
+            segmentIndex: index,
+            segmentLength: get(item, 'str.length', 0),
+            pageStartOffset: runningOffset
+          };
+          runningOffset += segment.segmentLength;
+          return segment;
+        });
+        return {
+          pageText,
+          segments
+        };
       });
   }
 
@@ -147,33 +229,32 @@ class PDFViewer extends PureComponent {
     const pattern = new RegExp(escapeRegExp(searchText), 'ig');
     return reduce(
       pages,
-      (results, pageText, pageIndex) => {
-        const matches = pageText.match(pattern);
-        if (matches && matches.length) {
-          results.pages.push({
-            pageIndex: pageIndex + 1,
-            startMatchIndex: results.totalCount + 1,
-            matchesOnPage: matches.length
+      (results, page, pageIndex) => {
+        const pageText = page.pageText;
+        let match;
+        while ((match = pattern.exec(pageText)) !== null) {
+          results.push({
+            pageNumber: pageIndex + 1,
+            matchStartOffset: match.index,
+            matchEndOffset: match.index + match[0].length
           });
-          results.totalCount += matches.length;
         }
         return results;
       },
-      { totalCount: 0, pages: [] }
+      []
     );
   }
 
   handlePrevSearchMatch = () => {
-    if (this.state.totalSearchMatches > 0) {
+    if (this.state.searchMatches.length > 0) {
       this.setState(prevState => {
+        // loop around at end of matches
         const newMatchIndex =
           prevState.currentSearchMatch <= 1
-            ? prevState.totalSearchMatches
+            ? prevState.searchMatches.length
             : prevState.currentSearchMatch - 1;
-        const pageForSearchMatch = this.getPageForSearchMatch(
-          prevState.searchMatches.pages,
-          newMatchIndex
-        );
+        const match = get(prevState.searchMatches, newMatchIndex - 1);
+        const pageForSearchMatch = get(match, 'pageNumber');
         if (pageForSearchMatch !== prevState.currentPageNumber) {
           this.scrollToPage(pageForSearchMatch);
         }
@@ -184,18 +265,17 @@ class PDFViewer extends PureComponent {
     }
   };
 
+  //TODOJB consolidate with handlePrevSearchMatch
   handleNextSearchMatch = () => {
-    if (this.state.totalSearchMatches > 0) {
+    if (this.state.searchMatches.length > 0) {
       this.setState(prevState => {
         // loop around at end of matches
         const newMatchIndex =
-          prevState.currentSearchMatch >= prevState.totalSearchMatches
+          prevState.currentSearchMatch >= prevState.searchMatches.length
             ? 1
             : prevState.currentSearchMatch + 1;
-        const pageForSearchMatch = this.getPageForSearchMatch(
-          prevState.searchMatches.pages,
-          newMatchIndex
-        );
+        const match = get(prevState.searchMatches, newMatchIndex - 1);
+        const pageForSearchMatch = get(match, 'pageNumber');
         if (pageForSearchMatch !== prevState.currentPageNumber) {
           this.scrollToPage(pageForSearchMatch);
         }
@@ -217,22 +297,16 @@ class PDFViewer extends PureComponent {
   };
 
   handleSearchTextChange = searchText => {
-    const customTextRenderer =
-      searchText && searchText.length >= MIN_SEARCH_LENGTH
-        ? this.makeTextRenderer(new RegExp(escapeRegExp(searchText), 'i'))
-        : null;
-    this.setState({ searchText, customTextRenderer });
-
+    this.setState({ searchText });
     const searchMatches = this.searchDocument(searchText, this.state.pagesText);
-    const totalSearchMatches = searchMatches.totalCount;
-    if (totalSearchMatches > 0) {
+    // console.log('searchMatches', searchMatches);
+    if (searchMatches.length > 0) {
       this.setState({
         currentSearchMatch: 1,
-        totalSearchMatches,
         searchMatches
       });
     } else {
-      this.setState({ currentSearchMatch: null, totalSearchMatches: null });
+      this.setState({ currentSearchMatch: null, searchMatches: [] });
     }
   };
 
@@ -253,9 +327,8 @@ class PDFViewer extends PureComponent {
       userScale,
       overrideScale,
       searchText,
-      customTextRenderer,
       currentSearchMatch,
-      totalSearchMatches,
+      searchMatches,
       isSearchOpen
     } = this.state;
     return (
@@ -275,7 +348,7 @@ class PDFViewer extends PureComponent {
           onPrevSearchMatch={this.handlePrevSearchMatch}
           onNextSearchMatch={this.handleNextSearchMatch}
           currentSearchMatch={currentSearchMatch}
-          totalSearchMatches={totalSearchMatches}
+          totalSearchMatches={searchMatches.length}
           onScrollToPage={this.scrollToPage}
           isSearchOpen={isSearchOpen}
           onToggleSearchBar={this.toggleSearchBar}
@@ -289,9 +362,14 @@ class PDFViewer extends PureComponent {
             listOuterRef={listOuterRef}
             userScale={userScale}
             overrideScale={overrideScale}
-            customTextRenderer={customTextRenderer}
+            makeTextRenderer={this.makeTextRenderer}
             initialPageOffset={this.props.initialPageOffset}
             searchText={searchText}
+            currentSearchMatch={currentSearchMatch}
+            currentSearchPage={get(searchMatches, [
+              currentSearchMatch - 1,
+              'pageNumber'
+            ])}
           />
         </div>
       </div>

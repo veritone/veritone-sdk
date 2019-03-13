@@ -245,11 +245,11 @@ class ViewerToolBar extends PureComponent {
               onKeyDown={this.handleSearchKeyDown}
               autoFocus
             />
-            {totalSearchMatches && (
+            {totalSearchMatches ? (
               <Typography>
                 {currentSearchMatch} of {totalSearchMatches}
               </Typography>
-            )}
+            ) : null}
             <Tooltip title="Previous">
               <div>
                 <IconButton

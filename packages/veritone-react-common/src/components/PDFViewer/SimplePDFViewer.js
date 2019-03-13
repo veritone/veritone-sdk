@@ -18,17 +18,20 @@ class SimplePDFViewer extends PureComponent {
     userScale: number,
     overrideScale: number,
     onDocumentLoad: func,
-    customTextRenderer: func,
+    makeTextRenderer: func,
     initialPageOffset: number,
     listRef: shape({ current: object }),
     listOuterRef: shape({ current: object }),
-    searchText: string
+    searchText: string,
+    currentSearchMatch: number,
+    currentSearchPage: number
   };
   static defaultProps = {
     userScale: 1,
     overrideScale: null,
     initialPageOffset: 1,
-    searchText: ''
+    searchText: '',
+    currentSearchMatch: null
   };
   state = {
     currentPageIndex: null,
@@ -82,12 +85,14 @@ class SimplePDFViewer extends PureComponent {
           const {
             file,
             userScale,
-            customTextRenderer,
+            makeTextRenderer,
             listRef,
             listOuterRef,
             overrideScale,
             initialPageOffset,
-            searchText
+            searchText,
+            currentSearchMatch,
+            currentSearchPage
           } = this.props;
           const scale =
             overrideScale ||
@@ -112,7 +117,13 @@ class SimplePDFViewer extends PureComponent {
                   width={width}
                   itemCount={numPages}
                   itemSize={itemHeight}
-                  itemData={{ scale, customTextRenderer, searchText }}
+                  itemData={{
+                    scale,
+                    makeTextRenderer,
+                    searchText,
+                    currentSearchMatch,
+                    currentSearchPage
+                  }}
                   onItemsRendered={this.onItemsRendered}
                   initialScrollOffset={(initialPageOffset - 1) * itemHeight}
                 >
@@ -134,7 +145,9 @@ class PageRow extends Component {
     data: shape({
       scale: number,
       searchText: string,
-      customTextRenderer: func
+      currentSearchMatch: number,
+      customTextRenderer: func,
+      currentSearchPage: number
     })
   };
 
@@ -142,16 +155,38 @@ class PageRow extends Component {
 
   render() {
     const { index, style, data } = this.props;
-    const { scale, customTextRenderer, searchText } = data;
-    const key = customTextRenderer
-      ? `custom_${searchText}`
-      : `default_${index}`;
+    const {
+      scale,
+      makeTextRenderer,
+      searchText,
+      currentSearchMatch,
+      currentSearchPage
+    } = data;
+    const pageNumber = index + 1;
+    const customTextRenderer =
+      searchText && searchText.length > 2 && makeTextRenderer
+        ? makeTextRenderer(pageNumber)
+        : null;
+    let key = '';
+    if (customTextRenderer) {
+      if (pageNumber === currentSearchPage) {
+        key = `${searchText}_${currentSearchMatch}`;
+      } else {
+        key = `${searchText}`;
+      }
+    } else {
+      key = `${pageNumber}`;
+    }
     return (
-      <div style={style} className={styles.pageContainer} key={`page_${index}`}>
+      <div
+        style={style}
+        className={styles.pageContainer}
+        key={`page_${pageNumber}`}
+      >
         <Page
           key={key}
           className={styles.pdfPage}
-          pageNumber={index + 1}
+          pageNumber={pageNumber}
           scale={scale}
           renderAnnotationLayer={false}
           customTextRenderer={customTextRenderer}
