@@ -262,6 +262,7 @@ class EngineOutputHeader extends Component {
       isMainMenuOpen,
       isSubMenuOpen
     } = this.state;
+    const popperZIndex = 10;
     const selectedEngine = engines.find(e => e.id === selectedEngineId);
     const selectedCombineEngine = combineEngines && combineEngines.find(e => e.id === selectedCombineEngineId);
     const engineCategory = get(engines, '[0].category');
@@ -319,7 +320,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[combineEngineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(combineEngineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[combineEngineCategory.categoryType]}
@@ -511,7 +512,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[engineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(engineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[engineCategory.categoryType]}
@@ -703,7 +704,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMoreMenuOpen}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
                           <Grow
                             in={isMoreMenuOpen}

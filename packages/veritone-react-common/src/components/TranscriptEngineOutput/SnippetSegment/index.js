@@ -20,13 +20,19 @@ export default class SnippetSegment extends Component {
     contentClassName: string,
     onClick: func,
     startMediaPlayHeadMs: number,
-    stopMediaPlayHeadMs: number
+    stopMediaPlayHeadMs: number,
+    virtualMeasure: func
   };
 
   static defaultProps = {
     startMediaPlayHeadMs: 0,
     stopMediaPlayHeadMs: 1000
   };
+
+  componentDidMount() {
+    const { virtualMeasure } = this.props;
+    virtualMeasure && virtualMeasure();
+  }
 
   handleSnippetClick = entryData => event => {
     const { onClick } = this.props;

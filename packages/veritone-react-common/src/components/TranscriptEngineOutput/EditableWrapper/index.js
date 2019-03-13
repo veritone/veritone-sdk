@@ -66,7 +66,8 @@ export default class EditableWrapper extends Component {
       })
     }),
     clearCursorPosition: func,
-    setIncomingChanges: func
+    setIncomingChanges: func,
+    virtualMeasure: func
   };
 
   static defaultProps = {
@@ -79,6 +80,11 @@ export default class EditableWrapper extends Component {
     return {
       cursorPosition: getCursorPosition()
     };
+  }
+
+  componentDidMount() {
+    const { virtualMeasure } = this.props;
+    virtualMeasure && virtualMeasure();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
