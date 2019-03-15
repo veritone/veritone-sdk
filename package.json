@@ -25,8 +25,5 @@
     "husky": "^0.15.0-rc.13",
     "prettier": "1.12.1",
     "wsrun": "^2.0.0"
-  },
-  "dependencies": {
-    "ajv": "^6.9.2"
   }
 }
