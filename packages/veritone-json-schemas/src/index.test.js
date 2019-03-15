@@ -1,4 +1,4 @@
-import { verifyObject, verifyTranscript } from './index';
+import { verifyObject, verifyTranscript, VALIDATORS } from './index';
 
 import * as objectSummary from '../schemas/vtn-standard/object/examples/summary.json';
 import * as objectSeries from '../schemas/vtn-standard/object/examples/series.json';
@@ -92,4 +92,10 @@ test('it should verify that a transcript with lattices output passes validation'
 
 test('it should verify that a basic transcript with confidence output passes validation', () => {
   expect(verifyTranscript(transcriptBasicWithConfidence)).toEqual(true);
+});
+
+test('it should export a transcript validator', () => {
+  expect(VALIDATORS['transcript']).toEqual(verifyTranscript);
+  expect(verifyTranscript).not.toBeUndefined();
+  expect(verifyTranscript).not.toBeNull();
 });
