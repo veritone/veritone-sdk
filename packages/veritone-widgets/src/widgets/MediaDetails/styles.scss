@@ -243,6 +243,14 @@
         height: 340px;
         width: 100%;
       }
+
+      .engineNullState {
+        padding-top: 4vh;
+      }
+
+      .engineNullStateTitleText {
+        color: $light-black;
+      }
     }
   }
 
@@ -301,4 +309,9 @@
     width: 100px;
     margin: 0 0 0 15px;
   }
+}
+
+.pdfViewer {
+  height: 100%;
+  width: 50vw;
 }
