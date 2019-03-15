@@ -99,10 +99,10 @@ class SimplePDFViewer extends PureComponent {
             (originalPageDimensions
               ? (userScale * width - (SCROLLBAR_MARGIN + PAGE_MARGIN)) /
                 originalPageDimensions.width
-              : null);
+              : 1);
           const itemHeight = originalPageDimensions
             ? originalPageDimensions.height * scale + PAGE_MARGIN
-            : null;
+            : 0;
           return (
             <Document
               file={file}
@@ -140,15 +140,15 @@ class SimplePDFViewer extends PureComponent {
 
 class PageRow extends Component {
   static propTypes = {
-    index: number,
-    style: shape(),
+    index: number.isRequired,
+    style: shape().isRequired,
     data: shape({
       scale: number,
       searchText: string,
       currentSearchMatch: number,
       customTextRenderer: func,
       currentSearchPage: number
-    })
+    }).isRequired
   };
 
   shouldComponentUpdate = shouldComponentUpdate.bind(this);
@@ -188,7 +188,7 @@ class PageRow extends Component {
           className={styles.pdfPage}
           pageNumber={pageNumber}
           scale={scale}
-          renderAnnotationLayer={false}
+          renderAnnotations={false}
           customTextRenderer={customTextRenderer}
           loading=""
         />
