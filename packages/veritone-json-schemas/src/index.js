@@ -5,6 +5,11 @@ import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
 
 import { isEmpty } from 'lodash';
 
+const VALIDATORS = {
+  "transcript": verifyTranscript,
+  "object": verifyObject
+}
+
 const verifyObject = objectResult => {
   const ajv = new Ajv.default({
     allErrors: true,
@@ -62,4 +67,4 @@ const verifyTranscript = transcriptResult => {
   }
 }
 
-export { verifyObject, verifyTranscript };
+export { VALIDATORS, verifyObject, verifyTranscript };

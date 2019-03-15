@@ -6,7 +6,22 @@
   "type": "object",
   "definitions": {
     "objectResult": {
-      "$ref": "master.json#/definitions/objectResult"
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "master.json#/definitions/objectResult"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "object"
+            }
+          }
+        }
+      ],
+      "required": [
+        "type"
+      ]
     }
   },
   "properties": {
@@ -19,10 +34,6 @@
             "properties": {
               "object": {
                 "$ref": "#/definitions/objectResult"
-              },
-              "type": {
-                "type": "string",
-                "pattern": "object"
               }
             }
           }
@@ -48,8 +59,7 @@
                 "minimum": 0
               },
               "type": {
-                "type": "string",
-                "pattern": "object"
+                "const": "object"
               }
             },
             "required": [
