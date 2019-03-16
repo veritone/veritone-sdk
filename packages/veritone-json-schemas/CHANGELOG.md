@@ -10,3 +10,10 @@
 
 ## 0.1.2
 * fix VALIDATORS export
+
+## 0.1.3
+* revise TRANSCRIPT validator to make words optional
+* add { processed: } to positive validations to show only the processed fields
+* dynamic test loader
+* empty words are no longer valid
+

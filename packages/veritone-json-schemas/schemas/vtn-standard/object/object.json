@@ -40,6 +40,12 @@
         ]
       }
     },
+    "validationContracts": {
+      "type": "array",
+      "items": {
+        "const": "object"
+      }
+    },
     "series": {
       "type": "array",
       "items": {
@@ -74,19 +80,6 @@
   "anyOf": [
     {
       "$ref": "master.json#/definitions/header"
-    }
-  ],
-  "allOf": [
-    {
-      "properties": {
-        "validationContracts": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "object"
-          }
-        }
-      }
     }
   ]
 }
