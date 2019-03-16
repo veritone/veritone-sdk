@@ -21,7 +21,7 @@ export default {
     }),
     resolve({ extensions }),
     commonjs(),
-    babel({ extensions, include: ['src/**/*'] }),
+    babel({ extensions, include: ['src/**/*'], runtimeHelpers: true }),
   ],
   output: [{
     file: pkg.main,
