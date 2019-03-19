@@ -13,47 +13,41 @@
       },
       "then": {
         "items": {
-          "allOf": [
-            {
-              "properties": {
-                "word": {
-                  "$ref": "master.json#/definitions/word"
-                },
-                "confidence": {
-                  "$ref": "master.json#/definitions/confidence"
-                },
-                "utteranceLength": {
-                  "$ref": "master.json#/definitions/utteranceLength"
-                },
-                "bestPath": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "word",
-                "confidence",
-                "utteranceLength"
-              ]
+          "type": "object",
+          "properties": {
+            "word": {
+              "$ref": "master.json#/definitions/word"
+            },
+            "confidence": {
+              "$ref": "master.json#/definitions/confidence"
+            },
+            "utteranceLength": {
+              "$ref": "master.json#/definitions/utteranceLength"
+            },
+            "bestPath": {
+              "type": "boolean"
             }
-          ],
-          "uniqueItems": true
+          },
+          "required": [
+            "word",
+            "confidence",
+            "utteranceLength"
+          ]
         },
+        "uniqueItems": true,
         "requireBestPath": true
       },
       "else": {
         "items": {
-          "allOf": [
-            {
-              "properties": {
-                "word": {
-                  "$ref": "master.json#/definitions/word"
-                },
-                "confidence": {
-                  "$ref": "master.json#/definitions/confidence"
-                }
-              }
+          "type": "object",
+          "properties": {
+            "word": {
+              "$ref": "master.json#/definitions/word"
+            },
+            "confidence": {
+              "$ref": "master.json#/definitions/confidence"
             }
-          ],
+          },
           "required": [
             "word"
           ]
@@ -71,45 +65,52 @@
     "series": {
       "type": "array",
       "items": {
-        "allOf": [
-          {
-            "properties": {
-              "words": {
-                "$ref": "#/definitions/words"
-              },
-              "startTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "stopTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "language": {
-                "$ref": "master.json#/definitions/language"
-              }
-            },
-            "required": [
-              "startTimeMs",
-              "stopTimeMs"
-            ]
+        "type": "object",
+        "properties": {
+          "words": {
+            "$ref": "#/definitions/words"
+          },
+          "startTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stopTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "language": {
+            "$ref": "master.json#/definitions/language"
           }
+        },
+        "required": [
+          "startTimeMs",
+          "stopTimeMs"
         ]
       }
+    },
+    "language": {
+      "$ref": "master.json#/definitions/language"
+    },
+    "schemaId": {
+      "$ref": "master.json#/definitions/header/properties/schemaId"
+    },
+    "sourceEngineId": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
+    },
+    "sourceEngineName": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
+    },
+    "taskPayload": {
+      "$ref": "master.json#/definitions/header/properties/taskPayload"
+    },
+    "taskId": {
+      "$ref": "master.json#/definitions/header/properties/taskId"
+    },
+    "generatedDateUTC": {
+      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
+    },
+    "externalSourceId": {
+      "$ref": "master.json#/definitions/header/properties/externalSourceId"
     }
-  },
-  "anyOf": [
-    {
-      "$ref": "master.json#/definitions/header"
-    }
-  ],
-  "allOf": [
-    {
-      "properties": {
-        "language": {
-          "$ref": "master.json#/definitions/language"
-        }
-      }
-    }
-  ]
+  }
 }

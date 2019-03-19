@@ -33,7 +33,7 @@ Object.keys(categories).forEach(category => {
           it(`should NOT validate ${test.directory}/${test.fileName}`, async () => {
             const json = await import (`../${test.directory}/${test.fileName}`);
             const invalidResult = validator(json);
-
+            expect(invalidResult).not.toHaveProperty("valid");
             expect(invalidResult.errors).not.toBeNull();
             expect(invalidResult.errors).not.toBeUndefined();
             expect(invalidResult.errors.length).toBeGreaterThan(0);
@@ -45,9 +45,6 @@ Object.keys(categories).forEach(category => {
           it(`should validate ${test.directory}/${test.fileName}`, async () => {
             const json = await import (`../${test.directory}/${test.fileName}`);
             const validResult = validator(json);
-            if(!validResult.valid) {
-              expect(json).toBeNull();
-            }
             expect(validResult).toHaveProperty("valid");
             expect(validResult.processed).not.toBeNull();
             expect(validResult.processed).not.toBeUndefined();

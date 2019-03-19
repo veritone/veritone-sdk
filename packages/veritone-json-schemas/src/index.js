@@ -1,4 +1,5 @@
-import * as Ajv from 'ajv';
+import Ajv from 'ajv';
+import AddAjvMergeAndPath from 'ajv-merge-patch';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
 import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
@@ -7,7 +8,7 @@ import { isEmpty, cloneDeep } from 'lodash';
 
 const verifyObject = objectResult => {
   // validate object
-  const ajv = new Ajv.default({
+  const ajv = new Ajv({
     allErrors: true,
     schemas: [MASTER_SCHEMA, OBJECT_SCHEMA]
   });
@@ -16,13 +17,12 @@ const verifyObject = objectResult => {
 
   // filtered results after validation
   const objectResultFiltered = cloneDeep(objectResult);
-  const ajvFilter = new Ajv.default({
-    allErrors: true,
+  const ajvFilter = new Ajv({
     schemas: [MASTER_SCHEMA, OBJECT_SCHEMA],
-    removeAdditional: true
+    removeAdditional: "all"
   });
-  ajvFilter.compile(OBJECT_SCHEMA);
-  validate(objectResultFiltered);
+  const validateWithFilter = ajvFilter.compile(OBJECT_SCHEMA);
+  validateWithFilter(objectResultFiltered);
 
 
   if (!valid) {
@@ -61,7 +61,7 @@ const verifyTranscript = transcriptResult => {
   };
 
   // validate transcript
-  const ajv = new Ajv.default({
+  const ajv = new Ajv({
     allErrors: true,
     schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA]
   });
@@ -74,17 +74,17 @@ const verifyTranscript = transcriptResult => {
 
   // validate transcript and filter out everything not validated
   const transcriptResultFiltered = cloneDeep(transcriptResult);
-  const ajvFilter = new Ajv.default({
-    allErrors: true,
+  const ajvFilter = new Ajv({
     schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA],
-    removeAdditional: true
+    removeAdditional: "all"
   });
   ajvFilter.addKeyword('requireBestPath', {
     validate: validateBestPath,
     errors: true
   });
-  ajvFilter.compile(TRANSCRIPT_SCHEMA);
-  validate(transcriptResultFiltered);
+
+  const validateWithFilter = ajvFilter.compile(TRANSCRIPT_SCHEMA);
+  validateWithFilter(transcriptResultFiltered);
 
   if (!valid) {
     return {

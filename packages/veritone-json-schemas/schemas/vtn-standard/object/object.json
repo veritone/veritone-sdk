@@ -4,82 +4,34 @@
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
   "type": "object",
-  "definitions": {
-    "objectResult": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "master.json#/definitions/objectResult"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": "object"
-            }
-          }
-        }
-      ],
-      "required": [
-        "type"
-      ]
-    }
-  },
   "properties": {
-    "object": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "allOf": [
-          {
-            "properties": {
-              "object": {
-                "$ref": "#/definitions/objectResult"
-              }
-            }
-          }
-        ]
-      }
-    },
     "validationContracts": {
       "type": "array",
       "items": {
         "const": "object"
       }
     },
+    "object": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "$ref": "master.json#/definitions/objectResult"
+          }
+        }
+      }
+    },
     "series": {
       "type": "array",
       "items": {
         "type": "object",
-        "allOf": [
-          {
-            "properties": {
-              "object": {
-                "$ref": "#/definitions/objectResult"
-              },
-              "startTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "stopTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "type": {
-                "const": "object"
-              }
-            },
-            "required": [
-              "startTimeMs",
-              "stopTimeMs"
-            ]
+        "properties": {
+          "object": {
+            "$ref": "master.json#/definitions/objectResult"
           }
-        ]
+        }
       }
     }
-  },
-  "anyOf": [
-    {
-      "$ref": "master.json#/definitions/header"
-    }
-  ]
+  }
 }

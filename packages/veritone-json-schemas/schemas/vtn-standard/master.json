@@ -51,7 +51,14 @@
           "type": "array",
           "items": [
             {
-              "$ref": "#/definitions/indexingTypes"
+              "type": "string",
+              "enum": [
+                "audio-fingerprint",
+                "ocr",
+                "face",
+                "object",
+                "transcript"
+              ]
             }
           ]
         }
@@ -62,16 +69,6 @@
       "minimum": 0,
       "maximum": 1,
       "description": "Confidence of the result expressed as a range of 0.0 to 1.0"
-    },
-    "indexingTypes": {
-      "type": "string",
-      "enum": [
-        "audio-fingerprint",
-        "ocr",
-        "face",
-        "object",
-        "transcript"
-      ]
     },
     "objectCategory": {
       "type": "array",
@@ -116,9 +113,17 @@
         "label": {
           "type": "string"
         },
-        "type": {
-          "$ref": "#/definitions/indexingTypes"
-        }
+        "type":
+          {
+            "type": "string",
+            "enum": [
+              "audio-fingerprint",
+              "ocr",
+              "face",
+              "object",
+              "transcript"
+            ]
+          }
       },
       "required": [
         "type"
@@ -134,6 +139,9 @@
         "properties": {
           "objectCategory": {
             "$ref": "#/definitions/objectCategory"
+          },
+          "type": {
+            "const": "object"
           }
         }
       }
@@ -156,31 +164,27 @@
       "type": "array",
       "items": {
         "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/objectResult"
+        "properties": {
+          "startTimeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The start time relative to the start of the media asset in milliseconds.",
+            "example": 0
           },
-          {
-            "properties": {
-              "startTimeMs": {
-                "type": "integer",
-                "minimum": 0,
-                "description": "The start time relative to the start of the media asset in milliseconds.",
-                "example": 0
-              },
-              "stopTimeMs": {
-                "type": "integer",
-                "minimum": 0,
-                "description": "The stop time relative to the start of the media asset in milliseconds.",
-                "example": 3000
-              }
-            },
-            "required": [
-              "startTimeMs",
-              "stopTimeMs"
-            ]
+          "stopTimeMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The stop time relative to the start of the media asset in milliseconds.",
+            "example": 3000
           }
-        ]
+        },
+        "required": [
+          "startTimeMs",
+          "stopTimeMs"
+        ],
+        "additionalProperties": {
+          "$ref": "#/definitions/objectResult"
+        }
       }
     },
     "point": {
