@@ -4,15 +4,17 @@
   outline: none;
 }
 
-.mediaPlayButton:global(.video-react-big-play-button) {
-  top: 50%;
-  left: 50%;
-  margin-left: -0.75em;
-  margin-top: -0.75em;
-  height: 1.5em;
-  width: 1.5em;
-  border-radius: 1em;
-  border: none;
+:global(.video-react) {
+  .mediaPlayButton:global(.video-react-big-play-button) {
+    top: 50%;
+    left: 50%;
+    margin-left: -0.75em;
+    margin-top: -0.75em;
+    height: 1.5em;
+    width: 1.5em;
+    border-radius: 1em;
+    border: none;
+  }
 }
 
 .mediaPlayerControls {
