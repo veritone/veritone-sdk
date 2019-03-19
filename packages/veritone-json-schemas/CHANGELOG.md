@@ -17,3 +17,6 @@
 * dynamic test loader
 * empty words are no longer valid
 
+## 0.1.4
+* Fix { processed } for transcript. 
+* More tests, addd vtn-standard headers to transcript
