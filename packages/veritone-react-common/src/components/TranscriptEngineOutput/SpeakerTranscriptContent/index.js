@@ -265,8 +265,9 @@ export default class SpeakerTranscriptContent extends Component {
           key={`virtual-speaker-grid`}
           width={900}
           height={500}
+          style={{ width: '100%', height: '100%' }}
           deferredMeasurementCache={cellCache}
-          overscanRowCount={0}
+          overscanRowCount={5}
           rowRenderer={this.rowRenderer(editMode)}
           rowCount={totalSpeakerSeries.length}
           rowHeight={cellCache.rowHeight} />
