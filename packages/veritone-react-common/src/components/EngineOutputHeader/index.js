@@ -308,7 +308,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[combineEngineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(combineEngineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[combineEngineCategory.categoryType]}
@@ -500,7 +500,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[engineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(engineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[engineCategory.categoryType]}
@@ -692,7 +692,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMoreMenuOpen}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
                           <Grow
                             in={isMoreMenuOpen}
