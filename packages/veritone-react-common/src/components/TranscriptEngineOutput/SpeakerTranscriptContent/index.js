@@ -140,7 +140,7 @@ export default class SpeakerTranscriptContent extends Component {
         const speakerSeries = speakerSegment.series.map((speakerSerie, speakerIndex) => {
           const speakerStartTime = speakerSerie.startTimeMs;
           const speakerStopTime = speakerSerie.stopTimeMs;
-          const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+          const timeFormat = speakerStartTime >= 3600000 ? 'h:mm:ss' : 'mm:ss';
           const speakerTimingStart = format(speakerStartTime, timeFormat);
           const speakerTimingStop = format(speakerStopTime, timeFormat);
           const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
