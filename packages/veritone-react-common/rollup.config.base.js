@@ -33,16 +33,24 @@ export default {
     'react-dnd-html5-backend',
     'react-dom',
     'react-infinite-calendar',
+    'react-pdf',
+    'react-popper',
     'react-redux',
+    'react-rnd',
+    'react-virtualized',
+    'react-virtualized-auto-sizer',
+    'react-window',
     'recompose',
     'redux',
     'redux-form',
     'recompose',
     'react-dotdotdot',
-    'rechart',
+    'recharts',
     'recharts-scale',
+    'screenfull',
+    'shaka-player',
     'video-react',
-    'shaka-player'
+    'video-react/dist/video-react.es.js'
   ],
   plugins: [
     replace({

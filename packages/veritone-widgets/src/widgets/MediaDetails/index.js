@@ -55,7 +55,9 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  PDFViewer,
+  NullState
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
@@ -80,6 +82,8 @@ const saga = util.reactReduxSaga.saga;
 
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
+const enginesNullState =
+  '//static.veritone.com/veritone-ui/engines-nullstate.png';
 
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
@@ -521,6 +525,10 @@ class MediaDetailsWidget extends React.Component {
     return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
+  getPreviewUrl = () => {
+    return get(this.props, 'tdo.previewUrl');
+  };
+
   isEditableEngineResults = () => {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
@@ -798,7 +806,6 @@ class MediaDetailsWidget extends React.Component {
             {`Bulk edit transcript will run in the background and may take some time to finish.`}
           </span>
         }
-
       />
     );
   };
@@ -1002,18 +1009,26 @@ class MediaDetailsWidget extends React.Component {
       engineCategorySelectorItems
     } = this.getCombineAggregations();
 
-    const isPdf = /^.*\/.*pdf$/.test(
+    const tdoMimeType =
       get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
+      get(tdo, 'details.veritoneFile.mimetype');
+
+    const isText = includes(
+      [
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/pdf',
+        'message/rfc822',
+        'application/vnd.ms-outlook',
+        'text/plain',
+        'text/plain; charset=utf-8',
+        'application/vnd.ms-powerpoint',
+        'application/rtf'
+      ],
+      tdoMimeType
     );
-    const isImage = /^image\/.*/.test(
-      get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
-    );
-    const isMedia = /^(audio|video)\/.*/.test(
-      get(tdo, 'primaryAsset.contentType') ||
-        get(tdo, 'details.veritoneFile.mimetype')
-    );
+    const isImage = /^image\/.*/.test(tdoMimeType);
+    const isMedia = /^(audio|video)\/.*/.test(tdoMimeType);
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
@@ -1183,7 +1198,7 @@ class MediaDetailsWidget extends React.Component {
                   <div
                     className={styles.pageHeaderActionButtons}
                     data-veritone-component="mdp-page-header-actions"
-                    >
+                  >
                     {get(this.props, 'tdo.id') && (
                       <IconButton
                         className={styles.pageHeaderActionButton}
@@ -1236,7 +1251,6 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.toggleInfoPanel}
                         aria-label="Info Panel"
                         data-veritone-component="mdp-show-metadata-button"
-
                       >
                         <Tooltip
                           id="tooltip-show-metadata"
@@ -1411,7 +1425,7 @@ class MediaDetailsWidget extends React.Component {
                     <div
                       className={styles.engineActionHeader}
                       data-veritone-component="mdp-engine-action-header"
-                      >
+                    >
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={engineCategorySelectorItems}
@@ -1435,7 +1449,6 @@ class MediaDetailsWidget extends React.Component {
                     onClick={this.toggleExpandedMode}
                     aria-label="Back"
                     data-veritone-component="mdp-back-button-edit-mode"
-
                   >
                     <Icon
                       className="icon-arrow-back"
@@ -1480,7 +1493,7 @@ class MediaDetailsWidget extends React.Component {
             <div
               className={styles.mediaScreen}
               data-veritone-component="mdp-media-screen"
-              >
+            >
               {get(tdo, 'id') &&
                 !(
                   get(selectedEngineCategory, 'categoryType') ===
@@ -1489,7 +1502,7 @@ class MediaDetailsWidget extends React.Component {
                   <div
                     className={styles.mediaView}
                     data-veritone-component="mdp-media-view"
-                    >
+                  >
                     {!this.getPrimaryAssetUri() &&
                       !get(this.props, 'tdo.streams.length') && (
                         <Image
@@ -1501,19 +1514,20 @@ class MediaDetailsWidget extends React.Component {
                       )}
                     {!isImage &&
                       !isMedia &&
-                      !isPdf &&
-                      !!this.getPrimaryAssetUri() && (
+                      ((!isText && !!this.getPrimaryAssetUri()) ||
+                        (isText && !this.getPreviewUrl())) && (
                         <div className={styles.fileIconContainer}>
                           <InsertDriveFile className={styles.fileIcon} />
                         </div>
                       )}
                     {!isImage &&
                       !isMedia &&
-                      isPdf &&
-                      !!this.getPrimaryAssetUri() &&(
-                        <div className={styles.fileIconContainer}>
-                          <PictureAsPdf className={styles.fileIcon}/>
-                        </div>
+                      isText &&
+                      this.getPreviewUrl() && (
+                        <PDFViewer
+                          file={this.getPreviewUrl()}
+                          className={styles.pdfViewer}
+                        />
                       )}
                     {isImage &&
                       !!this.getPrimaryAssetUri() && (
@@ -1548,7 +1562,7 @@ class MediaDetailsWidget extends React.Component {
                 <div
                   data-veritone-component="mdp-category-view"
                   className={styles.engineCategoryView}
-                  >
+                >
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
@@ -1712,6 +1726,33 @@ class MediaDetailsWidget extends React.Component {
                     )}
                 </div>
               )}
+              {get(tdo, 'id') &&
+                !selectedEngineId && (
+                  <div
+                    data-veritone-component="mdp-engine-nullstate"
+                    className={styles.engineCategoryView}
+                  >
+                    <NullState
+                      imgProps={{
+                        src: enginesNullState,
+                        alt: enginesNullState,
+                        style: {
+                          marginBottom: '30px'
+                        }
+                      }}
+                      titleText="No Engines Found"
+                      btnProps={{
+                        onClick: this.handleRunProcess,
+                        text: 'Run Cognitive Engine'
+                      }}
+                      className={styles.engineNullState}
+                    >
+                      <div className={styles.engineNullStateTitleText}>
+                        You have no engine data available for this file.
+                      </div>
+                    </NullState>
+                  </div>
+                )}
             </div>
           )}
 

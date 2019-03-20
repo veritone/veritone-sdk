@@ -1,3 +1,6 @@
 {
-  "clientId": "20c89274-c99d-46f3-8ef1-29de68b12abc"
+  "clientId": "20c89274-c99d-46f3-8ef1-29de68b12abc",
+  "apiRoot": "https://api.aws-dev.veritone.com",
+  "switchAppRoute": "https://app.aws-dev.veritone.com/switch-app",
+  "graphQLEndpoint": "v3/graphql"
 }

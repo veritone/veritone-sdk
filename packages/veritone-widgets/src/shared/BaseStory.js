@@ -17,7 +17,7 @@ import {
   GlobalNotificationDialog
 } from '../widgets/Notifications';
 
-const app = VeritoneApp();
+const app = VeritoneApp(devConfig);
 
 @withProps({
   store: app._store

@@ -15,7 +15,7 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import { Manager, Target, Popper } from 'react-popper';
+import { Manager, Reference, Popper } from 'react-popper';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import KeyboardIcon from '@material-ui/icons/Keyboard';
@@ -279,179 +279,185 @@ class EngineOutputHeader extends Component {
               disabled={disableEngineSelect}
             >
               <Manager>
-                <Target>
-                  <Input
-                    inputRef={this.setMenuAnchorRef(combineEngineCategory.categoryType)}
-                    disabled={disableEngineSelect}
-                    aria-owns={isMainMenuOpen[combineEngineCategory.categoryType] ? 'menu-list-grow' : undefined}
-                    className={styles.engineSelect}
-                    onClick={this.handleMainMenuClick(combineEngineCategory.categoryType)}
-                    data-veritone-component="engine-output-header-select"
-                    value={(selectedCombineEngine && selectedCombineEngine.name) || combineEngines[0].name}
-                    readOnly
-                    inputProps={{ className: styles.mainMenuText }}
-                    startAdornment={(
-                      <Icon className={combineEngineCategory.iconClass}
-                        classes={{ root: styles.categoryIcon }}
-                      />
-                    )}
-                    endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
-                </Target>
+                <Reference>
+                  {({ ref }) => (
+                    <div ref={ref}>
+                      <Input
+                        inputRef={this.setMenuAnchorRef(combineEngineCategory.categoryType)}
+                        disabled={disableEngineSelect}
+                        aria-owns={isMainMenuOpen[combineEngineCategory.categoryType] ? 'menu-list-grow' : undefined}
+                        className={styles.engineSelect}
+                        onClick={this.handleMainMenuClick(combineEngineCategory.categoryType)}
+                        data-veritone-component="engine-output-header-select"
+                        value={(selectedCombineEngine && selectedCombineEngine.name) || combineEngines[0].name}
+                        readOnly
+                        inputProps={{ className: styles.mainMenuText }}
+                        startAdornment={(
+                          <Icon className={combineEngineCategory.iconClass}
+                            classes={{ root: styles.categoryIcon }}
+                          />
+                        )}
+                        endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
+                    </div>
+                  )}
+                </Reference>
                 {selectedCombineEngine && isMainMenuOpen[combineEngineCategory.categoryType] && (
                   <Popper
                     className={styles.moreMenuPopperContent}
                     placement="bottom-end"
                     eventsEnabled={isMainMenuOpen[combineEngineCategory.categoryType]}
                   >
-                    <ClickAwayListener onClickAway={this.handleMainMenuClick(combineEngineCategory.categoryType)}>
-                      <Grow
-                        in={isMainMenuOpen[combineEngineCategory.categoryType]}
-                        id="menu-list-grow"
-                        style={{ transformOrigin: '0 0 0' }}
-                      >
-                        <Paper>
-                          <MenuList role="menu" classes={{ root: styles.mainMenu }}>
-                            <MenuItem
-                              button
-                              onClick={this.handleSubMenuClick(combineEngineCategory.categoryType)('engine')}
-                            >
-                              <ListItemText
-                                classes={{
-                                  primary: styles.selectMenuItem
-                                }}
-                                primary="Available Engines"
-                              />
-                              {get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
-                            </MenuItem>
-                            <Collapse
-                              className={styles.engineList}
-                              in={get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'engine'], false)}
-                              timeout="auto"
-                              unmountOnExit>
-                              {combineEngines.map(e => {
-                                return (
-                                  <MenuItem
-                                    key={`engine-menu-item-${e.id}`}
-                                    value={e.id}
-                                    classes={{
-                                      root: styles.engine
-                                    }}
-                                    onClick={this.handleCombineEngineChange(e)}
-                                  >
-                                    {e.id === selectedCombineEngineId && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: e.id !== selectedCombineEngineId
-                                        })
-                                      }} 
-                                      primary={e.name}
-                                      title={e.name}
-                                    />
-                                  </MenuItem>
-                                );
-                              })}
-                            </Collapse>
-                            { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
-                              <Divider />
-                            )}
-                            { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
-                              <div>
+                    {({ ref, style, placement }) => (
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                        <ClickAwayListener onClickAway={this.handleMainMenuClick(combineEngineCategory.categoryType)}>
+                          <Grow
+                            in={isMainMenuOpen[combineEngineCategory.categoryType]}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: '0 0 0' }}
+                          >
+                            <Paper>
+                              <MenuList role="menu" classes={{ root: styles.mainMenu }}>
                                 <MenuItem
                                   button
-                                  onClick={this.handleSubMenuClick(combineEngineCategory.categoryType)('version')}
+                                  onClick={this.handleSubMenuClick(combineEngineCategory.categoryType)('engine')}
                                 >
                                   <ListItemText
                                     classes={{
                                       primary: styles.selectMenuItem
-                                    }} 
-                                    primary="Versioning"
+                                    }}
+                                    primary="Available Engines"
                                   />
-                                  {get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'version'], false) ? <ExpandLess /> : <ExpandMore />}
+                                  {get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
                                 </MenuItem>
                                 <Collapse
-                                  in={get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'version'], false)}
+                                  className={styles.engineList}
+                                  in={get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'engine'], false)}
                                   timeout="auto"
                                   unmountOnExit>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('userEdited')}
-                                  >
-                                    {selectedCombineEngineWithData.showingUserEditedOutput && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: !selectedCombineEngineWithData.showingUserEditedOutput
-                                        })
-                                      }} 
-                                      primary="User-Edited"
-                                    />
-                                  </MenuItem>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('original')}
-                                  >
-                                    {!selectedCombineEngineWithData.showingUserEditedOutput && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: selectedCombineEngineWithData.showingUserEditedOutput
-                                        })
-                                      }} 
-                                      primary="Original"
-                                    />
-                                  </MenuItem>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('restoreOriginal')}
-                                  >
-                                    <ListItemText
-                                      classes={{
-                                        root: styles.restoreOriginalMenuItem,
-                                        primary: cx(styles.selectMenuItem, styles.menuItemInset)
-                                      }} 
-                                      primary="Restore Original"
-                                    />
-                                  </MenuItem>
-                                </Collapse>
-                              </div>
-                            )}
-                            { isArray(combineViewTypes) && combineViewTypes.length && (
-                              combineViewTypes
-                                .filter(view => view.id !== selectedCombineViewTypeId)
-                                .map(view => {
-                                  return (
-                                    <div key={`combine-engine-view-container-${view.id}`}>
-                                      <Divider />
+                                  {combineEngines.map(e => {
+                                    return (
                                       <MenuItem
-                                        key={`combine-engine-view-item-${view.id}`}
-                                        onClick={this.handleCombineViewTypeChange(view.id)}
+                                        key={`engine-menu-item-${e.id}`}
+                                        value={e.id}
                                         classes={{
                                           root: styles.engine
                                         }}
+                                        onClick={this.handleCombineEngineChange(e)}
                                       >
-                                        {view.name}
+                                        {e.id === selectedCombineEngineId && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: e.id !== selectedCombineEngineId
+                                            })
+                                          }} 
+                                          primary={e.name}
+                                          title={e.name}
+                                        />
                                       </MenuItem>
-                                    </div>
-                                  );
-                                })
-                            )}
-                          </MenuList>
-                        </Paper>
-                      </Grow>
-                    </ClickAwayListener>
+                                    );
+                                  })}
+                                </Collapse>
+                                { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
+                                  <div>
+                                    <Divider />
+                                    <MenuItem
+                                      button
+                                      onClick={this.handleSubMenuClick(combineEngineCategory.categoryType)('version')}
+                                    >
+                                      <ListItemText
+                                        classes={{
+                                          primary: styles.selectMenuItem
+                                        }} 
+                                        primary="Versioning"
+                                      />
+                                      {get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'version'], false) ? <ExpandLess /> : <ExpandMore />}
+                                    </MenuItem>
+                                    <Collapse
+                                      in={get(isSubMenuOpen, [combineEngineCategory && combineEngineCategory.categoryType, 'version'], false)}
+                                      timeout="auto"
+                                      unmountOnExit>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('userEdited')}
+                                      >
+                                        {selectedCombineEngineWithData.showingUserEditedOutput && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: !selectedCombineEngineWithData.showingUserEditedOutput
+                                            })
+                                          }} 
+                                          primary="User-Edited"
+                                        />
+                                      </MenuItem>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('original')}
+                                      >
+                                        {!selectedCombineEngineWithData.showingUserEditedOutput && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: selectedCombineEngineWithData.showingUserEditedOutput
+                                            })
+                                          }} 
+                                          primary="Original"
+                                        />
+                                      </MenuItem>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedCombineEngineWithData)('restoreOriginal')}
+                                      >
+                                        <ListItemText
+                                          classes={{
+                                            root: styles.restoreOriginalMenuItem,
+                                            primary: cx(styles.selectMenuItem, styles.menuItemInset)
+                                          }} 
+                                          primary="Restore Original"
+                                        />
+                                      </MenuItem>
+                                    </Collapse>
+                                  </div>
+                                )}
+                                { isArray(combineViewTypes) && combineViewTypes.length && (
+                                  combineViewTypes
+                                    .filter(view => view.id !== selectedCombineViewTypeId)
+                                    .map(view => {
+                                      return (
+                                        <div key={`combine-engine-view-container-${view.id}`}>
+                                          <Divider />
+                                          <MenuItem
+                                            key={`combine-engine-view-item-${view.id}`}
+                                            onClick={this.handleCombineViewTypeChange(view.id)}
+                                            classes={{
+                                              root: styles.engine
+                                            }}
+                                          >
+                                            {view.name}
+                                          </MenuItem>
+                                        </div>
+                                      );
+                                    })
+                                )}
+                              </MenuList>
+                            </Paper>
+                          </Grow>
+                        </ClickAwayListener>
+                      </div>
+                    )}
                   </Popper>
                 )}
               </Manager>
@@ -463,161 +469,167 @@ class EngineOutputHeader extends Component {
               disabled={disableEngineSelect}
             >
               <Manager>
-                <Target>
-                  <Input
-                    inputRef={this.setMenuAnchorRef(engineCategory.categoryType)}
-                    disabled={disableEngineSelect}
-                    aria-owns={isMainMenuOpen[engineCategory.categoryType] ? 'menu-list-grow' : undefined}
-                    className={styles.engineSelect}
-                    onClick={this.handleMainMenuClick(engineCategory.categoryType)}
-                    data-veritone-component="engine-output-header-select"
-                    value={(selectedEngine && selectedEngine.name) || engines[0].name}
-                    readOnly
-                    inputProps={{
-                      className: styles.mainMenuText
-                    }}
-                    startAdornment={(
-                      <Icon className={engineCategory.iconClass}
-                        classes={{ root: styles.categoryIcon }}
-                      />
-                    )}
-                    endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
-                </Target>
+                <Reference>
+                  {({ ref }) => (
+                    <div ref={ref}>
+                      <Input
+                        inputRef={this.setMenuAnchorRef(engineCategory.categoryType)}
+                        disabled={disableEngineSelect}
+                        aria-owns={isMainMenuOpen[engineCategory.categoryType] ? 'menu-list-grow' : undefined}
+                        className={styles.engineSelect}
+                        onClick={this.handleMainMenuClick(engineCategory.categoryType)}
+                        data-veritone-component="engine-output-header-select"
+                        value={(selectedEngine && selectedEngine.name) || engines[0].name}
+                        readOnly
+                        inputProps={{
+                          className: styles.mainMenuText
+                        }}
+                        startAdornment={(
+                          <Icon className={engineCategory.iconClass}
+                            classes={{ root: styles.categoryIcon }}
+                          />
+                        )}
+                        endAdornment={( <ArrowDropDownIcon className={styles.dropdownIcon} /> )} />
+                    </div>
+                  )}
+                </Reference>
                 {selectedEngine && isMainMenuOpen[engineCategory.categoryType] && (
                   <Popper
                     className={styles.moreMenuPopperContent}
                     placement="bottom-end"
                     eventsEnabled={isMainMenuOpen[engineCategory.categoryType]}
                   >
-                    <ClickAwayListener onClickAway={this.handleMainMenuClick(engineCategory.categoryType)}>
-                      <Grow
-                        in={isMainMenuOpen[engineCategory.categoryType]}
-                        id="menu-list-grow"
-                        style={{ transformOrigin: '0 0 0' }}
-                      >
-                        <Paper>
-                          <MenuList role="menu" classes={{ root: styles.mainMenu }}>
-                            <MenuItem
-                              button
-                              onClick={this.handleSubMenuClick(engineCategory.categoryType)('engine')}
-                            >
-                              <ListItemText
-                                classes={{
-                                  primary: styles.selectMenuItem
-                                }}
-                                primary="Available Engines"
-                              />
-                              {get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
-                            </MenuItem>
-                            <Collapse
-                              className={styles.engineList}
-                              in={get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'engine'], false)}
-                              timeout="auto"
-                              unmountOnExit>
-                              {engines.map(e => {
-                                return (
-                                  <MenuItem
-                                    key={`engine-menu-item-${e.id}`}
-                                    value={e.id}
-                                    classes={{
-                                      root: styles.engine
-                                    }}
-                                    onClick={this.handleEngineChange(e)}
-                                  >
-                                    {e.id === selectedEngineId && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: e.id !== selectedEngineId
-                                        })
-                                      }} 
-                                      primary={e.name}
-                                      title={e.name}
-                                    />
-                                  </MenuItem>
-                                );
-                              })}
-                            </Collapse>
-                            { selectedEngineWithData && selectedEngineWithData.hasUserEdits && (
-                              <Divider />
-                            )}
-                            { selectedEngineWithData && selectedEngineWithData.hasUserEdits && (
-                              <div>
+                    {({ ref, style, placement }) => (
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                        <ClickAwayListener onClickAway={this.handleMainMenuClick(engineCategory.categoryType)}>
+                          <Grow
+                            in={isMainMenuOpen[engineCategory.categoryType]}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: '0 0 0' }}
+                          >
+                            <Paper>
+                              <MenuList role="menu" classes={{ root: styles.mainMenu }}>
                                 <MenuItem
                                   button
-                                  onClick={this.handleSubMenuClick(engineCategory.categoryType)('version')}
+                                  onClick={this.handleSubMenuClick(engineCategory.categoryType)('engine')}
                                 >
                                   <ListItemText
                                     classes={{
                                       primary: styles.selectMenuItem
-                                    }} 
-                                    primary="Versioning"
+                                    }}
+                                    primary="Available Engines"
                                   />
-                                  {get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'version'], false) ? <ExpandLess /> : <ExpandMore />}
+                                  {get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'engine'], false) ? <ExpandLess /> : <ExpandMore />}
                                 </MenuItem>
                                 <Collapse
-                                  in={get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'version'], false)}
+                                  className={styles.engineList}
+                                  in={get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'engine'], false)}
                                   timeout="auto"
                                   unmountOnExit>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedEngineWithData)('userEdited')}
-                                  >
-                                    {selectedEngineWithData.showingUserEditedOutput && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: !selectedEngineWithData.showingUserEditedOutput
-                                        })
-                                      }} 
-                                      primary="User-Edited"
-                                    />
-                                  </MenuItem>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedEngineWithData)('original')}
-                                  >
-                                    {!selectedEngineWithData.showingUserEditedOutput && (
-                                      <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
-                                        <DoneIcon />
-                                      </ListItemIcon>
-                                    )}
-                                    <ListItemText
-                                      classes={{
-                                        primary: cx(styles.selectMenuItem, {
-                                          [styles.menuItemInset]: selectedEngineWithData.showingUserEditedOutput
-                                        })
-                                      }} 
-                                      primary="Original"
-                                    />
-                                  </MenuItem>
-                                  <MenuItem
-                                    button
-                                    onClick={this.handleOnUserEditChange(selectedEngineWithData)('restoreOriginal')}
-                                  >
-                                    <ListItemText
-                                      classes={{
-                                        root: styles.restoreOriginalMenuItem,
-                                        primary: cx(styles.selectMenuItem, styles.menuItemInset)
-                                      }} 
-                                      primary="Restore Original"
-                                    />
-                                  </MenuItem>
+                                  {engines.map(e => {
+                                    return (
+                                      <MenuItem
+                                        key={`engine-menu-item-${e.id}`}
+                                        value={e.id}
+                                        classes={{
+                                          root: styles.engine
+                                        }}
+                                        onClick={this.handleEngineChange(e)}
+                                      >
+                                        {e.id === selectedEngineId && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: e.id !== selectedEngineId
+                                            })
+                                          }} 
+                                          primary={e.name}
+                                          title={e.name}
+                                        />
+                                      </MenuItem>
+                                    );
+                                  })}
                                 </Collapse>
-                              </div>
-                            )}
-                          </MenuList>
-                        </Paper>
-                      </Grow>
-                    </ClickAwayListener>
+                                { selectedEngineWithData && selectedEngineWithData.hasUserEdits && (
+                                  <div>
+                                    <Divider />
+                                    <MenuItem
+                                      button
+                                      onClick={this.handleSubMenuClick(engineCategory.categoryType)('version')}
+                                    >
+                                      <ListItemText
+                                        classes={{
+                                          primary: styles.selectMenuItem
+                                        }} 
+                                        primary="Versioning"
+                                      />
+                                      {get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'version'], false) ? <ExpandLess /> : <ExpandMore />}
+                                    </MenuItem>
+                                    <Collapse
+                                      in={get(isSubMenuOpen, [engineCategory && engineCategory.categoryType, 'version'], false)}
+                                      timeout="auto"
+                                      unmountOnExit>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedEngineWithData)('userEdited')}
+                                      >
+                                        {selectedEngineWithData.showingUserEditedOutput && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: !selectedEngineWithData.showingUserEditedOutput
+                                            })
+                                          }} 
+                                          primary="User-Edited"
+                                        />
+                                      </MenuItem>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedEngineWithData)('original')}
+                                      >
+                                        {!selectedEngineWithData.showingUserEditedOutput && (
+                                          <ListItemIcon classes={{ root: styles.subMenuCheckIcon }}>
+                                            <DoneIcon />
+                                          </ListItemIcon>
+                                        )}
+                                        <ListItemText
+                                          classes={{
+                                            primary: cx(styles.selectMenuItem, {
+                                              [styles.menuItemInset]: selectedEngineWithData.showingUserEditedOutput
+                                            })
+                                          }} 
+                                          primary="Original"
+                                        />
+                                      </MenuItem>
+                                      <MenuItem
+                                        button
+                                        onClick={this.handleOnUserEditChange(selectedEngineWithData)('restoreOriginal')}
+                                      >
+                                        <ListItemText
+                                          classes={{
+                                            root: styles.restoreOriginalMenuItem,
+                                            primary: cx(styles.selectMenuItem, styles.menuItemInset)
+                                          }} 
+                                          primary="Restore Original"
+                                        />
+                                      </MenuItem>
+                                    </Collapse>
+                                  </div>
+                                )}
+                              </MenuList>
+                            </Paper>
+                          </Grow>
+                        </ClickAwayListener>
+                      </div>
+                    )}
                   </Popper>
                 )}
               </Manager>
@@ -653,21 +665,25 @@ class EngineOutputHeader extends Component {
           )}
           {!!get(moreMenuItems, 'length') && (
             <Manager>
-              <Target>
-                <div ref={this.setMenuTarget}>
-                  <IconButton
-                    aria-label="More"
-                    aria-haspopup="true"
-                    aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
-                    onClick={this.toggleIsMoreMenuOpen}
-                    classes={{
-                      root: styles.actionIconButton
-                    }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                </div>
-              </Target>
+              <Reference>
+                {({ ref }) => (
+                  <div ref={ref}>
+                    <div ref={this.setMenuTarget}>
+                      <IconButton
+                        aria-label="More"
+                        aria-haspopup="true"
+                        aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
+                        onClick={this.toggleIsMoreMenuOpen}
+                        classes={{
+                          root: styles.actionIconButton
+                        }}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    </div>
+                  </div>
+                )}
+              </Reference>
               {isMoreMenuOpen &&
                 moreMenuItems && (
                   <Popper
@@ -675,19 +691,23 @@ class EngineOutputHeader extends Component {
                     placement="bottom-end"
                     eventsEnabled={isMoreMenuOpen}
                   >
-                    <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
-                      <Grow
-                        in={isMoreMenuOpen}
-                        id="menu-list-grow"
-                        style={{ transformOrigin: '0 0 0' }}
-                      >
-                        <Paper>
-                          <MenuList role="menu">
-                            {updatedMoreMenuItems}
-                          </MenuList>
-                        </Paper>
-                      </Grow>
-                    </ClickAwayListener>
+                    {({ ref, style, placement }) => (
+                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                        <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
+                          <Grow
+                            in={isMoreMenuOpen}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: '0 0 0' }}
+                          >
+                            <Paper>
+                              <MenuList role="menu">
+                                {updatedMoreMenuItems}
+                              </MenuList>
+                            </Paper>
+                          </Grow>
+                        </ClickAwayListener>
+                      </div>
+                    )}
                   </Popper>
                 )}
             </Manager>

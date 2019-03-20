@@ -24,6 +24,7 @@ export ProfileMenu from './components/ProfileMenu';
 export RaisedTextField from './components/RaisedTextField';
 export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
+export { PDFViewer, SimplePDFViewer } from './components/PDFViewer';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
