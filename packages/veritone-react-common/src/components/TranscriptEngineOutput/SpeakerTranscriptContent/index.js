@@ -152,10 +152,15 @@ export default class SpeakerTranscriptContent extends Component {
       return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
     });
 
+      
+    const startZeroTime = new Date(1990, 8, 15);
+    const stopZeroTime = new Date(1990, 8, 15);
     const speakerSerie = totalSpeakerSeries[index];
-    const speakerStartTime = speakerSerie.startTimeMs;
-    const speakerStopTime = speakerSerie.stopTimeMs;
-    const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+    startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
+    stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
+    const speakerStartTime = startZeroTime.getTime();
+    const speakerStopTime = stopZeroTime.getTime();
+    const timeFormat = speakerSerie.startTimeMs >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
     const speakerTimingStart = format(speakerStartTime, timeFormat);
     const speakerTimingStop = format(speakerStopTime, timeFormat);
     const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
