@@ -1151,6 +1151,7 @@ class MediaDetailsWidget extends React.Component {
                         <Tooltip
                             id="tooltip-back-media"
                             title="Previous file"
+                            disableHoverListener={!isBackActive}
                         >
                           <Icon
                             classes={{ root: styles.iconClass }}
@@ -1169,6 +1170,7 @@ class MediaDetailsWidget extends React.Component {
                         <Tooltip
                           id="tooltip-next-media"
                           title="Next file"
+                          disableHoverListener={!isNextActive}
                         >
                           <Icon
                             classes={{ root: styles.iconClass }}
