@@ -193,7 +193,10 @@ class MediaDetailsWidget extends React.Component {
     }),
     // property to configure experimental autorefresh in saga
     // eslint-disable-next-line react/no-unused-prop-types
-    refreshIntervalMs: number,
+    onNext: func,
+    onBack: func,
+    isNextActive: bool,
+    isBackActive: bool,
     onRunProcess: func,
     onClose: func,
     className: string,
@@ -998,6 +1001,18 @@ class MediaDetailsWidget extends React.Component {
     };
   };
 
+  onNextFile = () => {
+    if (this.props.isNextActive) {
+      this.props.onNext();
+    }
+  }
+
+  onBackFile = () => {
+    if (this.props.isBackActive) {
+      this.props.onBack();
+    }
+  }
+
   render() {
     let {
       engineCategories,
@@ -1025,7 +1040,11 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit
+      cancelEdit,
+      onBack,
+      onNext,
+      isNextActive,
+      isBackActive,
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1134,7 +1153,8 @@ class MediaDetailsWidget extends React.Component {
                 <div
                   className={styles.pageHeader}
                   data-veritone-component="mdp-page-header"
-                >
+                  >
+                  <div className={styles.pageHeaderActionButtons}>
                   {get(
                     this.props,
                     'tdo.details.veritoneFile.filename.length',
@@ -1182,6 +1202,45 @@ class MediaDetailsWidget extends React.Component {
                       {!isLoadingTdo && 'No Filename'}
                     </div>
                   )}
+                    { onBack && (
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        aria-label="Previous file"
+                        onClick={this.onBackFile}
+                        style={isBackActive ? { color: 'white' } : {}}
+                      >
+                        <Tooltip
+                            id="tooltip-back-media"
+                            title="Previous file"
+                            disableHoverListener={!isBackActive}
+                        >
+                          <Icon
+                            classes={{ root: styles.iconClass }}
+                            className="icon-keyboard_arrow_left"
+                          />
+                        </Tooltip>
+                      </IconButton>
+                    )}
+                    { onNext && (
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        aria-label="Next file"
+                        onClick={this.onNextFile}
+                        style={isNextActive ? { color: 'white' } : {}}
+                      >
+                        <Tooltip
+                          id="tooltip-next-media"
+                          title="Next file"
+                          disableHoverListener={!isNextActive}
+                        >
+                          <Icon
+                            classes={{ root: styles.iconClass }}
+                            className="icon-keyboard_arrow_right"
+                          />
+                        </Tooltip>
+                      </IconButton>
+                    )}
+                  </div>
                   <div
                     className={styles.pageHeaderActionButtons}
                     data-veritone-component="mdp-page-header-actions"
