@@ -54,7 +54,7 @@ export default class ProfileMenu extends React.Component {
 
     return (
       <div>
-        <IconButton className={this.props.className} onClick={this.openMenu}>
+        <IconButton className={this.props.className} onClick={this.openMenu} data-veritone-element="profile-menu-button">
           <Avatar src={userProfileImage} style={{ height: 35, width: 35 }} />
         </IconButton>
         <Menu
