@@ -102,6 +102,10 @@ export default class SpeakerTranscriptContent extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
+  state = {
+    measuredInitially: false
+  };
+
   componentDidMount() {
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
@@ -118,9 +122,24 @@ export default class SpeakerTranscriptContent extends Component {
   };
 
   virtualMeasure = (measure, index) => () => {
-    setTimeout(() => { measure && measure() });
+    const { measuredInitially } = this.state;
+    if (!measuredInitially) {
+      setTimeout(() => { measure && measure(); });
+      this.setState({ measuredInitially: true });
+    } else {
+      measure && measure();
+    }
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
+    }
+  }
+
+  getContentDimension = () => {
+    if (this.contentRef) {
+      return {
+        width: this.contentRef.clientWidth,
+        height: this.contentRef.clientHeight
+      }
     }
   }
 
@@ -153,8 +172,8 @@ export default class SpeakerTranscriptContent extends Component {
     });
 
       
-    const startZeroTime = new Date(1990, 8, 15);
-    const stopZeroTime = new Date(1990, 8, 15);
+    const startZeroTime = new Date(0, 0, 0);
+    const stopZeroTime = new Date(0, 0, 0);
     const speakerSerie = totalSpeakerSeries[index];
     startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
     stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
@@ -171,10 +190,11 @@ export default class SpeakerTranscriptContent extends Component {
         parent={parent}
         cache={cellCache}
         columnIndex={0}
+        style={{ width: '100%' }}
         rowIndex={index}>
         {({ measure }) => (
-          <div style={{ ...style }}>
-            <Grid container key={speakerGridKey}>
+          <div style={{ ...style, width: '100%' }}>
+            <Grid container key={speakerGridKey} style={{ height: '100%', paddingBottom: '20px' }}>
               <Grid item xs={4} sm={3} md={2} lg={1} xl={1}>
                 <SpeakerPill
                   editMode={editMode}
@@ -187,7 +207,7 @@ export default class SpeakerTranscriptContent extends Component {
                   stopMediaPlayHeadMs={stopMediaPlayHeadMs}
                 />
               </Grid>
-              <Grid item xs sm md lg xl>
+              <Grid item xs sm md lg xl style={{ height: '100%' }}>
                 <span className={styles.speakerStartTimeLabel}>
                   {`${speakerTimingStart} - ${speakerTimingStop}`}
                 </span>
@@ -277,79 +297,6 @@ export default class SpeakerTranscriptContent extends Component {
           rowCount={totalSpeakerSeries.length}
           rowHeight={cellCache.rowHeight} />
       );
-
-      return totalSpeakerSeries.map(speakerSerie => {
-        const speakerStartTime = speakerSerie.startTimeMs;
-        const speakerStopTime = speakerSerie.stopTimeMs;
-        const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-        const speakerTimingStart = format(speakerStartTime, timeFormat);
-        const speakerTimingStop = format(speakerStopTime, timeFormat);
-        const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
-
-        const speakerContent = (
-          <Grid container key={speakerGridKey}>
-            <Grid item
-              xs={4}
-              sm={3}
-              md={2}
-              lg={1}
-              xl={1}
-            >
-              <SpeakerPill
-                editMode={editMode}
-                speakerSegment={speakerSerie}
-                speakerData={parsedData.speakerSegments}
-                availableSpeakers={availableSpeakers}
-                onClick={this.handleOnClick}
-                onChange={this.handleDataChanged}
-                startMediaPlayHeadMs={mediaPlayerTimeMs}
-                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              />
-            </Grid>
-            <Grid item xs sm md lg xl>
-              <span className={styles.speakerStartTimeLabel}>
-                {`${speakerTimingStart} - ${speakerTimingStop}`}
-              </span>
-              {
-                editMode ?
-                  (
-                    <EditableWrapper
-                      key={'transcript-speaker-snippet' + speakerStartTime}
-                      speakerData={parsedData.speakerSegments}
-                      content={{
-                        series: speakerSerie.fragments,
-                        wordGuidMap: speakerSerie.wordGuidMap
-                      }}
-                      editMode
-                      onChange={this.handleDataChanged}
-                      undo={undo}
-                      redo={redo}
-                      onClick={this.handleOnClick}
-                      startMediaPlayHeadMs={mediaPlayerTimeMs}
-                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                      classNames={classNames(styles.contentSegment)}
-                      cursorPosition={cursorPosition}
-                      clearCursorPosition={clearCursorPosition}
-                      setIncomingChanges={setIncomingChanges}
-                    />
-                  ) :
-                  (
-                    <SnippetSegment
-                      key={'transcript-speaker-snippet' + speakerStartTime}
-                      series={speakerSerie.fragments}
-                      onClick={this.handleOnClick}
-                      startMediaPlayHeadMs={mediaPlayerTimeMs}
-                      stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                      classNames={classNames(styles.contentSegment)}
-                    />
-                  )
-              }
-            </Grid>
-          </Grid>
-        );
-
-        return speakerContent;
-      });
     } else {
       if (editMode) {
         return (
@@ -380,6 +327,7 @@ export default class SpeakerTranscriptContent extends Component {
             startMediaPlayHeadMs={mediaPlayerTimeMs}
             stopMediaPlayHeadMs={stopMediaPlayHeadMs}
             classNames={classNames(styles.contentSegment)}
+            getContainerDimension={this.getContentDimension}
           />
         );
       }
@@ -393,7 +341,10 @@ export default class SpeakerTranscriptContent extends Component {
     } = this.props;
 
     return (
-      <div className={classNames(styles.transcriptContent, className)}>
+      <div
+        ref={ref => this.contentRef = ref}
+        className={classNames(styles.transcriptContent, className)}
+      >
         {this.renderSpeakerSnippetSegments(parsedData)}
       </div>
     );

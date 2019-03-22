@@ -47,9 +47,9 @@ export class TranscriptExample extends Component {
 
     this.selectedEngineId = '1';
     this.engines = [
-      { id: '1', name: 'Engine-X' },
-      { id: '2', name: 'Engine-Y' },
-      { id: '3', name: 'Engine-Z' }
+      { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' } },
+      { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' } },
+      { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' } }
     ];
 
     const mockData = genMockData(
