@@ -1,5 +1,4 @@
 import Ajv from 'ajv';
-import AddAjvMergeAndPath from 'ajv-merge-patch';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
 import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
