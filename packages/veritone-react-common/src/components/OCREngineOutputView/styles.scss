@@ -12,6 +12,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 20px;
+  height: calc(100vh - 250px);
+  padding-bottom: 25px;
 }
 
 .ocrContainer {
