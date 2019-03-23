@@ -103,13 +103,53 @@ export default class SpeakerTranscriptContent extends Component {
   };
 
   state = {
-    measuredInitially: false
+    measuredInitially: false,
+    virtualizedSerieBlocks: []
   };
 
   componentDidMount() {
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
+    // Create resize watchers to calculate width available for text
+    window.addEventListener('resize', this.onWindowResize);
+    setTimeout(this.onWindowResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  onWindowResize = () => {
+    const {
+      parsedData,
+      getContentDimension
+    } = this.props;
+    const totalTranscriptSeries = parsedData.snippetSegments
+      .reduce((acc, seg) => acc.concat(seg.series), []);
+    const totalTranscriptGuidMap = parsedData.snippetSegments
+      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
+    const contentDimension = getContentDimension && getContentDimension();
+    const newVirtualizedSerieBlocks = [];
+    const charPerPage = 2813;
+
+    for (let index = 0, charCount = 0, curSeries = [], curMap = {}; index < totalTranscriptSeries.length; index++) {
+      const serie = totalTranscriptSeries[index];
+      charCount += serie.words[0].word.length;
+      if (charCount > charPerPage || index === totalTranscriptSeries.length - 1) {
+        charCount = 0;
+        newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
+        curSeries = [];
+        curMap = {};
+      }
+      curSeries.push(serie);
+      curMap[serie.guid] = totalTranscriptGuidMap[serie.guid];
+    }
+    this.setState({ virtualizedSerieBlocks: newVirtualizedSerieBlocks }, () => {
+      if (this.virtualList) {
+        this.virtualList.forceUpdateGrid();
+      }
+    });
   }
 
   handleOnClick = (event, seriesObject) => {
@@ -141,9 +181,81 @@ export default class SpeakerTranscriptContent extends Component {
         height: this.contentRef.clientHeight
       }
     }
+    return {};
   }
 
-  rowRenderer = editMode => ({ key, parent, index, style }) => {
+
+  transcriptRowRenderer = ({ key, parent, index, style }) => {
+    const {
+      editMode,
+      parsedData,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs,
+      selectedCombineViewTypeId,
+      cursorPosition,
+      clearCursorPosition,
+      undo,
+      redo,
+      setIncomingChanges
+    } = this.props;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const totalTranscriptSeries = parsedData.snippetSegments
+      .reduce((acc, seg) => acc.concat(seg.series), []);
+    const totalTranscriptGuidMap = parsedData.snippetSegments
+      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
+    const {
+      virtualizedSerieBlocks
+    } = this.state;
+    const textareaToDecodeCharacters = document.createElement('textarea');
+
+    const virtualizedSerieBlock = virtualizedSerieBlocks[index];
+
+    return (
+      <CellMeasurer
+        key={key}
+        parent={parent}
+        cache={cellCache}
+        columnIndex={0}
+        style={{ width: '100%' }}
+        rowIndex={index}>
+        {({ measure }) => (
+          <div style={{ ...style, width: '100%' }}>
+            { !editMode
+                ? ( 
+                  <SnippetSegment
+                    virtualMeasure={this.virtualMeasure(measure, index)}
+                    key={'virtualized-transcript-snippet'}
+                    series={virtualizedSerieBlock.series}
+                    onClick={this.handleOnClick}
+                    startMediaPlayHeadMs={mediaPlayerTimeMs}
+                    stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                    classNames={classNames(styles.contentSegment)} />
+                ) : (
+                  <EditableWrapper
+                    key={'virtualized-transcript-snippet-editwrapper'}
+                    content={{
+                      series: virtualizedSerieBlock.series,
+                      wordGuidMap: virtualizedSerieBlock.wordGuidMap
+                    }}
+                    editMode
+                    onChange={this.handleDataChanged}
+                    undo={undo}
+                    redo={redo}
+                    onClick={this.handleOnClick}
+                    startMediaPlayHeadMs={mediaPlayerTimeMs}
+                    stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                    classNames={classNames(styles.contentSegment)}
+                    cursorPosition={cursorPosition}
+                    clearCursorPosition={clearCursorPosition} />
+                )
+            }
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  }
+
+  speakerRowRenderer = editMode => ({ key, parent, index, style }) => {
     const {
       parsedData,
       mediaPlayerTimeMs,
@@ -267,6 +379,9 @@ export default class SpeakerTranscriptContent extends Component {
       redo,
       setIncomingChanges
     } = this.props;
+    const {
+      virtualizedSerieBlocks
+    } = this.state;
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     const totalTranscriptSeries = parsedData.snippetSegments
       .reduce((acc, seg) => acc.concat(seg.series), []);
@@ -282,55 +397,37 @@ export default class SpeakerTranscriptContent extends Component {
     availableSpeakers.sort((a, b) => {
       return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
     });
+    const contentDimension = this.getContentDimension();
 
     if (selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
       return (
         <List
           ref={ref => this.virtualList = ref}
           key={`virtual-speaker-grid`}
-          width={900}
-          height={500}
+          width={contentDimension.width || 900}
+          height={contentDimension.height || 500}
           style={{ width: '100%', height: '100%' }}
           deferredMeasurementCache={cellCache}
           overscanRowCount={5}
-          rowRenderer={this.rowRenderer(editMode)}
+          rowRenderer={this.speakerRowRenderer(editMode)}
           rowCount={totalSpeakerSeries.length}
           rowHeight={cellCache.rowHeight} />
       );
     } else {
-      if (editMode) {
-        return (
-          <EditableWrapper
-            key={'transcript-snippet-editwrapper'}
-            content={{
-              series: totalTranscriptSeries,
-              wordGuidMap: totalTranscriptGuidMap
-            }}
-            editMode
-            onChange={this.handleDataChanged}
-            undo={undo}
-            redo={redo}
-            onClick={this.handleOnClick}
-            startMediaPlayHeadMs={mediaPlayerTimeMs}
-            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            classNames={classNames(styles.contentSegment)}
-            cursorPosition={cursorPosition}
-            clearCursorPosition={clearCursorPosition}
-          />
-        );
-      } else {
-        return (
-          <SnippetSegment
-            key={'transcript-snippet-viewer'}
-            series={totalTranscriptSeries}
-            onClick={this.handleOnClick}
-            startMediaPlayHeadMs={mediaPlayerTimeMs}
-            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-            classNames={classNames(styles.contentSegment)}
-            getContainerDimension={this.getContentDimension}
-          />
-        );
-      }
+      return (
+        <List
+          ref={ref => this.virtualList = ref}
+          key={`virtual-transcript-grid`}
+          width={contentDimension.width || 900}
+          height={contentDimension.height || 500}
+          style={{ width: '100%', height: '100%' }}
+          deferredMeasurementCache={cellCache}
+          overscanRowCount={1}
+          rowRenderer={this.transcriptRowRenderer}
+          rowCount={virtualizedSerieBlocks.length}
+          rowHeight={cellCache.rowHeight}
+        />
+      );
     }
   };
 

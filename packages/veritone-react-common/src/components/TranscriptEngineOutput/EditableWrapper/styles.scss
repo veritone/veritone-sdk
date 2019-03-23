@@ -6,7 +6,6 @@
   display: flex;
   flex-flow: row nowrap;
   overflow-wrap: break-word;
-  padding-bottom: 20px;
 
   .time {
     padding: 20px 20px 20px 0;
@@ -15,10 +14,6 @@
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
-  }
-
-  .content {
-    padding-bottom: 20px;
   }
 
   border-bottom: 1px solid $faint-black;
