@@ -18,5 +18,10 @@
 * empty words are no longer valid
 
 ## 0.1.4
-* Fix { processed } for transcript. 
+* Fix { processed } for transcript.
 * More tests, addd vtn-standard headers to transcript
+
+## 0.1.5
+* Change GUIDS from number to string
+* Some minor changes in descriptions
+

@@ -3,30 +3,30 @@ import _ from 'lodash';
 
 import glob from 'glob';
 
-const categories = {};
+const validationContracts = {};
 
 // dynamically import all json files in examples or invalid-examples
 const files = glob.sync("schemas/vtn-standard/**/**(examples|invalid-examples)/!(master.json)//*.json");
 for(let file of files) {
-  const categoryIndex = file.split("/").findIndex(directory => _.includes(directory, "examples")) - 1;
-  const category = file.split("/")[categoryIndex];
+  const validationContractIndex = file.split("/").findIndex(directory => _.includes(directory, "examples")) - 1;
+  const validationContract = file.split("/")[validationContractIndex];
   let directory = file.split("/");
   let fileName = directory.pop();
   directory = directory.join("/");
   const test = {directory, fileName};
 
-  if (category in categories) {
-    categories[category].push(test);
+  if (validationContract in validationContracts) {
+    validationContracts[validationContract].push(test);
   } else {
-    categories[category] = [test];
+    validationContracts[validationContract] = [test];
   }
 }
 
-Object.keys(categories).forEach(category => {
-  describe(`"${category}" tests`, () => {
-    const validator = VALIDATORS[category];
+Object.keys(validationContracts).forEach(validationContract => {
+  describe(`"${validationContract}" tests`, () => {
+    const validator = VALIDATORS[validationContract];
     if(typeof validator === 'function') {
-      for(let test of categories[category]) {
+      for(let test of validationContracts[validationContract]) {
         if( _.includes(test.directory, 'invalid' )) {
 
           // JSON files in invalid-examples should not validate
@@ -53,7 +53,7 @@ Object.keys(categories).forEach(category => {
         }
       };
     } else {
-      console.warn(`No validator for engineCategory: ${category}`)
+      console.warn(`No validator for validationConract: ${validationContract}`)
     }
   })
 });

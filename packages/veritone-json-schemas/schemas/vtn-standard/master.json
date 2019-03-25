@@ -20,7 +20,7 @@
         },
         "sourceEngineName": {
           "type": "string",
-          "description": "Engine name used to generate output (provided by Veritone) // TO DO: Verify if this is internal or external engine name",
+          "description": "Engine name used to generate output (provided by Veritone)",
           "example": "capio"
         },
         "taskPayload": {
@@ -90,7 +90,7 @@
           "class"
         ]
       },
-      "description": "Optional category for object recognition"
+      "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
     "objectResult": {
       "type": "object",
@@ -102,13 +102,13 @@
           "$ref": "#/definitions/confidence"
         },
         "entityId": {
-          "type": "number"
+          "type": "string"
         },
         "entityIdentifierId": {
-          "type": "number"
+          "type": "string"
         },
         "libraryId": {
-          "type": "number"
+          "type": "string"
         },
         "label": {
           "type": "string"
