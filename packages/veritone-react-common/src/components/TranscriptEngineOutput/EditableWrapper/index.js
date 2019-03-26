@@ -119,7 +119,7 @@ export default class EditableWrapper extends Component {
 
   handleDebounceOnChange = () => {
     const event = this.savedEvent;
-    const { content, onChange, setIncomingChanges } = this.props;
+    const { content, onChange, setIncomingChanges, virtualMeasure } = this.props;
     if (event && event.target) {
       const contentEditableElement = event.target;
       const wordGuidMap = content.wordGuidMap;
@@ -127,6 +127,7 @@ export default class EditableWrapper extends Component {
       onChange && hasChange && onChange(event, historyDiff, cursorPos);
       setIncomingChanges && setIncomingChanges(false);
       this.savedEvent = undefined;
+      virtualMeasure && virtualMeasure();
     }
   }
 

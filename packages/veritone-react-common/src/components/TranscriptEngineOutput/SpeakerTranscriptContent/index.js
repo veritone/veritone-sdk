@@ -184,7 +184,6 @@ export default class SpeakerTranscriptContent extends Component {
     return {};
   }
 
-
   transcriptRowRenderer = ({ key, parent, index, style }) => {
     const {
       editMode,
