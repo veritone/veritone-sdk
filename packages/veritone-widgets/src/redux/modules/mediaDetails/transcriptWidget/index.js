@@ -754,22 +754,22 @@ function updateTrailingSpeakerIndices(speakerData, diff) {
   let newEditableSpeakerData = speakerData;
   const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
   if (diff.index !== currentSpeakers.length) {
+    const combineSpeakerSeriesUpdate = {};
     isArray(currentSpeakers) && currentSpeakers.slice(diff.index - currentSpeakers.length).forEach((speaker, speakerIndex) => {
+      const combineGuidMapUpdate = {};
       isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
-        newEditableSpeakerData = update(newEditableSpeakerData, {
-          [diff.chunkIndex]: {
-            series: {
-              [diff.index + speakerIndex]: {
-                wordGuidMap: {
-                  [fragment.guid]: {
-                    speakerIndex: { $set: (diff.index + speakerIndex) }
-                  }
-                }
-              }
-            }
-          }
-        })
+        combineGuidMapUpdate[fragment.guid] = {
+          speakerIndex: { $set: (diff.index + speakerIndex) }
+        };
       });
+      combineSpeakerSeriesUpdate[diff.index + speakerIndex] = {
+        wordGuidMap: combineGuidMapUpdate
+      };
+    });
+    newEditableSpeakerData = update(newEditableSpeakerData, {
+      [diff.chunkIndex]: {
+        series: combineSpeakerSeriesUpdate
+      }
     });
   }
   return newEditableSpeakerData;
@@ -785,6 +785,7 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
   let wasUpdated = false;
   isArray(newEditableSpeakerData)
     && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
+      const combineSpeakerSeriesUpdate = {};
       isArray(chunk.series)
         && chunk.series.forEach((serie, speakerIndex) => {
           if (
@@ -830,22 +831,30 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
               []
             );
             if (diff.dialogueIndex !== newFragments.length) {
+              const combineGuidMapUpdate = {};
               newFragments.slice(diff.dialogueIndex - newFragments.length).forEach((frag, index) => {
-                newEditableSpeakerData = update(newEditableSpeakerData, {
-                  [speakerChunkIndex]: {
-                    series: {
-                      [speakerIndex]: {
-                        wordGuidMap: {
-                          [frag.guid]: {
-                            dialogueIndex: { $set: diff.dialogueIndex + index },
-                            index: { $set: diff.index + index }
-                          }
-                        }
-                      }
-                    }
-                  }
-                })
+                combineGuidMapUpdate[frag.guid] = {
+                  dialogueIndex: { $set: diff.dialogueIndex + index },
+                  index: { $set: diff.index + index }
+                };
+                // newEditableSpeakerData = update(newEditableSpeakerData, {
+                //   [speakerChunkIndex]: {
+                //     series: {
+                //       [speakerIndex]: {
+                //         wordGuidMap: {
+                //           [frag.guid]: {
+                //             dialogueIndex: { $set: diff.dialogueIndex + index },
+                //             index: { $set: diff.index + index }
+                //           }
+                //         }
+                //       }
+                //     }
+                //   }
+                // })
               });
+              combineSpeakerSeriesUpdate[speakerIndex] = {
+                wordGuidMap: combineGuidMapUpdate
+              };
             }
             wasUpdated = true;
           } else if (wasUpdated) {
@@ -873,22 +882,34 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
             const indexDifference = isRemove
               ? (-1)
               : 1;
+            const combineGuidMapUpdate = {};
             fragments.forEach((frag, dialogueIndex) => {
               const index = wordGuidMap[frag.guid].index;
-              newEditableSpeakerData = update(newEditableSpeakerData, {
-                [speakerChunkIndex]: {
-                  series : {
-                    [speakerIndex]: {
-                      wordGuidMap: {
-                        [frag.guid]: {
-                          index: { $set: index + indexDifference }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
+              combineGuidMapUpdate[frag.guid] = {
+                index: { $set: index + indexDifference }
+              };
+              // newEditableSpeakerData = update(newEditableSpeakerData, {
+              //   [speakerChunkIndex]: {
+              //     series : {
+              //       [speakerIndex]: {
+              //         wordGuidMap: {
+              //           [frag.guid]: {
+              //             index: { $set: index + indexDifference }
+              //           }
+              //         }
+              //       }
+              //     }
+              //   }
+              // });
             });
+            combineSpeakerSeriesUpdate[speakerIndex] = {
+              wordGuidMap: combineGuidMapUpdate
+            };
+          }
+        });
+        newEditableSpeakerData = update(newEditableSpeakerData, {
+          [speakerChunkIndex]: {
+            series: combineSpeakerSeriesUpdate
           }
         });
     });
