@@ -7,8 +7,6 @@
 }
 
 .ocrContent {
-  display: flex;
-  flex-flow: row wrap;
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 20px;
@@ -21,12 +19,13 @@
   max-width: 100%;
   align-items: center;
   margin: 0 15px 15px 0;
-  height: auto;
+  height: 42px;
   padding: 10px;
   color: $dark-black;
   border-radius: 20px;
   border: 1px solid $grey-4;
   background-color: $fullWhite;
+  display: inline-block;
 
   &.highlighted {
     border-color: $blue-1;
