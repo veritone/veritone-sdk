@@ -67,7 +67,8 @@ export default class EditableWrapper extends Component {
     }),
     clearCursorPosition: func,
     setIncomingChanges: func,
-    virtualMeasure: func
+    virtualMeasure: func,
+    seriesPerPage: number
   };
 
   static defaultProps = {
@@ -169,7 +170,8 @@ export default class EditableWrapper extends Component {
       editMode,
       content,
       speakerData,
-      onChange
+      onChange,
+      seriesPerPage
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
@@ -209,7 +211,7 @@ export default class EditableWrapper extends Component {
           if (!noCursorSelection) {
             // If there is a selection, handle deletes by setting empty strings
             event.preventDefault();
-            const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
+            const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage);
             setCursorPosition(spanChildren, oldCursorPosition);
             return;
           } else if (keyCode === 8 && wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
@@ -266,7 +268,7 @@ export default class EditableWrapper extends Component {
             setCursorPosition(spanChildren, newPos);
             return;
           }
-          const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
+          const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage);
           setCursorPosition(spanChildren, oldCursorPosition);
         }
       }
@@ -274,7 +276,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentPaste = event => {
-    const { editMode, content, onChange } = this.props;
+    const { editMode, content, onChange, seriesPerPage } = this.props;
     const wordGuidMap = content.wordGuidMap;
     
     if (event) {
@@ -291,7 +293,7 @@ export default class EditableWrapper extends Component {
 
     const contentEditableElement = get(event, 'target.parentElement');
     const spanChildren = contentEditableElement.children;
-    const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, stringToPaste);
+    const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, seriesPerPage, stringToPaste);
 
     const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
     hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
@@ -700,7 +702,7 @@ function sortByIndex(a, b) {
 }
 
 // spanArray will be mutated
-function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
+function handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage, textToInsert = '') {
   const cursorPos = getCursorPosition();
   const startPos = cursorPos.start;
   const endPos = cursorPos.end;
@@ -708,11 +710,11 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   const cursorEndMap = wordGuidMap[cursorPos.end.guid];
   let startIndex = cursorStartMap.dialogueIndex;
   if (isUndefined(startIndex)) {
-    startIndex = cursorStartMap.index;
+    startIndex = cursorStartMap.index % seriesPerPage;
   }
   let endIndex = cursorEndMap.dialogueIndex;
   if (isUndefined(endIndex)) {
-    endIndex = cursorEndMap.index;
+    endIndex = cursorEndMap.index % seriesPerPage;
   }
   const startSpan = spanArray[startIndex];
   const endSpan = spanArray[endIndex];

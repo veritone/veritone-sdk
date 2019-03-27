@@ -463,20 +463,22 @@ function revertHistoryDiff(state, historyDiff) {
                 }
               }
             });
-            const subFragments = totalTranscriptFragments
-              .filter(frag => frag.startTimeMs >= diff.oldValue.startTimeMs);
-            const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
-            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.oldValue, nextSpeaker, diff.index, diff.chunkIndex);
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    fragments: { $set: fragments },
-                    wordGuidMap: { $set: wordGuidMap }
-                  } 
+            if (diff.newValue.startTimeMs != diff.oldValue.startTimeMs || diff.newValue.stopTimeMs != diff.oldValue.stopTimeMs) {
+              const subFragments = totalTranscriptFragments
+                .filter(frag => frag.startTimeMs >= diff.oldValue.startTimeMs);
+              const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
+              const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.oldValue, nextSpeaker, diff.index, diff.chunkIndex);
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [diff.chunkIndex]: {
+                  series: {
+                    [diff.index]: {
+                      fragments: { $set: fragments },
+                      wordGuidMap: { $set: wordGuidMap }
+                    } 
+                  }
                 }
-              }
-            });
+              });
+            }
             break;
           }
           case 'INSERT': {
@@ -687,20 +689,22 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 }
               }
             });
-            const subFragments = totalTranscriptFragments
-              .filter(frag => frag.startTimeMs >= diff.newValue.startTimeMs);
-            const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
-            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.newValue, nextSpeaker, diff.index, diff.chunkIndex);
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    fragments: { $set: fragments },
-                    wordGuidMap: { $set: wordGuidMap }
-                  } 
+            if (diff.newValue.startTimeMs != diff.oldValue.startTimeMs || diff.newValue.stopTimeMs != diff.oldValue.stopTimeMs) {
+              const subFragments = totalTranscriptFragments
+                .filter(frag => frag.startTimeMs >= diff.newValue.startTimeMs);
+              const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
+              const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.newValue, nextSpeaker, diff.index, diff.chunkIndex);
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [diff.chunkIndex]: {
+                  series: {
+                    [diff.index]: {
+                      fragments: { $set: fragments },
+                      wordGuidMap: { $set: wordGuidMap }
+                    } 
+                  }
                 }
-              }
-            });
+              });
+            }
             break;
           }
           case 'INSERT': {

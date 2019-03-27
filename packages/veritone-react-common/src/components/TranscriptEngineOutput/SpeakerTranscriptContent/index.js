@@ -103,8 +103,7 @@ export default class SpeakerTranscriptContent extends Component {
   };
 
   state = {
-    measuredInitially: false,
-    virtualizedSerieBlocks: []
+    measuredInitially: false
   };
 
   componentDidMount() {
@@ -120,7 +119,9 @@ export default class SpeakerTranscriptContent extends Component {
     window.removeEventListener('resize', this.onWindowResize);
   }
 
-  onWindowResize = () => {
+  seriesPerPage = 1000;
+
+  generateVirtualizedTranscriptBlocks = () => {
     const {
       parsedData,
       getContentDimension
@@ -135,9 +136,14 @@ export default class SpeakerTranscriptContent extends Component {
 
     for (let index = 0, charCount = 0, curSeries = [], curMap = {}; index < totalTranscriptSeries.length; index++) {
       const serie = totalTranscriptSeries[index];
-      charCount += serie.words[0].word.length;
-      if (charCount > charPerPage || index === totalTranscriptSeries.length - 1) {
-        charCount = 0;
+      // charCount += serie.words[0].word.length;
+      // if (charCount > charPerPage || index === totalTranscriptSeries.length - 1) {
+      //   charCount = 0;
+      //   newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
+      //   curSeries = [];
+      //   curMap = {};
+      // }
+      if (curSeries.length === this.seriesPerPage || index === totalTranscriptSeries.length - 1) {
         newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
         curSeries = [];
         curMap = {};
@@ -145,11 +151,13 @@ export default class SpeakerTranscriptContent extends Component {
       curSeries.push(serie);
       curMap[serie.guid] = totalTranscriptGuidMap[serie.guid];
     }
-    this.setState({ virtualizedSerieBlocks: newVirtualizedSerieBlocks }, () => {
-      if (this.virtualList) {
-        this.virtualList.forceUpdateGrid();
-      }
-    });
+    return newVirtualizedSerieBlocks;
+  };
+
+  onWindowResize = () => {
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
   }
 
   handleOnClick = (event, seriesObject) => {
@@ -198,15 +206,8 @@ export default class SpeakerTranscriptContent extends Component {
       setIncomingChanges
     } = this.props;
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const totalTranscriptSeries = parsedData.snippetSegments
-      .reduce((acc, seg) => acc.concat(seg.series), []);
-    const totalTranscriptGuidMap = parsedData.snippetSegments
-      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
-    const {
-      virtualizedSerieBlocks
-    } = this.state;
-    const textareaToDecodeCharacters = document.createElement('textarea');
 
+    const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
 
     return (
@@ -231,6 +232,8 @@ export default class SpeakerTranscriptContent extends Component {
                     classNames={classNames(styles.contentSegment)} />
                 ) : (
                   <EditableWrapper
+                    seriesPerPage={this.seriesPerPage}
+                    virtualMeasure={this.virtualMeasure(measure, index)}
                     key={'virtualized-transcript-snippet-editwrapper'}
                     content={{
                       series: virtualizedSerieBlock.series,
@@ -245,7 +248,8 @@ export default class SpeakerTranscriptContent extends Component {
                     stopMediaPlayHeadMs={stopMediaPlayHeadMs}
                     classNames={classNames(styles.contentSegment)}
                     cursorPosition={cursorPosition}
-                    clearCursorPosition={clearCursorPosition} />
+                    clearCursorPosition={clearCursorPosition}
+                    setIncomingChanges={setIncomingChanges} />
                 )
             }
           </div>
@@ -326,6 +330,7 @@ export default class SpeakerTranscriptContent extends Component {
                   editMode ?
                     (
                       <EditableWrapper
+                        seriesPerPage={this.seriesPerPage}
                         virtualMeasure={this.virtualMeasure(measure, index)}
                         key={'transcript-speaker-snippet' + speakerStartTime}
                         speakerData={parsedData.speakerSegments}
@@ -378,9 +383,7 @@ export default class SpeakerTranscriptContent extends Component {
       redo,
       setIncomingChanges
     } = this.props;
-    const {
-      virtualizedSerieBlocks
-    } = this.state;
+    const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     const totalTranscriptSeries = parsedData.snippetSegments
       .reduce((acc, seg) => acc.concat(seg.series), []);
