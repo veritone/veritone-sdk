@@ -136,10 +136,10 @@ export default class SpeakerTranscriptContent extends Component {
 
 
     if (selectedCombineViewTypeId === 'speaker-view') {
-      const startZeroTime = new Date(1990, 8, 15);
-      const stopZeroTime = new Date(1990, 8, 15);
       const speakerSnippetSegments = speakerSegments.map((speakerSegment, speakerChunkIndex) => {
         const speakerSeries = speakerSegment.series.map((speakerSerie, speakerIndex) => {
+          const startZeroTime = new Date(1990, 8, 15);
+          const stopZeroTime = new Date(1990, 8, 15);
           startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
           stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
           const speakerStartTime = startZeroTime.getTime();
