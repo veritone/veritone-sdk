@@ -2,16 +2,10 @@ import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import { orderBy, get } from 'lodash';
 import classNames from 'classnames';
-import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 import SnippetFragment from '../SnippetFragment';
 
 import styles from './styles.scss';
-
-const cellCache = new CellMeasurerCache({
-  defaultHeight: 50,
-  fixedWidth: true
-});
 
 export default class SnippetSegment extends Component {
   static propTypes = {

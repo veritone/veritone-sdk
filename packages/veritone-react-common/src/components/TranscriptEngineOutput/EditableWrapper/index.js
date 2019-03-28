@@ -77,15 +77,15 @@ export default class EditableWrapper extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
+  componentDidMount() {
+    const { virtualMeasure } = this.props;
+    virtualMeasure && virtualMeasure();
+  }
+  
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return {
       cursorPosition: getCursorPosition()
     };
-  }
-
-  componentDidMount() {
-    const { virtualMeasure } = this.props;
-    virtualMeasure && virtualMeasure();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -131,7 +131,6 @@ export default class EditableWrapper extends Component {
       virtualMeasure && virtualMeasure();
     }
   }
-
 
   handleContentClick = event => {
     const { content, onClick } = this.props;

@@ -46,12 +46,10 @@ describe('OCREngineOutputView', () => {
     expect(wrapper.find('.ocrContent')).toHaveLength(1);
   });
 
-  it('should display a list of ocr objects', () => {
+  it('should display virtual list of ocr objects', () => {
     const wrapper = mount(<OCREngineOutputView data={ocrAssets} />);
 
-    expect(wrapper.find('.ocrContainer')).toHaveLength(
-      ocrAssets[0].series.length
-    );
+    expect(wrapper.find('.virtual-ocr-list')).toBeDefined();
   });
 
   it('adds props.className to the root', function() {

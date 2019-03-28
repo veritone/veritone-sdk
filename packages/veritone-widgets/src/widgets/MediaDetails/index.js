@@ -12,7 +12,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import PictureAsPdf from '@material-ui/icons/PictureAsPdf';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { get, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -135,34 +135,22 @@ export default class SpeakerTranscriptContent extends Component {
   }
 
   generateVirtualizedTranscriptBlocks = () => {
-    const {
-      parsedData,
-      getContentDimension
-    } = this.props;
-    const totalTranscriptSeries = parsedData.snippetSegments
-      .reduce((acc, seg) => acc.concat(seg.series), []);
-    const totalTranscriptGuidMap = parsedData.snippetSegments
-      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
-    const contentDimension = getContentDimension && getContentDimension();
+    const { parsedData } = this.props;
+    const totalTranscriptSeries = parsedData.snippetSegments.reduce((acc, seg) => acc.concat(seg.series), []);
+    const totalTranscriptGuidMap = parsedData.snippetSegments.reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
     const newVirtualizedSerieBlocks = [];
-    const charPerPage = 2813;
 
-    for (let index = 0, charCount = 0, curSeries = [], curMap = {}; index < totalTranscriptSeries.length; index++) {
+    for (let index = 0, curSeries = [], curMap = {}; index < totalTranscriptSeries.length; index++) {
       const serie = totalTranscriptSeries[index];
-      // charCount += serie.words[0].word.length;
-      // if (charCount > charPerPage || index === totalTranscriptSeries.length - 1) {
-      //   charCount = 0;
-      //   newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
-      //   curSeries = [];
-      //   curMap = {};
-      // }
+      if (curSeries.length < this.seriesPerPage) {
+        curSeries.push(serie);
+        curMap[serie.guid] = totalTranscriptGuidMap[serie.guid];
+      } 
       if (curSeries.length === this.seriesPerPage || index === totalTranscriptSeries.length - 1) {
         newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
         curSeries = [];
         curMap = {};
       }
-      curSeries.push(serie);
-      curMap[serie.guid] = totalTranscriptGuidMap[serie.guid];
     }
     return newVirtualizedSerieBlocks;
   };
@@ -189,23 +177,11 @@ export default class SpeakerTranscriptContent extends Component {
     }
   }
 
-  getContentDimension = () => {
-    if (this.contentRef) {
-      return {
-        width: this.contentRef.clientWidth,
-        height: this.contentRef.clientHeight
-      }
-    }
-    return {};
-  }
-
   transcriptRowRenderer = ({ key, parent, index, style }) => {
     const {
       editMode,
-      parsedData,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId,
       cursorPosition,
       clearCursorPosition,
       undo,
@@ -270,7 +246,6 @@ export default class SpeakerTranscriptContent extends Component {
       parsedData,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId,
       cursorPosition,
       clearCursorPosition,
       undo,
@@ -278,10 +253,6 @@ export default class SpeakerTranscriptContent extends Component {
       setIncomingChanges
     } = this.props;
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const totalTranscriptSeries = parsedData.snippetSegments
-      .reduce((acc, seg) => acc.concat(seg.series), []);
-    const totalTranscriptGuidMap = parsedData.snippetSegments
-      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
     const totalSpeakerSeries = parsedData.speakerSegments
       .reduce((acc, seg) => acc.concat(seg.series), []);
     const availableSpeakerSet = new Set();
@@ -383,21 +354,9 @@ export default class SpeakerTranscriptContent extends Component {
       parsedData,
       className,
       editMode,
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId,
-      cursorPosition,
-      clearCursorPosition,
-      undo,
-      redo,
-      setIncomingChanges
+      selectedCombineViewTypeId
     } = this.props;
     const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
-    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const totalTranscriptSeries = parsedData.snippetSegments
-      .reduce((acc, seg) => acc.concat(seg.series), []);
-    const totalTranscriptGuidMap = parsedData.snippetSegments
-      .reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
     const totalSpeakerSeries = parsedData.speakerSegments
       .reduce((acc, seg) => acc.concat(seg.series), []);
     const availableSpeakerSet = new Set();
@@ -408,18 +367,15 @@ export default class SpeakerTranscriptContent extends Component {
     availableSpeakers.sort((a, b) => {
       return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
     });
-    const contentDimension = this.getContentDimension();
 
     return (
-      <div
-        ref={ref => this.contentRef = ref}
-        className={classNames(styles.transcriptContent, className)}
-      >
+      <div className={classNames(styles.transcriptContent, className)}>
         <AutoSizer style={{ width: '100%', height: '100%' }}>
           {({ height, width }) => {
             return selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')
             ? (
               <List
+                // eslint-disable-next-line
                 ref={ref => this.virtualList = ref}
                 key={`virtual-speaker-grid`}
                 width={width || 900}
@@ -432,6 +388,7 @@ export default class SpeakerTranscriptContent extends Component {
                 rowHeight={cellCache.rowHeight} /> 
             ) : (
               <List
+                // eslint-disable-next-line
                 ref={ref => this.virtualList = ref}
                 key={`virtual-transcript-grid`}
                 width={width || 900}

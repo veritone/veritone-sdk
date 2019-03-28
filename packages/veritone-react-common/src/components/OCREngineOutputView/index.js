@@ -1,10 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import cx from 'classnames';
-import { msToReadableString } from 'helpers/time';
-import { isEmpty, debounce } from 'lodash';
+import { debounce } from 'lodash';
 
-import Grid from '@material-ui/core/Grid';
 import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -87,16 +85,6 @@ class OCREngineOutputView extends Component {
     }
   }
 
-  getContentDimension = () => {
-    if (this.contentRef) {
-      return {
-        width: this.contentRef.clientWidth,
-        height: this.contentRef.clientHeight
-      }
-    }
-    return {};
-  }
-
   virtualMeasure = (measure, index) => () => {
     const { measuredInitially } = this.state;
     if (!measuredInitially) {
@@ -110,7 +98,7 @@ class OCREngineOutputView extends Component {
     }
   }
 
-  generateVirtualizedSerieBlocks = () => {
+  generateVirtualizedOcrBlocks = () => {
     const {
       data
     } = this.props;
@@ -119,23 +107,24 @@ class OCREngineOutputView extends Component {
 
     for (let index = 0, curSeries = []; index < totalOcrSeries.length; index++) {
       const serie = totalOcrSeries[index];
+      if (curSeries.length < this.seriesPerPage) {
+        curSeries.push(serie);
+      }
       if (curSeries.length === this.seriesPerPage || index === totalOcrSeries.length - 1) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
-      curSeries.push(serie);
     }
     return newVirtualizedSerieBlocks;
   };
 
   ocrRowRenderer = ({ key, parent, index, style }) => {
     const {
-      className,
       currentMediaPlayerTime,
       onOcrClicked
     } = this.props;
 
-    const virtualizedSerieBlocks = this.generateVirtualizedSerieBlocks();
+    const virtualizedSerieBlocks = this.generateVirtualizedOcrBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
 
     return (
@@ -147,7 +136,7 @@ class OCREngineOutputView extends Component {
         style={{ width: '100%' }}
         rowIndex={index}>
         {({ measure }) => (
-          <div style={{ ...style, width: '100%' }}>
+          <div className={`ocr-segment-block-${index}`} style={{ ...style, width: '100%' }}>
             <OCRSegment
               virtualMeasure={this.virtualMeasure(measure, index)}
               series={virtualizedSerieBlock.series}
@@ -166,11 +155,9 @@ class OCREngineOutputView extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      currentMediaPlayerTime,
       outputNullState
     } = this.props;
-    const contentDimension = this.getContentDimension();
-    const virtualizedSerieBlocks = this.generateVirtualizedSerieBlocks();
+    const virtualizedSerieBlocks = this.generateVirtualizedOcrBlocks();
 
     return (
       <div className={cx(styles.ocrOutputView, className)}>
@@ -183,17 +170,18 @@ class OCREngineOutputView extends Component {
         />
         {outputNullState || (
           <div 
-            ref={ref => this.contentRef = ref}
             className={styles.ocrContent}
             data-veritone-component="orc-engine-output-content"
           >
             <AutoSizer style={{ width: '100%', height: '100%' }}>
               {({ height, width }) => (
                 <List
+                  // eslint-disable-next-line
                   ref={ref => this.virtualList = ref}
+                  className={'virtual-ocr-list'}
                   key={`virtual-ocr-grid`}
-                  width={contentDimension.width || 900}
-                  height={contentDimension.height || 500}
+                  width={width || 900}
+                  height={height || 500}
                   style={{ width: '100%', height: '100%' }}
                   deferredMeasurementCache={cellCache}
                   overscanRowCount={1}

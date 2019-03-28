@@ -85,11 +85,13 @@ storiesOf('ObjectDetectionEngineOutput', module).add('Base', () => {
   let engines = [
     {
       id: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
-      name: 'Google Cloud Video Intelligence - Label Detection'
+      name: 'Google Cloud Video Intelligence - Label Detection',
+      category: { categoryType: 'dummy' } 
     },
     {
       id: '12345',
-      name: 'Test Engine Name'
+      name: 'Test Engine Name',
+      category: { categoryType: 'dummy' } 
     }
   ];
 

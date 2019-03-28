@@ -61,7 +61,13 @@ describe('Sentiment Engine Output', () => {
   let sentimentEngineOutput = mount(
     <SentimentEngineOutput
       data={sampleData}
-      engines={[{ id: '1', name: 'Engine-X' }, { id: '2', name: 'Engine-Y' }]}
+      engines={[{
+        id: '1', name: 'Engine-X',
+        category: { categoryType: 'dummy' }
+      }, {
+        id: '2', name: 'Engine-Y',
+        category: { categoryType: 'dummy' }
+      }]}
       selectedEngineId="1"
       mediaPlayerTimeMs={2400}
       mediaPlayerTimeIntervalMs={150}

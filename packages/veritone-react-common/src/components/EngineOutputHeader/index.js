@@ -285,7 +285,7 @@ class EngineOutputHeader extends Component {
           data-veritone-component="engine-header-actions"
           >
           {children}
-          {isArray(combineEngines) && combineEngines.length > 0 && (
+          {combineEngineCategory && isArray(combineEngines) && combineEngines.length > 0 && (
             <FormControl
               className={styles.engineFormControl}
               disabled={disableEngineSelect}
@@ -475,7 +475,7 @@ class EngineOutputHeader extends Component {
               </Manager>
             </FormControl>
           )}
-          {!isEmpty(engines) && (
+          {engineCategory && !isEmpty(engines) && (
             <FormControl
               className={styles.engineFormControl}
               disabled={disableEngineSelect}

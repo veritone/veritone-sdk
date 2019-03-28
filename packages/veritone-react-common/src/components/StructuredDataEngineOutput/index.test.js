@@ -106,8 +106,8 @@ const SCHEMA_BY_ID = {
 };
 
 const ENGINES = [
-  { id: 'time-correlated-weather', name: 'Weather' },
-  { id: 'time-correlated-fb-feed', name: 'Facebook feeds' }
+  { id: 'time-correlated-weather', name: 'Weather', category: { categoryType: 'dummy' }  },
+  { id: 'time-correlated-fb-feed', name: 'Facebook feeds', category: { categoryType: 'dummy' }  }
 ];
 
 describe('StructuredDataEngineOutput', () => {
@@ -163,7 +163,7 @@ describe('StructuredDataEngineOutput', () => {
       .find('.headerActions')
       .find('.engineSelect')
       .first();
-    expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[0].id);
+    expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[0].name);
     expect(wrapper.find('[aria-label="Expanded View"]').exists()).toEqual(true);
     expect(wrapper.find('table')).toHaveLength(1);
     expect(
@@ -216,7 +216,7 @@ describe('StructuredDataEngineOutput', () => {
       .find('.headerActions')
       .find('.engineSelect')
       .first();
-    expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[1].id);
+    expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[1].name);
     expect(wrapper.find('[aria-label="Expanded View"]').exists()).toEqual(true);
     expect(wrapper.find('table')).toHaveLength(1);
     expect(

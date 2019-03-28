@@ -3,7 +3,6 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 
 import cx from 'classnames';
 import { msToReadableString } from 'helpers/time';
-import { isEmpty } from 'lodash';
 
 import styles from './styles.scss';
 
