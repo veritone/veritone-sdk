@@ -2,10 +2,10 @@ import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import cx from 'classnames';
 import { msToReadableString } from 'helpers/time';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 
 import Grid from '@material-ui/core/Grid';
-import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import OCRSegment from './OCRSegment';
@@ -15,7 +15,6 @@ const cellCache = new CellMeasurerCache({
   defaultHeight: 50,
   fixedWidth: true
 });
-const seriesPerPage = 20;
 
 class OCREngineOutputView extends Component {
   static propTypes = {
@@ -72,9 +71,18 @@ class OCREngineOutputView extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.onWindowResize);
   }
+
+  seriesPerPage = 20;
+  windowResizeDelay = 100;
   
-  onWindowResize = () => {
+  onWindowResize = debounce(
+    () => this.handleWindowResize(),
+    this.windowResizeDelay
+  );
+
+  handleWindowResize = () => {
     if (this.virtualList) {
+      cellCache.clearAll();
       this.virtualList.forceUpdateGrid();
     }
   }
@@ -111,7 +119,7 @@ class OCREngineOutputView extends Component {
 
     for (let index = 0, curSeries = []; index < totalOcrSeries.length; index++) {
       const serie = totalOcrSeries[index];
-      if (curSeries.length === seriesPerPage || index === totalOcrSeries.length - 1) {
+      if (curSeries.length === this.seriesPerPage || index === totalOcrSeries.length - 1) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
@@ -141,10 +149,10 @@ class OCREngineOutputView extends Component {
         {({ measure }) => (
           <div style={{ ...style, width: '100%' }}>
             <OCRSegment
+              virtualMeasure={this.virtualMeasure(measure, index)}
               series={virtualizedSerieBlock.series}
               currentMediaPlayerTime={currentMediaPlayerTime}
-              onOcrClicked={onOcrClicked}
-              virtualMeasure={this.virtualMeasure}/>
+              onOcrClicked={onOcrClicked} />
           </div>
         )}
       </CellMeasurer>
@@ -179,18 +187,22 @@ class OCREngineOutputView extends Component {
             className={styles.ocrContent}
             data-veritone-component="orc-engine-output-content"
           >
-            <List
-              ref={ref => this.virtualList = ref}
-              key={`virtual-ocr-grid`}
-              width={contentDimension.width || 900}
-              height={contentDimension.height || 500}
-              style={{ width: '100%', height: '100%' }}
-              deferredMeasurementCache={cellCache}
-              overscanRowCount={1}
-              rowRenderer={this.ocrRowRenderer}
-              rowCount={virtualizedSerieBlocks.length}
-              rowHeight={cellCache.rowHeight}
-            />
+            <AutoSizer style={{ width: '100%', height: '100%' }}>
+              {({ height, width }) => (
+                <List
+                  ref={ref => this.virtualList = ref}
+                  key={`virtual-ocr-grid`}
+                  width={contentDimension.width || 900}
+                  height={contentDimension.height || 500}
+                  style={{ width: '100%', height: '100%' }}
+                  deferredMeasurementCache={cellCache}
+                  overscanRowCount={1}
+                  rowRenderer={this.ocrRowRenderer}
+                  rowCount={virtualizedSerieBlocks.length}
+                  rowHeight={cellCache.rowHeight}
+                />
+              )}
+            </AutoSizer>
           </div>
         )}
       </div>

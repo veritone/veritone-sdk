@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { get } from 'lodash';
+import { get, debounce } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
-import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
 import SnippetSegment from '../SnippetSegment';
 import SpeakerPill from '../SpeakerPill';
@@ -120,6 +120,19 @@ export default class SpeakerTranscriptContent extends Component {
   }
 
   seriesPerPage = 1000;
+  windowResizeDelay = 100;
+
+  onWindowResize = debounce(
+    () => this.handleWindowResize(),
+    this.windowResizeDelay
+  );
+
+  handleWindowResize = () => {
+    if (this.virtualList) {
+      cellCache.clearAll();
+      this.virtualList.forceUpdateGrid();
+    }
+  }
 
   generateVirtualizedTranscriptBlocks = () => {
     const {
@@ -153,12 +166,6 @@ export default class SpeakerTranscriptContent extends Component {
     }
     return newVirtualizedSerieBlocks;
   };
-
-  onWindowResize = () => {
-    if (this.virtualList) {
-      this.virtualList.forceUpdateGrid();
-    }
-  }
 
   handleOnClick = (event, seriesObject) => {
     this.props.onClick &&
@@ -371,8 +378,10 @@ export default class SpeakerTranscriptContent extends Component {
     );
   }
 
-  renderSpeakerSnippetSegments = parsedData => {
+  render() {
     const {
+      parsedData,
+      className,
       editMode,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
@@ -401,50 +410,42 @@ export default class SpeakerTranscriptContent extends Component {
     });
     const contentDimension = this.getContentDimension();
 
-    if (selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
-      return (
-        <List
-          ref={ref => this.virtualList = ref}
-          key={`virtual-speaker-grid`}
-          width={contentDimension.width || 900}
-          height={contentDimension.height || 500}
-          style={{ width: '100%', height: '100%' }}
-          deferredMeasurementCache={cellCache}
-          overscanRowCount={5}
-          rowRenderer={this.speakerRowRenderer(editMode)}
-          rowCount={totalSpeakerSeries.length}
-          rowHeight={cellCache.rowHeight} />
-      );
-    } else {
-      return (
-        <List
-          ref={ref => this.virtualList = ref}
-          key={`virtual-transcript-grid`}
-          width={contentDimension.width || 900}
-          height={contentDimension.height || 500}
-          style={{ width: '100%', height: '100%' }}
-          deferredMeasurementCache={cellCache}
-          overscanRowCount={1}
-          rowRenderer={this.transcriptRowRenderer}
-          rowCount={virtualizedSerieBlocks.length}
-          rowHeight={cellCache.rowHeight}
-        />
-      );
-    }
-  };
-
-  render() {
-    const {
-      parsedData,
-      className
-    } = this.props;
-
     return (
       <div
         ref={ref => this.contentRef = ref}
         className={classNames(styles.transcriptContent, className)}
       >
-        {this.renderSpeakerSnippetSegments(parsedData)}
+        <AutoSizer style={{ width: '100%', height: '100%' }}>
+          {({ height, width }) => {
+            return selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')
+            ? (
+              <List
+                ref={ref => this.virtualList = ref}
+                key={`virtual-speaker-grid`}
+                width={width || 900}
+                height={height || 500}
+                style={{ width: '100%', height: '100%' }}
+                deferredMeasurementCache={cellCache}
+                overscanRowCount={5}
+                rowRenderer={this.speakerRowRenderer(editMode)}
+                rowCount={totalSpeakerSeries.length}
+                rowHeight={cellCache.rowHeight} /> 
+            ) : (
+              <List
+                ref={ref => this.virtualList = ref}
+                key={`virtual-transcript-grid`}
+                width={width || 900}
+                height={height || 500}
+                style={{ width: '100%', height: '100%' }}
+                deferredMeasurementCache={cellCache}
+                overscanRowCount={1}
+                rowRenderer={this.transcriptRowRenderer}
+                rowCount={virtualizedSerieBlocks.length}
+                rowHeight={cellCache.rowHeight}
+              />
+            )
+          }}
+        </AutoSizer>
       </div>
     );
   }
