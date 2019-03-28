@@ -287,8 +287,8 @@ export default class SpeakerTranscriptContent extends Component {
     });
 
       
-    const startZeroTime = new Date(0, 0, 0);
-    const stopZeroTime = new Date(0, 0, 0);
+    const startZeroTime = new Date(1990, 8, 15);
+    const stopZeroTime = new Date(1990, 8, 15);
     const speakerSerie = totalSpeakerSeries[index];
     startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
     stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
