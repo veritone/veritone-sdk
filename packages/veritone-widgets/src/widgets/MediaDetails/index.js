@@ -1653,6 +1653,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'fingerprint' && (
                       <FingerprintEngineOutput
                         data={selectedEngineResults}
+                        onClick={this.handleUpdateMediaPlayerTime}
                         entities={entities}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
