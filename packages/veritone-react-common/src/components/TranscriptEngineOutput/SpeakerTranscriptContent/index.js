@@ -119,7 +119,7 @@ export default class SpeakerTranscriptContent extends Component {
     window.removeEventListener('resize', this.onWindowResize);
   }
 
-  seriesPerPage = 1000;
+  seriesPerPage = 1500;
   windowResizeDelay = 100;
 
   onWindowResize = debounce(
@@ -206,13 +206,13 @@ export default class SpeakerTranscriptContent extends Component {
             { !editMode
                 ? ( 
                   <SnippetSegment
+                    className={styles.transcriptView}
                     virtualMeasure={this.virtualMeasure(measure, index)}
                     key={'virtualized-transcript-snippet'}
                     series={virtualizedSerieBlock.series}
                     onClick={this.handleOnClick}
                     startMediaPlayHeadMs={mediaPlayerTimeMs}
-                    stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                    classNames={classNames(styles.contentSegment)} />
+                    stopMediaPlayHeadMs={stopMediaPlayHeadMs} />
                 ) : (
                   <EditableWrapper
                     seriesPerPage={this.seriesPerPage}
@@ -229,7 +229,6 @@ export default class SpeakerTranscriptContent extends Component {
                     onClick={this.handleOnClick}
                     startMediaPlayHeadMs={mediaPlayerTimeMs}
                     stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                    classNames={classNames(styles.contentSegment)}
                     cursorPosition={cursorPosition}
                     clearCursorPosition={clearCursorPosition}
                     setIncomingChanges={setIncomingChanges} />
@@ -323,7 +322,6 @@ export default class SpeakerTranscriptContent extends Component {
                         onClick={this.handleOnClick}
                         startMediaPlayHeadMs={mediaPlayerTimeMs}
                         stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                        classNames={classNames(styles.contentSegment)}
                         cursorPosition={cursorPosition}
                         clearCursorPosition={clearCursorPosition}
                         setIncomingChanges={setIncomingChanges}
@@ -337,7 +335,6 @@ export default class SpeakerTranscriptContent extends Component {
                         onClick={this.handleOnClick}
                         startMediaPlayHeadMs={mediaPlayerTimeMs}
                         stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                        classNames={classNames(styles.contentSegment)}
                       />
                     )
                 }
