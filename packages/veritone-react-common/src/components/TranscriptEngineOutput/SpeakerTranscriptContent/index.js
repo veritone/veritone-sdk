@@ -192,6 +192,7 @@ export default class SpeakerTranscriptContent extends Component {
 
     const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
+    const isLastBlock = virtualizedSerieBlocks.length - 1 === index;
 
     return (
       <CellMeasurer
@@ -206,7 +207,7 @@ export default class SpeakerTranscriptContent extends Component {
             { !editMode
                 ? ( 
                   <SnippetSegment
-                    className={styles.transcriptView}
+                    className={ isLastBlock ? styles.transcriptView : '' }
                     virtualMeasure={this.virtualMeasure(measure, index)}
                     key={'virtualized-transcript-snippet'}
                     series={virtualizedSerieBlock.series}
