@@ -53,10 +53,6 @@ class OCREngineOutputView extends Component {
     data: []
   };
 
-  state = {
-    measuredInitially: false
-  }
-
   componentDidMount() {
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
@@ -86,13 +82,7 @@ class OCREngineOutputView extends Component {
   }
 
   virtualMeasure = (measure, index) => () => {
-    const { measuredInitially } = this.state;
-    if (!measuredInitially) {
-      setTimeout(() => { measure && measure(); });
-      this.setState({ measuredInitially: true });
-    } else {
-      measure && measure();
-    }
+    measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }

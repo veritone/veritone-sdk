@@ -1672,8 +1672,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={selectedEngineResults}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}

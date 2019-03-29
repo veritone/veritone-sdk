@@ -102,10 +102,6 @@ export default class SpeakerTranscriptContent extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
-  state = {
-    measuredInitially: false
-  };
-
   componentDidMount() {
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
@@ -165,13 +161,7 @@ export default class SpeakerTranscriptContent extends Component {
   };
 
   virtualMeasure = (measure, index) => () => {
-    const { measuredInitially } = this.state;
-    if (!measuredInitially) {
-      setTimeout(() => { measure && measure(); });
-      this.setState({ measuredInitially: true });
-    } else {
-      measure && measure();
-    }
+    measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
@@ -367,7 +357,9 @@ export default class SpeakerTranscriptContent extends Component {
     });
 
     return (
-      <div className={classNames(styles.transcriptContent, className)}>
+      <div
+        className={classNames(styles.transcriptContent, className)}
+      >
         <AutoSizer style={{ width: '100%', height: '100%' }}>
           {({ height, width }) => {
             return selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')
