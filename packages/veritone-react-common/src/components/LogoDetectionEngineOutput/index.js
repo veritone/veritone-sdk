@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy, kebabCase, get, debounce } from 'lodash';
+import { debounce } from 'lodash';
 
 import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
-import { msToReadableString } from '../../helpers/time';
 import EngineOutputHeader from '../EngineOutputHeader';
 import LogoSegment from './LogoSegment';
-
-import PillButton from '../share-components/buttons/PillButton';
-import DynamicContentScroll from '../share-components/scrolls/DynamicContentScroll';
 
 import styles from './styles.scss';
 
@@ -48,18 +44,11 @@ export default class LogoDetectionEngineOutput extends Component {
     selectedEngineId: string,
 
     className: string,
-    entryClassName: string,
-    entryLabelClassName: string,
-    entryInfoClassName: string,
 
-    onScroll: func,
     onEntrySelected: func,
     onEngineChange: func,
     onExpandClick: func,
 
-    mediaLengthMs: number,
-    neglectableTimeMs: number,
-    estimatedDisplayTimeMs: number,
     currentMediaPlayerTime: number,
     outputNullState: node
   };
@@ -67,7 +56,6 @@ export default class LogoDetectionEngineOutput extends Component {
   static defaultProps = {
     data: [],
     title: 'Logo Recognition',
-    neglectableTimeMs: 500,
     currentMediaPlayerTime: 0
   };
 
@@ -168,10 +156,6 @@ export default class LogoDetectionEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      onScroll,
-      mediaLengthMs,
-      neglectableTimeMs,
-      estimatedDisplayTimeMs,
       outputNullState
     } = this.props;
     const virtualizedSerieBlocks = this.generateVirtualizedLogoBlocks();

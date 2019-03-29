@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape } from 'prop-types';
-import classNames from 'classnames';
 import { kebabCase, get } from 'lodash';
 
 import { msToReadableString } from '../../../helpers/time';

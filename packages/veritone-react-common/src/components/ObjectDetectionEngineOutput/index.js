@@ -31,7 +31,7 @@ class ObjectDetectionEngineOutput extends Component {
         )
       })
     ),
-    onObjectOccurrenceClick: func,
+    onObjectClick: func,
     selectedEngineId: string,
     engines: arrayOf(
       shape({
@@ -109,7 +109,7 @@ class ObjectDetectionEngineOutput extends Component {
   objectRowRenderer = ({ key, parent, index, style }) => {
     const {
       currentMediaPlayerTime,
-      onObjectOccurrenceClick
+      onObjectClick
     } = this.props;
 
     const virtualizedSerieBlocks = this.generateVirtualizedObjectBlocks();
@@ -129,16 +129,12 @@ class ObjectDetectionEngineOutput extends Component {
               virtualMeasure={this.virtualMeasure(measure, index)}
               objectGroup={virtualizedSerieBlock}
               currentMediaPlayerTime={currentMediaPlayerTime}
-              onObjectOccurrenceClick={onObjectOccurrenceClick} />
+              onObjectClick={onObjectClick} />
           </div>
         )}
       </CellMeasurer>
     );
   }
-
-  handleObjectClick = (startTime, stopTime) => {
-    this.props.onObjectOccurrenceClick(startTime, stopTime);
-  };
 
   render() {
     const {
@@ -146,7 +142,6 @@ class ObjectDetectionEngineOutput extends Component {
       selectedEngineId,
       engines,
       onEngineChange,
-      currentMediaPlayerTime,
       onExpandClick,
       outputNullState
     } = this.props;

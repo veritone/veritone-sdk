@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 
 import EngineOutputHeader from './';

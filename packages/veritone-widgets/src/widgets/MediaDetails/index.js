@@ -1646,9 +1646,7 @@ class MediaDetailsWidget extends React.Component {
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
+                        onFaceOccurrenceClicked={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
@@ -1662,9 +1660,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectOccurrenceClick={
-                          this.handleUpdateMediaPlayerTime
-                        }
+                        onObjectClick={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}

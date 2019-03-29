@@ -50,7 +50,7 @@ const sampleData = [
 ];
 
 describe('Logo Engine Output', () => {
-  let translationEngineOutput = mount(
+  let logoEngineOutput = mount(
     <LogoDetectionEngineOutput
       data={sampleData}
       engines={[{
@@ -69,21 +69,21 @@ describe('Logo Engine Output', () => {
   );
 
   it('Missing EngineOutputHeader', () => {
-    expect(translationEngineOutput.find('EngineOutputHeader')).toHaveLength(1);
+    expect(logoEngineOutput.find('EngineOutputHeader')).toHaveLength(1);
   });
 
-  it('Missing DynamicContentScroll', () => {
-    expect(translationEngineOutput.find('DynamicContentScroll')).toHaveLength(
+  it('Missing Virtual List', () => {
+    expect(logoEngineOutput.find('List')).toHaveLength(
       1
     );
   });
 
   it('Missing PillButton', () => {
-    expect(translationEngineOutput.find('PillButton')).toHaveLength(4);
+    expect(logoEngineOutput.find('PillButton')).toHaveLength(4);
   });
 
   it('Invalid Label', () => {
-    const labels = translationEngineOutput.find('.label');
+    const labels = logoEngineOutput.find('.label');
     expect(labels).toHaveLength(4);
     expect(labels.at(0).text()).toEqual('test1a');
     expect(labels.at(1).text()).toEqual('test1b');
@@ -92,7 +92,7 @@ describe('Logo Engine Output', () => {
   });
 
   it('Invalid highlight', () => {
-    const hlButtons = translationEngineOutput.find('.highlighted');
-    expect(hlButtons).toHaveLength(2);
+    const hlButtons = logoEngineOutput.find('.highlighted');
+    expect(hlButtons).toHaveLength(1);
   });
 });

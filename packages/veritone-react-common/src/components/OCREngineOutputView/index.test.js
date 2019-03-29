@@ -40,10 +40,10 @@ describe('OCREngineOutputView', () => {
     expect(wrapper.find(EngineOutputHeader)).toHaveLength(1);
   });
 
-  it('should have a content area', () => {
+  it('should have a virtual list', () => {
     const wrapper = mount(<OCREngineOutputView data={ocrAssets} />);
 
-    expect(wrapper.find('.ocrContent')).toHaveLength(1);
+    expect(wrapper.find('List')).toHaveLength(1);
   });
 
   it('should display virtual list of ocr objects', () => {
