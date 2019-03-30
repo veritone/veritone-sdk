@@ -3,8 +3,6 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import { orderBy, get } from 'lodash';
 import classNames from 'classnames';
 
-import SnippetFragment from '../SnippetFragment';
-
 import styles from './styles.scss';
 
 export default class SnippetSegment extends Component {
@@ -18,7 +16,7 @@ export default class SnippetSegment extends Component {
     ),
     className: string,
     contentClassName: string,
-    onClick: func,
+    onTranslateClicked: func,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number,
     virtualMeasure: func
@@ -29,20 +27,16 @@ export default class SnippetSegment extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
-  state = {
-    virtualizedSerieBlocks: []
-  }
-
   componentDidMount() {
     const { virtualMeasure } = this.props;
     virtualMeasure && virtualMeasure();
   }
 
   handleSnippetClick = entryData => event => {
-    const { onClick } = this.props;
+    const { onTranslateClicked } = this.props;
 
-    if (onClick) {
-      onClick(event, entryData);
+    if (onTranslateClicked) {
+      onTranslateClicked(event, entryData);
     }
   };
 
@@ -55,9 +49,8 @@ export default class SnippetSegment extends Component {
       stopMediaPlayHeadMs
     } = this.props;
     const textareaToDecodeCharacters = document.createElement('textarea');
-
     return (
-      <div className={classNames(styles.transcriptSegment, className)}>
+      <div className={classNames(styles.translateSegment, className)}>
         <div className={classNames(styles.content, contentClassName)}>
           {
             series.map(entry => {
@@ -74,20 +67,18 @@ export default class SnippetSegment extends Component {
                 textareaToDecodeCharacters.innerHTML = selectedWord;
                 value = textareaToDecodeCharacters.value;
               }
-
               return (
-                <SnippetFragment
+                <span
                   key={fragmentKey}
-                  value={value}
-                  active={
-                    !(
+                  onClick={this.handleSnippetClick(entry)}
+                  className={classNames(styles.translateSnippet, styles.read, className, {
+                    [styles.highlight]: !(
                       stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
                     )
-                  }
-                  startTimeMs={startTime}
-                  stopTimeMs={stopTime}
-                  onClick={this.handleSnippetClick(entry)}
-                />
+                  })}
+                >
+                  {value}
+                </span>
               );
             })
           }

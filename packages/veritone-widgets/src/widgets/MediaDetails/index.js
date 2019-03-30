@@ -1705,9 +1705,8 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
                       <TranslationEngineOutput
-                        contents={selectedEngineResults}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        onRerunProcess={this.handleRunProcess}
+                        data={selectedEngineResults}
+                        onTranslateClicked={this.handleUpdateMediaPlayerTime}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
