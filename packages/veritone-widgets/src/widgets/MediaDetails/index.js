@@ -337,6 +337,7 @@ class MediaDetailsWidget extends React.Component {
     ),
     isFetchingEntities: bool,
     loadContentTemplates: func,
+    getFieldOptions: func,
     updateTdoContentTemplates: func,
     contentTemplates: objectOf(
       shape({
@@ -986,6 +987,7 @@ class MediaDetailsWidget extends React.Component {
       tdo,
       isLoadingTdo,
       tdoContentTemplates,
+      getFieldOptions,
       schemasById,
       googleMapsApiKey,
       widgetError,
@@ -1774,6 +1776,7 @@ class MediaDetailsWidget extends React.Component {
               <ContentTemplateForm
                 templateData={contentTemplates}
                 initialTemplates={tdoContentTemplates}
+                getFieldOptions={getFieldOptions}
                 onSubmit={this.updateContentTemplates}
               />
             )}
