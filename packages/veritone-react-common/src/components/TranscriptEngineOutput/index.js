@@ -182,7 +182,7 @@ export default class TranscriptEngineOutput extends Component {
     };
     let selectedSpeakerEngineWithData = find(speakerEngines, { id: selectedSpeakerEngineId });
 
-    if (selectedSpeakerEngineWithData && selectedCombineViewTypeId === 'speaker-view') {
+    if (selectedSpeakerEngineWithData && selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
       selectedSpeakerEngineWithData = {
         ...selectedSpeakerEngineWithData,
         showingUserEditedOutput: showingUserEditedSpeakerOutput,

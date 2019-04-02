@@ -3,16 +3,11 @@
   width: 100%;
   overflow: hidden;
 
-  .scrolableContent {
-    height: calc(100vh - 250px);
+  .logoContent {
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 20px;
+    height: calc(100vh - 250px);
     padding-bottom: 25px;
-
-    .item {
-      .label {
-        max-width: 250px;
-      }
-      margin: 0 14px 14px 0;
-    }
   }
 }

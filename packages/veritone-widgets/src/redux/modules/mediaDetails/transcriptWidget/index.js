@@ -388,18 +388,18 @@ function revertHistoryDiff(state, historyDiff) {
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
             if (diff.index !== series.length) {
+              const combineGuidMapUpdate = {};
               series.slice(diff.index - series.length).forEach((serie, index) => {
-                newEditableData = update(newEditableData, {
-                  [diff.chunkIndex]: {
-                    wordGuidMap: {
-                      [serie.guid]: {
-                        index: {
-                          $set: diff.index + index
-                        }
-                      }
-                    }
+                combineGuidMapUpdate[serie.guid] = {
+                  index: {
+                    $set: diff.index + index
                   }
-                });
+                };
+              });
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: combineGuidMapUpdate
+                }
               });
             }
             // Update speaker data if available
@@ -416,18 +416,18 @@ function revertHistoryDiff(state, historyDiff) {
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
             if (diff.index !== series.length) {
+              const combineGuidMapUpdate = {};
               series.slice(diff.index - series.length).forEach((serie, index) => {
-                newEditableData = update(newEditableData, {
-                  [diff.chunkIndex]: {
-                    wordGuidMap: {
-                      [serie.guid]: {
-                        index: {
-                          $set: diff.index + index
-                        }
-                      }
-                    }
+                combineGuidMapUpdate[serie.guid] = {
+                  index: {
+                    $set: diff.index + index
                   }
-                });
+                };
+              });
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: combineGuidMapUpdate
+                }
               });
             }
             // Update speaker data if available
@@ -463,20 +463,22 @@ function revertHistoryDiff(state, historyDiff) {
                 }
               }
             });
-            const subFragments = totalTranscriptFragments
-              .filter(frag => frag.startTimeMs >= diff.oldValue.startTimeMs);
-            const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
-            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.oldValue, nextSpeaker, diff.index, diff.chunkIndex);
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    fragments: { $set: fragments },
-                    wordGuidMap: { $set: wordGuidMap }
-                  } 
+            if (diff.newValue.startTimeMs != diff.oldValue.startTimeMs || diff.newValue.stopTimeMs != diff.oldValue.stopTimeMs) {
+              const subFragments = totalTranscriptFragments
+                .filter(frag => frag.startTimeMs >= diff.oldValue.startTimeMs);
+              const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
+              const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.oldValue, nextSpeaker, diff.index, diff.chunkIndex);
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [diff.chunkIndex]: {
+                  series: {
+                    [diff.index]: {
+                      fragments: { $set: fragments },
+                      wordGuidMap: { $set: wordGuidMap }
+                    } 
+                  }
                 }
-              }
-            });
+              });
+            }
             break;
           }
           case 'INSERT': {
@@ -602,18 +604,18 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
             if (diff.index !== series.length) {
+              const combineGuidMapUpdate = {};
               series.slice(diff.index - series.length).forEach((serie, index) => {
-                newEditableData = update(newEditableData, {
-                  [diff.chunkIndex]: {
-                    wordGuidMap: {
-                      [serie.guid]: {
-                        index: {
-                          $set: diff.index + index
-                        }
-                      }
-                    }
+                combineGuidMapUpdate[serie.guid] = {
+                  index: {
+                    $set: diff.index + index
                   }
-                });
+                }
+              });
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: combineGuidMapUpdate
+                }
               });
             }
             //Update speaker map if available
@@ -640,18 +642,18 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
             // Update map indices after splice
             const series = newEditableData[diff.chunkIndex].series;
             if (diff.index !== series.length) {
+              const combineGuidMapUpdate = {};
               series.slice(diff.index - series.length).forEach((serie, index) => {
-                newEditableData = update(newEditableData, {
-                  [diff.chunkIndex]: {
-                    wordGuidMap: {
-                      [serie.guid]: {
-                        index: {
-                          $set: diff.index + index
-                        }
-                      }
-                    }
+                combineGuidMapUpdate[serie.guid] = {
+                  index: {
+                    $set: diff.index + index
                   }
-                });
+                };
+              });
+              newEditableData = update(newEditableData, {
+                [diff.chunkIndex]: {
+                  wordGuidMap: combineGuidMapUpdate
+                }
               });
             }
             newEditableSpeakerData = updateTrailingSpeakerData(newEditableSpeakerData, diff, false);
@@ -687,20 +689,22 @@ function applyHistoryDiff(state, historyDiff, cursorPosition) {
                 }
               }
             });
-            const subFragments = totalTranscriptFragments
-              .filter(frag => frag.startTimeMs >= diff.newValue.startTimeMs);
-            const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
-            const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.newValue, nextSpeaker, diff.index, diff.chunkIndex);
-            newEditableSpeakerData = update(newEditableSpeakerData, {
-              [diff.chunkIndex]: {
-                series: {
-                  [diff.index]: {
-                    fragments: { $set: fragments },
-                    wordGuidMap: { $set: wordGuidMap }
-                  } 
+            if (diff.newValue.startTimeMs != diff.oldValue.startTimeMs || diff.newValue.stopTimeMs != diff.oldValue.stopTimeMs) {
+              const subFragments = totalTranscriptFragments
+                .filter(frag => frag.startTimeMs >= diff.newValue.startTimeMs);
+              const nextSpeaker = get(newEditableSpeakerData, [diff.chunkIndex, 'series', diff.index + 1]);
+              const { fragments, wordGuidMap } = allocateSpeakerTranscripts(subFragments, totalWordGuidMap, diff.newValue, nextSpeaker, diff.index, diff.chunkIndex);
+              newEditableSpeakerData = update(newEditableSpeakerData, {
+                [diff.chunkIndex]: {
+                  series: {
+                    [diff.index]: {
+                      fragments: { $set: fragments },
+                      wordGuidMap: { $set: wordGuidMap }
+                    } 
+                  }
                 }
-              }
-            });
+              });
+            }
             break;
           }
           case 'INSERT': {
@@ -754,22 +758,22 @@ function updateTrailingSpeakerIndices(speakerData, diff) {
   let newEditableSpeakerData = speakerData;
   const currentSpeakers = get(newEditableSpeakerData, [diff.chunkIndex, 'series']);
   if (diff.index !== currentSpeakers.length) {
+    const combineSpeakerSeriesUpdate = {};
     isArray(currentSpeakers) && currentSpeakers.slice(diff.index - currentSpeakers.length).forEach((speaker, speakerIndex) => {
+      const combineGuidMapUpdate = {};
       isArray(speaker.fragments) && speaker.fragments.forEach((fragment, dialogueIndex) => {
-        newEditableSpeakerData = update(newEditableSpeakerData, {
-          [diff.chunkIndex]: {
-            series: {
-              [diff.index + speakerIndex]: {
-                wordGuidMap: {
-                  [fragment.guid]: {
-                    speakerIndex: { $set: (diff.index + speakerIndex) }
-                  }
-                }
-              }
-            }
-          }
-        })
+        combineGuidMapUpdate[fragment.guid] = {
+          speakerIndex: { $set: (diff.index + speakerIndex) }
+        };
       });
+      combineSpeakerSeriesUpdate[diff.index + speakerIndex] = {
+        wordGuidMap: combineGuidMapUpdate
+      };
+    });
+    newEditableSpeakerData = update(newEditableSpeakerData, {
+      [diff.chunkIndex]: {
+        series: combineSpeakerSeriesUpdate
+      }
     });
   }
   return newEditableSpeakerData;
@@ -785,6 +789,7 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
   let wasUpdated = false;
   isArray(newEditableSpeakerData)
     && newEditableSpeakerData.forEach((chunk, speakerChunkIndex) => {
+      const combineSpeakerSeriesUpdate = {};
       isArray(chunk.series)
         && chunk.series.forEach((serie, speakerIndex) => {
           if (
@@ -830,22 +835,30 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
               []
             );
             if (diff.dialogueIndex !== newFragments.length) {
+              const combineGuidMapUpdate = {};
               newFragments.slice(diff.dialogueIndex - newFragments.length).forEach((frag, index) => {
-                newEditableSpeakerData = update(newEditableSpeakerData, {
-                  [speakerChunkIndex]: {
-                    series: {
-                      [speakerIndex]: {
-                        wordGuidMap: {
-                          [frag.guid]: {
-                            dialogueIndex: { $set: diff.dialogueIndex + index },
-                            index: { $set: diff.index + index }
-                          }
-                        }
-                      }
-                    }
-                  }
-                })
+                combineGuidMapUpdate[frag.guid] = {
+                  dialogueIndex: { $set: diff.dialogueIndex + index },
+                  index: { $set: diff.index + index }
+                };
+                // newEditableSpeakerData = update(newEditableSpeakerData, {
+                //   [speakerChunkIndex]: {
+                //     series: {
+                //       [speakerIndex]: {
+                //         wordGuidMap: {
+                //           [frag.guid]: {
+                //             dialogueIndex: { $set: diff.dialogueIndex + index },
+                //             index: { $set: diff.index + index }
+                //           }
+                //         }
+                //       }
+                //     }
+                //   }
+                // })
               });
+              combineSpeakerSeriesUpdate[speakerIndex] = {
+                wordGuidMap: combineGuidMapUpdate
+              };
             }
             wasUpdated = true;
           } else if (wasUpdated) {
@@ -873,22 +886,34 @@ function updateTrailingSpeakerData(speakerData, diff, isRemove) {
             const indexDifference = isRemove
               ? (-1)
               : 1;
+            const combineGuidMapUpdate = {};
             fragments.forEach((frag, dialogueIndex) => {
               const index = wordGuidMap[frag.guid].index;
-              newEditableSpeakerData = update(newEditableSpeakerData, {
-                [speakerChunkIndex]: {
-                  series : {
-                    [speakerIndex]: {
-                      wordGuidMap: {
-                        [frag.guid]: {
-                          index: { $set: index + indexDifference }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
+              combineGuidMapUpdate[frag.guid] = {
+                index: { $set: index + indexDifference }
+              };
+              // newEditableSpeakerData = update(newEditableSpeakerData, {
+              //   [speakerChunkIndex]: {
+              //     series : {
+              //       [speakerIndex]: {
+              //         wordGuidMap: {
+              //           [frag.guid]: {
+              //             index: { $set: index + indexDifference }
+              //           }
+              //         }
+              //       }
+              //     }
+              //   }
+              // });
             });
+            combineSpeakerSeriesUpdate[speakerIndex] = {
+              wordGuidMap: combineGuidMapUpdate
+            };
+          }
+        });
+        newEditableSpeakerData = update(newEditableSpeakerData, {
+          [speakerChunkIndex]: {
+            series: combineSpeakerSeriesUpdate
           }
         });
     });
@@ -977,7 +1002,7 @@ export const getCombineViewTypes = state => {
   if (selectedCombineEngineId) {
     viewTypes.unshift({
       name: 'Speaker Separation',
-      id: 'speaker-view'
+      id: 'show-speaker-view'
     });
   }
   return viewTypes;

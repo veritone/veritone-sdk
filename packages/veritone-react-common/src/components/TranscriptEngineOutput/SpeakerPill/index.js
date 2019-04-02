@@ -25,7 +25,6 @@ import styles from './styles.scss';
 
 export default class SpeakerPill extends Component {
   static propTypes = {
-    speakerIndex: number,
     className: string,
     speakerSegment: shape({
       speakerId: string,
@@ -93,12 +92,18 @@ export default class SpeakerPill extends Component {
   };
 
   handleAvailableSpeakerClick = id => () => {
-    this.setState({ speakerName: id });
+    const { speakerSegment } = this.props;
+    const { speakerId } = speakerSegment;
+    this.setState({ speakerName: id }, () => {
+      id !== speakerId
+        ? this.handleAddClick()
+        : this.handleClearClick()
+    });
   };
 
   handleAddClick = event => {
-    event.preventDefault();
-    event.stopPropagation();
+    event && event.preventDefault();
+    event && event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll, speakerName } = this.state;
     const { speakerId } = speakerSegment;
@@ -111,8 +116,8 @@ export default class SpeakerPill extends Component {
   };
 
   handleClearClick = event => {
-    event.preventDefault();
-    event.stopPropagation();
+    event && event.preventDefault();
+    event && event.stopPropagation();
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
     const { applyAll } = this.state;
     const { speakerId } = speakerSegment;
@@ -139,12 +144,12 @@ export default class SpeakerPill extends Component {
 
   render() {
     const {
-      speakerIndex,
       editMode,
       speakerSegment,
       availableSpeakers,
       startMediaPlayHeadMs,
-      stopMediaPlayHeadMs
+      stopMediaPlayHeadMs,
+      speakerData
     } = this.props;
     const {
       speakerId,
@@ -182,6 +187,12 @@ export default class SpeakerPill extends Component {
     const colorClass = isHighlighted ? styles.highlight : '';
     const speakerPillLabel = extractPillLabel(speakerId);
     const speakerLabel = extractLabel(speakerId);
+    let speakerIndex;
+    speakerData.forEach(seg => seg.series.forEach((s, i) => {
+      if (s.guid === guid) {
+        speakerIndex = i;
+      }
+    }));
     const otherSpeakers = (speakerName && speakerName !== speakerId)
       ? availableSpeakers.filter(id => 
         id
@@ -391,8 +402,8 @@ function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
     }
   });
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   return {
     hasChange: transcriptChanges.length || speakerChanges.length,
@@ -440,7 +451,7 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
     });
   }
 
-  speakerChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
 
   return {
     hasChange: speakerChanges.length,
@@ -452,16 +463,9 @@ function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll,
 
 // Sort actions to be Update, Insert, Delete
 //  and for matched actions, we sort in descending index order
-function sortByAction(a, b) {
+function sortByIndex(a, b) {
   if (a.action && b.action) {
-    if (a.action > b.action) {
-      return -1;
-    } else if (a.action < b.action) {
-      return 1;
-    } else if (a.action === b.action) {
-      return b.index - a.index;
-    }
-    return 0;
+    return b.index - a.index;
   }
   return 0;
 }

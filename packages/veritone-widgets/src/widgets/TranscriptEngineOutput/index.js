@@ -391,16 +391,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       label: 'Play/Pause',
       hotkeys: [{
         keys: ['TAB']
-      }],
-      triggerFunc: event => {
-        return get(event, 'keyCode') === 9;
-      },
-      eventFunc: event => {
-        const { togglePlayback } = this.props;
-        event.preventDefault();
-        event.stopPropagation();
-        togglePlayback && togglePlayback();
-      }
+      }]  // Functionality moved up to parent MDP component
     }, {
       label: 'Undo',
       hotkeys: [{
@@ -681,7 +672,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     const combineEngineTask = speakerEngines
       .find(engine => engine.id === selectedCombineEngineId);
 
-    if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
+    if (combineEngineTask && selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
       let combineStatus = combineEngineTask.status;
       if (isFetchingSpecificEngineResult(selectedCombineEngineId)) {
         combineStatus = 'fetching';
@@ -701,14 +692,14 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   setHotKeyListeners = () => {
-    window.addEventListener('keydown', this.hoyKeyEvents);
+    window.addEventListener('keydown', this.hotKeyEvents);
   }
 
   unsetHotKeyListeners = () => {
-    window.removeEventListener('keydown', this.hoyKeyEvents);
+    window.removeEventListener('keydown', this.hotKeyEvents);
   }
 
-  hoyKeyEvents = event => {
+  hotKeyEvents = event => {
     this.hotKeyCategories.forEach(category => {
       category.commands.forEach(command => {
         command.triggerFunc
@@ -752,7 +743,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       'togglePlayback'
     ]);
 
-    const bulkEditEnabled = this.props.selectedCombineViewTypeId === 'speaker-view' ?
+    const bulkEditEnabled = this.props.selectedCombineViewTypeId && this.props.selectedCombineViewTypeId.includes('show') ?
       false : this.props.bulkEditEnabled;
 
     const outputNullState = this.determineSpeakerNullstate();

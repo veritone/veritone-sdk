@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { number } from 'prop-types';
 
 import { PDFViewer, SimplePDFViewer } from 'components/PDFViewer';
 import testPDF from './test.pdf';

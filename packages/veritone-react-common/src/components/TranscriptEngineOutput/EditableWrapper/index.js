@@ -66,7 +66,9 @@ export default class EditableWrapper extends Component {
       })
     }),
     clearCursorPosition: func,
-    setIncomingChanges: func
+    setIncomingChanges: func,
+    virtualMeasure: func,
+    seriesPerPage: number
   };
 
   static defaultProps = {
@@ -75,6 +77,11 @@ export default class EditableWrapper extends Component {
     stopMediaPlayHeadMs: 1000
   };
 
+  componentDidMount() {
+    const { virtualMeasure } = this.props;
+    virtualMeasure && virtualMeasure();
+  }
+  
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return {
       cursorPosition: getCursorPosition()
@@ -113,7 +120,7 @@ export default class EditableWrapper extends Component {
 
   handleDebounceOnChange = () => {
     const event = this.savedEvent;
-    const { content, onChange, setIncomingChanges } = this.props;
+    const { content, onChange, setIncomingChanges, virtualMeasure } = this.props;
     if (event && event.target) {
       const contentEditableElement = event.target;
       const wordGuidMap = content.wordGuidMap;
@@ -121,9 +128,9 @@ export default class EditableWrapper extends Component {
       onChange && hasChange && onChange(event, historyDiff, cursorPos);
       setIncomingChanges && setIncomingChanges(false);
       this.savedEvent = undefined;
+      virtualMeasure && virtualMeasure();
     }
   }
-
 
   handleContentClick = event => {
     const { content, onClick } = this.props;
@@ -162,7 +169,8 @@ export default class EditableWrapper extends Component {
       editMode,
       content,
       speakerData,
-      onChange
+      onChange,
+      seriesPerPage
     } = this.props;
     const hasSpeakerData = speakerData && speakerData.length;
     const wordGuidMap = content.wordGuidMap;
@@ -202,10 +210,10 @@ export default class EditableWrapper extends Component {
           if (!noCursorSelection) {
             // If there is a selection, handle deletes by setting empty strings
             event.preventDefault();
-            const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
+            const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage);
             setCursorPosition(spanChildren, oldCursorPosition);
             return;
-          } else if (wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
+          } else if (keyCode === 8 && wordObj.dialogueIndex === 0 && wordObj.speakerIndex && curCursorPos.end.offset === 0) {
             // Delete current speaker and add its time to the previous speaker
             event.preventDefault(); // Don't delete any text
             const { hasChange, historyDiff, cursorPos } = generateSpeakerDiffHistory(speakerData, curCursorPos, wordGuidMap, 'BACKSPACE');
@@ -259,7 +267,7 @@ export default class EditableWrapper extends Component {
             setCursorPosition(spanChildren, newPos);
             return;
           }
-          const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap);
+          const oldCursorPosition = handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage);
           setCursorPosition(spanChildren, oldCursorPosition);
         }
       }
@@ -267,7 +275,7 @@ export default class EditableWrapper extends Component {
   };
 
   handleContentPaste = event => {
-    const { editMode, content, onChange } = this.props;
+    const { editMode, content, onChange, seriesPerPage } = this.props;
     const wordGuidMap = content.wordGuidMap;
     
     if (event) {
@@ -284,7 +292,7 @@ export default class EditableWrapper extends Component {
 
     const contentEditableElement = get(event, 'target.parentElement');
     const spanChildren = contentEditableElement.children;
-    const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, stringToPaste);
+    const oldCursorPosition = handleSelectedTextUpdate(spanChildren, wordGuidMap, seriesPerPage, stringToPaste);
 
     const { hasChange, historyDiff, cursorPos } = generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, oldCursorPosition);
     hasChange, editMode && onChange && onChange(event, historyDiff, cursorPos);
@@ -322,7 +330,6 @@ export default class EditableWrapper extends Component {
       onChange: this.handleContentChange
     };
     const textareaToDecodeCharacters = document.createElement('textarea');
-    const totalFragments = content.series.length;
 
     const contentComponents = content.series.map((entry, index) => {
       const startTime = entry.startTimeMs;
@@ -338,7 +345,7 @@ export default class EditableWrapper extends Component {
         textareaToDecodeCharacters.innerHTML = selectedWord;
         value = textareaToDecodeCharacters.value;
         // Add spaces to valid fragments (except the last)
-        value = (value && (index !== totalFragments - 1)) ? value + ' ' : value;
+        value = (value && index) ? ' ' + value : value;
       }
 
       return (
@@ -448,21 +455,28 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
   const wordObj = wordGuidMap && wordGuidMap[targetGuid];
   if (wordObj) {
     if (keyType === 'ENTER') {
-      const serieText = orderBy(
+      let serieText = orderBy(
         get(wordObj, 'serie.words'),
         ['confidence'],
         ['desc']
       )[0].word;
+      if (wordObj.dialogueIndex !== 0 && wordObj.index !== 0) {
+        serieText = ' ' + serieText;
+      }
       const serieDuration = wordObj.serie.stopTimeMs - wordObj.serie.startTimeMs;
       const cursorOffset = Math.min(
         get(cursorPosition, 'start.offset', 0),
         serieText.length
       );
-      const splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
+      let splitTime = Math.floor((cursorOffset / serieText.length) * serieDuration) + wordObj.serie.startTimeMs;
       const oldValue = pick(wordObj.serie, ['guid', 'startTimeMs', 'stopTimeMs', 'words']);
 
-      const leftTextSplit = serieText.slice(0, cursorOffset);
-      if (leftTextSplit !== serieText) {
+      if (wordObj.dialogueIndex !== 0 && wordObj.index !== 0 && cursorOffset === 1) {
+        splitTime = wordObj.serie.startTimeMs;
+      }
+
+      const leftTextSplit = serieText.slice(0, cursorOffset).trim();
+      if (leftTextSplit && leftTextSplit !== serieText.trim()) {
         transcriptChanges.push({
           index: wordObj.index,
           chunkIndex: wordObj.chunkIndex,
@@ -474,14 +488,14 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: leftTextSplit.trim()
+              word: leftTextSplit
             }]
           },
           ...pick(wordObj, ['speakerIndex', 'speakerChunkIndex', 'dialogueIndex'])
         });
       }
-      const rightTextSplit = serieText.slice(cursorOffset, serieText.length);
-      if (rightTextSplit) {
+      const rightTextSplit = serieText.slice(cursorOffset, serieText.length).trim();
+      if (rightTextSplit && rightTextSplit !== serieText.trim()) {
         transcriptChanges.push({
           index: wordObj.index + 1,
           chunkIndex: wordObj.chunkIndex,
@@ -493,7 +507,7 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
             words: [{
               bestPath: true,
               confidence: 1,
-              word: rightTextSplit.trim()
+              word: rightTextSplit
             }]
           }
         });
@@ -544,8 +558,8 @@ function generateSpeakerDiffHistory(speakerData, cursorPosition, wordGuidMap, ke
     }
   }
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   return {
     hasChange: speakerChanges.length,
@@ -659,8 +673,8 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
     });
   }
 
-  speakerChanges.sort(sortByAction);
-  transcriptChanges.sort(sortByAction);
+  speakerChanges.sort(sortByIndex);
+  transcriptChanges.sort(sortByIndex);
 
   let cursorPos;
   if (speakerChanges.length || transcriptChanges.length) {
@@ -679,22 +693,15 @@ function generateTranscriptDiffHistory(contentEditableElement, wordGuidMap, curs
 
 // Sort actions to be Update, Insert, Delete
 //  and for matched actions, we sort in descending index order
-function sortByAction(a, b) {
+function sortByIndex(a, b) {
   if (a.action && b.action) {
-    if (a.action > b.action) {
-      return -1;
-    } else if (a.action < b.action) {
-      return 1;
-    } else if (a.action === b.action) {
-      return b.index - a.index;
-    }
-    return 0;
+    return b.index - a.index;
   }
   return 0;
 }
 
 // spanArray will be mutated
-function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
+function handleSelectedTextUpdate(spanArray, wordGuidMap, seriesPerPage, textToInsert = '') {
   const cursorPos = getCursorPosition();
   const startPos = cursorPos.start;
   const endPos = cursorPos.end;
@@ -702,11 +709,11 @@ function handleSelectedTextUpdate(spanArray, wordGuidMap, textToInsert = '') {
   const cursorEndMap = wordGuidMap[cursorPos.end.guid];
   let startIndex = cursorStartMap.dialogueIndex;
   if (isUndefined(startIndex)) {
-    startIndex = cursorStartMap.index;
+    startIndex = cursorStartMap.index % seriesPerPage;
   }
   let endIndex = cursorEndMap.dialogueIndex;
   if (isUndefined(endIndex)) {
-    endIndex = cursorEndMap.index;
+    endIndex = cursorEndMap.index % seriesPerPage;
   }
   const startSpan = spanArray[startIndex];
   const endSpan = spanArray[endIndex];

@@ -25,9 +25,9 @@ export class TranslationExample extends Component {
   state = {
     selectedEngineId: '1',
     engines: [
-      { id: '1', name: 'Engine-X' },
-      { id: '2', name: 'Engine-Y' },
-      { id: '3', name: 'Engine-Z' }
+      { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' }  },
+      { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' }  },
+      { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' }  }
     ],
     contents: renderMockData(0, 50000)
   };
@@ -50,16 +50,14 @@ export class TranslationExample extends Component {
     if (!this.props.lazyLoading) {
       return (
         <TranslationEngineOutput
-          contents={state.contents}
-          onClick={action('entry clicked')}
-          onRerunProcess={action('on rerun')}
+          data={state.contents}
+          onTranslateClicked={action('entry clicked')}
           className={styles.outputViewRoot}
           engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClick={action('expand clicked')}
           defaultLanguage={'en-US'}
-          onLanguageChanged={action('language changed')}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
           outputNullState={
@@ -76,20 +74,14 @@ export class TranslationExample extends Component {
     } else {
       return (
         <TranslationEngineOutput
-          contents={state.contents}
-          onClick={action('entry clicked')}
-          onRerunProcess={action('on rerun')}
+          data={state.contents}
+          onTranslateClicked={action('entry clicked')}
           className={styles.outputViewRoot}
           engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClick={action('expand clicked')}
           defaultLanguage={'en-US'}
-          onLanguageChanged={action('language changed')}
-          onScroll={this.handleDataRequesting}
-          mediaLengthMs={600000}
-          neglectableTimeMs={1000}
-          estimatedDisplayTimeMs={50000}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
           outputNullState={

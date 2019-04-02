@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy, kebabCase, get } from 'lodash';
+import { debounce } from 'lodash';
 
-import { msToReadableString } from '../../helpers/time';
+import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+
 import EngineOutputHeader from '../EngineOutputHeader';
-
-import PillButton from '../share-components/buttons/PillButton';
-import DynamicContentScroll from '../share-components/scrolls/DynamicContentScroll';
+import LogoSegment from './LogoSegment';
 
 import styles from './styles.scss';
+
+const cellCache = new CellMeasurerCache({
+  defaultHeight: 50,
+  fixedWidth: true
+});
 
 export default class LogoDetectionEngineOutput extends Component {
   static propTypes = {
@@ -40,124 +44,109 @@ export default class LogoDetectionEngineOutput extends Component {
     selectedEngineId: string,
 
     className: string,
-    entryClassName: string,
-    entryLabelClassName: string,
-    entryInfoClassName: string,
 
-    onScroll: func,
     onEntrySelected: func,
     onEngineChange: func,
     onExpandClick: func,
 
-    mediaLengthMs: number,
-    neglectableTimeMs: number,
-    estimatedDisplayTimeMs: number,
-    mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number,
+    currentMediaPlayerTime: number,
     outputNullState: node
   };
 
   static defaultProps = {
     data: [],
     title: 'Logo Recognition',
-    neglectableTimeMs: 500,
-    mediaPlayerTimeMs: 0,
-    mediaPlayerTimeIntervalMs: 500
+    currentMediaPlayerTime: 0
   };
+
+  componentDidMount() {
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+    // Create resize watchers to calculate width available for text
+    window.addEventListener('resize', this.onWindowResize);
+    setTimeout(this.onWindowResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  seriesPerPage = 20;
+  windowResizeDelay = 100;
+  
+  onWindowResize = debounce(
+    () => this.handleWindowResize(),
+    this.windowResizeDelay
+  );
+
+  handleWindowResize = () => {
+    if (this.virtualList) {
+      cellCache.clearAll();
+      this.virtualList.forceUpdateGrid();
+    }
+  }
+
+  virtualMeasure = (measure, index) => () => {
+    measure && measure();
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+  }
 
   handleEntrySelected = (event, entry) => {
     this.props.onEntrySelected &&
       this.props.onEntrySelected(entry.startTimeMs, entry.stopTimeMs);
   };
 
-  renderContents() {
-    let {
-      data,
-      entryClassName,
-      entryInfoClassName,
-      entryLabelClassName,
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+  generateVirtualizedLogoBlocks = () => {
+    const {
+      data
+    } = this.props;
+    const totalLogoSeries = data.reduce((acc, seg) => acc.concat(seg.series), []);
+    const newVirtualizedSerieBlocks = [];
+
+    for (let index = 0, curSeries = []; index < totalLogoSeries.length; index++) {
+      const serie = totalLogoSeries[index];
+      if (curSeries.length < this.seriesPerPage) {
+        curSeries.push(serie);
+      }
+      if (curSeries.length === this.seriesPerPage || index === totalLogoSeries.length - 1) {
+        newVirtualizedSerieBlocks.push({ series: curSeries });
+        curSeries = [];
+      }
+    }
+    return newVirtualizedSerieBlocks;
+  };
+
+  logoRowRenderer = ({ key, parent, index, style }) => {
+    const {
+      currentMediaPlayerTime,
+      onEntrySelected
     } = this.props;
 
-    let contents = [];
+    const virtualizedSerieBlocks = this.generateVirtualizedLogoBlocks();
+    const virtualizedSerieBlock = virtualizedSerieBlocks[index];
 
-    data.map(chunk => {
-      let groupStartTime = chunk.startTimeMs;
-      let groupStopTime = chunk.stopTimeMs;
-
-      const items = [];
-      let series = chunk.series;
-      if (series && series.length > 0) {
-        // Sort detected logos by there start time and end time
-        series = sortBy(series, 'startTimeMs', 'stopTimeMs');
-
-        // Draw detected logos in the series
-        let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-        series.map((itemInfo, index) => {
-          if (itemInfo.object) {
-            if (
-              groupStartTime === undefined ||
-              itemInfo.startTimeMs < groupStartTime
-            ) {
-              groupStartTime = itemInfo.startTimeMs;
-            }
-
-            if (
-              groupStopTime === undefined ||
-              itemInfo.stopTimeMs > groupStopTime
-            ) {
-              groupStopTime = itemInfo.stopTimeMs;
-            }
-
-            //Look for detected logo
-            const startTime = Math.floor(itemInfo.startTimeMs / 1000) * 1000;
-            const stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
-            const startTimeString = msToReadableString(itemInfo.startTimeMs);
-            const stopTimeString = msToReadableString(itemInfo.stopTimeMs);
-            const timeRangeKeyPart = `${itemInfo.startTimeMs}-${
-              itemInfo.stopTimeMs
-            }`;
-            const boundingPoly = get(itemInfo.object, 'boundingPoly', []);
-            const boundingPolyKeyPart = boundingPoly.length
-              ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
-              : '';
-            const pillKey = `logo-pill-${kebabCase(
-              itemInfo.object.label
-            )}-${timeRangeKeyPart}-${
-              itemInfo.confidence
-            }-${boundingPolyKeyPart}`;
-            const logoItem = (
-              <PillButton
-                value={index}
-                label={itemInfo.object.label}
-                info={`${startTimeString} - ${stopTimeString}`}
-                className={classNames(styles.item, entryClassName)}
-                labelClassName={classNames(styles.label, entryLabelClassName)}
-                infoClassName={entryInfoClassName}
-                key={pillKey}
-                onClick={this.handleEntrySelected}
-                data={itemInfo}
-                highlight={
-                  !(
-                    endMediaPlayHeadMs < startTime ||
-                    mediaPlayerTimeMs > stopTime
-                  )
-                }
-              />
-            );
-            items.push(logoItem);
-          }
-        });
-      }
-      contents.push({
-        start: groupStartTime,
-        stop: groupStopTime,
-        content: items
-      });
-    });
-
-    return contents;
+    return (
+      <CellMeasurer
+        key={key}
+        parent={parent}
+        cache={cellCache}
+        columnIndex={0}
+        style={{ width: '100%' }}
+        rowIndex={index}>
+        {({ measure }) => (
+          <div className={`logo-segment-block-${index}`} style={{ ...style, width: '100%' }}>
+            <LogoSegment
+              virtualMeasure={this.virtualMeasure(measure, index)}
+              series={virtualizedSerieBlock.series}
+              currentMediaPlayerTime={currentMediaPlayerTime}
+              onEntrySelected={onEntrySelected} />
+          </div>
+        )}
+      </CellMeasurer>
+    );
   }
 
   render() {
@@ -167,14 +156,9 @@ export default class LogoDetectionEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      onScroll,
-      mediaLengthMs,
-      neglectableTimeMs,
-      estimatedDisplayTimeMs,
       outputNullState
     } = this.props;
-
-    const contents = this.renderContents();
+    const virtualizedSerieBlocks = this.generateVirtualizedLogoBlocks();
 
     return (
       <div className={classNames(styles.logoDetection, this.props.className)}>
@@ -186,14 +170,29 @@ export default class LogoDetectionEngineOutput extends Component {
           onExpandClick={onExpandClick}
         />
         {outputNullState || (
-          <DynamicContentScroll
-            contents={contents}
-            className={styles.scrolableContent}
-            onScroll={onScroll}
-            totalSize={mediaLengthMs}
-            neglectableSize={neglectableTimeMs}
-            estimatedDisplaySize={estimatedDisplayTimeMs}
-          />
+          <div
+            className={styles.logoContent}
+            data-veritone-component="logo-engine-output-content"
+          >
+            <AutoSizer style={{ width: '100%', height: '100%' }}>
+              {({ height, width }) => (
+                <List
+                  // eslint-disable-next-line
+                  ref={ref => this.virtualList = ref}
+                  className={'virtual-logo-list'}
+                  key={`virtual-logo-grid`}
+                  width={width || 900}
+                  height={height || 500}
+                  style={{ width: '100%', height: '100%' }}
+                  deferredMeasurementCache={cellCache}
+                  overscanRowCount={1}
+                  rowRenderer={this.logoRowRenderer}
+                  rowCount={virtualizedSerieBlocks.length}
+                  rowHeight={cellCache.rowHeight}
+                />
+              )}
+            </AutoSizer>
+          </div>
         )}
       </div>
     );

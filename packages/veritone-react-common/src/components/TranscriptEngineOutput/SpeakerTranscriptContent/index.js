@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { isArray } from 'lodash';
+import { debounce } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
+import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 
-import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
 import SnippetSegment from '../SnippetSegment';
 import SpeakerPill from '../SpeakerPill';
 import EditableWrapper from '../EditableWrapper';
 
 import styles from './styles.scss';
+
+const cellCache = new CellMeasurerCache({
+  defaultHeight: 50,
+  fixedWidth: true
+});
 
 export default class SpeakerTranscriptContent extends Component {
   static propTypes = {
@@ -64,14 +69,14 @@ export default class SpeakerTranscriptContent extends Component {
     editMode: bool,
 
     onClick: func,
-    onScroll: func,
+    // onScroll: func,
     onChange: func,
     undo: func,
     redo: func,
 
-    mediaLengthMs: number,
-    neglectableTimeMs: number,
-    estimatedDisplayTimeMs: number,
+    // mediaLengthMs: number,
+    // neglectableTimeMs: number,
+    // estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
@@ -97,6 +102,55 @@ export default class SpeakerTranscriptContent extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
+  componentDidMount() {
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+    // Create resize watchers to calculate width available for text
+    window.addEventListener('resize', this.onWindowResize);
+    setTimeout(this.onWindowResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  seriesPerPage = 1500;
+  windowResizeDelay = 100;
+
+  onWindowResize = debounce(
+    () => this.handleWindowResize(),
+    this.windowResizeDelay
+  );
+
+  handleWindowResize = () => {
+    if (this.virtualList) {
+      cellCache.clearAll();
+      this.virtualList.forceUpdateGrid();
+    }
+  }
+
+  generateVirtualizedTranscriptBlocks = () => {
+    const { parsedData } = this.props;
+    const totalTranscriptSeries = parsedData.snippetSegments.reduce((acc, seg) => acc.concat(seg.series), []);
+    const totalTranscriptGuidMap = parsedData.snippetSegments.reduce((acc, seg) => ({ ...acc, ...seg.wordGuidMap }), {});
+    const newVirtualizedSerieBlocks = [];
+
+    for (let index = 0, curSeries = [], curMap = {}; index < totalTranscriptSeries.length; index++) {
+      const serie = totalTranscriptSeries[index];
+      if (curSeries.length < this.seriesPerPage) {
+        curSeries.push(serie);
+        curMap[serie.guid] = totalTranscriptGuidMap[serie.guid];
+      } 
+      if (curSeries.length === this.seriesPerPage || index === totalTranscriptSeries.length - 1) {
+        newVirtualizedSerieBlocks.push({ series: curSeries, wordGuidMap: curMap });
+        curSeries = [];
+        curMap = {};
+      }
+    }
+    return newVirtualizedSerieBlocks;
+  };
+
   handleOnClick = (event, seriesObject) => {
     this.props.onClick &&
       this.props.onClick(seriesObject.startTimeMs, seriesObject.stopTimeMs);
@@ -106,63 +160,129 @@ export default class SpeakerTranscriptContent extends Component {
     this.props.onChange && this.props.onChange(event, historyDiff, cursorPosition);
   };
 
-  renderSpeakerSnippetSegments = parsedData => {
+  virtualMeasure = (measure, index) => () => {
+    measure && measure();
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+  }
+
+  transcriptRowRenderer = ({ key, parent, index, style }) => {
     const {
       editMode,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      selectedCombineViewTypeId,
       cursorPosition,
       clearCursorPosition,
       undo,
       redo,
       setIncomingChanges
     } = this.props;
-    const speakerData = parsedData.speakerSegments;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
+    const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
+    const virtualizedSerieBlock = virtualizedSerieBlocks[index];
+    const isLastBlock = virtualizedSerieBlocks.length - 1 === index;
+
+    return (
+      <CellMeasurer
+        key={key}
+        parent={parent}
+        cache={cellCache}
+        columnIndex={0}
+        style={{ width: '100%' }}
+        rowIndex={index}>
+        {({ measure }) => (
+          <div style={{ ...style, width: '100%' }}>
+            { !editMode
+                ? ( 
+                  <SnippetSegment
+                    className={ isLastBlock ? styles.transcriptView : '' }
+                    virtualMeasure={this.virtualMeasure(measure, index)}
+                    key={'virtualized-transcript-snippet'}
+                    series={virtualizedSerieBlock.series}
+                    onClick={this.handleOnClick}
+                    startMediaPlayHeadMs={mediaPlayerTimeMs}
+                    stopMediaPlayHeadMs={stopMediaPlayHeadMs} />
+                ) : (
+                  <EditableWrapper
+                    seriesPerPage={this.seriesPerPage}
+                    virtualMeasure={this.virtualMeasure(measure, index)}
+                    key={'virtualized-transcript-snippet-editwrapper'}
+                    content={{
+                      series: virtualizedSerieBlock.series,
+                      wordGuidMap: virtualizedSerieBlock.wordGuidMap
+                    }}
+                    editMode
+                    onChange={this.handleDataChanged}
+                    undo={undo}
+                    redo={redo}
+                    onClick={this.handleOnClick}
+                    startMediaPlayHeadMs={mediaPlayerTimeMs}
+                    stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                    cursorPosition={cursorPosition}
+                    clearCursorPosition={clearCursorPosition}
+                    setIncomingChanges={setIncomingChanges} />
+                )
+            }
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  }
+
+  speakerRowRenderer = editMode => ({ key, parent, index, style }) => {
+    const {
+      parsedData,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs,
+      cursorPosition,
+      clearCursorPosition,
+      undo,
+      redo,
+      setIncomingChanges
+    } = this.props;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const totalSpeakerSeries = parsedData.speakerSegments
+      .reduce((acc, seg) => acc.concat(seg.series), []);
     const availableSpeakerSet = new Set();
-    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
-      isArray(chunk.series) && chunk.series.forEach((serie, index) => {
-        serie.speakerId && availableSpeakerSet.add(serie.speakerId);
-      });
+    totalSpeakerSeries.forEach(serie => {
+      serie.speakerId && availableSpeakerSet.add(serie.speakerId);
     });
     const availableSpeakers = Array.from(availableSpeakerSet);
     availableSpeakers.sort((a, b) => {
       return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
     });
 
-    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const speakerSegments = parsedData.speakerSegments;
+      
+    const startZeroTime = new Date(1990, 8, 15);
+    const stopZeroTime = new Date(1990, 8, 15);
+    const speakerSerie = totalSpeakerSeries[index];
+    startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
+    stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
+    const speakerStartTime = startZeroTime.getTime();
+    const speakerStopTime = stopZeroTime.getTime();
+    const timeFormat = speakerSerie.startTimeMs >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
+    const speakerTimingStart = format(speakerStartTime, timeFormat);
+    const speakerTimingStop = format(speakerStopTime, timeFormat);
+    const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
 
-
-    if (selectedCombineViewTypeId === 'speaker-view') {
-      const speakerSnippetSegments = speakerSegments.map((speakerSegment, speakerChunkIndex) => {
-        const speakerSeries = speakerSegment.series.map((speakerSerie, speakerIndex) => {
-          const startZeroTime = new Date(1990, 8, 15);
-          const stopZeroTime = new Date(1990, 8, 15);
-          startZeroTime.setMilliseconds(speakerSerie.startTimeMs);
-          stopZeroTime.setMilliseconds(speakerSerie.stopTimeMs);
-          const speakerStartTime = startZeroTime.getTime();
-          const speakerStopTime = stopZeroTime.getTime();
-          const timeFormat = speakerSerie.startTimeMs >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-          const speakerTimingStart = format(speakerStartTime, timeFormat);
-          const speakerTimingStop = format(speakerStopTime, timeFormat);
-          const speakerGridKey = `speaker-edit-row-${speakerSerie.guid}`;
-
-          const speakerContent = (
-            <Grid container key={speakerGridKey}>
-              <Grid item
-                xs={4}
-                sm={3}
-                md={2}
-                lg={1}
-                xl={1}
-              >
+    return (
+      <CellMeasurer
+        key={key}
+        parent={parent}
+        cache={cellCache}
+        columnIndex={0}
+        style={{ width: '100%' }}
+        rowIndex={index}>
+        {({ measure }) => (
+          <div style={{ ...style, width: '100%' }}>
+            <Grid container key={speakerGridKey} style={{ height: '100%', paddingBottom: '20px' }}>
+              <Grid item xs={4} sm={3} md={2} lg={1} xl={1}>
                 <SpeakerPill
-                  speakerIndex={speakerIndex}
                   editMode={editMode}
                   speakerSegment={speakerSerie}
-                  speakerData={speakerSegments}
+                  speakerData={parsedData.speakerSegments}
                   availableSpeakers={availableSpeakers}
                   onClick={this.handleOnClick}
                   onChange={this.handleDataChanged}
@@ -170,7 +290,7 @@ export default class SpeakerTranscriptContent extends Component {
                   stopMediaPlayHeadMs={stopMediaPlayHeadMs}
                 />
               </Grid>
-              <Grid item xs sm md lg xl>
+              <Grid item xs sm md lg xl style={{ height: '100%' }}>
                 <span className={styles.speakerStartTimeLabel}>
                   {`${speakerTimingStart} - ${speakerTimingStop}`}
                 </span>
@@ -178,8 +298,10 @@ export default class SpeakerTranscriptContent extends Component {
                   editMode ?
                     (
                       <EditableWrapper
+                        seriesPerPage={this.seriesPerPage}
+                        virtualMeasure={this.virtualMeasure(measure, index)}
                         key={'transcript-speaker-snippet' + speakerStartTime}
-                        speakerData={speakerData}
+                        speakerData={parsedData.speakerSegments}
                         content={{
                           series: speakerSerie.fragments,
                           wordGuidMap: speakerSerie.wordGuidMap
@@ -191,7 +313,6 @@ export default class SpeakerTranscriptContent extends Component {
                         onClick={this.handleOnClick}
                         startMediaPlayHeadMs={mediaPlayerTimeMs}
                         stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                        classNames={classNames(styles.contentSegment)}
                         cursorPosition={cursorPosition}
                         clearCursorPosition={clearCursorPosition}
                         setIncomingChanges={setIncomingChanges}
@@ -199,110 +320,79 @@ export default class SpeakerTranscriptContent extends Component {
                     ) :
                     (
                       <SnippetSegment
+                        virtualMeasure={this.virtualMeasure(measure, index)}
                         key={'transcript-speaker-snippet' + speakerStartTime}
                         series={speakerSerie.fragments}
                         onClick={this.handleOnClick}
                         startMediaPlayHeadMs={mediaPlayerTimeMs}
                         stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                        classNames={classNames(styles.contentSegment)}
                       />
                     )
                 }
               </Grid>
             </Grid>
-          );
-
-          return speakerContent;
-        });
-
-        return {
-          start: speakerSegment.startTimeMs,
-          stop: speakerSegment.stopTimeMs,
-          content: speakerSeries
-        };
-      });
-
-      return speakerSnippetSegments;
-    } else {
-      if (editMode) {
-        const snippetSegments = parsedData.snippetSegments.map((segmentData, chunkIndex) => {
-          const segmentStartTime = segmentData.startTimeMs;
-          const segmentStopTime = segmentData.stopTimeMs;
-          const segmentContent = (
-            <EditableWrapper
-              key={'transcript-snippet' + segmentStartTime}
-              content={segmentData}
-              editMode
-              onChange={this.handleDataChanged}
-              undo={undo}
-              redo={redo}
-              onClick={this.handleOnClick}
-              startMediaPlayHeadMs={mediaPlayerTimeMs}
-              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              classNames={classNames(styles.contentSegment)}
-              cursorPosition={cursorPosition}
-              clearCursorPosition={clearCursorPosition}
-            />
-          );
-
-          return {
-            start: segmentStartTime,
-            stop: segmentStopTime,
-            content: segmentContent
-          };
-        });
-
-        return snippetSegments;
-      } else {
-        const snippetSegments = parsedData.snippetSegments.map(segmentData => {
-          const segmentStartTime = segmentData.startTimeMs;
-          const segmentStopTime = segmentData.stopTimeMs;
-          const segmentContent = (
-            <SnippetSegment
-              key={'transcript-snippet' + segmentStartTime}
-              series={segmentData.series}
-              onClick={this.handleOnClick}
-              startMediaPlayHeadMs={mediaPlayerTimeMs}
-              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              classNames={classNames(styles.contentSegment)}
-            />
-          );
-
-          return {
-            start: segmentStartTime,
-            stop: segmentStopTime,
-            content: segmentContent
-          };
-        });
-
-        return snippetSegments;
-      }
-    }
-  };
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  }
 
   render() {
     const {
       parsedData,
-      editMode,
       className,
-      mediaLengthMs,
-      neglectableTimeMs,
-      estimatedDisplayTimeMs,
-      onScroll
+      editMode,
+      selectedCombineViewTypeId
     } = this.props;
+    const virtualizedSerieBlocks = this.generateVirtualizedTranscriptBlocks();
+    const totalSpeakerSeries = parsedData.speakerSegments
+      .reduce((acc, seg) => acc.concat(seg.series), []);
+    const availableSpeakerSet = new Set();
+    totalSpeakerSeries.forEach(serie => {
+      serie.speakerId && availableSpeakerSet.add(serie.speakerId);
+    });
+    const availableSpeakers = Array.from(availableSpeakerSet);
+    availableSpeakers.sort((a, b) => {
+      return a.toLowerCase() < b.toLowerCase() ? -1 : 1;
+    });
 
     return (
-      <div className={classNames(styles.transcriptContent, className)}>
-        <DynamicContentScroll
-          className={classNames(styles.container)}
-          onScroll={!editMode ? onScroll : null}
-          totalSize={
-            parsedData.lazyLoading && onScroll && !editMode ? mediaLengthMs : 0
-          }
-          estimatedDisplaySize={estimatedDisplayTimeMs}
-          neglectableSize={neglectableTimeMs}
-          contents={ this.renderSpeakerSnippetSegments(parsedData) }
-        />
+      <div
+        className={classNames(styles.transcriptContent, className)}
+      >
+        <AutoSizer style={{ width: '100%', height: '100%' }}>
+          {({ height, width }) => {
+            return selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')
+            ? (
+              <List
+                // eslint-disable-next-line
+                ref={ref => this.virtualList = ref}
+                key={`virtual-speaker-grid`}
+                width={width || 900}
+                height={height || 500}
+                style={{ width: '100%', height: '100%' }}
+                deferredMeasurementCache={cellCache}
+                overscanRowCount={5}
+                rowRenderer={this.speakerRowRenderer(editMode)}
+                rowCount={totalSpeakerSeries.length}
+                rowHeight={cellCache.rowHeight} /> 
+            ) : (
+              <List
+                // eslint-disable-next-line
+                ref={ref => this.virtualList = ref}
+                key={`virtual-transcript-grid`}
+                width={width || 900}
+                height={height || 500}
+                style={{ width: '100%', height: '100%' }}
+                deferredMeasurementCache={cellCache}
+                overscanRowCount={1}
+                rowRenderer={this.transcriptRowRenderer}
+                rowCount={virtualizedSerieBlocks.length}
+                rowHeight={cellCache.rowHeight}
+              />
+            )
+          }}
+        </AutoSizer>
       </div>
     );
   }

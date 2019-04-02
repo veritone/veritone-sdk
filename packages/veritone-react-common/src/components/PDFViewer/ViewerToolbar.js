@@ -158,7 +158,6 @@ class ViewerToolBar extends PureComponent {
     const {
       currentPageNumber,
       numPages,
-      userScale,
       searchText,
       currentSearchMatch,
       totalSearchMatches,

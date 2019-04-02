@@ -1,11 +1,9 @@
 @import 'src/styles/modules/variables';
 
-.transcriptSegment {
+.translateSegment {
   width: 100%;
-
-  display: flex;
-  flex-flow: row nowrap;
-  overflow-wrap: break-word;
+  height: 100%;
+  display: block;
 
   .time {
     padding: 20px 20px 20px 0;
@@ -16,14 +14,18 @@
     font-weight: 400;
   }
 
+  .content {
+    width: 100%;
+  }
+
   border-bottom: 1px solid $faint-black;
 }
 
-.transcriptSegment:last-child {
+.translateSegment:last-child {
   border-bottom: none;
 }
 
-.transcriptSnippet {
+.translateSnippet {
   outline: none;
   color: $dark-black;
   font-family: Roboto;
@@ -33,6 +35,10 @@
 
   &:hover {
     color: $blue-1;
+  }
+
+  &::after {
+    content: ' ';
   }
 }
 

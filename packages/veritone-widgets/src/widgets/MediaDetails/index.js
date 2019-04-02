@@ -12,7 +12,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import PictureAsPdf from '@material-ui/icons/PictureAsPdf';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -439,12 +438,50 @@ class MediaDetailsWidget extends React.Component {
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
+    this.setHotKeyListeners();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
       this.handleDisableEditBtn(false);
     }
+  }
+
+  componentWillUnmount() {
+    this.unsetHotKeyListeners();
+  }
+
+  hotKeyCategories = [{
+    commands: [{
+      // Toggle Play/Pause
+      triggerFunc: event => {
+        return get(event, 'keyCode') === 9;
+      },
+      eventFunc: event => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.handleToggleMediaPlayerPlayback && this.handleToggleMediaPlayerPlayback();
+      }
+    }]
+  }];
+
+  setHotKeyListeners = () => {
+    window.addEventListener('keydown', this.hotKeyEvents);
+  }
+
+  unsetHotKeyListeners = () => {
+    window.removeEventListener('keydown', this.hotKeyEvents);
+  }
+
+  hotKeyEvents = event => {
+    this.hotKeyCategories.forEach(category => {
+      category.commands.forEach(command => {
+        command.triggerFunc
+          && command.triggerFunc(event)
+          && command.eventFunc
+          && command.eventFunc(event);
+      });
+    });
   }
 
   handleMediaPlayerStateChange(state) {
@@ -653,6 +690,12 @@ class MediaDetailsWidget extends React.Component {
     return get(selectedEngine, 'status') === 'complete';
   };
 
+  isSelectedCombineEngineViewableAndCompleted = () => {
+    const hasResults = get(this.props.selectedCombineEngineResults, 'length');
+    const isShown = this.props.selectedCombineViewTypeId && this.props.selectedCombineViewTypeId.includes('show');
+    return hasResults || !isShown;
+  };
+
   buildEngineNullStateComponent = () => {
     const selectedEngineId = this.props.selectedEngineId;
     const engines = get(this.props.selectedEngineCategory, 'engines');
@@ -734,10 +777,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
+    const hasCombineViews = get(this.props, 'combineViewTypes.length');
     if (
       !this.isEditableEngineResults() ||
       !this.hasSelectedEngineResults() ||
-      !this.isSelectedEngineCompleted()
+      !this.isSelectedEngineCompleted() ||
+      !(hasCombineViews && this.isSelectedCombineEngineViewableAndCompleted())
     ) {
       return false;
     }
@@ -1603,9 +1648,7 @@ class MediaDetailsWidget extends React.Component {
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
+                        onFaceOccurrenceClicked={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
@@ -1619,9 +1662,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectOccurrenceClick={
-                          this.handleUpdateMediaPlayerTime
-                        }
+                        onObjectClick={this.handleUpdateMediaPlayerTime}
                         outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
@@ -1629,8 +1670,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={selectedEngineResults}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
@@ -1667,9 +1707,8 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
                       <TranslationEngineOutput
-                        contents={selectedEngineResults}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        onRerunProcess={this.handleRunProcess}
+                        data={selectedEngineResults}
+                        onTranslateClicked={this.handleUpdateMediaPlayerTime}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}

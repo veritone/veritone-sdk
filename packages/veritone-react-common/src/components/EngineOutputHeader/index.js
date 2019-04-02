@@ -157,11 +157,22 @@ class EngineOutputHeader extends Component {
   };
 
   handleCombineEngineChange = engine => () => {
+    const {
+      onCombineEngineChange,
+      handleCombineViewTypeChange,
+      selectedCombineEngineId,
+      selectedCombineViewTypeId,
+      combineViewTypes
+    } = this.props;
+    const showViewType = combineViewTypes.find(type => type.id && type.id.includes('show'));
     if (
-      this.props.onCombineEngineChange &&
-      this.props.selectedCombineEngineId !== engine.id 
+      onCombineEngineChange &&
+      selectedCombineEngineId !== engine.id 
     ) {
-      this.props.onCombineEngineChange(engine.id);
+      if (showViewType && showViewType.id !== selectedCombineViewTypeId) {
+        handleCombineViewTypeChange(showViewType.id);
+      }
+      onCombineEngineChange(engine.id);
       this.resetSubMenus();
     }
   }
@@ -251,6 +262,7 @@ class EngineOutputHeader extends Component {
       isMainMenuOpen,
       isSubMenuOpen
     } = this.state;
+    const popperZIndex = 10;
     const selectedEngine = engines.find(e => e.id === selectedEngineId);
     const selectedCombineEngine = combineEngines && combineEngines.find(e => e.id === selectedCombineEngineId);
     const engineCategory = get(engines, '[0].category');
@@ -273,7 +285,7 @@ class EngineOutputHeader extends Component {
           data-veritone-component="engine-header-actions"
           >
           {children}
-          {isArray(combineEngines) && combineEngines.length > 0 && (
+          {combineEngineCategory && isArray(combineEngines) && combineEngines.length > 0 && (
             <FormControl
               className={styles.engineFormControl}
               disabled={disableEngineSelect}
@@ -308,7 +320,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[combineEngineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(combineEngineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[combineEngineCategory.categoryType]}
@@ -362,7 +374,7 @@ class EngineOutputHeader extends Component {
                                     );
                                   })}
                                 </Collapse>
-                                { selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
+                                { selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show') && selectedCombineEngineWithData && selectedCombineEngineWithData.hasUserEdits && (
                                   <div>
                                     <Divider />
                                     <MenuItem
@@ -463,7 +475,7 @@ class EngineOutputHeader extends Component {
               </Manager>
             </FormControl>
           )}
-          {!isEmpty(engines) && (
+          {engineCategory && !isEmpty(engines) && (
             <FormControl
               className={styles.engineFormControl}
               disabled={disableEngineSelect}
@@ -500,7 +512,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMainMenuOpen[engineCategory.categoryType]}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.handleMainMenuClick(engineCategory.categoryType)}>
                           <Grow
                             in={isMainMenuOpen[engineCategory.categoryType]}
@@ -692,7 +704,7 @@ class EngineOutputHeader extends Component {
                     eventsEnabled={isMoreMenuOpen}
                   >
                     {({ ref, style, placement }) => (
-                      <div ref={ref} style={{ ...style, zIndex: 1 }} data-placement={placement}>
+                      <div ref={ref} style={{ ...style, zIndex: popperZIndex }} data-placement={placement}>
                         <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
                           <Grow
                             in={isMoreMenuOpen}
