@@ -1,9 +1,8 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 
 import ObjectDetectionEngineOutput from 'components/ObjectDetectionEngineOutput';
 import EngineOutputHeader from 'components/EngineOutputHeader';
-import ObjectGroup from 'components/ObjectDetectionEngineOutput/ObjectGroup';
 
 describe('ObjectDetectionEngineOutput', () => {
   const data = [

@@ -71,11 +71,6 @@ const sampleData = [
         ]
       }
     ]
-  },
-  {
-    startTimeMs: 9000,
-    stopTimeMs: 15000,
-    status: 'error'
   }
 ];
 
@@ -89,10 +84,10 @@ describe('Translation Engine Output', () => {
         id: '2', name: 'Engine-Y',
         category: { categoryType: 'dummy' }
       }]}
+      defaultLanguage={sampleData[0].series[0].language}
       selectedEngineId="1"
-      contents={sampleData}
+      data={sampleData}
       mediaPlayerTimeMs={0}
-      onRerunProcess={jest.fn()}
       onEngineChange={jest.fn()}
     />
   );
@@ -101,38 +96,20 @@ describe('Translation Engine Output', () => {
     expect(translationEngineOutput.find('EngineOutputHeader')).toHaveLength(1);
   });
 
-  it('Missing TranslationContent', () => {
-    expect(translationEngineOutput.find('TranslationContent')).toHaveLength(1);
+  it('Missing Virtual List', () => {
+    expect(translationEngineOutput.find('List')).toHaveLength(1);
   });
 
   it('invalid translation data segment', () => {
-    const dataSegments = translationEngineOutput.find('DataSegment');
-    expect(dataSegments).toHaveLength(3);
+    const dataSegments = translationEngineOutput.find('List');
+    expect(dataSegments).toHaveLength(1);
+    const spanFragments = dataSegments.find('span');
 
-    expect(dataSegments.at(0).text()).toEqual('todo');
-    expect(dataSegments.at(1).text()).toEqual('wakanda');
-    expect(dataSegments.at(2).text()).toEqual('test');
-    expect(dataSegments.at(0).prop('active')).toEqual(true);
-    expect(dataSegments.at(1).prop('active')).toEqual(false);
-    expect(dataSegments.at(2).prop('active')).toEqual(false);
-    expect(dataSegments.at(0).find('span.highlight')).toHaveLength(1);
-    expect(dataSegments.at(1).find('span.highlight')).toHaveLength(0);
-    expect(dataSegments.at(2).find('span.highlight')).toHaveLength(0);
-  });
-
-  it('invalid no translation data segment', () => {
-    const nodataSegments = translationEngineOutput.find('NoDataSegment');
-    expect(nodataSegments).toHaveLength(1);
-    const nodataTimes = nodataSegments.find('div.time');
-    expect(nodataTimes).toHaveLength(1);
-    expect(nodataTimes.at(0).text()).toEqual('00:05 - 00:06');
-  });
-
-  it('invalid error <-> rerun process segment', () => {
-    const errorSegments = translationEngineOutput.find('ErrorSegment');
-    expect(errorSegments).toHaveLength(1);
-    const errorTimes = errorSegments.find('div.time');
-    expect(errorTimes).toHaveLength(1);
-    expect(errorTimes.at(0).text()).toEqual('00:09 - 00:15');
+    expect(spanFragments.at(0).text()).toEqual('todo');
+    expect(spanFragments.at(1).text()).toEqual('wakanda');
+    expect(spanFragments.at(2).text()).toEqual('test');
+    expect(spanFragments.at(0).find('span.highlight')).toHaveLength(1);
+    expect(spanFragments.at(1).find('span.highlight')).toHaveLength(0);
+    expect(spanFragments.at(2).find('span.highlight')).toHaveLength(0);
   });
 });

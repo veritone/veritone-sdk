@@ -63,7 +63,6 @@ export default class TranslationEngineOutput extends Component {
   static defaultProps = {
     data: [],
     title: 'Translation',
-    neglectableTimeMs: 500,
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -169,6 +168,7 @@ export default class TranslationEngineOutput extends Component {
       const serie = totalTranslateSeries[index];
       if (
         serie &&
+        serie.words &&
         serie.language === selectedLanguage &&
         curSeries.length < this.seriesPerPage
       ) {
@@ -233,7 +233,6 @@ export default class TranslationEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      onTranslateClicked,
       outputNullState
     } = this.props;
     const {
