@@ -14,12 +14,7 @@
     "object": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "$ref": "master.json#/definitions/objectResult"
-          }
-        }
+        "$ref": "master.json#/definitions/objectResult"
       }
     },
     "series": {
@@ -29,9 +24,45 @@
         "properties": {
           "object": {
             "$ref": "master.json#/definitions/objectResult"
+          },
+          "startTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stopTimeMs": {
+            "type": "integer",
+            "minimum": 0
           }
-        }
+        },
+        "required": [
+          "startTimeMs",
+          "stopTimeMs"
+        ]
       }
+    },
+    "language": {
+      "$ref": "master.json#/definitions/language"
+    },
+    "schemaId": {
+      "$ref": "master.json#/definitions/header/properties/schemaId"
+    },
+    "sourceEngineId": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
+    },
+    "sourceEngineName": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
+    },
+    "taskPayload": {
+      "$ref": "master.json#/definitions/header/properties/taskPayload"
+    },
+    "taskId": {
+      "$ref": "master.json#/definitions/header/properties/taskId"
+    },
+    "generatedDateUTC": {
+      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
+    },
+    "externalSourceId": {
+      "$ref": "master.json#/definitions/header/properties/externalSourceId"
     }
   }
 }

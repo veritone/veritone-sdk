@@ -25,7 +25,7 @@
         },
         "taskPayload": {
           "type": "object",
-          "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone) // TO DO: LINK TO DOCS EXPLAINING TASK PAYLOAD",
+          "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone). Task payload will be a combination of attributes found on https://docs.veritone.com/#/developer/adapters/quick-start/step-2?id=constructing-a-batch-pull-adapter and any default custom fields (https://docs.veritone.com/#/developer/engines/custom-fields/?id=custom-fields)",
           "example": {
             "detectionThreshold": 0.7,
             "processingFPS": 30
@@ -51,14 +51,7 @@
           "type": "array",
           "items": [
             {
-              "type": "string",
-              "enum": [
-                "audio-fingerprint",
-                "ocr",
-                "face",
-                "object",
-                "transcript"
-              ]
+              "$ref": "#/definitions/objectResultType"
             }
           ]
         }
@@ -70,8 +63,37 @@
       "maximum": 1,
       "description": "Confidence of the result expressed as a range of 0.0 to 1.0"
     },
+    "point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the x axis (1.0 would be right of the axis)"
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "description": "A point describing the 2d coordinates from the top left corner of the source."
+    },
+    "boundingPoly": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/point"
+      }
+    },
     "objectCategory": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
@@ -92,6 +114,16 @@
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
+    "objectResultType": {
+      "type": "string",
+      "enum": [
+        "audio-fingerprint",
+        "ocr",
+        "face",
+        "object",
+        "transcript"
+      ]
+    },
     "objectResult": {
       "type": "object",
       "properties": {
@@ -105,7 +137,8 @@
           "type": "string"
         },
         "entityIdentifierId": {
-          "type": "string"
+          "type": "string",
+          "description": "The unique ID of recognized entity identifier (for example, a specific image). This information is not always available and is therefore optional."
         },
         "libraryId": {
           "type": "string"
@@ -113,38 +146,31 @@
         "label": {
           "type": "string"
         },
-        "type":
-          {
-            "type": "string",
-            "enum": [
-              "audio-fingerprint",
-              "ocr",
-              "face",
-              "object",
-              "transcript"
-            ]
+        "objectCategory": {
+          "$ref": "#/definitions/objectCategory"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "type": {
+          "if": {
+            "properties": {
+              "objectCategory": {
+                "type": "object"
+              }
+            }
+          },
+          "then": {
+            "const": "object"
+          },
+          "else": {
+            "$ref": "#/definitions/objectResultType"
           }
+        }
       },
       "required": [
         "type"
-      ],
-      "if": {
-        "properties": {
-          "type": {
-            "pattern": "object"
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "objectCategory": {
-            "$ref": "#/definitions/objectCategory"
-          },
-          "type": {
-            "const": "object"
-          }
-        }
-      }
+      ]
     },
     "word": {
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
@@ -186,38 +212,6 @@
           "$ref": "#/definitions/objectResult"
         }
       }
-    },
-    "point": {
-      "type": "object",
-      "properties": {
-        "x": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "A floating point describing the location via percentage on the x axis (1.0 would be right of the axis)"
-        },
-        "y": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
-        }
-      },
-      "required": [
-        "x",
-        "y"
-      ],
-      "description": "A point describing the 2d coordinates from the top left corner of the source."
-    },
-    "boundingPoly": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/point"
-      },
-      "required": [
-        "x",
-        "y"
-      ]
     }
   }
 }
