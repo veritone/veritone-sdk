@@ -25,7 +25,9 @@
           "x": 0.5,
           "y": 0.1
         }
-      ]
+      ],
+      "startTimeMs": 0,
+      "stopTimeMs": 2200
     }
   ]
 }

@@ -7,7 +7,7 @@
     "startTimeMs": 2000,
     "stopTimeMs": 2100,
     "object": {
-      "type": "objects",
+      "type": "wrongtype",
       "label": "dog",
       "confidence": 0.9,
       "objectCategory": [{

@@ -26,19 +26,23 @@
           "y": 0.1
         }
       ],
-      "objectCategory": [{
-        "class": "animal",
-        "@id": "1576"
-      }]
+      "objectCategory": [
+        {
+          "class": "animal",
+          "@id": "1576"
+        }
+      ]
     },
     {
       "type": "object",
       "label": "cat",
       "confidence": 0.55,
-      "objectCategory": [{
-        "class": "animal",
-        "@id": "1576"
-      }]
+      "objectCategory": [
+        {
+          "class": "animal",
+          "@id": "1576"
+        }
+      ]
     }
   ],
   "series": [
@@ -48,10 +52,12 @@
       "object": {
         "type": "object",
         "label": "dog",
-        "objectCategory": [{
-          "class": "animal",
-          "@id": "1576"
-        }],
+        "objectCategory": [
+          {
+            "class": "animal",
+            "@id": "1576"
+          }
+        ],
         "confidence": 0.9,
         "boundingPoly": [
           {
@@ -80,10 +86,12 @@
         "type": "object",
         "label": "cat",
         "confidence": 0.55,
-        "objectCategory": [{
-          "class": "animal",
-          "@id": "1576"
-        }]
+        "objectCategory": [
+          {
+            "class": "animal",
+            "@id": "1576"
+          }
+        ]
       }
     },
     {
@@ -93,10 +101,12 @@
         "type": "object",
         "label": "ball",
         "confidence": 0.55,
-        "objectCategory": [{
-          "class": "toys",
-          "@id": "3526"
-        }]
+        "objectCategory": [
+          {
+            "class": "toys",
+            "@id": "3526"
+          }
+        ]
       }
     }
   ]
