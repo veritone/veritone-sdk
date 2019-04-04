@@ -1,0 +1,48 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
+  "validationContracts": [
+    "transcript"
+  ],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 300,
+      "words": [
+        {
+          "word": "this",
+          "confidence": 0.2
+        }
+      ]
+    },
+    {
+      "startTimeMs": 300,
+      "stopTimeMs": 500,
+      "words": [
+        {
+          "word": "is",
+          "confidence": 0.1
+        }
+      ]
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 800,
+      "words": [
+        {
+          "word": "a",
+          "confidence": 0.1
+        }
+      ]
+    },
+    {
+      "startTimeMs": 800,
+      "stopTimeMs": 1200,
+      "words": [
+        {
+          "word": "sentence",
+          "confidence": 0.1
+        }
+      ]
+    }
+  ]
+}

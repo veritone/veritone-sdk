@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "lodash",
+    "transform-dynamic-import",
+    "@babel/plugin-transform-runtime"
+  ],
+  "presets": [
+    "@babel/env"
+  ]
+}

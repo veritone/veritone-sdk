@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/object.json",
+  "title": "vtn-standard.object",
+  "description": "Standard engine output for Object at Veritone",
+  "type": "object",
+  "properties": {
+    "validationContracts": {
+      "type": "array",
+      "items": {
+        "const": "object"
+      }
+    },
+    "object": {
+      "type": "array",
+      "items": {
+        "$ref": "master.json#/definitions/objectResult"
+      }
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "$ref": "master.json#/definitions/objectResult"
+          },
+          "startTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stopTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "startTimeMs",
+          "stopTimeMs"
+        ]
+      }
+    },
+    "language": {
+      "$ref": "master.json#/definitions/language"
+    },
+    "schemaId": {
+      "$ref": "master.json#/definitions/header/properties/schemaId"
+    },
+    "sourceEngineId": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
+    },
+    "sourceEngineName": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
+    },
+    "taskPayload": {
+      "$ref": "master.json#/definitions/header/properties/taskPayload"
+    },
+    "taskId": {
+      "$ref": "master.json#/definitions/header/properties/taskId"
+    },
+    "generatedDateUTC": {
+      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
+    },
+    "externalSourceId": {
+      "$ref": "master.json#/definitions/header/properties/externalSourceId"
+    }
+  }
+}
