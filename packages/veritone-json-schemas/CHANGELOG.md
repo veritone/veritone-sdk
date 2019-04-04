@@ -25,3 +25,7 @@
 * Change GUIDS from number to string
 * Some minor changes in descriptions
 
+## 0.1.6
+* Changes to type enum in series / object results
+* Support for object recognition/detection
+* More examples for transcript
