@@ -28,11 +28,7 @@
               "type": "boolean"
             }
           },
-          "required": [
-            "word",
-            "confidence",
-            "utteranceLength"
-          ]
+          "required": ["word", "confidence", "utteranceLength"]
         },
         "uniqueItems": true,
         "requireBestPath": true
@@ -48,9 +44,7 @@
               "$ref": "master.json#/definitions/confidence"
             }
           },
-          "required": [
-            "word"
-          ]
+          "required": ["word"]
         }
       }
     }
@@ -82,10 +76,7 @@
             "$ref": "master.json#/definitions/language"
           }
         },
-        "required": [
-          "startTimeMs",
-          "stopTimeMs"
-        ]
+        "required": ["startTimeMs", "stopTimeMs"]
       }
     },
     "language": {

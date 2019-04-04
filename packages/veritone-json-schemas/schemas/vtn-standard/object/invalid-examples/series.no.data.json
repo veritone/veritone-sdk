@@ -1,6 +1,6 @@
 {
-  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
-  "validationContracts": ["transcript"],
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "validationContracts": ["object"],
   "series": [
     {
       "startTimeMs": 0,
@@ -16,12 +16,12 @@
       "stopTimeMs": 500,
       "words": [
         {
-          "word": "is"
+          "word": "world"
         }
       ]
     },
     {
-      "startTimeMs": 500,
+      "startTimeMs": 100,
       "stopTimeMs": 800,
       "words": [
         {

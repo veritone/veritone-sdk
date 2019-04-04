@@ -34,10 +34,7 @@
             "minimum": 0
           }
         },
-        "required": [
-          "startTimeMs",
-          "stopTimeMs"
-        ]
+        "required": ["startTimeMs", "stopTimeMs", "object"]
       }
     },
     "language": {

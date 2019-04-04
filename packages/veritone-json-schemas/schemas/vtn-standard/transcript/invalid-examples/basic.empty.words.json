@@ -1,14 +1,11 @@
 {
   "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
-  "validationContracts": [
-    "transcript"
-  ],
+  "validationContracts": ["transcript"],
   "series": [
     {
       "startTimeMs": 0,
       "stopTimeMs": 300,
-      "words": [
-      ]
+      "words": []
     },
     {
       "startTimeMs": 300,

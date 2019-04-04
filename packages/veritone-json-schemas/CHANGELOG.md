@@ -29,3 +29,8 @@
 * Changes to type enum in series / object results
 * Support for object recognition/detection
 * More examples for transcript
+
+## 0.1.7
+* Make object required if a series array is present
+* Add test cases to prevent empty objects in summaries
+* Add test case to make sure that an empty object summary with no recognition/detection is a valid result.
