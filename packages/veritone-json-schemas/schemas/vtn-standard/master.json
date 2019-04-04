@@ -117,11 +117,18 @@
     "objectResultType": {
       "type": "string",
       "enum": [
-        "audio-fingerprint",
-        "ocr",
-        "face",
         "object",
-        "transcript"
+        "face",
+        "licensePlate",
+        "logo",
+        "fingerprint",
+        "speakerId",
+        "soundId",
+        "concept",
+        "keyword",
+        "text",
+        "namedEntity",
+        "barcode"
       ]
     },
     "objectResult": {
