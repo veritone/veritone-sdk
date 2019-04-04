@@ -9,16 +9,16 @@ This repo contains all the JSON schemas besides structured data used by Veritone
 ## Usage
 This package exports the following
 ```
-	{
-		VALIDATORS: {
-		  "transcript": validateTranscript
-		  "object: validateObject
-          ...
-        },
-        validateTranscript: fn(),
-        validateObject: fn(),
-        ...
-	}
+  {
+	  VALIDATORS: {
+      "transcript": validateTranscript
+      "object: validateObject
+      ...
+    },
+    validateTranscript: fn(),
+    validateObject: fn(),
+    ...
+  }
 ```
 
 which is a map of valid validation contracts to their validating functions.
