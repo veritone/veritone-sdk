@@ -36,7 +36,8 @@
         },
         "required": [
           "startTimeMs",
-          "stopTimeMs"
+          "stopTimeMs",
+          "object"
         ]
       }
     },
