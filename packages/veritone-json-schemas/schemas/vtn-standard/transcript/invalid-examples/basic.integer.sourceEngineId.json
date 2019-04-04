@@ -1,8 +1,6 @@
 {
   "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
-  "validationContracts": [
-    "transcript"
-  ],
+  "validationContracts": ["transcript"],
   "sourceEngineId": 3,
   "series": [
     {

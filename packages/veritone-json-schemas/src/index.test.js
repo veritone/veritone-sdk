@@ -35,14 +35,14 @@ Object.keys(validationContracts).forEach(validationContract => {
           // JSON files in invalid-examples should not validate
           it(`should NOT validate ${test.directory}/${
             test.fileName
-            }`, async () => {
-              const json = await import(`../${test.directory}/${test.fileName}`);
-              const invalidResult = validator(json);
-              expect(invalidResult).not.toHaveProperty('valid');
-              expect(invalidResult.errors).not.toBeNull();
-              expect(invalidResult.errors).not.toBeUndefined();
-              expect(invalidResult.errors.length).toBeGreaterThan(0);
-            });
+          }`, async () => {
+            const json = await import(`../${test.directory}/${test.fileName}`);
+            const invalidResult = validator(json);
+            expect(invalidResult).not.toHaveProperty('valid');
+            expect(invalidResult.errors).not.toBeNull();
+            expect(invalidResult.errors).not.toBeUndefined();
+            expect(invalidResult.errors.length).toBeGreaterThan(0);
+          });
         } else {
           // JSON files in examples should validate
           it(`should validate ${test.directory}/${test.fileName}`, async () => {
@@ -66,70 +66,63 @@ test('it should export a transcript validator', () => {
   expect(verifyTranscript).not.toBeNull();
 });
 
-
 test('it should validate an object but strip out startTimeMs and stopTimeMs in the summary object array', () => {
-  const objectSummaryWithTimeFields =
-  {
-    "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
-    "validationContracts": [
-      "object"
-    ],
-    "object": [
+  const objectSummaryWithTimeFields = {
+    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
+    validationContracts: ['object'],
+    object: [
       {
-        "type": "object",
-        "label": "dog",
-        "confidence": 0.9,
-        "boundingPoly": [
+        type: 'object',
+        label: 'dog',
+        confidence: 0.9,
+        boundingPoly: [
           {
-            "x": 0.1,
-            "y": 0.1
+            x: 0.1,
+            y: 0.1
           },
           {
-            "x": 0.1,
-            "y": 0.5
+            x: 0.1,
+            y: 0.5
           },
           {
-            "x": 0.5,
-            "y": 0.5
+            x: 0.5,
+            y: 0.5
           },
           {
-            "x": 0.5,
-            "y": 0.1
+            x: 0.5,
+            y: 0.1
           }
         ],
-        "startTimeMs": 0,
-        "stopTimeMs": 2200
+        startTimeMs: 0,
+        stopTimeMs: 2200
       }
     ]
   };
 
-  const objectSummaryWithoutTimeFields =
-  {
-    "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
-    "validationContracts": [
-      "object"
-    ],
-    "object": [
+  const objectSummaryWithoutTimeFields = {
+    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
+    validationContracts: ['object'],
+    object: [
       {
-        "type": "object",
-        "label": "dog",
-        "confidence": 0.9,
-        "boundingPoly": [
+        type: 'object',
+        label: 'dog',
+        confidence: 0.9,
+        boundingPoly: [
           {
-            "x": 0.1,
-            "y": 0.1
+            x: 0.1,
+            y: 0.1
           },
           {
-            "x": 0.1,
-            "y": 0.5
+            x: 0.1,
+            y: 0.5
           },
           {
-            "x": 0.5,
-            "y": 0.5
+            x: 0.5,
+            y: 0.5
           },
           {
-            "x": 0.5,
-            "y": 0.1
+            x: 0.5,
+            y: 0.1
           }
         ]
       }

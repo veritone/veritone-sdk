@@ -79,10 +79,7 @@
           "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
         }
       },
-      "required": [
-        "x",
-        "y"
-      ],
+      "required": ["x", "y"],
       "description": "A point describing the 2d coordinates from the top left corner of the source."
     },
     "boundingPoly": {
@@ -108,9 +105,7 @@
             "example": "1"
           }
         },
-        "required": [
-          "class"
-        ]
+        "required": ["class"]
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
@@ -175,9 +170,7 @@
           }
         }
       },
-      "required": [
-        "type"
-      ]
+      "required": ["type"]
     },
     "word": {
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
@@ -211,10 +204,7 @@
             "example": 3000
           }
         },
-        "required": [
-          "startTimeMs",
-          "stopTimeMs"
-        ],
+        "required": ["startTimeMs", "stopTimeMs"],
         "additionalProperties": {
           "$ref": "#/definitions/objectResult"
         }
