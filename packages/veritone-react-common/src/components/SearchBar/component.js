@@ -71,6 +71,9 @@ import { SearchBar } from '.';
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
 // hardcoded for now to help setup storybook.
+
+const LIBRARY_LIMIT = 50;
+
 const transcript = {
   id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
   name: 'Transcript',
@@ -365,33 +368,49 @@ export class SampleSearchBar extends React.Component {
 
   async getLibraries(auth) {
     if(auth) {
-      return await fetch(`${this.props.api}v3/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + auth
-        },
-        body: JSON.stringify({query:
-          `query {
-            libraries(limit: 50) {
-              records {
-                id
-                name
-                description
-                coverImageUrl
+      let LIBRARY_OFFSET = 0;
+      let libraries = [];
+      while (true) {
+        const data = await fetch(`${this.props.api}v3/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + auth
+          },
+          body: JSON.stringify({query:
+            `query {
+              libraries(limit: ${LIBRARY_LIMIT}, offset: ${LIBRARY_OFFSET}) {
+                records {
+                  id
+                  name
+                  description
+                  coverImageUrl
+                }
               }
-            }
-          }`
+            }`
+          })
         })
-      }).then(
-        response => {
+        .then(response => {
           if (response.status === 200) {
             return response.json();
-          } else {
-            return false;
           }
+          throw new Error('Can not get libraries')
+        })
+        .then(y => y.data.libraries ? y.data.libraries.records : [])
+        .catch((err) => {
+          console.log(err)
+          return [];
+        })
+
+        libraries = [...libraries, ...data];
+        LIBRARY_OFFSET = libraries.length;
+
+        if (data.length < LIBRARY_LIMIT) {
+          break;
         }
-      ).then( y => y.data.libraries.records )
+      }
+
+      return Promise.resolve(libraries);
     }
   }
 
