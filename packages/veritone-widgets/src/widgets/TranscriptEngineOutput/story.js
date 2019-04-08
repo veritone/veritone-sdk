@@ -6,8 +6,8 @@ import { action } from '@storybook/addon-actions';
 
 import { Provider } from 'react-redux';
 import { util } from 'veritone-redux-common';
-import configureStore from '../../redux/configureStore';
 
+import VeritoneApp from '../../shared/VeritoneApp';
 import TranscriptEngineOutput from './';
 import styles from './story.styles.scss';
 
@@ -112,6 +112,12 @@ const vlfWords = [
   'wiggly'
 ];
 
+const mockTDO = {
+  id: '12345',
+  startDateTime: '2019-02-28T01:20:00.000Z',
+  stopDateTime: '2019-02-28T01:30:00.000Z'
+};
+
 const mockData = genMockData(
   initialStartTime,
   initialStopTime,
@@ -123,7 +129,8 @@ const mockData = genMockData(
   false
 );
 
-const store = configureStore();
+const app = VeritoneApp();
+const store = app._store;
 storiesOf('Transcript Engine Output', module)
   .addDecorator(story => (
     <Provider store={store}>
@@ -149,6 +156,7 @@ storiesOf('Transcript Engine Output', module)
           selectedEngineId={selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClick={action('expand view clicked')}
+          tdo={mockTDO}
         />
       </div>
     );

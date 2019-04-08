@@ -159,3 +159,18 @@ const MyPage = () => (
 ## 6.2.0
 * MediaPlayer component
   * Support styling changes introduced in veritone-react-common v6.2.0
+
+## 6.3.0
+* _Widget sagas are now started when the widget mounts, and stopped them when the widget unmounts_
+  * This means tree shaking can get rid of unrelated sagas!
+  * It also means unrelated sagas aren't running and possibly doing unnecessary actions in the background!
+  * This is enabled by a new 2-argument widget() wrapper which accepts a saga, ie. `const FilePickerWidget = widget(FilePickerWidgetComponent, filePickerRootSaga)`
+* Updates to EngineOutputExport module, see https://github.com/veritone/veritone-sdk/pull/235
+* ContentTemplate
+  * text inputs are now multiline
+  * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
+* ContentTemplateForm
+  * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
+
+## 6.3.1
+* Add recompose to excluded dependencies (fixes build issues)

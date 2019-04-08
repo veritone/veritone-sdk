@@ -1,0 +1,51 @@
+@import 'src/styles/modules/variables';
+
+.translateSegment {
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  .time {
+    padding: 20px 20px 20px 0;
+    color: $dark-black;
+    font-family: Roboto;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  border-bottom: 1px solid $faint-black;
+}
+
+.translateSegment:last-child {
+  border-bottom: none;
+}
+
+.translateSnippet {
+  outline: none;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 300;
+
+  &:hover {
+    color: $blue-1;
+  }
+
+  &::after {
+    content: ' ';
+  }
+}
+
+.read {
+  cursor: pointer;
+}
+
+.highlight {
+  font-weight: 500;
+}

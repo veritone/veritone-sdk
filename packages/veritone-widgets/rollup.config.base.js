@@ -18,8 +18,10 @@ export default {
   external: [
     'react',
     'react-dom',
+    'react-popper',
     'react-redux',
     'react-redux-saga',
+    'recompose',
     'redux',
     'redux-api-middleware-fixed',
     'redux-saga',

@@ -1,0 +1,47 @@
+@import 'src/styles/modules/variables';
+
+.shortcutsContent {
+  padding-top: 15px;
+
+  .shortcutsTitle {
+    font-size: 16px;
+    color: $dark-black;
+    font-weight: 500;
+  }
+
+  .shortKeyTitle {
+    font-size: 14px;
+    color: $dark-black;
+  }
+
+  .shortKey {
+    font-size: 14px;
+    color: $dark-black;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .buttonShortcuts {
+    font-family: 'Roboto', sans-serif;
+    color: $light-black;
+    display: inline-block;
+    min-width: auto;
+    min-height: auto;
+    padding: 12px 18px;
+    border: 1px solid #8a8a8a;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, $grey-1 0%, #f0f0f0 100%);
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 1),
+      0 2px 0 0 rgba(159, 159, 159, 1);
+    white-space: nowrap;
+  }
+
+  .operator {
+    font-family: 'Roboto', sans-serif;
+    color: $light-black;
+    margin: 0 10px;
+  }
+}
+.closeButton {
+  color: $blue-1;
+}

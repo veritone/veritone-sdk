@@ -195,15 +195,16 @@ export default class TemplateForms extends React.Component {
               title: schemaProps[schemaProp].title || schemaProp,
               value: template.data[schemaProp] || '',
               onChange: this.handleSchemaFieldChange(template, schemaProp, type)
-            }
+            };
 
             if (type === 'string' && !enums) {
-              fieldProps.multiline = true,
-              fieldProps.rowsMax = (
-                this.props.textInputMaxRows
-                && isNumber(this.props.textInputMaxRows)
-                && this.props.textInputMaxRows >= 1
-              ) ? toSafeInteger(this.props.textInputMaxRows) : 15
+              (fieldProps.multiline = true),
+                (fieldProps.rowsMax =
+                  this.props.textInputMaxRows &&
+                  isNumber(this.props.textInputMaxRows) &&
+                  this.props.textInputMaxRows >= 1
+                    ? toSafeInteger(this.props.textInputMaxRows)
+                    : 15);
             }
 
             return (

@@ -1,0 +1,31 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.ocrContainer {
+  @include mui-text('body1');
+  max-width: 100%;
+  align-items: center;
+  margin: 0 15px 15px 0;
+  padding: 10px;
+  color: $dark-black;
+  border-radius: 20px;
+  border: 1px solid $grey-4;
+  background-color: $fullWhite;
+  display: inline-block;
+
+  &.highlighted {
+    border-color: $blue-1;
+    background-color: $light-blue;
+  }
+}
+
+.ocrText {
+  color: $dark-black;
+  white-space: normal !important;
+}
+
+.ocrObjectTimestamp {
+  margin-left: 5px;
+  color: $blue-1;
+  text-overflow: initial !important;
+}

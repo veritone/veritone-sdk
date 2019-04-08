@@ -238,10 +238,26 @@
     margin: 20px;
     display: flex;
     flex-direction: row;
+    height: calc(100vh - 200px);
     flex: auto;
 
     .mediaView {
       flex: auto;
+
+      .fileIconContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 450px;
+        height: 250px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: $faint-black;
+        .fileIcon {
+          color: $blue-1;
+          font-size: 9em;
+        }
+      }
 
       .sourceLabel {
         color: rgba(0, 0, 0, 0.54);
@@ -261,6 +277,14 @@
       .sentimentChartViewRoot {
         height: 340px;
         width: 100%;
+      }
+
+      .engineNullState {
+        padding-top: 4vh;
+      }
+
+      .engineNullStateTitleText {
+        color: $light-black;
       }
     }
   }
@@ -320,4 +344,9 @@
     width: 100px;
     margin: 0 0 0 15px;
   }
+}
+
+.pdfViewer {
+  height: 100%;
+  width: 50vw;
 }

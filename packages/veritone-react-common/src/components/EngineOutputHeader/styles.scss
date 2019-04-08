@@ -33,8 +33,16 @@
     min-width: 120px;
     margin-left: 20px;
 
+    .categoryIcon {
+      cursor: pointer;
+      font-size: 20px;
+      margin: 6px;
+    }
+
     .engineSelect {
       @include mui-text('body1');
+      white-space: nowrap;
+      padding: 0;
     }
   }
 
@@ -70,4 +78,47 @@
 
 .moreMenuPopperContent {
   z-index: 1;
+}
+
+.mainMenu {
+  min-width: 300px;
+}
+
+.engineList {
+  max-height: calc(48px * 3);
+  overflow-y: auto !important;
+}
+
+.selectMenuItem {
+  font-size: 14px !important;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+
+  &.menuItemInset {
+    margin-left: 40px;
+  }
+}
+
+.restoreOriginalMenuItem {
+  padding: 0 !important;
+}
+
+.subMenuCheckIcon {
+  color: $blue-1 !important;
+  margin-right: 0 !important;
+}
+
+.dropdownIcon {
+  margin-top: 4px;
+  color: $light-black;
+  cursor: pointer;
+}
+
+.mainMenuText {
+  max-width: 200px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none;
 }

@@ -26,9 +26,9 @@ export class GeoExample extends Component {
   state = {
     selectedEngineId: '1',
     engines: [
-      { id: '1', name: 'Engine-X' },
-      { id: '2', name: 'Engine-Y' },
-      { id: '3', name: 'Engine-Z' }
+      { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' } },
+      { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' } },
+      { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' } }
     ],
     mockData: genMockData(0, 600000)
   };

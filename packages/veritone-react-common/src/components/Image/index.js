@@ -1,9 +1,6 @@
 import React from 'react';
-
 import { string, func, bool } from 'prop-types';
-
 import styles from './styles.scss';
-
 const Image = ({
   src,
   height = '100px',
@@ -37,7 +34,6 @@ const Image = ({
     </div>
   );
 };
-
 Image.propTypes = {
   src: string.isRequired,
   height: string,
@@ -47,5 +43,4 @@ Image.propTypes = {
   border: bool,
   label: string
 };
-
 export default Image;

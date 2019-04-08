@@ -3,10 +3,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import DoneIcon from '@material-ui/icons/Done';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import {
   shape,
   number,
@@ -131,46 +127,36 @@ class FaceEngineOutput extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     activeTab: string,
-    setActiveTab: func,
+    onActiveTabChange: func,
     selectedEntityId: string,
     onSelectEntity: func,
-    hasLibraryAccess: bool
+    hasLibraryAccess: bool,
+    viewMode: string,
+    onViewModeChange: func
   };
 
   state = {
-    viewMode: 'summary',
     lastCheckedFace: null
   };
 
-  static getDerivedStateFromProps(nextProps, state) {
-    if (nextProps.editMode && state.viewMode !== 'summary') {
-      return {
-        viewMode: 'summary'
-      };
-    }
-    return null;
-  }
-
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.props.activeTab) {
-      this.props.setActiveTab(activeTab);
+      this.props.onActiveTabChange(activeTab);
     }
   };
 
   handleViewModeChange = evt => {
-    this.setState({
-      viewMode: evt.target.value
-    });
+    this.props.onViewModeChange(evt.target.value);
     this.props.onSelectEntity(null);
   };
 
-  handleUserEditChange = evt => {
-    if (evt.target.value == 'restoreOriginal') {
-      this.props.onRestoreOriginalClick();
+  handleUserEditChange = engine => viewType => () => {
+    if (viewType == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(viewType === 'userEdited');
   };
 
   render() {
@@ -193,7 +179,6 @@ class FaceEngineOutput extends Component {
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      unrecognizedFaces,
       bulkEditActionItems,
       activeTab,
       onSelectFaces,
@@ -202,18 +187,43 @@ class FaceEngineOutput extends Component {
       onAddToExistingEntity,
       selectedEntityId,
       onSelectEntity,
-      hasLibraryAccess
+      hasLibraryAccess,
+      viewMode,
+      entities,
+      isSearchingEntities
     } = this.props;
+    let { unrecognizedFaces, recognizedFaces } = this.props;
+    if (viewMode === 'byScene') {
+      unrecognizedFaces = unrecognizedFaces.filter(face => {
+        return (
+          currentMediaPlayerTime >= face.startTimeMs &&
+          currentMediaPlayerTime <= face.stopTimeMs
+        );
+      });
+      recognizedFaces = Object.keys(recognizedFaces).reduce((acc, entityId) => {
+        return {
+          ...acc,
+          [entityId]: recognizedFaces[entityId].filter(face => {
+            return (
+              currentMediaPlayerTime >= face.startTimeMs &&
+              currentMediaPlayerTime <= face.stopTimeMs
+            );
+          })
+        };
+      }, {});
+    }
 
-    const { viewMode } = this.state;
     const recognizedFaceCount = reduce(
-      Object.values(this.props.recognizedFaces),
+      Object.values(recognizedFaces),
       (acc, faces) => {
         return acc + faces.length;
       },
       0
     );
-    const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const selectedEngineWithData = {
+      ...find(engines, { id: selectedEngineId }),
+      showingUserEditedOutput
+    };
     const faceTabs = (
       <Tabs
         value={activeTab}
@@ -233,17 +243,22 @@ class FaceEngineOutput extends Component {
       </Tabs>
     );
     return (
-      <div className={cx(styles.faceEngineOutput, className)}>
+      <div
+        className={cx(styles.faceEngineOutput, className)}
+        data-veritone-component="face-engine-output"
+      >
         <EngineOutputHeader
           title="Faces"
           hideTitle={editMode}
           engines={engines}
           selectedEngineId={selectedEngineId}
+          selectedEngineWithData={selectedEngineWithData}
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
+          onUserEditChange={this.handleUserEditChange}
           disableEditButton={
             disableEditButton ||
             (recognizedFaceCount < 1 && get(unrecognizedFaces, 'length') < 1)
@@ -253,107 +268,35 @@ class FaceEngineOutput extends Component {
           {editMode && (
             <div className={styles.faceTabHeaderContainer}>{faceTabs}</div>
           )}
-          {!editMode &&
-            selectedEngine &&
-            selectedEngine.hasUserEdits && (
-              <Select
-                autoWidth
-                value={showingUserEditedOutput ? 'userEdited' : 'original'}
-                onChange={this.handleUserEditChange}
-                className={styles.outputHeaderSelect}
-                MenuProps={{
-                  anchorOrigin: {
-                    horizontal: 'right',
-                    vertical: 'bottom'
-                  },
-                  transformOrigin: {
-                    horizontal: 'right',
-                    vertical: 'top'
-                  },
-                  getContentAnchorEl: null
-                }}
-                // eslint-disable-next-line
-                renderValue={() =>
-                  showingUserEditedOutput
-                    ? 'User-Edited'
-                    : 'Original (View Only)'
-                }
-              >
-                <MenuItem value="userEdited">
-                  {showingUserEditedOutput && (
-                    <ListItemIcon
-                      classes={{ root: styles.userEditListItemIcon }}
-                    >
-                      <DoneIcon />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText
-                    classes={{
-                      primary: cx(styles.selectMenuItem, {
-                        [styles.menuItemInset]: !showingUserEditedOutput
-                      })
-                    }}
-                    primary="User-Edited"
-                  />
-                </MenuItem>
-                <MenuItem value="original">
-                  {!showingUserEditedOutput && (
-                    <ListItemIcon
-                      classes={{ root: styles.userEditListItemIcon }}
-                    >
-                      <DoneIcon />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText
-                    classes={{
-                      primary: cx(styles.selectMenuItem, {
-                        [styles.menuItemInset]: showingUserEditedOutput
-                      })
-                    }}
-                    primary="Original (View Only)"
-                  />
-                </MenuItem>
-                <Divider light />
-                <MenuItem value="restoreOriginal">
-                  <ListItemText
-                    classes={{
-                      root: styles.restoreOriginalMenuItem,
-                      primary: cx(styles.selectMenuItem, styles.menuItemInset)
-                    }}
-                    primary="Restore Original"
-                  />
-                </MenuItem>
-              </Select>
-            )}
-          {!editMode && (
-            <Select
-              autoWidth
-              value={viewMode}
-              onChange={this.handleViewModeChange}
-              className={cx(styles.outputHeaderSelect)}
-              MenuProps={{
-                anchorOrigin: {
-                  horizontal: 'center',
-                  vertical: 'bottom'
-                },
-                transformOrigin: {
-                  horizontal: 'center',
-                  vertical: 'top'
-                },
-                getContentAnchorEl: null
-              }}
-            >
-              <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
-                Summary
-              </MenuItem>
+          <Select
+            autoWidth
+            value={viewMode}
+            onChange={this.handleViewModeChange}
+            className={cx(styles.outputHeaderSelect)}
+            MenuProps={{
+              anchorOrigin: {
+                horizontal: 'center',
+                vertical: 'bottom'
+              },
+              transformOrigin: {
+                horizontal: 'center',
+                vertical: 'top'
+              },
+              getContentAnchorEl: null
+            }}
+          >
+            <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
+              Summary
+            </MenuItem>
+            {activeTab === 'faceRecognition' && (
               <MenuItem value="byFrame" className={cx(styles.selectMenuItem)}>
                 By Frame
               </MenuItem>
-              <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
-                By Scene
-              </MenuItem>
-            </Select>
-          )}
+            )}
+            <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
+              By Scene
+            </MenuItem>
+          </Select>
         </EngineOutputHeader>
         {!editMode && faceTabs}
         {outputNullState}
@@ -363,15 +306,16 @@ class FaceEngineOutput extends Component {
               className={cx(styles.faceTabBody, {
                 [styles.editMode]: editMode
               })}
+              data-veritone-component="face-engine-output-faceentities"
             >
               <FaceEntities
                 editMode={editMode}
                 viewMode={viewMode}
-                faces={this.props.recognizedFaces}
+                faces={recognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
-                entities={this.props.entities}
+                entities={entities}
                 onSelectEntity={onSelectEntity}
                 selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
@@ -389,19 +333,19 @@ class FaceEngineOutput extends Component {
               className={cx(styles.faceTabBody, {
                 [styles.editMode]: editMode
               })}
+              data-veritone-component="face-engine-output-facegrid"
             >
               <FaceGrid
                 faces={unrecognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 editMode={editMode}
-                viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
                 onRemoveFaces={onRemoveFaces}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
-                isSearchingEntities={this.props.isSearchingEntities}
+                isSearchingEntities={isSearchingEntities}
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
                 onAddToExistingEntity={onAddToExistingEntity}

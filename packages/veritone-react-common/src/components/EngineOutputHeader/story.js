@@ -11,11 +11,17 @@ storiesOf('EngineOutputHeader', module)
     let engines = [
       {
         name: 'My test engine',
-        id: '1234-5678-9876'
+        id: '1234-5678-9876',
+        category: {
+          categoryType: 'dummy'
+        }
       },
       {
         name: 'My test engine 2',
-        id: '0987-6543-1234'
+        id: '0987-6543-1234',
+        category: {
+          categoryType: 'dummy'
+        }
       }
     ];
 

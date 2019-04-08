@@ -1,9 +1,8 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 
 import ObjectDetectionEngineOutput from 'components/ObjectDetectionEngineOutput';
 import EngineOutputHeader from 'components/EngineOutputHeader';
-import ObjectGroup from 'components/ObjectDetectionEngineOutput/ObjectGroup';
 
 describe('ObjectDetectionEngineOutput', () => {
   const data = [
@@ -18,6 +17,14 @@ describe('ObjectDetectionEngineOutput', () => {
           object: {
             label: 'data',
             confidence: 0.942457377910614
+          }
+        },
+        {
+          startTimeMs: 2000,
+          stopTimeMs: 3000,
+          object: {
+            label: 'next_data',
+            confidence: 0.892457377910614
           }
         }
       ]
@@ -45,32 +52,22 @@ describe('ObjectDetectionEngineOutput', () => {
     expect(wrapper.contains(EngineOutputHeader)).toEqual(true);
   });
 
-  it('should render each ObjectGroup passed in the data array', () => {
-    const wrapper = shallow(<ObjectDetectionEngineOutput data={data} />);
+  it('should render each virtual list', () => {
+    const wrapper = mount(<ObjectDetectionEngineOutput data={data} />);
 
-    expect(wrapper.find(ObjectGroup).length).toEqual(2);
-    expect(
-      wrapper.containsAllMatchingElements([
-        /* eslint-disable react/jsx-key */
-        <ObjectGroup objectGroup={data[0]} />,
-        <ObjectGroup objectGroup={data[1]} />
-      ])
-    ).toBeTruthy();
+    expect(wrapper.find('List').length).toEqual(1);
   });
 
-  it('should call props.onObjectOccurrenceClick when an object pill is clicked', () => {
+  it('should call props.onObjectClick when an object pill is clicked', () => {
     const handler = jest.fn();
-    const wrapper = shallow(
-      <ObjectDetectionEngineOutput
-        data={data}
-        onObjectOccurrenceClick={handler}
-      />
+    const wrapper = mount(
+      <ObjectDetectionEngineOutput data={data} onObjectClick={handler} />
     );
 
     wrapper
-      .find(ObjectGroup)
-      .get(0)
-      .props.onObjectClick(0, 2000);
+      .find('.objectPill')
+      .first()
+      .simulate('click');
     expect(handler).toHaveBeenCalledWith(0, 2000);
   });
 });

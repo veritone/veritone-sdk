@@ -70,10 +70,7 @@ export default class EngineCategoryConfigList extends Component {
 
   componentDidUpdate() {
     // Detect if speaker data is available
-    const {
-      speakerCategoryType,
-      outputConfigsByCategoryId
-    } = this.props;
+    const { speakerCategoryType, outputConfigsByCategoryId } = this.props;
     let hasSpeakerDataBeenSet = this.props.hasSpeakerData;
     Object.keys(outputConfigsByCategoryId).forEach(categoryId => {
       const categoryEngines = outputConfigsByCategoryId[categoryId];
@@ -98,10 +95,13 @@ export default class EngineCategoryConfigList extends Component {
 
     // Temporary bypass of speaker category since we are planning
     // to separate it from transcription output in the future
-    const modifiedOutputConfigsByCategoryId = Object.keys(outputConfigsByCategoryId)
-      .filter(categoryId => 
-        outputConfigsByCategoryId[categoryId].find(engine => engine.categoryType !== speakerCategoryType)
-      );
+    const modifiedOutputConfigsByCategoryId = Object.keys(
+      outputConfigsByCategoryId
+    ).filter(categoryId =>
+      outputConfigsByCategoryId[categoryId].find(
+        engine => engine.categoryType !== speakerCategoryType
+      )
+    );
 
     return (
       <div data-veritone-component="engine-category-config-list">

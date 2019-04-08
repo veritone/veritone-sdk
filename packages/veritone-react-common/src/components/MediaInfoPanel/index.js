@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import { Manager, Target, Popper } from 'react-popper';
+import { Manager, Reference, Popper } from 'react-popper';
 import { func, arrayOf, shape, string, bool } from 'prop-types';
 import EditIcon from '@material-ui/icons/Edit';
 import MenuList from '@material-ui/core/MenuList';
@@ -207,66 +207,80 @@ class MediaInfoPanel extends Component {
     };
 
     const contentElement = (
-      <div className={styles.mediaInfoPanel}>
+      <div
+        className={styles.mediaInfoPanel}
+        data-veritone-component="media-info-panel"
+      >
         <div>
-          <div className={styles.infoPanelHeader}>
+          <div
+            className={styles.infoPanelHeader}
+            data-veritone-component="media-info-panel-header"
+          >
             <span>Metadata</span>
             <div className={styles.headerMenu}>
               {this.props.canEditMedia() && (
                 <Manager>
-                  <Target>
-                    <div ref={this.setMenuTarget}>
-                        <IconButton
-                          className={styles.pageHeaderActionButton}
-                          aria-label="Edit"
-                          aria-haspopup="true"
-                          aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                          onClick={this.toggleIsMenuOpen}
-                        >
-                          <Tooltip
-                            id="tooltip-show-edit-menu"
-                            title="Edit"
-                            PopperProps={{
-                              style: {
-                                pointerEvents: 'none'
-                              }
-                            }}
+                  <Reference>
+                    {({ ref }) => (
+                      <div ref={ref}>
+                        <div ref={this.setMenuTarget}>
+                          <IconButton
+                            className={styles.pageHeaderActionButton}
+                            aria-label="Edit"
+                            aria-haspopup="true"
+                            aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                            onClick={this.toggleIsMenuOpen}
                           >
-                            <EditIcon />
-                          </Tooltip>
-                        </IconButton>
-                    </div>
-                  </Target>
+                            <Tooltip
+                              id="tooltip-show-edit-menu"
+                              title="Edit"
+                              PopperProps={{
+                                style: {
+                                  pointerEvents: 'none'
+                                }
+                              }}
+                            >
+                              <EditIcon />
+                            </Tooltip>
+                          </IconButton>
+                        </div>
+                      </div>
+                    )}
+                  </Reference>
                   {isMenuOpen && (
                     <Popper
                       className={styles.popperContent}
                       placement="bottom-end"
                       eventsEnabled={isMenuOpen}
                     >
-                      <ClickAwayListener onClickAway={this.onMenuClose}>
-                        <Grow
-                          in={isMenuOpen}
-                          id="menu-list-grow"
-                          style={{ transformOrigin: '0 0 0' }}
-                        >
-                          <Paper>
-                            <MenuList role="menu">
-                              <MenuItem
-                                classes={{ root: styles.headerMenuItem }}
-                                onClick={this.onMetadataOpen}
-                              >
-                                Edit Metadata
-                              </MenuItem>
-                              <MenuItem
-                                classes={{ root: styles.headerMenuItem }}
-                                onClick={this.onEditTagsOpen}
-                              >
-                                Edit Tags
-                              </MenuItem>
-                            </MenuList>
-                          </Paper>
-                        </Grow>
-                      </ClickAwayListener>
+                      {({ ref, style, placement }) => (
+                        <div ref={ref} style={style} data-placement={placement}>
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onMetadataOpen}
+                                  >
+                                    Edit Metadata
+                                  </MenuItem>
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onEditTagsOpen}
+                                  >
+                                    Edit Tags
+                                  </MenuItem>
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </div>
+                      )}
                     </Popper>
                   )}
                 </Manager>
@@ -283,7 +297,10 @@ class MediaInfoPanel extends Component {
               </IconButton>
             </div>
           </div>
-          <Paper className={styles.infoPanelContent}>
+          <Paper
+            className={styles.infoPanelContent}
+            data-veritone-component="media-info-panel-content"
+          >
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>

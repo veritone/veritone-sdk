@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 
 import EngineOutputHeader from './';
@@ -44,11 +43,13 @@ describe('EngineOutputHeader', () => {
     let engines = [
       {
         name: 'My test engine',
-        id: '1234-5678-9876'
+        id: '1234-5678-9876',
+        category: { categoryType: 'dummy' }
       },
       {
         name: 'My test engine 2',
-        id: '0987-6543-1234'
+        id: '0987-6543-1234',
+        category: { categoryType: 'dummy' }
       }
     ];
 
@@ -56,7 +57,7 @@ describe('EngineOutputHeader', () => {
       <EngineOutputHeader title="Test Title" engines={engines} />
     );
 
-    expect(wrapper.find(Select).exists()).toEqual(true);
+    expect(wrapper.find('.engineSelect').exists()).toEqual(true);
   });
 
   it('should call onExpandClick to be called when the expand button is clicked', () => {

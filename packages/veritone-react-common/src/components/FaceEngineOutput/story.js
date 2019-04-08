@@ -256,7 +256,8 @@ class FaceEngineOutputStory extends Component {
       {
         id: 'f44aa80e-4650-c55c-58e7-49c965019790',
         name: 'Temporal',
-        status: 'completed'
+        status: 'completed',
+        category: { categoryType: 'dummy' }
       }
     ],
     selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'

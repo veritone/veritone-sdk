@@ -30,7 +30,9 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId),
-    transcriptCategoryType: engineOutputExportModule.transcriptCategoryType(state),
+    transcriptCategoryType: engineOutputExportModule.transcriptCategoryType(
+      state
+    ),
     initialSubtitleConfig: engineOutputExportModule.getSubtitleConfig(
       state,
       categoryId
@@ -130,7 +132,8 @@ export default class EngineCategoryConfig extends Component {
       initialSpeakerToggle,
       transcriptCategoryType
     } = this.props;
-    const isTranscriptionCategory = category.categoryType === transcriptCategoryType;
+    const isTranscriptionCategory =
+      category.categoryType === transcriptCategoryType;
 
     let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
@@ -155,7 +158,9 @@ export default class EngineCategoryConfig extends Component {
 
     return (
       <div data-veritone-component="engine-category-config">
-        <ListItem data-veritone-element={`${kebabCase(category.name)}-engine-category`}>
+        <ListItem
+          data-veritone-element={`${kebabCase(category.name)}-engine-category`}
+        >
           <ListItemIcon>
             <Icon className={category.iconClass} />
           </ListItemIcon>
@@ -187,23 +192,26 @@ export default class EngineCategoryConfig extends Component {
                 />
               );
             })}
-            {hasSpeakerData && isTranscriptionCategory && (
-              <ListItem className={styles.engineListItem}>
-                <div className={styles.customizeOutputBox}>
-                  <RecordVoiceOverIcon className={styles.customizeSettingsIcon} />
-                  <span className={styles.customizeSettingsText}>
-                    Include speaker separation results
-                  </span>
-                  <Switch
-                    className={styles.customizeButton}
-                    color="primary"
-                    checked={initialSpeakerToggle.withSpeakerData}
-                    onChange={this.handleSpeakerToggle}
-                    data-veritone-element="with-speaker-data"
-                  />
-                </div>
-              </ListItem>
-            )}
+            {hasSpeakerData &&
+              isTranscriptionCategory && (
+                <ListItem className={styles.engineListItem}>
+                  <div className={styles.customizeOutputBox}>
+                    <RecordVoiceOverIcon
+                      className={styles.customizeSettingsIcon}
+                    />
+                    <span className={styles.customizeSettingsText}>
+                      Include speaker separation results
+                    </span>
+                    <Switch
+                      className={styles.customizeButton}
+                      color="primary"
+                      checked={initialSpeakerToggle.withSpeakerData}
+                      onChange={this.handleSpeakerToggle}
+                      data-veritone-element="with-speaker-data"
+                    />
+                  </div>
+                </ListItem>
+              )}
             {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>

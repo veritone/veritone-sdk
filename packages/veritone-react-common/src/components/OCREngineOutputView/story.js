@@ -19,7 +19,8 @@ const texts = [
 const engines = [
   {
     id: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
-    name: 'Cortex'
+    name: 'Cortex',
+    category: { categoryType: 'dummy' }
   }
 ];
 const mockData = genMockData(0, 60000, 1000, texts);

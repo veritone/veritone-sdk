@@ -177,12 +177,8 @@ export default createReducer(defaultState, {
             categoryId
           ]);
           const storedSpeakerToggle = state.hasSpeakerData
-            ? (
-                get(state, [
-                  'speakerToggleCache',
-                  categoryId
-                ]) || get(state, 'speakerToggleCache')
-              )
+            ? get(state, ['speakerToggleCache', categoryId]) ||
+              get(state, 'speakerToggleCache')
             : {};
           return {
             ...config,
@@ -195,8 +191,8 @@ export default createReducer(defaultState, {
                       ...storedSpeakerToggle
                     }
                   : {
-                    ...storedSpeakerToggle
-                  }
+                      ...storedSpeakerToggle
+                    }
               };
             })
           };
@@ -232,7 +228,7 @@ export default createReducer(defaultState, {
             formats: config.formats.map(format => {
               return {
                 ...format,
-                options: { 
+                options: {
                   ...format.options,
                   withSpeakerData: values
                 }
@@ -242,7 +238,7 @@ export default createReducer(defaultState, {
         }
         return config;
       })
-    }
+    };
   },
   [STORE_SPEAKER_TOGGLE](
     state,
@@ -267,7 +263,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       hasSpeakerData
-    }
+    };
   },
   [APPLY_SUBTITLE_CONFIGS](
     state,
@@ -418,11 +414,12 @@ export const getSubtitleConfig = (state, categoryId) =>
 export const getSpeakerToggle = (state, categoryId) => {
   // If the category speaker toggle is undefined, then
   // fallback to the default across all categories
-  const speakerToggleCache = get(local(state), ['speakerToggleCache', categoryId]) ||
+  const speakerToggleCache =
+    get(local(state), ['speakerToggleCache', categoryId]) ||
     get(local(state), 'speakerToggleCache');
   return speakerToggleCache;
 };
-export const hasSpeakerData = (state) => get(local(state), 'hasSpeakerData');
+export const hasSpeakerData = state => get(local(state), 'hasSpeakerData');
 export const isBulkExport = state => get(local(state), 'isBulkExport');
 export const selectedFormats = state =>
   get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
@@ -531,8 +528,9 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
     query,
     variables: {
       includeMedia: getIncludeMedia(getState()),
-      outputConfigurations: getOutputConfigurations(getState())
-        .map(config => pick(config, ['engineId', 'categoryId', 'formats'])),
+      outputConfigurations: getOutputConfigurations(getState()).map(config =>
+        pick(config, ['engineId', 'categoryId', 'formats'])
+      ),
       tdoData
     },
     dispatch,

@@ -33,10 +33,19 @@
       }
     }
 
-    .outputHeaderSelect {
-      @include mui-text('body1');
+    .outputHeaderSelectContainer {
       margin-left: 20px;
       float: right;
+    }
+
+    .outputHeaderSelect {
+      @include mui-text('body1');
+    }
+
+    .outputHeaderHelperText {
+      height: 0 !important;
+      min-height: 0 !important;
+      margin-bottom: -8px !important;
     }
   }
 
@@ -44,8 +53,9 @@
     flex: auto;
     clear: both;
     width: 100%;
-    height: calc(100% - 75px);
+    height: calc(100vh - 250px);
     padding-top: 20px;
+    padding-bottom: 25px;
   }
 }
 

@@ -3,57 +3,62 @@ import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
 import { find, get } from 'lodash';
 import cx from 'classnames';
 
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Divider from '@material-ui/core/Divider';
-import DoneIcon from '@material-ui/icons/Done';
-
 import EngineOutputHeader from '../EngineOutputHeader';
-import TranscriptContent, { View, Edit } from './TranscriptContent';
 import SpeakerTranscriptContent from './SpeakerTranscriptContent';
 import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
   static propTypes = {
-    data: arrayOf(
-      shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        status: string,
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            guid: string,
-            words: arrayOf(
-              shape({
-                word: string.isRequired,
-                confidence: number
-              })
-            )
-          })
-        )
-      })
-    ),
-    speakerData: arrayOf(
-      shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        status: string,
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            speakerId: string.isRequired
-          })
-        )
-      })
-    ),
+    parsedData: shape({
+      lazyLoading: bool,
+      snippetSegments: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          series: arrayOf(
+            shape({
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              guid: string.isRequired,
+              words: arrayOf(
+                shape({
+                  word: string.isRequired,
+                  confidence: number
+                })
+              )
+            })
+          )
+        })
+      ),
+      speakerSegments: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          status: string,
+          series: arrayOf(
+            shape({
+              guid: string.isRequired,
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              speakerId: string.isRequired,
+              fragments: arrayOf(
+                shape({
+                  startTimeMs: number.isRequired,
+                  stopTimeMs: number.isRequired,
+                  guid: string.isRequired,
+                  words: arrayOf(
+                    shape({
+                      word: string.isRequired,
+                      confidence: number
+                    })
+                  )
+                })
+              )
+            })
+          )
+        })
+      )
+    }),
     selectedEngineId: string,
     selectedSpeakerEngineId: string,
     engines: arrayOf(
@@ -76,8 +81,6 @@ export default class TranscriptEngineOutput extends Component {
 
     editMode: bool,
     onChange: func,
-    editType: string,
-    onEditTypeChange: func,
 
     onClick: func,
     onScroll: func,
@@ -92,10 +95,9 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
     outputNullState: node,
-    bulkEditEnabled: bool,
     showingUserEditedOutput: bool,
+    showingUserEditedSpeakerOutput: bool,
     onToggleUserEditedOutput: func,
-    viewTypeSelectionEnabled: bool,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
@@ -103,225 +105,121 @@ export default class TranscriptEngineOutput extends Component {
     onRestoreOriginalClick: func.isRequired,
     combineViewTypes: arrayOf(
       shape({
-        name: string,
-        id: string
+        name: string.isRequired,
+        id: string.isRequired
       })
     ),
     handleCombineViewTypeChange: func,
-    selectedCombineViewTypeId: string
+    selectedCombineViewTypeId: string,
+    cursorPosition: shape({
+      start: shape({
+        guid: string,
+        offset: number
+      }),
+      end: shape({
+        guid: string,
+        offset: number
+      })
+    }),
+    clearCursorPosition: func,
+    hotKeyCategories: arrayOf(
+      shape({
+        label: string,
+        commands: arrayOf(
+          shape({
+            label: string.isRequired,
+            hotkeys: arrayOf(
+              shape({
+                platform: string,
+                operator: string,
+                keys: arrayOf(string).isRequired
+              })
+            ).isRequired
+          })
+        ).isRequired
+      })
+    ),
+    setIncomingChanges: func
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
-    editType: Edit.SNIPPET,
-    viewTypeSelectionEnabled: false,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      viewType: View.OVERVIEW,
-      editType: Edit.SNIPPET
-    };
-  }
-
-  handleUserEditChange = evt => {
-    if (evt.target.value == 'restoreOriginal') {
-      this.props.onRestoreOriginalClick();
+  handleUserEditChange = engine => viewType => () => {
+    if (viewType == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick(engine)();
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(engine)(viewType === 'userEdited');
   };
 
   handleViewChange = event => {
     this.setState({ viewType: event.target.value });
   };
 
-  handleEditChange = event => {
-    const onEditChangeCallback = this.props.onEditTypeChange;
-    if (onEditChangeCallback) {
-      onEditChangeCallback({ type: event.target.value });
-    } else {
-      this.setState({ editType: event.target.value });
-    }
-  };
-
-  renderEditOptions() {
-    const editType = this.props.onEditTypeChange
-      ? this.props.editType
-      : this.state.editType;
-    return (
-      <RadioGroup
-        row
-        aria-label="edit_mode"
-        value={editType}
-        name="editMode"
-        className={styles.radioButtonGroup}
-        onChange={this.handleEditChange}
-      >
-        <FormControlLabel
-          value={Edit.SNIPPET}
-          classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
-          control={
-            <Radio
-              color="primary"
-              disableRipple
-              classes={{ root: styles.radioRoot }}
-            />
-          }
-          label="Snippet Edit Mode"
-        />
-        {this.props.bulkEditEnabled && (
-          <FormControlLabel
-            value={Edit.BULK}
-            classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
-            control={
-              <Radio
-                color="primary"
-                disableRipple
-                classes={{ root: styles.radioRoot }}
-              />
-            }
-            label="Bulk Edit Mode"
-          />
-        )}
-      </RadioGroup>
-    );
-  }
-
-  renderResultOptions() {
-    const { showingUserEditedOutput } = this.props;
-    return (
-      <Select
-        autoWidth
-        value={showingUserEditedOutput ? 'userEdited' : 'original'}
-        onChange={this.handleUserEditChange}
-        className={styles.outputHeaderSelect}
-        MenuProps={{
-          anchorOrigin: {
-            horizontal: 'right',
-            vertical: 'bottom'
-          },
-          transformOrigin: {
-            horizontal: 'right',
-            vertical: 'top'
-          },
-          getContentAnchorEl: null
-        }}
-        // eslint-disable-next-line
-        renderValue={() =>
-          showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'
-        }
-      >
-        <MenuItem value="userEdited">
-          {showingUserEditedOutput && (
-            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-              <DoneIcon />
-            </ListItemIcon>
-          )}
-          <ListItemText
-            classes={{
-              primary: cx(styles.selectMenuItem, {
-                [styles.menuItemInset]: !showingUserEditedOutput
-              })
-            }}
-            primary="User-Edited"
-          />
-        </MenuItem>
-        <MenuItem value="original">
-          {!showingUserEditedOutput && (
-            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
-              <DoneIcon />
-            </ListItemIcon>
-          )}
-          <ListItemText
-            classes={{
-              primary: cx(styles.selectMenuItem, {
-                [styles.menuItemInset]: showingUserEditedOutput
-              })
-            }}
-            primary="Original (View Only)"
-          />
-        </MenuItem>
-        <Divider light />
-        <MenuItem value="restoreOriginal">
-          <ListItemText
-            classes={{
-              root: styles.restoreOriginalMenuItem,
-              primary: cx(styles.selectMenuItem, styles.menuItemInset)
-            }}
-            primary="Restore Original"
-          />
-        </MenuItem>
-      </Select>
-    );
-  }
-
-  renderViewOptions() {
-    return (
-      <Select
-        autoWidth
-        value={this.state.viewType}
-        className={styles.outputHeaderSelect}
-        onChange={this.handleViewChange}
-        MenuProps={{
-          anchorOrigin: {
-            horizontal: 'center',
-            vertical: 'bottom'
-          },
-          transformOrigin: {
-            horizontal: 'center',
-            vertical: 'top'
-          },
-          getContentAnchorEl: null
-        }}
-      >
-        <MenuItem value={View.TIME} className={styles.selectMenuItem}>
-          Time
-        </MenuItem>
-        <MenuItem value={View.OVERVIEW} className={styles.selectMenuItem}>
-          Overview
-        </MenuItem>
-      </Select>
-    );
-  }
-
   renderHeader() {
     const {
       title,
       engines,
+      speakerEngines,
       selectedEngineId,
+      selectedSpeakerEngineId,
       editMode,
       onEngineChange,
       onCombineEngineChange,
       onExpandClick,
       headerClassName,
-      viewTypeSelectionEnabled,
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      speakerEngines,
-      selectedSpeakerEngineId,
       combineViewTypes,
       selectedCombineViewTypeId,
-      handleCombineViewTypeChange
+      handleCombineViewTypeChange,
+      showingUserEditedOutput,
+      showingUserEditedSpeakerOutput,
+      parsedData,
+      hotKeyCategories
     } = this.props;
-    const selectedEngine = find(engines, { id: selectedEngineId });
-      
+
+    let selectedEngineWithData = {
+      ...find(engines, { id: selectedEngineId }),
+      showingUserEditedOutput,
+      engineResults: parsedData.snippetSegments
+    };
+    let selectedSpeakerEngineWithData = find(speakerEngines, {
+      id: selectedSpeakerEngineId
+    });
+
+    if (
+      selectedSpeakerEngineWithData &&
+      selectedCombineViewTypeId &&
+      selectedCombineViewTypeId.includes('show')
+    ) {
+      selectedSpeakerEngineWithData = {
+        ...selectedSpeakerEngineWithData,
+        showingUserEditedOutput: showingUserEditedSpeakerOutput,
+        engineResults: parsedData.speakerSegments
+      };
+    }
+
     return (
       <EngineOutputHeader
         title={title}
         hideTitle={editMode}
         engines={engines}
+        selectedEngineWithData={selectedEngineWithData}
         selectedEngineId={selectedEngineId}
+        selectedCombineEngineWithData={selectedSpeakerEngineWithData}
+        selectedCombineEngineId={selectedSpeakerEngineId}
         onEngineChange={onEngineChange}
         onCombineEngineChange={onCombineEngineChange}
+        onUserEditChange={this.handleUserEditChange}
         onExpandClick={onExpandClick}
         className={headerClassName}
         showMoreMenuButton={!editMode && get(moreMenuItems, 'length')}
@@ -331,32 +229,23 @@ export default class TranscriptEngineOutput extends Component {
         disableEditButton={disableEditButton}
         disableEngineSelect={!!editMode}
         combineEngines={speakerEngines}
-        selectedCombineEngineId={selectedSpeakerEngineId}
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
-      >
-        <div className={styles.controllers}>
-          {editMode && this.renderEditOptions()}
-          {!editMode &&
-            selectedEngine &&
-            selectedEngine.hasUserEdits &&
-            this.renderResultOptions()}
-          {!editMode && viewTypeSelectionEnabled && this.renderViewOptions()}
-        </div>
-      </EngineOutputHeader>
+        hotKeyCategories={hotKeyCategories}
+      />
     );
   }
 
   renderBody() {
     const {
-      data,
+      parsedData,
+      cursorPosition,
+      clearCursorPosition,
       onClick,
       onScroll,
       editMode,
       onChange,
-      editType,
-      onEditTypeChange,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs,
@@ -366,52 +255,34 @@ export default class TranscriptEngineOutput extends Component {
       outputNullState,
       selectedEngineId,
       selectedCombineViewTypeId,
-      speakerData
+      setIncomingChanges
     } = this.props;
-
-    const currentEditType = onEditTypeChange ? editType : this.state.editType;
 
     return (
       outputNullState || (
-        <div className={styles.content}>
+        <div
+          className={styles.content}
+          data-veritone-component="transciption-engine-output-content"
+        >
           {
-            selectedCombineViewTypeId === 'speaker-view' ? 
-            (
-              <SpeakerTranscriptContent
-                data={data}
-                speakerData={speakerData}
-                editMode={editMode}
-                viewType={this.state.viewType}
-                editType={currentEditType}
-                mediaPlayerTimeMs={mediaPlayerTimeMs}
-                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-                estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-                mediaLengthMs={mediaLengthMs}
-                neglectableTimeMs={neglectableTimeMs}
-                onClick={onClick}
-                onScroll={onScroll}
-                onChange={onChange}
-                selectedEngineId={selectedEngineId}
-                className={contentClassName}
-              />
-            ) : (
-              <TranscriptContent
-                data={data}
-                editMode={editMode}
-                viewType={this.state.viewType}
-                editType={currentEditType}
-                mediaPlayerTimeMs={mediaPlayerTimeMs}
-                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-                estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-                mediaLengthMs={mediaLengthMs}
-                neglectableTimeMs={neglectableTimeMs}
-                onClick={onClick}
-                onScroll={onScroll}
-                onChange={onChange}
-                selectedEngineId={selectedEngineId}
-                className={contentClassName}
-              />
-            )
+            <SpeakerTranscriptContent
+              parsedData={parsedData}
+              editMode={editMode}
+              mediaPlayerTimeMs={mediaPlayerTimeMs}
+              mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+              estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+              mediaLengthMs={mediaLengthMs}
+              neglectableTimeMs={neglectableTimeMs}
+              cursorPosition={cursorPosition}
+              clearCursorPosition={clearCursorPosition}
+              onClick={onClick}
+              onScroll={onScroll}
+              onChange={onChange}
+              selectedEngineId={selectedEngineId}
+              className={contentClassName}
+              selectedCombineViewTypeId={selectedCombineViewTypeId}
+              setIncomingChanges={setIncomingChanges}
+            />
           }
         </div>
       )
@@ -421,7 +292,10 @@ export default class TranscriptEngineOutput extends Component {
   render() {
     const { className } = this.props;
     return (
-      <div className={cx(styles.transcriptOutput, className)}>
+      <div
+        className={cx(styles.transcriptOutput, className)}
+        data-veritone-component="transciption-engine-output"
+      >
         {this.renderHeader()}
         {this.renderBody()}
       </div>

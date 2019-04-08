@@ -1,11 +1,23 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import cx from 'classnames';
-import { msToReadableString } from 'helpers/time';
-import { isEmpty } from 'lodash';
+import { debounce } from 'lodash';
+
+import {
+  AutoSizer,
+  List,
+  CellMeasurer,
+  CellMeasurerCache
+} from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
+import OCRSegment from './OCRSegment';
 import styles from './styles.scss';
+
+const cellCache = new CellMeasurerCache({
+  defaultHeight: 50,
+  fixedWidth: true
+});
 
 class OCREngineOutputView extends Component {
   static propTypes = {
@@ -46,17 +58,111 @@ class OCREngineOutputView extends Component {
     data: []
   };
 
+  componentDidMount() {
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+    // Create resize watchers to calculate width available for text
+    window.addEventListener('resize', this.onWindowResize);
+    setTimeout(this.onWindowResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  seriesPerPage = 20;
+  windowResizeDelay = 100;
+
+  onWindowResize = debounce(
+    () => this.handleWindowResize(),
+    this.windowResizeDelay
+  );
+
+  handleWindowResize = () => {
+    if (this.virtualList) {
+      cellCache.clearAll();
+      this.virtualList.forceUpdateGrid();
+    }
+  };
+
+  virtualMeasure = (measure, index) => () => {
+    measure && measure();
+    if (this.virtualList) {
+      this.virtualList.forceUpdateGrid();
+    }
+  };
+
+  generateVirtualizedOcrBlocks = () => {
+    const { data } = this.props;
+    const totalOcrSeries = data.reduce(
+      (acc, seg) => acc.concat(seg.series),
+      []
+    );
+    const newVirtualizedSerieBlocks = [];
+
+    for (
+      let index = 0, curSeries = [];
+      index < totalOcrSeries.length;
+      index++
+    ) {
+      const serie = totalOcrSeries[index];
+      if (curSeries.length < this.seriesPerPage) {
+        curSeries.push(serie);
+      }
+      if (
+        curSeries.length === this.seriesPerPage ||
+        index === totalOcrSeries.length - 1
+      ) {
+        newVirtualizedSerieBlocks.push({ series: curSeries });
+        curSeries = [];
+      }
+    }
+    return newVirtualizedSerieBlocks;
+  };
+
+  ocrRowRenderer = ({ key, parent, index, style }) => {
+    const { currentMediaPlayerTime, onOcrClicked } = this.props;
+
+    const virtualizedSerieBlocks = this.generateVirtualizedOcrBlocks();
+    const virtualizedSerieBlock = virtualizedSerieBlocks[index];
+
+    return (
+      <CellMeasurer
+        key={key}
+        parent={parent}
+        cache={cellCache}
+        columnIndex={0}
+        style={{ width: '100%' }}
+        rowIndex={index}
+      >
+        {({ measure }) => (
+          <div
+            className={`ocr-segment-block-${index}`}
+            style={{ ...style, width: '100%' }}
+          >
+            <OCRSegment
+              virtualMeasure={this.virtualMeasure(measure, index)}
+              series={virtualizedSerieBlock.series}
+              currentMediaPlayerTime={currentMediaPlayerTime}
+              onOcrClicked={onOcrClicked}
+            />
+          </div>
+        )}
+      </CellMeasurer>
+    );
+  };
+
   render() {
     const {
-      data,
       className,
       engines,
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      currentMediaPlayerTime,
       outputNullState
     } = this.props;
+    const virtualizedSerieBlocks = this.generateVirtualizedOcrBlocks();
 
     return (
       <div className={cx(styles.ocrOutputView, className)}>
@@ -68,55 +174,28 @@ class OCREngineOutputView extends Component {
           onExpandClick={onExpandClick}
         />
         {outputNullState || (
-          <div className={styles.ocrContent}>
-            {data.map(dataObject => {
-              return (
-                <Fragment
-                  key={`ocr-object-group-${dataObject.sourceEngineId}-${
-                    dataObject.taskId
-                  }`}
-                >
-                  {!isEmpty(dataObject.series) &&
-                    dataObject.series
-                      .filter(ocrObject => ocrObject.object && ocrObject.object.text)
-                      .map(ocrObject => {
-                      return (
-                        <div
-                          key={`ocr-object-${ocrObject.startTimeMs}-${
-                            ocrObject.stopTimeMs
-                          }-${ocrObject.object.text}`}
-                          className={cx(styles.ocrContainer, {
-                            [styles.highlighted]:
-                              currentMediaPlayerTime >= ocrObject.startTimeMs &&
-                              currentMediaPlayerTime <= ocrObject.stopTimeMs
-                          })}
-                          // eslint-disable-next-line
-                          onClick={() =>
-                            this.props.onOcrClicked(
-                              ocrObject.startTimeMs,
-                              ocrObject.stopTimeMs
-                            )
-                          }
-                        >
-                          <span className={styles.ocrText}>
-                            {ocrObject.object.text}
-                          </span>
-                          {ocrObject.startTimeMs >= 0 &&
-                            ocrObject.stopTimeMs >= 0 && (
-                              <span className={styles.ocrObjectTimestamp}>
-                                {`${msToReadableString(
-                                  ocrObject.startTimeMs
-                                )} - ${msToReadableString(
-                                  ocrObject.stopTimeMs
-                                )}`}
-                              </span>
-                            )}
-                        </div>
-                      );
-                    })}
-                </Fragment>
-              );
-            })}
+          <div
+            className={styles.ocrContent}
+            data-veritone-component="orc-engine-output-content"
+          >
+            <AutoSizer style={{ width: '100%', height: '100%' }}>
+              {({ height, width }) => (
+                <List
+                  // eslint-disable-next-line
+                  ref={ref => (this.virtualList = ref)}
+                  className={'virtual-ocr-list'}
+                  key={`virtual-ocr-grid`}
+                  width={width || 900}
+                  height={height || 500}
+                  style={{ width: '100%', height: '100%' }}
+                  deferredMeasurementCache={cellCache}
+                  overscanRowCount={1}
+                  rowRenderer={this.ocrRowRenderer}
+                  rowCount={virtualizedSerieBlocks.length}
+                  rowHeight={cellCache.rowHeight}
+                />
+              )}
+            </AutoSizer>
           </div>
         )}
       </div>

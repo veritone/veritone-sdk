@@ -224,7 +224,10 @@ export default class AddToExistingEntityDialog extends Component {
       updateUserSetting
     } = this.props;
     const { selectedEntity } = this.state;
-    if (get(selectedEntity, 'ownedByOrganization') && get(selectedIdentifiers, 'length')) {
+    if (
+      get(selectedEntity, 'ownedByOrganization') &&
+      get(selectedIdentifiers, 'length')
+    ) {
       createEntityIdentifiers(
         selectedIdentifiers.map(face => {
           return {
@@ -405,7 +408,7 @@ export default class AddToExistingEntityDialog extends Component {
                                       !isUndefined(
                                         result.ownedByOrganization
                                       ) && !result.ownedByOrganization
-                                        ? 'This person belongs to a shared library.'
+                                        ? 'This person belongs to a shared library and is managed by another organization.'
                                         : ''
                                     }
                                     placement="top-start"

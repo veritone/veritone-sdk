@@ -59,6 +59,7 @@ export default class AlertDialog extends Component {
     } = this.props;
     const forwardingProps = { ...this.props };
     const omittedProps = [
+      'titleLabel',
       'onCancel',
       'onApprove',
       'cancelValue',
@@ -89,9 +90,7 @@ export default class AlertDialog extends Component {
         >
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
-        <DialogActions
-          classes={{ root: styles.dialogActions }}
-        >
+        <DialogActions classes={{ root: styles.dialogActions }}>
           {onCancel && (
             <Button
               onClick={this.handleCancel}

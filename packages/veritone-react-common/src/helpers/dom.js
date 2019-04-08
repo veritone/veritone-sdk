@@ -46,3 +46,21 @@ export function getMousePosition(e) {
 
   return { x, y };
 }
+
+export function hasCommandModifier(e) {
+  const platform = navigator.platform;
+  const isOSX = platform.includes('Mac');
+  return e && isOSX ? !!e.metaKey && !e.altKey : isCtrlKeyCommand(e);
+}
+
+export function isCtrlKeyCommand(e) {
+  return !!e.ctrlKey && !e.altKey;
+}
+
+export function hasShiftKey(e) {
+  return e && e.shiftKey;
+}
+
+export function hasControlModifier(e) {
+  return e && !!e.ctrlKey && !e.altKey;
+}

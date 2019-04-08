@@ -24,6 +24,8 @@ export const UPDATE_TDO_CONTENT_TEMPLATES = `vtn/${namespace}_UPDATE_TDO_CONTENT
 export const UPDATE_TDO_CONTENT_TEMPLATES_FAILURE = `vtn/${namespace}_UPDATE_TDO_CONTENT_TEMPLATES_FAILURE`;
 export const SELECT_ENGINE_CATEGORY = `vtn/${namespace}_SELECT_ENGINE_CATEGORY`;
 export const SET_SELECTED_ENGINE_ID = `vtn/${namespace}_SET_SELECTED_ENGINE_ID`;
+export const SET_SELECTED_COMBINE_ENGINE_ID = `vtn/${namespace}_SET_SELECTED_COMBINE_ENGINE_ID`;
+export const SET_SELECTED_COMBINE_VIEW_TYPE = `vtn/${namespace}_SET_SELECTED_COMBINE_VIEW_TYPE`;
 export const TOGGLE_EDIT_MODE = `vtn/${namespace}_TOGGLE_EDIT_MODE`;
 export const TOGGLE_INFO_PANEL = `vtn/${namespace}_TOGGLE_INFO_PANEL`;
 export const INITIALIZE_WIDGET = `vtn/${namespace}_INITIALIZE_WIDGET`;
@@ -91,6 +93,17 @@ const defaultMDPState = {
     {
       combineType: 'speaker',
       withType: 'transcript',
+      viewTypes: [
+        {
+          name: 'Show Engine Output',
+          id: 'show-speaker-view',
+          combine: true
+        },
+        {
+          name: 'Hide Engine Output',
+          id: 'transcript-view'
+        }
+      ],
       quickExportOptions: {
         withSpeakerData: true
       }
@@ -445,6 +458,36 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         selectedEngineId: payload
+      }
+    };
+  },
+  [SET_SELECTED_COMBINE_ENGINE_ID](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        selectedCombineEngineId: payload
+      }
+    };
+  },
+  [SET_SELECTED_COMBINE_VIEW_TYPE](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        selectedCombineViewTypeId: payload
       }
     };
   },
@@ -850,6 +893,10 @@ export const getSelectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const getSelectedEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineId']);
+export const getSelectedCombineEngineId = (state, widgetId) =>
+  get(local(state), [widgetId, 'selectedCombineEngineId']);
+export const getSelectedCombineViewTypeId = (state, widgetId) =>
+  get(local(state), [widgetId, 'selectedCombineViewTypeId']);
 export const isEditingTags = (state, widgetId) =>
   get(local(state), [widgetId, 'editingTags']);
 export const isEditModeEnabled = (state, widgetId) =>
@@ -885,6 +932,23 @@ export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 export const categoryCombinationMapper = (state, widgetId) =>
   get(local(state), [widgetId, 'categoryCombinationMapper']);
+export const getCombineViewTypes = (state, widgetId) => {
+  const localWidgetState = get(local(state), widgetId, {});
+  const {
+    selectedEngineCategory,
+    selectedCombineEngineId,
+    categoryCombinationMapper
+  } = localWidgetState;
+
+  const withType = get(selectedEngineCategory, 'categoryType');
+  const combineMapper = find(categoryCombinationMapper, ['withType', withType]);
+  const viewTypes = get(combineMapper, 'viewTypes', []);
+  if (selectedCombineEngineId) {
+    return viewTypes;
+  } else {
+    return viewTypes.filter(view => !view.combine);
+  }
+};
 export const isShowingTagsView = (state, widgetId) =>
   get(local(state), [widgetId, 'showTagsView']);
 
@@ -986,6 +1050,20 @@ export const setEngineId = (widgetId, engineId) => ({
   payload: engineId,
   meta: { widgetId }
 });
+
+export const setCombineEngineId = (widgetId, engineId) => ({
+  type: SET_SELECTED_COMBINE_ENGINE_ID,
+  payload: engineId,
+  meta: { widgetId }
+});
+
+export const setSelectedCombineViewTypeId = (widgetId, viewTypeId) => {
+  return {
+    type: SET_SELECTED_COMBINE_VIEW_TYPE,
+    payload: viewTypeId,
+    meta: { widgetId }
+  };
+};
 
 export const toggleInfoPanel = widgetId => ({
   type: TOGGLE_INFO_PANEL,

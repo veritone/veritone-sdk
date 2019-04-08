@@ -1,0 +1,45 @@
+@import 'src/styles/modules/variables';
+
+.transcriptSegment {
+  width: 100%;
+
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-wrap: break-word;
+
+  .time {
+    padding: 20px 20px 20px 0;
+    color: $dark-black;
+    font-family: Roboto;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+  }
+
+  border-bottom: 1px solid $faint-black;
+}
+
+.transcriptSegment:last-child {
+  border-bottom: none;
+}
+
+.transcriptSnippet {
+  outline: none;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 300;
+
+  &:hover {
+    color: $blue-1;
+  }
+}
+
+.read {
+  cursor: pointer;
+}
+
+.highlight {
+  font-weight: 500;
+}
