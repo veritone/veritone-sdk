@@ -366,20 +366,17 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
-  async getLibraries(auth) {
-    if(auth) {
-      let LIBRARY_OFFSET = 0;
-      let libraries = [];
-      while (true) {
-        const data = await fetch(`${this.props.api}v3/graphql`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + auth
-          },
-          body: JSON.stringify({query:
-            `query {
-              libraries(limit: ${LIBRARY_LIMIT}, offset: ${LIBRARY_OFFSET}) {
+  getLibrary = async (auth, offset) => {
+    return fetch(`${this.props.api}v3/graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + auth
+      },
+      body: JSON.stringify({
+        query:
+          `query {
+              libraries(limit: ${LIBRARY_LIMIT}, offset: ${offset}) {
                 records {
                   id
                   name
@@ -388,30 +385,27 @@ export class SampleSearchBar extends React.Component {
                 }
               }
             }`
-          })
-        })
-        .then(response => {
-          if (response.status === 200) {
-            return response.json();
-          }
-          throw new Error('Can not get libraries')
-        })
-        .then(y => y.data.libraries ? y.data.libraries.records : [])
-        .catch((err) => {
-          console.log(err)
-          return [];
-        })
-
-        libraries = [...libraries, ...data];
-        LIBRARY_OFFSET = libraries.length;
-
-        if (data.length < LIBRARY_LIMIT) {
-          break;
+      })
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
         }
-      }
+        throw new Error('Can not get libraries')
+      })
+      .then(y => y.data.libraries ? y.data.libraries.records : [])
+      .catch((err) => {
+        console.log(err)
+        return [];
+      })
+  }
 
-      return Promise.resolve(libraries);
+  async getLibraries(auth, offset = 0) {
+    const data = await this.getLibrary(auth, offset);
+    if (data.length < LIBRARY_LIMIT) {
+      return data;
     }
+    return [...data, ...(await this.getLibraries(auth, offset + data.length))];
   }
 
   getEntityFetch = (auth) => {
