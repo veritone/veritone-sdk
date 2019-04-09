@@ -366,7 +366,7 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
-  getLibrary = async (auth, offset) => {
+  getLibraryPage = async (auth, offset) => {
     return fetch(`${this.props.api}v3/graphql`, {
       method: 'POST',
       headers: {
@@ -401,7 +401,7 @@ export class SampleSearchBar extends React.Component {
   }
 
   async getLibraries(auth, offset = 0) {
-    const data = await this.getLibrary(auth, offset);
+    const data = await this.getLibraryPage(auth, offset);
     if (data.length < LIBRARY_LIMIT) {
       return data;
     }
