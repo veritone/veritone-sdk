@@ -22,5 +22,6 @@
 }
 
 .highlight {
-  font-weight: 500;
+  // Use bold or heavier cuz some languages don't highlight properly with 500
+  font-weight: bold;
 }
