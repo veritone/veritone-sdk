@@ -71,6 +71,9 @@ import { SearchBar } from '.';
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
 // hardcoded for now to help setup storybook.
+
+const LIBRARY_LIMIT = 50;
+
 const transcript = {
   id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
   name: 'Transcript',
@@ -363,36 +366,46 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
-  async getLibraries(auth) {
-    if(auth) {
-      return await fetch(`${this.props.api}v3/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + auth
-        },
-        body: JSON.stringify({query:
+  getLibraryPage = async (auth, offset) => {
+    return fetch(`${this.props.api}v3/graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + auth
+      },
+      body: JSON.stringify({
+        query:
           `query {
-            libraries(limit: 50) {
-              records {
-                id
-                name
-                description
-                coverImageUrl
+              libraries(limit: ${LIBRARY_LIMIT}, offset: ${offset}) {
+                records {
+                  id
+                  name
+                  description
+                  coverImageUrl
+                }
               }
-            }
-          }`
-        })
-      }).then(
-        response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            return false;
-          }
+            }`
+      })
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
         }
-      ).then( y => y.data.libraries.records )
+        throw new Error('Can not get libraries')
+      })
+      .then(y => y.data.libraries ? y.data.libraries.records : [])
+      .catch((err) => {
+        console.log(err)
+        return [];
+      })
+  }
+
+  async getLibraries(auth, offset = 0) {
+    const data = await this.getLibraryPage(auth, offset);
+    if (data.length < LIBRARY_LIMIT) {
+      return data;
     }
+    return [...data, ...(await this.getLibraries(auth, offset + data.length))];
   }
 
   getEntityFetch = (auth) => {
