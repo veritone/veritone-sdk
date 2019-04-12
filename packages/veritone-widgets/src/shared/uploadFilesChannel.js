@@ -48,7 +48,7 @@ export default function uploadFilesChannel(
     if (readyState === XMLHttpRequest.DONE) {
       remainingFiles -= 1;
 
-      if (status === 200) {
+      if (status >= 200 && status < 300) {
         chan.put({ success: true, file, descriptor });
       } else {
         onStatusCodeFailure(file, descriptor);
@@ -80,6 +80,8 @@ export default function uploadFilesChannel(
     // xhr.upload.addEventListener('abort', onFailure.bind(null, file, descriptor));
 
     xhr.open(method, descriptor.url, true);
+    // Need this header for azure
+    xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
     xhr.send(file);
   });
 
