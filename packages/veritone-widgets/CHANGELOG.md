@@ -192,3 +192,6 @@ const MyPage = () => (
 * Updates to engineOutputExport module and widget
 * Update veritone icons css file version
 * AppBar: always fetch enabled apps, even outside of a widget
+
+## 7.1.0
+* Add support for Azure storage blobs via File Picker
