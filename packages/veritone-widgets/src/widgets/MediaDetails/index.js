@@ -704,12 +704,9 @@ class MediaDetailsWidget extends React.Component {
     return get(selectedEngine, 'status') === 'complete';
   };
 
-  isSelectedCombineEngineViewableAndCompleted = () => {
+  isSelectedCombineEngineCompleted = () => {
     const hasResults = get(this.props.selectedCombineEngineResults, 'length');
-    const isShown =
-      this.props.selectedCombineViewTypeId &&
-      this.props.selectedCombineViewTypeId.includes('show');
-    return hasResults || !isShown;
+    return !!hasResults;
   };
 
   buildEngineNullStateComponent = () => {
@@ -793,14 +790,16 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    const hasCombineViews = get(this.props, 'combineViewTypes.length');
+    const isCombineView = this.props.selectedCombineViewTypeId && this.props.selectedCombineViewTypeId.includes('show');
     if (
       !this.isEditableEngineResults() ||
       !this.hasSelectedEngineResults() ||
-      !this.isSelectedEngineCompleted() ||
-      !(hasCombineViews && this.isSelectedCombineEngineViewableAndCompleted())
+      !this.isSelectedEngineCompleted()
     ) {
       return false;
+    }
+    if (isCombineView) {  
+      return this.isSelectedCombineEngineCompleted();
     }
     return true;
   };
