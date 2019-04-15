@@ -19,12 +19,15 @@ export const defaultState = {
 
 export default createReducer(defaultState, {
   [FETCH_ENGINE_RESULTS](state, action) {
-    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
-      return {
-        ...acc,
-        [id]: true
-      }
-    }, {});
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce(
+      (acc, id) => {
+        return {
+          ...acc,
+          [id]: true
+        };
+      },
+      {}
+    );
     return {
       ...state,
       isFetchingEngineResults: true,
@@ -64,14 +67,22 @@ export default createReducer(defaultState, {
       if (requestEngineIds.length === 1) {
         const requestEngineId = requestEngineIds[0];
         // if exists user edited version for requested engine id - ignore manual edit
-        if (!some(results, { requestEngineId: requestEngineId, userEdited: true })) {
+        if (
+          !some(results, { requestEngineId: requestEngineId, userEdited: true })
+        ) {
           const originalEngineResult = find(results, { requestEngineId });
           // keep only 'manual' results
-          results = differenceBy(results, [{ requestEngineId }], 'requestEngineId');
+          results = differenceBy(
+            results,
+            [{ requestEngineId }],
+            'requestEngineId'
+          );
           // remap 'manual' results with requestEngineId
           forEach(results, manualEditEngineResult => {
-            manualEditEngineResult.requestEngineId = originalEngineResult.requestEngineId;
-            manualEditEngineResult.sourceEngineId = originalEngineResult.sourceEngineId;
+            manualEditEngineResult.requestEngineId =
+              originalEngineResult.requestEngineId;
+            manualEditEngineResult.sourceEngineId =
+              originalEngineResult.sourceEngineId;
           });
         }
       }
@@ -82,26 +93,31 @@ export default createReducer(defaultState, {
     };
     const resultsGroupedByTdoId = groupBy(results, 'tdoId');
     forEach(Object.keys(resultsGroupedByTdoId), tdoId => {
-      const resultsGroupedByRequestEngineId = groupBy(resultsGroupedByTdoId[tdoId], 'requestEngineId');
-      forEach(Object.keys(resultsGroupedByRequestEngineId),
-        engineId =>
-          resultsGroupedByRequestEngineId[engineId]
-            .forEach(result => {
-              delete result.requestEngineId;
-              delete result.tdoId;
-            }));
+      const resultsGroupedByRequestEngineId = groupBy(
+        resultsGroupedByTdoId[tdoId],
+        'requestEngineId'
+      );
+      forEach(Object.keys(resultsGroupedByRequestEngineId), engineId =>
+        resultsGroupedByRequestEngineId[engineId].forEach(result => {
+          delete result.requestEngineId;
+          delete result.tdoId;
+        })
+      );
       tdoEngineResultsMappedByEngineId[tdoId] = {
         ...state.tdoEngineResultsMappedByEngineId[tdoId],
         ...resultsGroupedByRequestEngineId
       };
     });
 
-    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
-      return {
-        ...acc,
-        [id]: false
-      }
-    }, {});
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce(
+      (acc, id) => {
+        return {
+          ...acc,
+          [id]: false
+        };
+      },
+      {}
+    );
 
     return {
       ...state,
@@ -115,12 +131,15 @@ export default createReducer(defaultState, {
     };
   },
   [FETCH_ENGINE_RESULTS_FAILURE](state, action) {
-    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce((acc, id) => {
-      return {
-        ...acc,
-        [id]: false
-      }
-    }, {});
+    const engineFlagsByIds = get(action, 'meta.variables.engineIds', []).reduce(
+      (acc, id) => {
+        return {
+          ...acc,
+          [id]: false
+        };
+      },
+      {}
+    );
     return {
       ...state,
       isFetchingEngineResults: false,
@@ -154,7 +173,7 @@ export const engineResultsByEngineId = (state, tdoId, engineId) =>
 export const isFetchingEngineResults = state =>
   local(state).isFetchingEngineResults;
 
-export const isFetchingSpecificEngineResult = (state) => engineId =>
+export const isFetchingSpecificEngineResult = state => engineId =>
   get(local(state), ['isFetchingSpecificEngineResult', engineId], false);
 
 export const isDisplayingUserEditedOutput = (state, tdoId, engineId) => {
