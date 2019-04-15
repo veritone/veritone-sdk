@@ -5,12 +5,7 @@ import classNames from 'classnames';
 
 import styles from './styles.scss';
 
-const SnippetFragment = ({
-  className,
-  active,
-  value,
-  onClick
-}) => (
+const SnippetFragment = ({ className, active, value, onClick }) => (
   <span
     onClick={onClick}
     className={classNames(styles.transcriptSnippet, styles.read, className, {

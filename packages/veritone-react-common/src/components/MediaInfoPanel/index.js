@@ -207,15 +207,15 @@ class MediaInfoPanel extends Component {
     };
 
     const contentElement = (
-      <div 
+      <div
         className={styles.mediaInfoPanel}
         data-veritone-component="media-info-panel"
-        >
+      >
         <div>
-          <div 
+          <div
             className={styles.infoPanelHeader}
             data-veritone-component="media-info-panel-header"
-            >
+          >
             <span>Metadata</span>
             <div className={styles.headerMenu}>
               {this.props.canEditMedia() && (
@@ -224,25 +224,25 @@ class MediaInfoPanel extends Component {
                     {({ ref }) => (
                       <div ref={ref}>
                         <div ref={this.setMenuTarget}>
-                            <IconButton
-                              className={styles.pageHeaderActionButton}
-                              aria-label="Edit"
-                              aria-haspopup="true"
-                              aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                              onClick={this.toggleIsMenuOpen}
+                          <IconButton
+                            className={styles.pageHeaderActionButton}
+                            aria-label="Edit"
+                            aria-haspopup="true"
+                            aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                            onClick={this.toggleIsMenuOpen}
+                          >
+                            <Tooltip
+                              id="tooltip-show-edit-menu"
+                              title="Edit"
+                              PopperProps={{
+                                style: {
+                                  pointerEvents: 'none'
+                                }
+                              }}
                             >
-                              <Tooltip
-                                id="tooltip-show-edit-menu"
-                                title="Edit"
-                                PopperProps={{
-                                  style: {
-                                    pointerEvents: 'none'
-                                  }
-                                }}
-                              >
-                                <EditIcon />
-                              </Tooltip>
-                            </IconButton>
+                              <EditIcon />
+                            </Tooltip>
+                          </IconButton>
                         </div>
                       </div>
                     )}
@@ -253,35 +253,34 @@ class MediaInfoPanel extends Component {
                       placement="bottom-end"
                       eventsEnabled={isMenuOpen}
                     >
-
-                    {({ ref, style, placement }) => (
-                      <div ref={ref} style={style} data-placement={placement}>
-                        <ClickAwayListener onClickAway={this.onMenuClose}>
-                          <Grow
-                            in={isMenuOpen}
-                            id="menu-list-grow"
-                            style={{ transformOrigin: '0 0 0' }}
-                          >
-                            <Paper>
-                              <MenuList role="menu">
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onMetadataOpen}
-                                >
-                                  Edit Metadata
-                                </MenuItem>
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onEditTagsOpen}
-                                >
-                                  Edit Tags
-                                </MenuItem>
-                              </MenuList>
-                            </Paper>
-                          </Grow>
-                        </ClickAwayListener>
-                      </div>
-                    )}
+                      {({ ref, style, placement }) => (
+                        <div ref={ref} style={style} data-placement={placement}>
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onMetadataOpen}
+                                  >
+                                    Edit Metadata
+                                  </MenuItem>
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onEditTagsOpen}
+                                  >
+                                    Edit Tags
+                                  </MenuItem>
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </div>
+                      )}
                     </Popper>
                   )}
                 </Manager>
@@ -298,10 +297,10 @@ class MediaInfoPanel extends Component {
               </IconButton>
             </div>
           </div>
-          <Paper 
+          <Paper
             className={styles.infoPanelContent}
-            data-veritone-component="media-info-panel-content"            
-            >
+            data-veritone-component="media-info-panel-content"
+          >
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>

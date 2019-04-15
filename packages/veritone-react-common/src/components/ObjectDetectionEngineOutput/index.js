@@ -3,7 +3,12 @@ import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 import { debounce } from 'lodash';
 
-import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import {
+  AutoSizer,
+  List,
+  CellMeasurer,
+  CellMeasurerCache
+} from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import ObjectGroup from './ObjectGroup';
@@ -66,7 +71,7 @@ class ObjectDetectionEngineOutput extends Component {
 
   seriesPerPage = 20;
   windowResizeDelay = 100;
-  
+
   onWindowResize = debounce(
     () => this.handleWindowResize(),
     this.windowResizeDelay
@@ -77,28 +82,36 @@ class ObjectDetectionEngineOutput extends Component {
       cellCache.clearAll();
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   virtualMeasure = (measure, index) => () => {
     measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   generateVirtualizedObjectBlocks = () => {
-    const {
-      data
-    } = this.props;
-    const totalObjectSeries = data.reduce((acc, seg) => acc.concat(seg.series), []);
+    const { data } = this.props;
+    const totalObjectSeries = data.reduce(
+      (acc, seg) => acc.concat(seg.series),
+      []
+    );
     const newVirtualizedSerieBlocks = [];
 
-    for (let index = 0, curSeries = []; index < totalObjectSeries.length; index++) {
+    for (
+      let index = 0, curSeries = [];
+      index < totalObjectSeries.length;
+      index++
+    ) {
       const serie = totalObjectSeries[index];
       if (curSeries.length < this.seriesPerPage) {
         curSeries.push(serie);
       }
-      if (curSeries.length === this.seriesPerPage || index === totalObjectSeries.length - 1) {
+      if (
+        curSeries.length === this.seriesPerPage ||
+        index === totalObjectSeries.length - 1
+      ) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
@@ -107,10 +120,7 @@ class ObjectDetectionEngineOutput extends Component {
   };
 
   objectRowRenderer = ({ key, parent, index, style }) => {
-    const {
-      currentMediaPlayerTime,
-      onObjectClick
-    } = this.props;
+    const { currentMediaPlayerTime, onObjectClick } = this.props;
 
     const virtualizedSerieBlocks = this.generateVirtualizedObjectBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
@@ -122,19 +132,24 @@ class ObjectDetectionEngineOutput extends Component {
         cache={cellCache}
         columnIndex={0}
         style={{ width: '100%' }}
-        rowIndex={index}>
+        rowIndex={index}
+      >
         {({ measure }) => (
-          <div className={`object-segment-block-${index}`} style={{ ...style, width: '100%' }}>
+          <div
+            className={`object-segment-block-${index}`}
+            style={{ ...style, width: '100%' }}
+          >
             <ObjectGroup
               virtualMeasure={this.virtualMeasure(measure, index)}
               objectGroup={virtualizedSerieBlock}
               currentMediaPlayerTime={currentMediaPlayerTime}
-              onObjectClick={onObjectClick} />
+              onObjectClick={onObjectClick}
+            />
           </div>
         )}
       </CellMeasurer>
     );
-  }
+  };
 
   render() {
     const {
@@ -157,15 +172,15 @@ class ObjectDetectionEngineOutput extends Component {
           engines={engines}
         />
         {outputNullState || (
-          <div 
+          <div
             className={styles.objectDetectionContent}
-            data-veritone-component="object-detection-output-content"                      
-            >
+            data-veritone-component="object-detection-output-content"
+          >
             <AutoSizer style={{ width: '100%', height: '100%' }}>
               {({ height, width }) => (
                 <List
                   // eslint-disable-next-line
-                  ref={ref => this.virtualList = ref}
+                  ref={ref => (this.virtualList = ref)}
                   className={'virtual-object-list'}
                   key={`virtual-object-grid`}
                   width={width || 900}

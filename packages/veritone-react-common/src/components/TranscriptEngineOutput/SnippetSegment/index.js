@@ -31,7 +31,7 @@ export default class SnippetSegment extends Component {
 
   state = {
     virtualizedSerieBlocks: []
-  }
+  };
 
   componentDidMount() {
     const { virtualMeasure } = this.props;
@@ -59,38 +59,37 @@ export default class SnippetSegment extends Component {
     return (
       <div className={classNames(styles.transcriptSegment, className)}>
         <div className={classNames(styles.content, contentClassName)}>
-          {
-            series.map(entry => {
-              const startTime = entry.startTimeMs;
-              const stopTime = entry.stopTimeMs;
-              const words = entry.words || [];
-              const orderedWords = orderBy(words, ['confidence'], ['desc']);
-              const selectedWord = get(orderedWords, '[0].word');
-              const fragmentKey = entry.guid
-                ? entry.guid
-                : `snippet-fragment-${startTime}-${stopTime}`;
-              let value = '';
-              if (selectedWord) {
-                textareaToDecodeCharacters.innerHTML = selectedWord;
-                value = textareaToDecodeCharacters.value;
-              }
+          {series.map(entry => {
+            const startTime = entry.startTimeMs;
+            const stopTime = entry.stopTimeMs;
+            const words = entry.words || [];
+            const orderedWords = orderBy(words, ['confidence'], ['desc']);
+            const selectedWord = get(orderedWords, '[0].word');
+            const fragmentKey = entry.guid
+              ? entry.guid
+              : `snippet-fragment-${startTime}-${stopTime}`;
+            let value = '';
+            if (selectedWord) {
+              textareaToDecodeCharacters.innerHTML = selectedWord;
+              value = textareaToDecodeCharacters.value;
+            }
 
-              return (
-                <SnippetFragment
-                  key={fragmentKey}
-                  value={value}
-                  active={
-                    !(
-                      stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
-                    )
-                  }
-                  startTimeMs={startTime}
-                  stopTimeMs={stopTime}
-                  onClick={this.handleSnippetClick(entry)}
-                />
-              );
-            })
-          }
+            return (
+              <SnippetFragment
+                key={fragmentKey}
+                value={value}
+                active={
+                  !(
+                    stopMediaPlayHeadMs < startTime ||
+                    startMediaPlayHeadMs > stopTime
+                  )
+                }
+                startTimeMs={startTime}
+                stopTimeMs={stopTime}
+                onClick={this.handleSnippetClick(entry)}
+              />
+            );
+          })}
         </div>
       </div>
     );

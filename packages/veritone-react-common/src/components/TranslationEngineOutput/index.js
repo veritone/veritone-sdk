@@ -3,7 +3,12 @@ import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy, get, debounce } from 'lodash';
 
-import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import {
+  AutoSizer,
+  List,
+  CellMeasurer,
+  CellMeasurerCache
+} from 'react-virtualized';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -108,7 +113,9 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
-    const selectedLanguage = !translatedLanguages.includes(state.selectedLanguage)
+    const selectedLanguage = !translatedLanguages.includes(
+      state.selectedLanguage
+    )
       ? translatedLanguages[0]
       : state.selectedLanguage || defaultLanguage;
 
@@ -134,7 +141,7 @@ export default class TranslationEngineOutput extends Component {
 
   seriesPerPage = 20;
   windowResizeDelay = 100;
-  
+
   onWindowResize = debounce(
     () => this.handleWindowResize(),
     this.windowResizeDelay
@@ -145,26 +152,29 @@ export default class TranslationEngineOutput extends Component {
       cellCache.clearAll();
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   virtualMeasure = (measure, index) => () => {
     measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   generateVirtualizedTranslationBlocks = () => {
-    const {
-      data
-    } = this.props;
-    const {
-      selectedLanguage
-    } = this.state;
-    const totalTranslateSeries = data.reduce((acc, seg) => acc.concat(seg.series), []);
+    const { data } = this.props;
+    const { selectedLanguage } = this.state;
+    const totalTranslateSeries = data.reduce(
+      (acc, seg) => acc.concat(seg.series),
+      []
+    );
     const newVirtualizedSerieBlocks = [];
 
-    for (let index = 0, curSeries = []; index < totalTranslateSeries.length; index++) {
+    for (
+      let index = 0, curSeries = [];
+      index < totalTranslateSeries.length;
+      index++
+    ) {
       const serie = totalTranslateSeries[index];
       if (
         serie &&
@@ -174,7 +184,10 @@ export default class TranslationEngineOutput extends Component {
       ) {
         curSeries.push(serie);
       }
-      if (curSeries.length === this.seriesPerPage || index === totalTranslateSeries.length - 1) {
+      if (
+        curSeries.length === this.seriesPerPage ||
+        index === totalTranslateSeries.length - 1
+      ) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
@@ -200,9 +213,13 @@ export default class TranslationEngineOutput extends Component {
         cache={cellCache}
         columnIndex={0}
         style={{ width: '100%' }}
-        rowIndex={index}>
+        rowIndex={index}
+      >
         {({ measure }) => (
-          <div className={`ocr-segment-block-${index}`} style={{ ...style, width: '100%' }}>
+          <div
+            className={`ocr-segment-block-${index}`}
+            style={{ ...style, width: '100%' }}
+          >
             <TranslationSegment
               virtualMeasure={this.virtualMeasure(measure, index)}
               series={virtualizedSerieBlock.series}
@@ -214,7 +231,7 @@ export default class TranslationEngineOutput extends Component {
         )}
       </CellMeasurer>
     );
-  }
+  };
 
   handleLanguageChanged = event => {
     const selectedVal = event.target.value;
@@ -235,10 +252,7 @@ export default class TranslationEngineOutput extends Component {
       onExpandClick,
       outputNullState
     } = this.props;
-    const {
-      languages,
-      selectedLanguage
-    } = this.state;
+    const { languages, selectedLanguage } = this.state;
     const virtualizedSerieBlocks = this.generateVirtualizedTranslationBlocks();
 
     return (
@@ -283,33 +297,31 @@ export default class TranslationEngineOutput extends Component {
             </Select>
           )}
         </EngineOutputHeader>
-        {
-          outputNullState || (
-            <div
-              className={classNames(styles.body)}
-              data-veritone-component="translate-engine-output-content"
-            >
-              <AutoSizer style={{ width: '100%', height: '100%' }}>
-                {({ height, width }) => (
-                  <List
-                    // eslint-disable-next-line
-                    ref={ref => this.virtualList = ref}
-                    className={'virtual-translate-list'}
-                    key={`virtual-translate-grid`}
-                    width={width || 900}
-                    height={height || 500}
-                    style={{ width: '100%', height: '100%' }}
-                    deferredMeasurementCache={cellCache}
-                    overscanRowCount={1}
-                    rowRenderer={this.translateRowRenderer}
-                    rowCount={virtualizedSerieBlocks.length}
-                    rowHeight={cellCache.rowHeight}
-                  />
-                )}
-              </AutoSizer>
-            </div>
-          )
-        }
+        {outputNullState || (
+          <div
+            className={classNames(styles.body)}
+            data-veritone-component="translate-engine-output-content"
+          >
+            <AutoSizer style={{ width: '100%', height: '100%' }}>
+              {({ height, width }) => (
+                <List
+                  // eslint-disable-next-line
+                  ref={ref => (this.virtualList = ref)}
+                  className={'virtual-translate-list'}
+                  key={`virtual-translate-grid`}
+                  width={width || 900}
+                  height={height || 500}
+                  style={{ width: '100%', height: '100%' }}
+                  deferredMeasurementCache={cellCache}
+                  overscanRowCount={1}
+                  rowRenderer={this.translateRowRenderer}
+                  rowCount={virtualizedSerieBlocks.length}
+                  rowHeight={cellCache.rowHeight}
+                />
+              )}
+            </AutoSizer>
+          </div>
+        )}
       </div>
     );
   }

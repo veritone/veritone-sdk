@@ -11,34 +11,12 @@ export default class TranscriptEngineOutput extends Component {
   static propTypes = {
     parsedData: shape({
       lazyLoading: bool,
-      snippetSegments: arrayOf(shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            guid: string.isRequired,
-            words: arrayOf(
-              shape({
-                word: string.isRequired,
-                confidence: number
-              })
-            )
-          })
-        )
-      })),
-      speakerSegments: arrayOf(shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        status: string,
-        series: arrayOf(
-          shape({
-            guid: string.isRequired,
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            speakerId: string.isRequired,
-            fragments: arrayOf(shape({
+      snippetSegments: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          series: arrayOf(
+            shape({
               startTimeMs: number.isRequired,
               stopTimeMs: number.isRequired,
               guid: string.isRequired,
@@ -48,10 +26,38 @@ export default class TranscriptEngineOutput extends Component {
                   confidence: number
                 })
               )
-            }))
-          })
-        )
-      }))
+            })
+          )
+        })
+      ),
+      speakerSegments: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          status: string,
+          series: arrayOf(
+            shape({
+              guid: string.isRequired,
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
+              speakerId: string.isRequired,
+              fragments: arrayOf(
+                shape({
+                  startTimeMs: number.isRequired,
+                  stopTimeMs: number.isRequired,
+                  guid: string.isRequired,
+                  words: arrayOf(
+                    shape({
+                      word: string.isRequired,
+                      confidence: number
+                    })
+                  )
+                })
+              )
+            })
+          )
+        })
+      )
     }),
     selectedEngineId: string,
     selectedSpeakerEngineId: string,
@@ -116,17 +122,23 @@ export default class TranscriptEngineOutput extends Component {
       })
     }),
     clearCursorPosition: func,
-    hotKeyCategories: arrayOf(shape({
-      label: string,
-      commands: arrayOf(shape({
-        label: string.isRequired,
-        hotkeys: arrayOf(shape({
-          platform: string,
-          operator: string,
-          keys: arrayOf(string).isRequired
-        })).isRequired
-      })).isRequired
-    })),
+    hotKeyCategories: arrayOf(
+      shape({
+        label: string,
+        commands: arrayOf(
+          shape({
+            label: string.isRequired,
+            hotkeys: arrayOf(
+              shape({
+                platform: string,
+                operator: string,
+                keys: arrayOf(string).isRequired
+              })
+            ).isRequired
+          })
+        ).isRequired
+      })
+    ),
     setIncomingChanges: func
   };
 
@@ -180,16 +192,22 @@ export default class TranscriptEngineOutput extends Component {
       showingUserEditedOutput,
       engineResults: parsedData.snippetSegments
     };
-    let selectedSpeakerEngineWithData = find(speakerEngines, { id: selectedSpeakerEngineId });
+    let selectedSpeakerEngineWithData = find(speakerEngines, {
+      id: selectedSpeakerEngineId
+    });
 
-    if (selectedSpeakerEngineWithData && selectedCombineViewTypeId && selectedCombineViewTypeId.includes('show')) {
+    if (
+      selectedSpeakerEngineWithData &&
+      selectedCombineViewTypeId &&
+      selectedCombineViewTypeId.includes('show')
+    ) {
       selectedSpeakerEngineWithData = {
         ...selectedSpeakerEngineWithData,
         showingUserEditedOutput: showingUserEditedSpeakerOutput,
         engineResults: parsedData.speakerSegments
       };
     }
-      
+
     return (
       <EngineOutputHeader
         title={title}
@@ -214,7 +232,8 @@ export default class TranscriptEngineOutput extends Component {
         combineViewTypes={combineViewTypes}
         selectedCombineViewTypeId={selectedCombineViewTypeId}
         handleCombineViewTypeChange={handleCombineViewTypeChange}
-        hotKeyCategories={hotKeyCategories} />
+        hotKeyCategories={hotKeyCategories}
+      />
     );
   }
 
@@ -241,10 +260,10 @@ export default class TranscriptEngineOutput extends Component {
 
     return (
       outputNullState || (
-        <div 
+        <div
           className={styles.content}
-          data-veritone-component="transciption-engine-output-content"          
-          >
+          data-veritone-component="transciption-engine-output-content"
+        >
           {
             <SpeakerTranscriptContent
               parsedData={parsedData}
@@ -276,7 +295,7 @@ export default class TranscriptEngineOutput extends Component {
       <div
         className={cx(styles.transcriptOutput, className)}
         data-veritone-component="transciption-engine-output"
-        >
+      >
         {this.renderHeader()}
         {this.renderBody()}
       </div>

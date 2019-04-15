@@ -97,12 +97,17 @@ describe('engineResults module reducer', () => {
       });
 
       engineResults(store.dispatch, store.getState).then(() => {
-        expect(store.getActions().map(action => {
-          return {
-            ...action,
-            meta: omit(action.meta, ['_internalRequestId', '_shouldTrackRequestsIndividually'])
-          }
-        })).toEqual(expectedActions);
+        expect(
+          store.getActions().map(action => {
+            return {
+              ...action,
+              meta: omit(action.meta, [
+                '_internalRequestId',
+                '_shouldTrackRequestsIndividually'
+              ])
+            };
+          })
+        ).toEqual(expectedActions);
         api.done();
         return;
       });
@@ -156,12 +161,17 @@ describe('engineResults module reducer', () => {
       ];
 
       engineResults(store.dispatch, store.getState).then(() => {
-        expect(store.getActions().map(action => {
-          return {
-            ...action,
-            meta: omit(action.meta, ['_internalRequestId', '_shouldTrackRequestsIndividually'])
-          }
-        })).toEqual(expectedActions);
+        expect(
+          store.getActions().map(action => {
+            return {
+              ...action,
+              meta: omit(action.meta, [
+                '_internalRequestId',
+                '_shouldTrackRequestsIndividually'
+              ])
+            };
+          })
+        ).toEqual(expectedActions);
         api.done();
         return;
       });

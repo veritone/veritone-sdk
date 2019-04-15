@@ -77,13 +77,18 @@ const sampleData = [
 describe('Translation Engine Output', () => {
   let translationEngineOutput = mount(
     <TranslationEngineOutpt
-      engines={[{
-        id: '1', name: 'Engine-X',
-        category: { categoryType: 'dummy' }
-      }, {
-        id: '2', name: 'Engine-Y',
-        category: { categoryType: 'dummy' }
-      }]}
+      engines={[
+        {
+          id: '1',
+          name: 'Engine-X',
+          category: { categoryType: 'dummy' }
+        },
+        {
+          id: '2',
+          name: 'Engine-Y',
+          category: { categoryType: 'dummy' }
+        }
+      ]}
       defaultLanguage={sampleData[0].series[0].language}
       selectedEngineId="1"
       data={sampleData}

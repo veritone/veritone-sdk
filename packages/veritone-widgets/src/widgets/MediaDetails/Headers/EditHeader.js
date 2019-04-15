@@ -23,10 +23,10 @@ const editHeader = ({
     }
   };
   return (
-    <div 
+    <div
       className={styles.editHeader}
-      data-veritone-component="mdp-edit-header"      
-      >
+      data-veritone-component="mdp-edit-header"
+    >
       <div className={styles.editHeaderIconContainer}>
         <Icon
           className={cx(engineCategoryIconClass, styles.engineCategoryIcon)}

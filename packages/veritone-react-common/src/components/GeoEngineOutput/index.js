@@ -166,8 +166,10 @@ export default class GeoEngineOutput extends Component {
       const series = dataChunk.series;
       series &&
         series
-          .filter(seriesItem =>
-              get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+          .filter(
+            seriesItem =>
+              get(seriesItem, 'gps.length') ||
+              get(seriesItem, 'object.gps.length')
           )
           .forEach(entry => {
             const entryStartTime = entry.startTimeMs;
@@ -192,7 +194,7 @@ export default class GeoEngineOutput extends Component {
               startMediaPlayHeadMs > entryStopTime
             );
             extractedData.push(parsedEntry);
-        });
+          });
     });
     return extractedData;
   }

@@ -68,13 +68,18 @@ describe('Geo Engine Output', () => {
   const geoEngineOutput = mount(
     <GeoEngineOutput
       data={sampleData}
-      engines={[{
-        id: '1', name: 'Engine-X',
-        category: { categoryType: 'dummy' } 
-      }, {
-        id: '2', name: 'Engine-Y',
-        category: { categoryType: 'dummy' } 
-      }]}
+      engines={[
+        {
+          id: '1',
+          name: 'Engine-X',
+          category: { categoryType: 'dummy' }
+        },
+        {
+          id: '2',
+          name: 'Engine-Y',
+          category: { categoryType: 'dummy' }
+        }
+      ]}
       selectedEngineId="1"
       startTimeStamp={startTime}
     />

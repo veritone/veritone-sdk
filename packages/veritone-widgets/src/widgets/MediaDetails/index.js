@@ -93,7 +93,9 @@ const enginesNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(state),
+    isFetchingSpecificEngineResult: engineResultsModule.isFetchingSpecificEngineResult(
+      state
+    ),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       mediaId,
@@ -109,8 +111,14 @@ const enginesNullState =
       id
     ),
     selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, id),
-    selectedCombineEngineId: mediaDetailsModule.getSelectedCombineEngineId(state, id),
-    selectedCombineViewTypeId: mediaDetailsModule.getSelectedCombineViewTypeId(state, id),
+    selectedCombineEngineId: mediaDetailsModule.getSelectedCombineEngineId(
+      state,
+      id
+    ),
+    selectedCombineViewTypeId: mediaDetailsModule.getSelectedCombineViewTypeId(
+      state,
+      id
+    ),
     combineViewTypes: mediaDetailsModule.getCombineViewTypes(state, id),
     contentTemplates: mediaDetailsModule.getContentTemplates(state, id),
     tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(state, id),
@@ -164,7 +172,8 @@ const enginesNullState =
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
     setCombineEngineId: mediaDetailsModule.setCombineEngineId,
-    setSelectedCombineViewTypeId: mediaDetailsModule.setSelectedCombineViewTypeId,
+    setSelectedCombineViewTypeId:
+      mediaDetailsModule.setSelectedCombineViewTypeId,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
@@ -451,38 +460,43 @@ class MediaDetailsWidget extends React.Component {
     this.unsetHotKeyListeners();
   }
 
-  hotKeyCategories = [{
-    commands: [{
-      // Toggle Play/Pause
-      triggerFunc: event => {
-        return get(event, 'keyCode') === 9;
-      },
-      eventFunc: event => {
-        event.preventDefault();
-        event.stopPropagation();
-        this.handleToggleMediaPlayerPlayback && this.handleToggleMediaPlayerPlayback();
-      }
-    }]
-  }];
+  hotKeyCategories = [
+    {
+      commands: [
+        {
+          // Toggle Play/Pause
+          triggerFunc: event => {
+            return get(event, 'keyCode') === 9;
+          },
+          eventFunc: event => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.handleToggleMediaPlayerPlayback &&
+              this.handleToggleMediaPlayerPlayback();
+          }
+        }
+      ]
+    }
+  ];
 
   setHotKeyListeners = () => {
     window.addEventListener('keydown', this.hotKeyEvents);
-  }
+  };
 
   unsetHotKeyListeners = () => {
     window.removeEventListener('keydown', this.hotKeyEvents);
-  }
+  };
 
   hotKeyEvents = event => {
     this.hotKeyCategories.forEach(category => {
       category.commands.forEach(command => {
-        command.triggerFunc
-          && command.triggerFunc(event)
-          && command.eventFunc
-          && command.eventFunc(event);
+        command.triggerFunc &&
+          command.triggerFunc(event) &&
+          command.eventFunc &&
+          command.eventFunc(event);
       });
     });
-  }
+  };
 
   handleMediaPlayerStateChange(state) {
     this.props.updateMediaPlayerState(this.props.id, state);
@@ -507,9 +521,9 @@ class MediaDetailsWidget extends React.Component {
     }
     if (this.mediaPlayer.getState().player.paused) {
       return this.mediaPlayer.play();
-    } 
+    }
     this.mediaPlayer.pause();
-  }
+  };
 
   handleUpdateMediaPlayerTime = startTime => {
     if (!this.mediaPlayer) {
@@ -619,11 +633,11 @@ class MediaDetailsWidget extends React.Component {
 
   handleSelectCombineEngine = engineId => {
     this.props.setCombineEngineId(this.props.id, engineId);
-  }
+  };
 
   handleSelectCombineViewType = viewTypeId => {
     this.props.setSelectedCombineViewTypeId(this.props.id, viewTypeId);
-  }
+  };
 
   handleTabChange = (evt, selectedTabValue) => {
     if (selectedTabValue === 'contentTemplates') {
@@ -692,7 +706,9 @@ class MediaDetailsWidget extends React.Component {
 
   isSelectedCombineEngineViewableAndCompleted = () => {
     const hasResults = get(this.props.selectedCombineEngineResults, 'length');
-    const isShown = this.props.selectedCombineViewTypeId && this.props.selectedCombineViewTypeId.includes('show');
+    const isShown =
+      this.props.selectedCombineViewTypeId &&
+      this.props.selectedCombineViewTypeId.includes('show');
     return hasResults || !isShown;
   };
 
@@ -808,10 +824,7 @@ class MediaDetailsWidget extends React.Component {
       id: selectedEngineId
     });
     if (
-      includes(
-        editableCategoryTypes,
-        selectedEngineCategory.categoryType
-      ) &&
+      includes(editableCategoryTypes, selectedEngineCategory.categoryType) &&
       get(selectedEngine, 'hasUserEdits') &&
       !isDisplayingUserEditedOutput
     ) {
@@ -870,11 +883,7 @@ class MediaDetailsWidget extends React.Component {
 
   onRestoreOriginalConfirm = engine => () => {
     this.props.closeConfirmModal(this.props.id);
-    const {
-      id,
-      tdo,
-      selectedEngineResults
-    } = this.props;
+    const { id, tdo, selectedEngineResults } = this.props;
     const removeAllUserEdits = true;
     this.props.restoreOriginalEngineResults(
       id,
@@ -902,10 +911,10 @@ class MediaDetailsWidget extends React.Component {
     } = this.props;
     let formatOptions = {};
     let selectedCombineCategoryId;
-    const hasCombineEngineOutput = find(
-      categoryCombinationMapper, 
-      ['withType', selectedEngineCategory.categoryType]
-    );
+    const hasCombineEngineOutput = find(categoryCombinationMapper, [
+      'withType',
+      selectedEngineCategory.categoryType
+    ]);
     if (hasCombineEngineOutput) {
       const combineCategory = find(engineCategories, [
         'categoryType',
@@ -1005,13 +1014,13 @@ class MediaDetailsWidget extends React.Component {
     if (this.props.isNextActive) {
       this.props.onNext();
     }
-  }
+  };
 
   onBackFile = () => {
     if (this.props.isBackActive) {
       this.props.onBack();
     }
-  }
+  };
 
   render() {
     let {
@@ -1045,7 +1054,7 @@ class MediaDetailsWidget extends React.Component {
       onBack,
       onNext,
       isNextActive,
-      isBackActive,
+      isBackActive
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1154,56 +1163,56 @@ class MediaDetailsWidget extends React.Component {
                 <div
                   className={styles.pageHeader}
                   data-veritone-component="mdp-page-header"
-                  >
+                >
                   <div className={styles.pageHeaderActionButtons}>
-                  {get(
-                    this.props,
-                    'tdo.details.veritoneFile.filename.length',
-                    0
-                  ) > 120 && (
-                    <Tooltip
-                      id="truncated-file-name-tooltip"
-                      title={get(
-                        this.props,
-                        'tdo.details.veritoneFile.filename'
-                      )}
-                      PopperProps={{
-                        style: {
-                          pointerEvents: 'none',
-                          marginTop: '5px',
-                          top: '-10px'
-                        }
-                      }}
-                    >
-                      <div className={styles.pageHeaderTitleLabel}>
-                        {get(
-                          this.props,
-                          'tdo.details.veritoneFile.filename',
-                          ''
-                        ).substring(0, 120) + '...'}
-                      </div>
-                    </Tooltip>
-                  )}
-                  {get(this.props, 'tdo.id') &&
-                    get(
+                    {get(
                       this.props,
                       'tdo.details.veritoneFile.filename.length',
                       0
-                    ) <= 120 && (
-                      <div className={styles.pageHeaderTitleLabel}>
-                        {get(
+                    ) > 120 && (
+                      <Tooltip
+                        id="truncated-file-name-tooltip"
+                        title={get(
                           this.props,
-                          'tdo.details.veritoneFile.filename',
-                          'No Filename'
+                          'tdo.details.veritoneFile.filename'
                         )}
+                        PopperProps={{
+                          style: {
+                            pointerEvents: 'none',
+                            marginTop: '5px',
+                            top: '-10px'
+                          }
+                        }}
+                      >
+                        <div className={styles.pageHeaderTitleLabel}>
+                          {get(
+                            this.props,
+                            'tdo.details.veritoneFile.filename',
+                            ''
+                          ).substring(0, 120) + '...'}
+                        </div>
+                      </Tooltip>
+                    )}
+                    {get(this.props, 'tdo.id') &&
+                      get(
+                        this.props,
+                        'tdo.details.veritoneFile.filename.length',
+                        0
+                      ) <= 120 && (
+                        <div className={styles.pageHeaderTitleLabel}>
+                          {get(
+                            this.props,
+                            'tdo.details.veritoneFile.filename',
+                            'No Filename'
+                          )}
+                        </div>
+                      )}
+                    {!get(this.props, 'tdo.id') && (
+                      <div className={styles.pageHeaderTitleLabel}>
+                        {!isLoadingTdo && 'No Filename'}
                       </div>
                     )}
-                  {!get(this.props, 'tdo.id') && (
-                    <div className={styles.pageHeaderTitleLabel}>
-                      {!isLoadingTdo && 'No Filename'}
-                    </div>
-                  )}
-                    { onBack && (
+                    {onBack && (
                       <IconButton
                         className={styles.pageHeaderActionButton}
                         aria-label="Previous file"
@@ -1211,9 +1220,9 @@ class MediaDetailsWidget extends React.Component {
                         style={isBackActive ? { color: 'white' } : {}}
                       >
                         <Tooltip
-                            id="tooltip-back-media"
-                            title="Previous file"
-                            disableHoverListener={!isBackActive}
+                          id="tooltip-back-media"
+                          title="Previous file"
+                          disableHoverListener={!isBackActive}
                         >
                           <Icon
                             classes={{ root: styles.iconClass }}
@@ -1222,7 +1231,7 @@ class MediaDetailsWidget extends React.Component {
                         </Tooltip>
                       </IconButton>
                     )}
-                    { onNext && (
+                    {onNext && (
                       <IconButton
                         className={styles.pageHeaderActionButton}
                         aria-label="Next file"
@@ -1622,7 +1631,9 @@ class MediaDetailsWidget extends React.Component {
                         combineEngines={combineEngines}
                         onEngineChange={this.handleSelectEngine}
                         onCombineEngineChange={this.handleSelectCombineEngine}
-                        setSelectedCombineViewTypeId={this.handleSelectCombineViewType}
+                        setSelectedCombineViewTypeId={
+                          this.handleSelectCombineViewType
+                        }
                         selectedEngineId={selectedEngineId}
                         selectedCombineEngineId={selectedCombineEngineId}
                         selectedCombineViewTypeId={selectedCombineViewTypeId}
@@ -1648,7 +1659,9 @@ class MediaDetailsWidget extends React.Component {
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}
-                        onFaceOccurrenceClicked={this.handleUpdateMediaPlayerTime}
+                        onFaceOccurrenceClicked={
+                          this.handleUpdateMediaPlayerTime
+                        }
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
                         onRestoreOriginalClick={this.onRestoreOriginalClick}

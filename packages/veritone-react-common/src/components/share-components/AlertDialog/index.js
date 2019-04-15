@@ -90,9 +90,7 @@ export default class AlertDialog extends Component {
         >
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
-        <DialogActions
-          classes={{ root: styles.dialogActions }}
-        >
+        <DialogActions classes={{ root: styles.dialogActions }}>
           {onCancel && (
             <Button
               onClick={this.handleCancel}

@@ -265,17 +265,13 @@ export default class SentimentEngineOutput extends Component {
     }
 
     return (
-      <div 
+      <div
         className={styles.sentimentBody}
         data-veritone-component="sentiment-engine-output-body"
-        >
+      >
         {/* Draw Y axis this part is not scrollable */}
         <div className={styles.yAxis}>
-          <ResponsiveContainer 
-            width="100%" 
-            height="100%" 
-            minHeight="300px"
-          >
+          <ResponsiveContainer width="100%" height="100%" minHeight="300px">
             <AreaChart
               data={chartData}
               margin={{ top: 10, right: 30, left: 0, bottom: 40 }}
@@ -378,10 +374,10 @@ export default class SentimentEngineOutput extends Component {
             />
           )}
         {outputNullState}
-        <div 
+        <div
           className={styles.sentimentOutputContent}
-          data-veritone-component="sentiment-engine-output-content"                    
-          >
+          data-veritone-component="sentiment-engine-output-content"
+        >
           {!outputNullState && this.renderSummary(extractedData.average)}
           {!outputNullState && this.renderChart(extractedData)}
         </div>

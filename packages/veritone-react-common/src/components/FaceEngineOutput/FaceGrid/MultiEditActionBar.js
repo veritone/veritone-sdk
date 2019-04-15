@@ -59,7 +59,10 @@ const MultiEditActionBar = ({
               disableLibraryButtons ? '-disabled' : ''
             }`}
           >
-            <Tooltip title="Add Images to an Existing Person" placement="bottom-start">
+            <Tooltip
+              title="Add Images to an Existing Person"
+              placement="bottom-start"
+            >
               <Icon className={cx('icon-existing-entity', styles.entityIcon)} />
             </Tooltip>
           </IconButton>

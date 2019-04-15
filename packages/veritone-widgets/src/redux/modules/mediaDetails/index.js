@@ -83,21 +83,26 @@ const defaultMDPState = {
   isEditButtonDisabled: false,
   currentMediaPlayerTime: 0,
   isRestoringOriginalEngineResult: false,
-  categoryCombinationMapper: [{
-    combineType: 'speaker',
-    withType: 'transcript',
-    viewTypes: [{
-      name: 'Show Engine Output',
-      id: 'show-speaker-view',
-      combine: true
-    }, {
-      name: 'Hide Engine Output',
-      id: 'transcript-view'
-    }],
-    quickExportOptions: {
-      withSpeakerData: true
+  categoryCombinationMapper: [
+    {
+      combineType: 'speaker',
+      withType: 'transcript',
+      viewTypes: [
+        {
+          name: 'Show Engine Output',
+          id: 'show-speaker-view',
+          combine: true
+        },
+        {
+          name: 'Hide Engine Output',
+          id: 'transcript-view'
+        }
+      ],
+      quickExportOptions: {
+        withSpeakerData: true
+      }
     }
-  }]
+  ]
 };
 
 const defaultState = {};
@@ -475,7 +480,7 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         selectedCombineViewTypeId: payload
       }
-    }
+    };
   },
   [TOGGLE_EDIT_MODE](
     state,
@@ -520,20 +525,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES](
-    state
-  ) {
+  [REQUEST_ENTITIES](state) {
     return {
       ...state,
       isFetchingEntities: true
     };
   },
-  [REQUEST_ENTITIES_SUCCESS](
-    state,
-    {
-      payload
-    }
-  ) {
+  [REQUEST_ENTITIES_SUCCESS](state, { payload }) {
     const allEntities = uniqBy(
       values(payload).concat(get(state, 'entities', [])),
       'id'
@@ -545,12 +543,7 @@ export default createReducer(defaultState, {
       entities: allEntities
     };
   },
-  [REQUEST_ENTITIES_FAILURE](
-    state,
-    {
-      error
-    }
-  ) {
+  [REQUEST_ENTITIES_FAILURE](state, { error }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -783,7 +776,7 @@ export default createReducer(defaultState, {
       ...state,
       error: errorMessage || 'unknown error'
     };
-  },
+  }
 });
 
 const local = state => state[namespace];
@@ -809,9 +802,8 @@ export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getEntities = (state) =>
-  get(local(state), 'entities');
-export const isFetchingEntities = (state) =>
+export const getEntities = state => get(local(state), 'entities');
+export const isFetchingEntities = state =>
   get(local(state), 'isFetchingEntities');
 export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);

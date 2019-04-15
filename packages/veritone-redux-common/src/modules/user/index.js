@@ -247,17 +247,24 @@ const reducer = reduceReducers(
         fetchUserSettingsFailed: false,
         fetchUserSettingsFailureMessage: null,
         userSettings: []
-      }
+      };
     },
 
-    [constants.FETCH_USER_SETTINGS_SUCCESS](state, { payload: { me: { userSettings } } }) {
+    [constants.FETCH_USER_SETTINGS_SUCCESS](
+      state,
+      {
+        payload: {
+          me: { userSettings }
+        }
+      }
+    ) {
       return {
         ...state,
         isFetchingUserSettings: false,
         fetchUserSettingsFailed: false,
         fetchUserSettingsFailureMessage: null,
         userSettings: userSettings
-      }
+      };
     },
 
     [constants.FETCH_USER_SETTINGS_FAILURE](state, action) {
@@ -269,8 +276,8 @@ const reducer = reduceReducers(
         action.payload.name === 'ApiError'
           ? statusErrors[action.payload.status] || statusErrors.default
           : action.payload.name === 'RequestError'
-          ? 'There was an error when fetching your user settings, please try again.'
-          : statusErrors.default;
+            ? 'There was an error when fetching your user settings, please try again.'
+            : statusErrors.default;
 
       return {
         ...state,
@@ -287,17 +294,24 @@ const reducer = reduceReducers(
         isUpdatingUserSetting: false,
         updateUserSettingFailed: false,
         updateUserSettingFailureMessage: null
-      }
+      };
     },
 
-    [constants.UPDATE_USER_SETTING_SUCCESS](state, { payload: { updateCurrentUser: { userSettings } } }) {
+    [constants.UPDATE_USER_SETTING_SUCCESS](
+      state,
+      {
+        payload: {
+          updateCurrentUser: { userSettings }
+        }
+      }
+    ) {
       return {
         ...state,
         isUpdatingUserSetting: false,
         updateUserSettingFailed: false,
         updateUserSettingFailureMessage: null,
         userSettings: userSettings
-      }
+      };
     },
 
     [constants.UPDATE_USER_SETTING_FAILURE](state, action) {
@@ -309,8 +323,8 @@ const reducer = reduceReducers(
         action.payload.name === 'ApiError'
           ? statusErrors[action.payload.status] || statusErrors.default
           : action.payload.name === 'RequestError'
-          ? 'There was an error when updating your user settings, please try again.'
-          : statusErrors.default;
+            ? 'There was an error when updating your user settings, please try again.'
+            : statusErrors.default;
 
       return {
         ...state,

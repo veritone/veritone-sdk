@@ -3,7 +3,12 @@ import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import cx from 'classnames';
 import { debounce } from 'lodash';
 
-import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import {
+  AutoSizer,
+  List,
+  CellMeasurer,
+  CellMeasurerCache
+} from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import OCRSegment from './OCRSegment';
@@ -68,7 +73,7 @@ class OCREngineOutputView extends Component {
 
   seriesPerPage = 20;
   windowResizeDelay = 100;
-  
+
   onWindowResize = debounce(
     () => this.handleWindowResize(),
     this.windowResizeDelay
@@ -79,28 +84,36 @@ class OCREngineOutputView extends Component {
       cellCache.clearAll();
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   virtualMeasure = (measure, index) => () => {
     measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   generateVirtualizedOcrBlocks = () => {
-    const {
-      data
-    } = this.props;
-    const totalOcrSeries = data.reduce((acc, seg) => acc.concat(seg.series), []);
+    const { data } = this.props;
+    const totalOcrSeries = data.reduce(
+      (acc, seg) => acc.concat(seg.series),
+      []
+    );
     const newVirtualizedSerieBlocks = [];
 
-    for (let index = 0, curSeries = []; index < totalOcrSeries.length; index++) {
+    for (
+      let index = 0, curSeries = [];
+      index < totalOcrSeries.length;
+      index++
+    ) {
       const serie = totalOcrSeries[index];
       if (curSeries.length < this.seriesPerPage) {
         curSeries.push(serie);
       }
-      if (curSeries.length === this.seriesPerPage || index === totalOcrSeries.length - 1) {
+      if (
+        curSeries.length === this.seriesPerPage ||
+        index === totalOcrSeries.length - 1
+      ) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
@@ -109,10 +122,7 @@ class OCREngineOutputView extends Component {
   };
 
   ocrRowRenderer = ({ key, parent, index, style }) => {
-    const {
-      currentMediaPlayerTime,
-      onOcrClicked
-    } = this.props;
+    const { currentMediaPlayerTime, onOcrClicked } = this.props;
 
     const virtualizedSerieBlocks = this.generateVirtualizedOcrBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
@@ -124,19 +134,24 @@ class OCREngineOutputView extends Component {
         cache={cellCache}
         columnIndex={0}
         style={{ width: '100%' }}
-        rowIndex={index}>
+        rowIndex={index}
+      >
         {({ measure }) => (
-          <div className={`ocr-segment-block-${index}`} style={{ ...style, width: '100%' }}>
+          <div
+            className={`ocr-segment-block-${index}`}
+            style={{ ...style, width: '100%' }}
+          >
             <OCRSegment
               virtualMeasure={this.virtualMeasure(measure, index)}
               series={virtualizedSerieBlock.series}
               currentMediaPlayerTime={currentMediaPlayerTime}
-              onOcrClicked={onOcrClicked} />
+              onOcrClicked={onOcrClicked}
+            />
           </div>
         )}
       </CellMeasurer>
     );
-  }
+  };
 
   render() {
     const {
@@ -159,7 +174,7 @@ class OCREngineOutputView extends Component {
           onExpandClick={onExpandClick}
         />
         {outputNullState || (
-          <div 
+          <div
             className={styles.ocrContent}
             data-veritone-component="orc-engine-output-content"
           >
@@ -167,7 +182,7 @@ class OCREngineOutputView extends Component {
               {({ height, width }) => (
                 <List
                   // eslint-disable-next-line
-                  ref={ref => this.virtualList = ref}
+                  ref={ref => (this.virtualList = ref)}
                   className={'virtual-ocr-list'}
                   key={`virtual-ocr-grid`}
                   width={width || 900}
@@ -187,7 +202,5 @@ class OCREngineOutputView extends Component {
     );
   }
 }
-
-
 
 export default OCREngineOutputView;

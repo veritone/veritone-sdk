@@ -91,7 +91,7 @@ export default class AclGroups extends React.Component {
                       {organization.name}
                     </div>
                     <IconButton
-                      disabled = {organization.permission === 'owner'}
+                      disabled={organization.permission === 'owner'}
                       className={styles.aclRowDeleteIcon}
                       aria-label="Delete"
                       onClick={() => this.handleRemoveAcl(organization.id)}

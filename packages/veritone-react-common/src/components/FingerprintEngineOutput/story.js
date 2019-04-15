@@ -39,9 +39,9 @@ storiesOf('FingerprintEngineOutput', module).add('Base', () => {
 
 const selectedEngineId = '1';
 const engines = [
-  { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' }  },
-  { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' }  },
-  { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' }  }
+  { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' } },
+  { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' } },
+  { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' } }
 ];
 
 // Mock Data Generator

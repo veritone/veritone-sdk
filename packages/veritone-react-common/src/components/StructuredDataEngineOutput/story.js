@@ -14,7 +14,7 @@ storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
     {
       id: 'engineOfInterest',
       name: 'SD Engine Of Interest',
-      category: { categoryType: 'dummy' } 
+      category: { categoryType: 'dummy' }
     }
   ];
   let mockEngineOutput = getMockData();

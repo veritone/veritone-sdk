@@ -28,43 +28,37 @@ export default class OCRSegment extends Component {
   }
 
   render() {
-    const {
-      series,
-      currentMediaPlayerTime,
-      onOcrClicked
-    } = this.props;
+    const { series, currentMediaPlayerTime, onOcrClicked } = this.props;
 
     return series
       .filter(ocrObject => ocrObject.object && ocrObject.object.text)
       .map(ocrObject => {
         return (
           <div
-            key={`ocr-object-${ocrObject.startTimeMs}-${
-              ocrObject.stopTimeMs
-            }-${ocrObject.object.text}`}
+            key={`ocr-object-${ocrObject.startTimeMs}-${ocrObject.stopTimeMs}-${
+              ocrObject.object.text
+            }`}
             className={cx(styles.ocrContainer, {
               [styles.highlighted]:
                 currentMediaPlayerTime >= ocrObject.startTimeMs &&
                 currentMediaPlayerTime <= ocrObject.stopTimeMs
             })}
             // eslint-disable-next-line
-            onClick={() => onOcrClicked(ocrObject.startTimeMs, ocrObject.stopTimeMs)}
+            onClick={() =>
+              onOcrClicked(ocrObject.startTimeMs, ocrObject.stopTimeMs)
+            }
           >
-            <span className={styles.ocrText}>
-              {ocrObject.object.text}
-            </span>
+            <span className={styles.ocrText}>{ocrObject.object.text}</span>
             {ocrObject.startTimeMs >= 0 &&
               ocrObject.stopTimeMs >= 0 && (
                 <span className={styles.ocrObjectTimestamp}>
                   {`${msToReadableString(
                     ocrObject.startTimeMs
-                  )} - ${msToReadableString(
-                    ocrObject.stopTimeMs
-                  )}`}
+                  )} - ${msToReadableString(ocrObject.stopTimeMs)}`}
                 </span>
               )}
           </div>
         );
-    })
+      });
   }
 }

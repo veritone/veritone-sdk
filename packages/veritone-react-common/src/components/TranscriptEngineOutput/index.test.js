@@ -43,8 +43,7 @@ const sampleData = {
     }
   ],
   speakerSegments: []
-}
-
+};
 
 describe('Transcript Engine Output - View Mode', () => {
   const onRestoreOriginalClick = jest.fn();
@@ -53,13 +52,18 @@ describe('Transcript Engine Output - View Mode', () => {
       parsedData={sampleData}
       selectedEngineId="1"
       onRestoreOriginalClick={onRestoreOriginalClick}
-      engines={[{
-        id: '1', name: 'Engine-X',
-        category: { categoryType: 'dummy' }
-      }, {
-        id: '2', name: 'Engine-Y',
-        category: { categoryType: 'dummy' }
-      }]}
+      engines={[
+        {
+          id: '1',
+          name: 'Engine-X',
+          category: { categoryType: 'dummy' }
+        },
+        {
+          id: '2',
+          name: 'Engine-Y',
+          category: { categoryType: 'dummy' }
+        }
+      ]}
     />
   );
 
@@ -68,7 +72,9 @@ describe('Transcript Engine Output - View Mode', () => {
   });
 
   it('Missing SpeakerTranscriptContent', () => {
-    expect(transcriptEngineOutput.find('SpeakerTranscriptContent')).toHaveLength(1);
+    expect(
+      transcriptEngineOutput.find('SpeakerTranscriptContent')
+    ).toHaveLength(1);
   });
 
   it('Missing Virtualized Transcript', () => {
@@ -97,7 +103,9 @@ describe('Transcript Engine Ouput - Edit Mode', () => {
   });
 
   it('Missing SpeakerTranscriptContent', () => {
-    expect(transcriptEngineOutput.find('SpeakerTranscriptContent')).toHaveLength(1);
+    expect(
+      transcriptEngineOutput.find('SpeakerTranscriptContent')
+    ).toHaveLength(1);
   });
 
   it('Invalid Edit', () => {

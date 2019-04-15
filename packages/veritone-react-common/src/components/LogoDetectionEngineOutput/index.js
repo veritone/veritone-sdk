@@ -3,7 +3,12 @@ import { arrayOf, number, string, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
 import { debounce } from 'lodash';
 
-import { AutoSizer, List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
+import {
+  AutoSizer,
+  List,
+  CellMeasurer,
+  CellMeasurerCache
+} from 'react-virtualized';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import LogoSegment from './LogoSegment';
@@ -74,7 +79,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
   seriesPerPage = 20;
   windowResizeDelay = 100;
-  
+
   onWindowResize = debounce(
     () => this.handleWindowResize(),
     this.windowResizeDelay
@@ -85,14 +90,14 @@ export default class LogoDetectionEngineOutput extends Component {
       cellCache.clearAll();
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   virtualMeasure = (measure, index) => () => {
     measure && measure();
     if (this.virtualList) {
       this.virtualList.forceUpdateGrid();
     }
-  }
+  };
 
   handleEntrySelected = (event, entry) => {
     this.props.onEntrySelected &&
@@ -100,18 +105,26 @@ export default class LogoDetectionEngineOutput extends Component {
   };
 
   generateVirtualizedLogoBlocks = () => {
-    const {
-      data
-    } = this.props;
-    const totalLogoSeries = data.reduce((acc, seg) => acc.concat(seg.series), []);
+    const { data } = this.props;
+    const totalLogoSeries = data.reduce(
+      (acc, seg) => acc.concat(seg.series),
+      []
+    );
     const newVirtualizedSerieBlocks = [];
 
-    for (let index = 0, curSeries = []; index < totalLogoSeries.length; index++) {
+    for (
+      let index = 0, curSeries = [];
+      index < totalLogoSeries.length;
+      index++
+    ) {
       const serie = totalLogoSeries[index];
       if (curSeries.length < this.seriesPerPage) {
         curSeries.push(serie);
       }
-      if (curSeries.length === this.seriesPerPage || index === totalLogoSeries.length - 1) {
+      if (
+        curSeries.length === this.seriesPerPage ||
+        index === totalLogoSeries.length - 1
+      ) {
         newVirtualizedSerieBlocks.push({ series: curSeries });
         curSeries = [];
       }
@@ -120,10 +133,7 @@ export default class LogoDetectionEngineOutput extends Component {
   };
 
   logoRowRenderer = ({ key, parent, index, style }) => {
-    const {
-      currentMediaPlayerTime,
-      onEntrySelected
-    } = this.props;
+    const { currentMediaPlayerTime, onEntrySelected } = this.props;
 
     const virtualizedSerieBlocks = this.generateVirtualizedLogoBlocks();
     const virtualizedSerieBlock = virtualizedSerieBlocks[index];
@@ -135,19 +145,24 @@ export default class LogoDetectionEngineOutput extends Component {
         cache={cellCache}
         columnIndex={0}
         style={{ width: '100%' }}
-        rowIndex={index}>
+        rowIndex={index}
+      >
         {({ measure }) => (
-          <div className={`logo-segment-block-${index}`} style={{ ...style, width: '100%' }}>
+          <div
+            className={`logo-segment-block-${index}`}
+            style={{ ...style, width: '100%' }}
+          >
             <LogoSegment
               virtualMeasure={this.virtualMeasure(measure, index)}
               series={virtualizedSerieBlock.series}
               currentMediaPlayerTime={currentMediaPlayerTime}
-              onEntrySelected={onEntrySelected} />
+              onEntrySelected={onEntrySelected}
+            />
           </div>
         )}
       </CellMeasurer>
     );
-  }
+  };
 
   render() {
     const {
@@ -178,7 +193,7 @@ export default class LogoDetectionEngineOutput extends Component {
               {({ height, width }) => (
                 <List
                   // eslint-disable-next-line
-                  ref={ref => this.virtualList = ref}
+                  ref={ref => (this.virtualList = ref)}
                   className={'virtual-logo-list'}
                   key={`virtual-logo-grid`}
                   width={width || 900}

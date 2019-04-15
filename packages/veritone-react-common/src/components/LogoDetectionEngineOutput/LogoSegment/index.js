@@ -30,11 +30,7 @@ export default class LogoSegment extends Component {
   }
 
   render() {
-    const {
-      series,
-      currentMediaPlayerTime,
-      onEntrySelected
-    } = this.props;
+    const { series, currentMediaPlayerTime, onEntrySelected } = this.props;
 
     return series.map((itemInfo, index) => {
       if (itemInfo.object) {
@@ -50,9 +46,7 @@ export default class LogoSegment extends Component {
           : '';
         const pillKey = `logo-pill-${kebabCase(
           itemInfo.object.label
-        )}-${timeRangeKeyPart}-${
-          itemInfo.confidence
-        }-${boundingPolyKeyPart}`;
+        )}-${timeRangeKeyPart}-${itemInfo.confidence}-${boundingPolyKeyPart}`;
         return (
           <PillButton
             value={index}
@@ -62,7 +56,9 @@ export default class LogoSegment extends Component {
             labelClassName={styles.label}
             key={pillKey}
             // eslint-disable-next-line
-            onClick={() => onEntrySelected(itemInfo.startTimeMs, itemInfo.stopTimeMs)}
+            onClick={() =>
+              onEntrySelected(itemInfo.startTimeMs, itemInfo.stopTimeMs)
+            }
             data={itemInfo}
             highlight={
               currentMediaPlayerTime >= itemInfo.startTimeMs &&

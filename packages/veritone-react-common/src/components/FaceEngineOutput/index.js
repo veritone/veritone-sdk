@@ -243,10 +243,10 @@ class FaceEngineOutput extends Component {
       </Tabs>
     );
     return (
-      <div 
+      <div
         className={cx(styles.faceEngineOutput, className)}
-        data-veritone-component="face-engine-output"                  
-        >
+        data-veritone-component="face-engine-output"
+      >
         <EngineOutputHeader
           title="Faces"
           hideTitle={editMode}
@@ -306,7 +306,7 @@ class FaceEngineOutput extends Component {
               className={cx(styles.faceTabBody, {
                 [styles.editMode]: editMode
               })}
-              data-veritone-component="face-engine-output-faceentities"          
+              data-veritone-component="face-engine-output-faceentities"
             >
               <FaceEntities
                 editMode={editMode}

@@ -18,7 +18,8 @@ describe('ObjectDetectionEngineOutput', () => {
             label: 'data',
             confidence: 0.942457377910614
           }
-        }, {
+        },
+        {
           startTimeMs: 2000,
           stopTimeMs: 3000,
           object: {
@@ -60,10 +61,7 @@ describe('ObjectDetectionEngineOutput', () => {
   it('should call props.onObjectClick when an object pill is clicked', () => {
     const handler = jest.fn();
     const wrapper = mount(
-      <ObjectDetectionEngineOutput
-        data={data}
-        onObjectClick={handler}
-      />
+      <ObjectDetectionEngineOutput data={data} onObjectClick={handler} />
     );
 
     wrapper

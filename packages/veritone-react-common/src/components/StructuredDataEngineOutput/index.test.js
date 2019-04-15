@@ -106,8 +106,16 @@ const SCHEMA_BY_ID = {
 };
 
 const ENGINES = [
-  { id: 'time-correlated-weather', name: 'Weather', category: { categoryType: 'dummy' }  },
-  { id: 'time-correlated-fb-feed', name: 'Facebook feeds', category: { categoryType: 'dummy' }  }
+  {
+    id: 'time-correlated-weather',
+    name: 'Weather',
+    category: { categoryType: 'dummy' }
+  },
+  {
+    id: 'time-correlated-fb-feed',
+    name: 'Facebook feeds',
+    category: { categoryType: 'dummy' }
+  }
 ];
 
 describe('StructuredDataEngineOutput', () => {

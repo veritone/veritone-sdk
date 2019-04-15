@@ -79,7 +79,10 @@ describe('Fingerprint Engine Output', () => {
     <FingerprintEngineOutput
       data={sampleData}
       entities={sampleEntities}
-      engines={[{ id: '1', name: 'Engine-X', category: { categoryType: 'dummy' }  }, { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' }  }]}
+      engines={[
+        { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' } },
+        { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' } }
+      ]}
       selectedEngineId="1"
     />
   );

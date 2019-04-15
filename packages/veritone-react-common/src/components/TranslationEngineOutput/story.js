@@ -25,9 +25,9 @@ export class TranslationExample extends Component {
   state = {
     selectedEngineId: '1',
     engines: [
-      { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' }  },
-      { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' }  },
-      { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' }  }
+      { id: '1', name: 'Engine-X', category: { categoryType: 'dummy' } },
+      { id: '2', name: 'Engine-Y', category: { categoryType: 'dummy' } },
+      { id: '3', name: 'Engine-Z', category: { categoryType: 'dummy' } }
     ],
     contents: renderMockData(0, 50000)
   };

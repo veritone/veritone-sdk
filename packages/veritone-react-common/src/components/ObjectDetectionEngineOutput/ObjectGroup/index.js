@@ -31,19 +31,16 @@ export default class ObjectGroup extends Component {
   }
 
   render() {
-    const {
-      objectGroup,
-      onObjectClick,
-      currentMediaPlayerTime
-    } = this.props;
+    const { objectGroup, onObjectClick, currentMediaPlayerTime } = this.props;
     return objectGroup.series.map(objectData => {
       const timeRangeKeyPart = `${objectData.startTimeMs}-${
         objectData.stopTimeMs
       }`;
       const boundingPoly = get(objectData.object, 'boundingPoly', []);
-      const boundingPolyKeyPart = boundingPoly && boundingPoly.length
-        ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
-        : '';
+      const boundingPolyKeyPart =
+        boundingPoly && boundingPoly.length
+          ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
+          : '';
       const pillKey = `object-pill-${kebabCase(
         objectData.object.label
       )}-${timeRangeKeyPart}-${
@@ -63,9 +60,11 @@ export default class ObjectGroup extends Component {
             currentMediaPlayerTime <= objectData.stopTimeMs
           }
           // eslint-disable-next-line
-          onClick={() => onObjectClick(objectData.startTimeMs, objectData.stopTimeMs)}
+          onClick={() =>
+            onObjectClick(objectData.startTimeMs, objectData.stopTimeMs)
+          }
         />
       );
-    })
+    });
   }
 }

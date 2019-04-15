@@ -73,8 +73,10 @@ export default class GeoMapView extends Component {
       const selectedLat = value.lat();
       const selectedLng = value.lng();
       data
-        .filter(seriesItem =>
-          get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+        .filter(
+          seriesItem =>
+            get(seriesItem, 'gps.length') ||
+            get(seriesItem, 'object.gps.length')
         )
         .forEach(entry => {
           const gps = this.getGeoLocation(entry);
@@ -91,7 +93,7 @@ export default class GeoMapView extends Component {
             minDistance = distance;
             closestEntry = entry;
           }
-      });
+        });
 
       onClick(closestEntry.startTimeMs, closestEntry.stopTimeMs);
     }
@@ -99,10 +101,10 @@ export default class GeoMapView extends Component {
 
   handlePlayerTimeChange = () => {
     const { mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
-    const data = this.props.data
-      .filter(seriesItem =>
+    const data = this.props.data.filter(
+      seriesItem =>
         get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
-      );
+    );
 
     if (mediaPlayerTimeMs < 0) {
       return;
@@ -141,10 +143,10 @@ export default class GeoMapView extends Component {
   };
 
   estimatePosition(timeMs) {
-    const data = this.props.data
-      .filter(seriesItem =>
+    const data = this.props.data.filter(
+      seriesItem =>
         get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
-      );
+    );
 
     if (timeMs < 0) {
       return null;

@@ -53,13 +53,18 @@ describe('Logo Engine Output', () => {
   let logoEngineOutput = mount(
     <LogoDetectionEngineOutput
       data={sampleData}
-      engines={[{
-        id: '1', name: 'Engine-X',
-        category: { categoryType: 'dummy' }
-      }, {
-        id: '2', name: 'Engine-Y',
-        category: { categoryType: 'dummy' }
-      }]}
+      engines={[
+        {
+          id: '1',
+          name: 'Engine-X',
+          category: { categoryType: 'dummy' }
+        },
+        {
+          id: '2',
+          name: 'Engine-Y',
+          category: { categoryType: 'dummy' }
+        }
+      ]}
       selectedEngineId="1"
       mediaPlayerTimeMs={2400}
       mediaPlayerTimeIntervalMs={150}
@@ -73,9 +78,7 @@ describe('Logo Engine Output', () => {
   });
 
   it('Missing Virtual List', () => {
-    expect(logoEngineOutput.find('List')).toHaveLength(
-      1
-    );
+    expect(logoEngineOutput.find('List')).toHaveLength(1);
   });
 
   it('Missing PillButton', () => {

@@ -72,13 +72,7 @@ export default class SourceTypeField extends React.Component {
   };
 
   render() {
-    const {
-      id,
-      type,
-      query,
-      peerSelection,
-      ...rest
-    } = this.props;
+    const { id, type, query, peerSelection, ...rest } = this.props;
     const supportedTypes = [
       'object',
       'string',

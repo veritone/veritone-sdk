@@ -125,8 +125,8 @@ export default class FingerprintEngineOutput extends Component {
             entity.libraryName = library.name;
             if (!library.entities) {
               library.entities = [entity];
-            } else if (!some(library.entities, { 'id': entity.id })) {
-              library.entities.push(entity)
+            } else if (!some(library.entities, { id: entity.id })) {
+              library.entities.push(entity);
             }
           }
         });

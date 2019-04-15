@@ -57,9 +57,7 @@ const renderEntitySearchMenu = ({
           <div className={styles.menuEntityName}>
             {getEntityNameElement(result.name, searchEntityText)}
           </div>
-          <div className={styles.menuLibraryName}>
-            {result.library.name}
-          </div>
+          <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
     );
@@ -110,7 +108,7 @@ class FaceInfoBox extends Component {
   componentDidMount() {
     this.controller = new AbortController();
     const signal = this.controller.signal;
-    fetch(get(this.props, 'face.object.uri'), {signal})
+    fetch(get(this.props, 'face.object.uri'), { signal })
       .then(res => {
         if (!res.ok) {
           this.setState({
@@ -121,16 +119,17 @@ class FaceInfoBox extends Component {
         return res.blob();
       })
       .then(imageBlob => {
-        const reader = new FileReader() ;
+        const reader = new FileReader();
         reader.onload = () => {
           this.setState({
             sourceImage: reader.result,
             imageIsLoading: false
           });
         };
-        reader.readAsDataURL(imageBlob) ;
+        reader.readAsDataURL(imageBlob);
         return imageBlob;
-      }).catch(err => {
+      })
+      .catch(err => {
         if (err.name == 'AbortError') {
           return;
         }
@@ -299,57 +298,63 @@ class FaceInfoBox extends Component {
                           })}
                         />
                       </div>
-                      {isOpen ? (
-                        ReactDOM.createPortal(
-                          <Popper
-                            modifiers={{
-                              preventOverflow: {
-                                enabled: false
-                              }
-                            }}
-                            placement={this.calculatePopperPlacement()}
-                            style={{ zIndex: 1300 }}
-                            target={this._inputRef}
-                          >
-                            <Paper className={styles.autoCompleteDropdown} square>
-                              <div className={styles.libraryMatchesTitle}>
-                                Library Matches
-                              </div>
-                              <div className={styles.searchResultsList}>
-                                {isSearchingEntities ? (
-                                  <div className={styles.progressContainer}>
-                                    <CircularProgress />
-                                  </div>
-                                ) : searchResults && searchResults.length ? (
-                                  renderEntitySearchMenu({
-                                    results: searchResults,
-                                    getItemProps,
-                                    highlightedIndex,
-                                    searchEntityText: this.state.searchEntityText
-                                  })
-                                ) : (
-                                  <div className={styles.notFoundEntityMessage}>
-                                    Results Not Found
-                                  </div>
-                                )}
-                              </div>
-                              <div className={styles.addNewEntity}>
-                                <Button
-                                  color="primary"
-                                  className={styles.addNewEntityButton}
-                                  onClick={this.handleAddNewEntity(
-                                    face,
-                                    inputValue
+                      {isOpen
+                        ? ReactDOM.createPortal(
+                            <Popper
+                              modifiers={{
+                                preventOverflow: {
+                                  enabled: false
+                                }
+                              }}
+                              placement={this.calculatePopperPlacement()}
+                              style={{ zIndex: 1300 }}
+                              target={this._inputRef}
+                            >
+                              <Paper
+                                className={styles.autoCompleteDropdown}
+                                square
+                              >
+                                <div className={styles.libraryMatchesTitle}>
+                                  Library Matches
+                                </div>
+                                <div className={styles.searchResultsList}>
+                                  {isSearchingEntities ? (
+                                    <div className={styles.progressContainer}>
+                                      <CircularProgress />
+                                    </div>
+                                  ) : searchResults && searchResults.length ? (
+                                    renderEntitySearchMenu({
+                                      results: searchResults,
+                                      getItemProps,
+                                      highlightedIndex,
+                                      searchEntityText: this.state
+                                        .searchEntityText
+                                    })
+                                  ) : (
+                                    <div
+                                      className={styles.notFoundEntityMessage}
+                                    >
+                                      Results Not Found
+                                    </div>
                                   )}
-                                >
-                                  ADD NEW
-                                </Button>
-                              </div>
-                            </Paper>
-                          </Popper>,
-                          document.querySelector('body')
-                        )
-                      ) : null}
+                                </div>
+                                <div className={styles.addNewEntity}>
+                                  <Button
+                                    color="primary"
+                                    className={styles.addNewEntityButton}
+                                    onClick={this.handleAddNewEntity(
+                                      face,
+                                      inputValue
+                                    )}
+                                  >
+                                    ADD NEW
+                                  </Button>
+                                </div>
+                              </Paper>
+                            </Popper>,
+                            document.querySelector('body')
+                          )
+                        : null}
                     </div>
                   )}
                 </Downshift>

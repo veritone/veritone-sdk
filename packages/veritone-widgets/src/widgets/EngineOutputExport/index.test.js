@@ -22,7 +22,7 @@ import styles from './styles.scss';
 
 const mockStore = configureMockStore();
 
-const testTDOs = [{ tdoId: 'fakeTDOId '}];
+const testTDOs = [{ tdoId: 'fakeTDOId ' }];
 
 const testSpeakerEngine = {
   id: 'speakerEngineId',
@@ -122,16 +122,12 @@ describe('EngineCategoryConfigList', () => {
         <Provider store={store}>
           <EngineCategoryConfigList
             tdos={testTDOs}
-            outputConfigsByCategoryId={
-              engineOutputExportModule.outputConfigsByCategoryId(
-                store.getState()
-              )
-            }
-            expandedCategories={
-              engineOutputExportModule.expandedCategories(
-                store.getState()
-              )
-            }
+            outputConfigsByCategoryId={engineOutputExportModule.outputConfigsByCategoryId(
+              store.getState()
+            )}
+            expandedCategories={engineOutputExportModule.expandedCategories(
+              store.getState()
+            )}
             hasSpeakerData
           />
         </Provider>
@@ -143,10 +139,7 @@ describe('EngineCategoryConfigList', () => {
     });
 
     it('should not be displayed in the list', () => {
-      expect(
-        wrapper.find(EngineCategoryConfig)
-          .exists()
-      ).toEqual(false);
+      expect(wrapper.find(EngineCategoryConfig).exists()).toEqual(false);
     });
   });
 });

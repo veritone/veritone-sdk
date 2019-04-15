@@ -2,14 +2,14 @@ import React from 'react';
 import { string, func, bool } from 'prop-types';
 import styles from './styles.scss';
 const Image = ({
-   src,
-   height = '100px',
-   width = '100px',
-   type = 'cover',
-   border,
-   label,
-   onClick
- }) => {
+  src,
+  height = '100px',
+  width = '100px',
+  type = 'cover',
+  border,
+  label,
+  onClick
+}) => {
   return (
     <div
       style={{

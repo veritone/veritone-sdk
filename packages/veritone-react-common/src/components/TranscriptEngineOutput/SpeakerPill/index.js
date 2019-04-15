@@ -32,13 +32,17 @@ export default class SpeakerPill extends Component {
       stopTimeMs: number,
       guid: string
     }).isRequired,
-    speakerData: arrayOf(shape({
-      series: arrayOf(shape({
-        speakerId: string,
-        startTimeMs: number,
-        stopTimeMs: number
-      }))
-    })).isRequired,
+    speakerData: arrayOf(
+      shape({
+        series: arrayOf(
+          shape({
+            speakerId: string,
+            startTimeMs: number,
+            stopTimeMs: number
+          })
+        )
+      })
+    ).isRequired,
     availableSpeakers: arrayOf(string).isRequired,
     editMode: bool,
     onChange: func,
@@ -59,7 +63,7 @@ export default class SpeakerPill extends Component {
     speakerName: ''
   };
 
-  handlePillClick = (event) => {
+  handlePillClick = event => {
     if (this.props.onClick) {
       this.props.onClick(event, this.props.speakerSegment);
     }
@@ -95,9 +99,7 @@ export default class SpeakerPill extends Component {
     const { speakerSegment } = this.props;
     const { speakerId } = speakerSegment;
     this.setState({ speakerName: id }, () => {
-      id !== speakerId
-        ? this.handleAddClick()
-        : this.handleClearClick()
+      id !== speakerId ? this.handleAddClick() : this.handleClearClick();
     });
   };
 
@@ -109,7 +111,12 @@ export default class SpeakerPill extends Component {
     const { speakerId } = speakerSegment;
     const isApplyAll = speakerId ? applyAll : false;
 
-    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, speakerName)
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(
+      speakerData,
+      speakerSegment,
+      isApplyAll,
+      speakerName
+    );
 
     hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
@@ -123,7 +130,12 @@ export default class SpeakerPill extends Component {
     const { speakerId } = speakerSegment;
     const isApplyAll = speakerId ? applyAll : false;
 
-    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, isApplyAll, '')
+    const { hasChange, historyDiff } = generateSpeakerUpdateDiffHistory(
+      speakerData,
+      speakerSegment,
+      isApplyAll,
+      ''
+    );
 
     hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
@@ -131,16 +143,21 @@ export default class SpeakerPill extends Component {
 
   handleDeleteClick = event => {
     const { editMode, speakerData, speakerSegment, onChange } = this.props;
-    const { hasChange, historyDiff } = generateSpeakerDeleteDiffHistory(speakerData, speakerSegment);
+    const { hasChange, historyDiff } = generateSpeakerDeleteDiffHistory(
+      speakerData,
+      speakerSegment
+    );
     hasChange && editMode && onChange && onChange(event, historyDiff);
     this.handleMenuClose();
-  }
+  };
 
   autoFocusRef = node => {
     if (node && node.focus) {
-      setTimeout(() => { node.focus() }, 100);
+      setTimeout(() => {
+        node.focus();
+      }, 100);
     }
-  }
+  };
 
   render() {
     const {
@@ -151,22 +168,13 @@ export default class SpeakerPill extends Component {
       stopMediaPlayHeadMs,
       speakerData
     } = this.props;
-    const {
-      speakerId,
-      startTimeMs,
-      stopTimeMs,
-      guid
-    } = speakerSegment;
-    const {
-      showMenuButton,
-      anchorEl,
-      applyAll,
-      speakerName
-    } = this.state;
+    const { speakerId, startTimeMs, stopTimeMs, guid } = speakerSegment;
+    const { showMenuButton, anchorEl, applyAll, speakerName } = this.state;
 
     const extractPillLabel = speakerId => {
       if (isString(speakerId) && speakerId.length > 2) {
-        return speakerId.split(' ')
+        return speakerId
+          .split(' ')
           .slice(0, 3)
           .map(part => part.slice(0, 1))
           .join('')
@@ -181,111 +189,112 @@ export default class SpeakerPill extends Component {
       return 'Speaker ' + speakerId;
     };
 
-    const speakerKey = guid ? guid : `speaker-pill-${speakerId}-${startTimeMs}-${stopTimeMs}`;
-    const midMediaPlayerHeadMs = (startMediaPlayHeadMs + stopMediaPlayHeadMs) / 2;
-    const isHighlighted = startTimeMs <= midMediaPlayerHeadMs && midMediaPlayerHeadMs < stopTimeMs;
+    const speakerKey = guid
+      ? guid
+      : `speaker-pill-${speakerId}-${startTimeMs}-${stopTimeMs}`;
+    const midMediaPlayerHeadMs =
+      (startMediaPlayHeadMs + stopMediaPlayHeadMs) / 2;
+    const isHighlighted =
+      startTimeMs <= midMediaPlayerHeadMs && midMediaPlayerHeadMs < stopTimeMs;
     const colorClass = isHighlighted ? styles.highlight : '';
     const speakerPillLabel = extractPillLabel(speakerId);
     const speakerLabel = extractLabel(speakerId);
     let speakerIndex;
-    speakerData.forEach(seg => seg.series.forEach((s, i) => {
-      if (s.guid === guid) {
-        speakerIndex = i;
-      }
-    }));
-    const otherSpeakers = (speakerName && speakerName !== speakerId)
-      ? availableSpeakers.filter(id => 
-        id
-        && speakerId !== id 
-        && id.toLowerCase().startsWith(speakerName.toLowerCase())
-      ) : availableSpeakers.filter(id => speakerId !== id);
+    speakerData.forEach(seg =>
+      seg.series.forEach((s, i) => {
+        if (s.guid === guid) {
+          speakerIndex = i;
+        }
+      })
+    );
+    const otherSpeakers =
+      speakerName && speakerName !== speakerId
+        ? availableSpeakers.filter(
+            id =>
+              id &&
+              speakerId !== id &&
+              id.toLowerCase().startsWith(speakerName.toLowerCase())
+          )
+        : availableSpeakers.filter(id => speakerId !== id);
 
     return (
       <div
-        className={ classNames(this.props.className, styles.speakerPillContainer) }
-        onMouseEnter={ this.handleMouseEnter }
-        onMouseLeave={ this.handleMouseLeave }>
+        className={classNames(
+          this.props.className,
+          styles.speakerPillContainer
+        )}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      >
         <Tooltip
           title={speakerLabel}
           placement="bottom-end"
-          disableHoverListener={!speakerId}>
+          disableHoverListener={!speakerId}
+        >
           <div style={{ display: 'inline' }}>
-            {
-              speakerId ? (
-                <Chip
-                  className={ classNames(styles.speakerPill, colorClass) }
-                  key={ speakerKey }
-                  label={ speakerPillLabel }
-                  onClick={ this.handlePillClick }
-                  clickable
-                />
-              ) : (
-                <IconButton
-                className={ classNames(styles.nullSpeakerIcon, colorClass) }
-                  disableRipple
-                  onClick={ this.handlePillClick }>
-                  {
-                    editMode ? (
-                      <PersonAddIcon />
-                    ) : (
-                      <PersonIcon />
-                    )
-                  }
-                </IconButton>
-              )
-            }
+            {speakerId ? (
+              <Chip
+                className={classNames(styles.speakerPill, colorClass)}
+                key={speakerKey}
+                label={speakerPillLabel}
+                onClick={this.handlePillClick}
+                clickable
+              />
+            ) : (
+              <IconButton
+                className={classNames(styles.nullSpeakerIcon, colorClass)}
+                disableRipple
+                onClick={this.handlePillClick}
+              >
+                {editMode ? <PersonAddIcon /> : <PersonIcon />}
+              </IconButton>
+            )}
           </div>
         </Tooltip>
-        {
-          (editMode && showMenuButton) ?
-            (
-              <IconButton
-                className={ styles.editButton }
-                disableRipple
-                onClick={this.handleMenuOpen}>
-                <EditIcon 
-                  className={ styles.editIcon }/>
-              </IconButton>
-            ) : null
-        }
+        {editMode && showMenuButton ? (
+          <IconButton
+            className={styles.editButton}
+            disableRipple
+            onClick={this.handleMenuOpen}
+          >
+            <EditIcon className={styles.editIcon} />
+          </IconButton>
+        ) : null}
         <Menu
           MenuListProps={{ className: styles.speakerMenu }}
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
-          onClose={this.handleMenuClose}>
-          <form onSubmit={
-            speakerName !== speakerId
-              ? this.handleAddClick
-              : this.handleClearClick
-          }>
-            {
-              speakerId ? (
-                <ListItem
-                  className={styles.speakerMenuItem}
-                  dense
-                  button
-                  disableRipple
-                  onClick={this.handleClickApplyAll}>
-                  <Checkbox
-                    color="primary"
-                    disableRipple
-                    checked={applyAll} />
-                  <ListItemText
-                    className={styles.speakerApplyAllText}
-                    primary={`Apply to all "${speakerLabel}"`}
-                  />
-                </ListItem>
-              ) : null
+          onClose={this.handleMenuClose}
+        >
+          <form
+            onSubmit={
+              speakerName !== speakerId
+                ? this.handleAddClick
+                : this.handleClearClick
             }
-            <ListItem
-              className={styles.speakerMenuItem}
-              dense
+          >
+            {speakerId ? (
+              <ListItem
+                className={styles.speakerMenuItem}
+                dense
+                button
+                disableRipple
+                onClick={this.handleClickApplyAll}
               >
+                <Checkbox color="primary" disableRipple checked={applyAll} />
+                <ListItemText
+                  className={styles.speakerApplyAllText}
+                  primary={`Apply to all "${speakerLabel}"`}
+                />
+              </ListItem>
+            ) : null}
+            <ListItem className={styles.speakerMenuItem} dense>
               <FormControl className={styles.speakerInputContainer}>
                 <InputLabel
                   className={styles.speakerInputLabel}
                   htmlFor={`name-input-${speakerKey}`}
-                  shrink>
+                  shrink
+                >
                   Speaker Name
                 </InputLabel>
                 <Input
@@ -299,12 +308,13 @@ export default class SpeakerPill extends Component {
                   placeholder={speakerId}
                   fullWidth
                   endAdornment={
-                    (speakerName && speakerName !== speakerId) ? (
+                    speakerName && speakerName !== speakerId ? (
                       <Button
                         disableRipple
                         color="primary"
                         size="small"
-                        onClick={this.handleAddClick}>
+                        onClick={this.handleAddClick}
+                      >
                         Add
                       </Button>
                     ) : (
@@ -312,95 +322,105 @@ export default class SpeakerPill extends Component {
                         disableRipple
                         color="primary"
                         size="small"
-                        onClick={this.handleClearClick}>
+                        onClick={this.handleClearClick}
+                      >
                         Clear
                       </Button>
                     )
-                  } />
+                  }
+                />
               </FormControl>
-              { speakerIndex > 0 && (
+              {speakerIndex > 0 && (
                 <Tooltip
                   title="Delete Speaker"
                   placement="top-end"
-                  disableHoverListener={!speakerId}>
+                  disableHoverListener={!speakerId}
+                >
                   <IconButton
-                    className={ styles.deleteIconContainer }
+                    className={styles.deleteIconContainer}
                     disableRipple
-                    onClick={this.handleDeleteClick}>
+                    onClick={this.handleDeleteClick}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
               )}
             </ListItem>
             <ListItem
-              className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
-              dense>
-              <span
-                className={styles.speakerMenuAvailableHeader}>
+              className={classNames(
+                styles.speakerMenuItem,
+                styles.darkMenuSection
+              )}
+              dense
+            >
+              <span className={styles.speakerMenuAvailableHeader}>
                 Available Speakers
               </span>
             </ListItem>
-            <div
-              className={ styles.availableSpeakersScroller }>
-              {
-                otherSpeakers.map(id => {
-                  return (
-                    <ListItem
-                      key={`available-speaker-${id}`}
-                      className={ classNames(styles.speakerMenuItem, styles.darkMenuSection) }
-                      dense button
-                      onClick={this.handleAvailableSpeakerClick(id)}>
-                      
-                      <ListItemIcon>
-                        {
-                          speakerName === id ? (
-                              <CheckIcon className={ styles.speakerCheckIcon } />
-                          ) : <div />
-                        }
-                      </ListItemIcon>
-                      <ListItemText>{extractLabel(id)}</ListItemText>
-                    </ListItem>
-                  )
-                })
-              }
+            <div className={styles.availableSpeakersScroller}>
+              {otherSpeakers.map(id => {
+                return (
+                  <ListItem
+                    key={`available-speaker-${id}`}
+                    className={classNames(
+                      styles.speakerMenuItem,
+                      styles.darkMenuSection
+                    )}
+                    dense
+                    button
+                    onClick={this.handleAvailableSpeakerClick(id)}
+                  >
+                    <ListItemIcon>
+                      {speakerName === id ? (
+                        <CheckIcon className={styles.speakerCheckIcon} />
+                      ) : (
+                        <div />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText>{extractLabel(id)}</ListItemText>
+                  </ListItem>
+                );
+              })}
             </div>
           </form>
         </Menu>
       </div>
     );
   }
-};
+}
 
 function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
   const transcriptChanges = [];
   const speakerChanges = [];
   const { guid } = speakerSegment;
 
-  isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
-    let index;
-    if (isArray(chunk.series) 
-      && (index = findIndex(chunk.series, ['guid', guid])) !== -1
-      && index  // Don't allow deleting first one
-    ) {
-      speakerChanges.push({
-        chunkIndex,
-        index,
-        action: 'DELETE',
-        oldValue: speakerSegment
-      });
-      const previousSpeaker = speakerData[chunkIndex].series[index - 1];
-      speakerChanges.push({
-        chunkIndex,
-        index: index - 1,
-        action: 'UPDATE',
-        oldValue: previousSpeaker,
-        newValue: {
-          ...previousSpeaker,
-          stopTimeMs: speakerSegment.stopTimeMs
-        }
-      });
-    }
-  });
+  isArray(speakerData) &&
+    speakerData.forEach((chunk, chunkIndex) => {
+      let index;
+      if (
+        isArray(chunk.series) &&
+        (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
+        index // Don't allow deleting first one
+      ) {
+        speakerChanges.push({
+          chunkIndex,
+          index,
+          action: 'DELETE',
+          oldValue: speakerSegment
+        });
+        const previousSpeaker = speakerData[chunkIndex].series[index - 1];
+        speakerChanges.push({
+          chunkIndex,
+          index: index - 1,
+          action: 'UPDATE',
+          oldValue: previousSpeaker,
+          newValue: {
+            ...previousSpeaker,
+            stopTimeMs: speakerSegment.stopTimeMs
+          }
+        });
+      }
+    });
 
   speakerChanges.sort(sortByIndex);
   transcriptChanges.sort(sortByIndex);
@@ -414,41 +434,50 @@ function generateSpeakerDeleteDiffHistory(speakerData, speakerSegment) {
   };
 }
 
-function generateSpeakerUpdateDiffHistory(speakerData, speakerSegment, applyAll, speakerName) {
+function generateSpeakerUpdateDiffHistory(
+  speakerData,
+  speakerSegment,
+  applyAll,
+  speakerName
+) {
   const speakerChanges = [];
   const { guid, speakerId } = speakerSegment;
 
   if (applyAll) {
-    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
-      isArray(chunk.series) && chunk.series.forEach((serie, index) => {
-        serie.speakerId === speakerId && speakerChanges.push({
-          chunkIndex,
-          index,
-          action: 'UPDATE',
-          oldValue: serie,
-          newValue: {
-            ...serie,
-            speakerId: speakerName
-          }
-        });
+    isArray(speakerData) &&
+      speakerData.forEach((chunk, chunkIndex) => {
+        isArray(chunk.series) &&
+          chunk.series.forEach((serie, index) => {
+            serie.speakerId === speakerId &&
+              speakerChanges.push({
+                chunkIndex,
+                index,
+                action: 'UPDATE',
+                oldValue: serie,
+                newValue: {
+                  ...serie,
+                  speakerId: speakerName
+                }
+              });
+          });
       });
-    });
   } else {
-    isArray(speakerData) && speakerData.forEach((chunk, chunkIndex) => {
-      let index;
-      isArray(chunk.series) &&
-        (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
-        speakerChanges.push({
-          chunkIndex,
-          index,
-          action: 'UPDATE',
-          oldValue: speakerSegment,
-          newValue: {
-            ...speakerSegment,
-            speakerId: speakerName
-          }
-        });
-    });
+    isArray(speakerData) &&
+      speakerData.forEach((chunk, chunkIndex) => {
+        let index;
+        isArray(chunk.series) &&
+          (index = findIndex(chunk.series, ['guid', guid])) !== -1 &&
+          speakerChanges.push({
+            chunkIndex,
+            index,
+            action: 'UPDATE',
+            oldValue: speakerSegment,
+            newValue: {
+              ...speakerSegment,
+              speakerId: speakerName
+            }
+          });
+      });
   }
 
   speakerChanges.sort(sortByIndex);

@@ -300,10 +300,7 @@ class FaceEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = engine => showUserEdited => {
     const tdo = this.props.tdo;
-    this.props.clearEngineResultsByEngineId(
-      tdo.id,
-      engine.id
-    );
+    this.props.clearEngineResultsByEngineId(tdo.id, engine.id);
     this.props.fetchEngineResults({
       engineId: engine.id,
       tdo: tdo,

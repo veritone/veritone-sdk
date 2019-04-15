@@ -224,7 +224,10 @@ export default class AddToExistingEntityDialog extends Component {
       updateUserSetting
     } = this.props;
     const { selectedEntity } = this.state;
-    if (get(selectedEntity, 'ownedByOrganization') && get(selectedIdentifiers, 'length')) {
+    if (
+      get(selectedEntity, 'ownedByOrganization') &&
+      get(selectedIdentifiers, 'length')
+    ) {
       createEntityIdentifiers(
         selectedIdentifiers.map(face => {
           return {

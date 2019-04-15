@@ -52,36 +52,40 @@ export default class SnippetSegment extends Component {
     return (
       <div className={classNames(styles.translateSegment, className)}>
         <div className={classNames(styles.content, contentClassName)}>
-          {
-            series.map(entry => {
-              const startTime = entry.startTimeMs;
-              const stopTime = entry.stopTimeMs;
-              const words = entry.words || [];
-              const orderedWords = orderBy(words, ['confidence'], ['desc']);
-              const selectedWord = get(orderedWords, '[0].word');
-              const fragmentKey = entry.guid
-                ? entry.guid
-                : `snippet-fragment-${startTime}-${stopTime}`;
-              let value = '';
-              if (selectedWord) {
-                textareaToDecodeCharacters.innerHTML = selectedWord;
-                value = textareaToDecodeCharacters.value;
-              }
-              return (
-                <span
-                  key={fragmentKey}
-                  onClick={this.handleSnippetClick(entry)}
-                  className={classNames(styles.translateSnippet, styles.read, className, {
+          {series.map(entry => {
+            const startTime = entry.startTimeMs;
+            const stopTime = entry.stopTimeMs;
+            const words = entry.words || [];
+            const orderedWords = orderBy(words, ['confidence'], ['desc']);
+            const selectedWord = get(orderedWords, '[0].word');
+            const fragmentKey = entry.guid
+              ? entry.guid
+              : `snippet-fragment-${startTime}-${stopTime}`;
+            let value = '';
+            if (selectedWord) {
+              textareaToDecodeCharacters.innerHTML = selectedWord;
+              value = textareaToDecodeCharacters.value;
+            }
+            return (
+              <span
+                key={fragmentKey}
+                onClick={this.handleSnippetClick(entry)}
+                className={classNames(
+                  styles.translateSnippet,
+                  styles.read,
+                  className,
+                  {
                     [styles.highlight]: !(
-                      stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
+                      stopMediaPlayHeadMs < startTime ||
+                      startMediaPlayHeadMs > stopTime
                     )
-                  })}
-                >
-                  {value}
-                </span>
-              );
-            })
-          }
+                  }
+                )}
+              >
+                {value}
+              </span>
+            );
+          })}
         </div>
       </div>
     );

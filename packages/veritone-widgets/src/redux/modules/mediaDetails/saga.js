@@ -1206,7 +1206,7 @@ function* watchSetEngineId() {
 }
 
 function* watchSetCombineEngineId() {
-  yield takeEvery(SET_SELECTED_COMBINE_ENGINE_ID, function* (action) {
+  yield takeEvery(SET_SELECTED_COMBINE_ENGINE_ID, function*(action) {
     const selectedCombineEngineId = action.payload;
     const { widgetId } = action.meta;
 
@@ -1238,7 +1238,7 @@ function* watchSetCombineEngineId() {
         ignoreUserEdited: false
       })
     );
-  })
+  });
 }
 
 function* watchSelectEngineCategory() {
@@ -1271,7 +1271,7 @@ function* watchSelectEngineCategory() {
         yield put(setCombineEngineId(widgetId, combineEngineId));
         const viewTypes = yield select(getCombineViewTypes, widgetId);
         if (viewTypes.length) {
-          yield put(setSelectedCombineViewTypeId(widgetId, viewTypes[0].id)); 
+          yield put(setSelectedCombineViewTypeId(widgetId, viewTypes[0].id));
         }
       }
     }
