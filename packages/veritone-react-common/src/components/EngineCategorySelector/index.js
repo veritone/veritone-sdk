@@ -20,17 +20,21 @@ export default class EngineCategorySelector extends Component {
   render() {
     return (
       (this.props.engineCategories &&
-        this.props.engineCategories.length &&
-        this.props.selectedEngineCategoryId && (
+        this.props.engineCategories.length && (
           <div className={styles.engineCategoryTabsContainer}>
             <Tabs
-              value={this.props.selectedEngineCategoryId}
+              value={this.props.selectedEngineCategoryId || false}
               indicatorColor="primary"
               onChange={this.handleTabChange}
               classes={{
                 flexContainer: styles.engineCategoryTabs,
                 root: styles.engineCategoryTabsRoot,
                 scroller: styles.engineCategoryTabsScroller
+              }}
+              TabIndicatorProps={{
+                style: {
+                  transition: 'none'
+                }
               }}
             >
               {this.props.engineCategories.map(function(engineCategory) {

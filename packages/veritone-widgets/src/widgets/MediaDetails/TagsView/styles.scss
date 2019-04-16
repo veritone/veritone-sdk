@@ -1,0 +1,101 @@
+@import '../../../styles/modules/variables';
+
+.tagsView {
+  margin-left: 30px;
+  width: calc(100% - 480px) !important;
+
+  .tagsTitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .editButton {
+    height: 40px;
+    width: 40px;
+  }
+
+  .tagsContent {
+    padding-top: 20px;
+    overflow-y: hidden;
+
+    .tagsContainer {
+      overflow-y: auto;
+
+      .viewModePill {
+        border: 1px solid $grey-4;
+        border-radius: 20px;
+        margin-right: 15px;
+        margin-bottom: 15px;
+        height: 41px;
+        font-size: 14px;
+        line-height: 16px;
+        padding: 8px 12px;
+      }
+
+      .tagsInputLabel {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 400;
+
+        &.shrink {
+          transform: none;
+        }
+      }
+
+      .tagsInput {
+        min-width: 260px;
+        font-size: 14px;
+        line-height: 16px;
+      }
+
+      .noTags {
+        padding: 28px;
+
+        .noTagsText {
+          font-size: 20px !important;
+          font-weight: 300 !important;
+          line-height: 24px !important;
+        }
+
+        .noTagsSubText {
+          font-size: 14px !important;
+          font-weight: 300 !important;
+          line-height: 18px !important;
+          color: $light-black;
+        }
+
+        .tagsButtonContainer {
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+
+  .tagEditForm {
+    width: 100%;
+    height: 100%;
+
+    .actionButtonsEditMode {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      margin: 15px 80px 15px 0;
+      border-right: 1px solid $grey-4;
+      flex: none;
+
+      button {
+        height: 36px;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+
+      .actionButtonEditMode {
+        width: 108px;
+        margin-right: 20px;
+      }
+    }
+  }
+}

@@ -50,7 +50,7 @@ export default {
     'screenfull',
     'shaka-player',
     'video-react',
-    'video-react/dist/video-react.es.js'
+    'video-react/dist/video-react.cjs.js'
   ],
   plugins: [
     replace({

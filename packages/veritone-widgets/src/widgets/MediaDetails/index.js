@@ -6,6 +6,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
 import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
+import TabIndicator from '@material-ui/core/Tabs/TabIndicator';
 import Tabs from '@material-ui/core/Tabs';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -62,6 +63,7 @@ import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './MoreMenuItems';
+import TagsView from './TagsView';
 import EditHeader from './Headers/EditHeader';
 import { modules, util } from 'veritone-redux-common';
 const {
@@ -164,7 +166,8 @@ const enginesNullState =
       state,
       'downloadPublicMedia'
     ),
-    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia')
+    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia'),
+    isShowingTagsView: mediaDetailsModule.isShowingTagsView(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -185,7 +188,10 @@ const enginesNullState =
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
     createQuickExport: mediaDetailsModule.createQuickExport,
-    cancelEdit: mediaDetailsModule.cancelEdit
+    cancelEdit: mediaDetailsModule.cancelEdit,
+    enableTagsView: mediaDetailsModule.enableTagsView,
+    setEditTagsMode: mediaDetailsModule.setEditTagsMode,
+    saveTags: mediaDetailsModule.updateTdo
   },
   null,
   { withRef: true }
@@ -426,7 +432,11 @@ class MediaDetailsWidget extends React.Component {
     bulkEditEnabled: bool,
     publicMediaDownloadEnabled: bool,
     downloadMediaEnabled: bool,
-    cancelEdit: func
+    cancelEdit: func,
+    setEditTagsMode: func,
+    isShowingTagsView: bool,
+    enableTagsView: func,
+    saveTags: func
   };
 
   static contextTypes = {
@@ -1053,7 +1063,10 @@ class MediaDetailsWidget extends React.Component {
       onBack,
       onNext,
       isNextActive,
-      isBackActive
+      isBackActive,
+      setEditTagsMode,
+      isShowingTagsView,
+      saveTags
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1475,7 +1488,7 @@ class MediaDetailsWidget extends React.Component {
                     />
                   </Tabs>
                 )}
-                {selectedEngineCategory &&
+                {!!get(engineCategorySelectorItems, 'length') &&
                   this.state.selectedTabValue === 'mediaDetails' && (
                     <div
                       className={styles.engineActionHeader}
@@ -1484,12 +1497,48 @@ class MediaDetailsWidget extends React.Component {
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={engineCategorySelectorItems}
-                          selectedEngineCategoryId={selectedEngineCategory.id}
+                          selectedEngineCategoryId={
+                            this.props.isShowingTagsView
+                              ? null
+                              : get(selectedEngineCategory, 'id')
+                          }
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
                           }
                         />
                       </div>
+                      <span className={styles.categoryIconDivider} />
+                      <Tab
+                        // eslint-disable-next-line
+                        onClick={() => this.props.enableTagsView(this.props.id)}
+                        selected={this.props.isShowingTagsView}
+                        icon={
+                          <Tooltip
+                            id="tags-tab"
+                            title="Tags"
+                            classes={{
+                              tooltip: styles.categoryTabTooltip
+                            }}
+                          >
+                            <Icon
+                              className="icon-tag"
+                              classes={{ root: styles.categoryIcon }}
+                            />
+                          </Tooltip>
+                        }
+                        indicator={
+                          this.props.isShowingTagsView ? (
+                            <TabIndicator
+                              style={{ transition: 'none' }}
+                              color="primary"
+                            />
+                          ) : null
+                        }
+                        classes={{
+                          root: styles.accessoryTab,
+                          selected: styles.accessoryTabSelectedColor
+                        }}
+                      />
                     </div>
                   )}
               </div>
@@ -1531,11 +1580,16 @@ class MediaDetailsWidget extends React.Component {
           {selectedEngineCategory &&
             isEditModeEnabled && (
               <EditHeader
-                engineCategoryIconClass={get(
-                  selectedEngineCategory,
-                  'iconClass'
-                )}
-                engineCategoryType={get(selectedEngineCategory, 'categoryType')}
+                engineCategoryIconClass={
+                  isShowingTagsView
+                    ? 'icon-tag'
+                    : get(selectedEngineCategory, 'iconClass')
+                }
+                engineCategoryType={
+                  isShowingTagsView
+                    ? 'tags'
+                    : get(selectedEngineCategory, 'categoryType')
+                }
                 // eslint-disable-next-line
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)
@@ -1613,173 +1667,187 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   </div>
                 )}
-              {selectedEngineId && (
-                <div
-                  data-veritone-component="mdp-category-view"
-                  className={styles.engineCategoryView}
-                >
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutput
-                        tdo={tdo}
-                        showEditButton={this.showEditButton()}
-                        disableEditButton={this.isEditModeButtonDisabled()}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
-                        engines={selectedEngineCategory.engines}
-                        combineEngines={combineEngines}
-                        onEngineChange={this.handleSelectEngine}
-                        onCombineEngineChange={this.handleSelectCombineEngine}
-                        setSelectedCombineViewTypeId={
-                          this.handleSelectCombineViewType
-                        }
-                        selectedEngineId={selectedEngineId}
-                        selectedCombineEngineId={selectedCombineEngineId}
-                        selectedCombineViewTypeId={selectedCombineViewTypeId}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        togglePlayback={this.handleToggleMediaPlayerPlayback}
-                        neglectableTimeMs={100}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                        bulkEditEnabled={bulkEditEnabled}
-                        moreMenuItems={moreMenuItems}
-                        combineViewTypes={this.props.combineViewTypes}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
-                        speakerData={selectedCombineEngineResults}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'face' && (
-                      <FaceEngineOutput
-                        tdo={tdo}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        showEditButton={this.showEditButton()}
-                        disableEditButton={this.isEditModeButtonDisabled()}
-                        disableEdit={this.handleDisableEditBtn}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
-                        outputNullState={this.buildEngineNullStateComponent()}
-                        moreMenuItems={moreMenuItems}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'object' && (
-                      <ObjectDetectionEngineOutput
-                        data={selectedEngineResults}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectClick={this.handleUpdateMediaPlayerTime}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'logo' && (
-                      <LogoDetectionEngineOutput
-                        data={selectedEngineResults}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        onEntrySelected={this.handleUpdateMediaPlayerTime}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'ocr' && (
-                      <OCREngineOutputView
-                        data={selectedEngineResults}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                        selectedEngineId={selectedEngineId}
-                        onOcrClicked={this.handleUpdateMediaPlayerTime}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <FingerprintEngineOutput
-                        data={selectedEngineResults}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        entities={entities}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'translate' && (
-                      <TranslationEngineOutput
-                        data={selectedEngineResults}
-                        onTranslateClicked={this.handleUpdateMediaPlayerTime}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        mediaPlayerTimeIntervalMs={500}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'sentiment' && (
-                      <SentimentEngineOutput
-                        data={selectedEngineResults}
-                        className={cx(
-                          styles.engineOuputContainer,
-                          styles.sentimentChartViewRoot
-                        )}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'geolocation' && (
-                      <GeoEngineOutput
-                        data={selectedEngineResults}
-                        startTimeStamp={
-                          tdo && tdo.startDateTime ? tdo.startDateTime : null
-                        }
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        className={styles.engineOuputContainer}
-                        apiKey={googleMapsApiKey}
-                        onClick={this.handleUpdateMediaPlayerTime}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'correlation' && (
-                      <StructuredDataEngineOutput
-                        data={selectedEngineResults}
-                        schemasById={schemasById}
-                        engines={selectedEngineCategory.engines}
-                        selectedEngineId={selectedEngineId}
-                        onEngineChange={this.handleSelectEngine}
-                        onExpandClick={this.toggleExpandedMode}
-                        isExpandedMode={isExpandedMode}
-                        onSdoClick={this.handleUpdateMediaPlayerTime}
-                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
-                        outputNullState={this.buildEngineNullStateComponent()}
-                      />
-                    )}
-                </div>
+              {this.props.isShowingTagsView && (
+                <TagsView
+                  tags={get(tdo, 'details.tags')}
+                  editModeEnabled={isEditModeEnabled}
+                  showEditButton={this.showEditButton()}
+                  // eslint-disable-next-line
+                  onEditButtonClick={() =>
+                    setEditTagsMode(!isEditModeEnabled, this.props.id)
+                  }
+                  // eslint-disable-next-line
+                  onSubmit={formData => saveTags(formData, this.props.id)}
+                />
               )}
+              {selectedEngineId &&
+                !this.props.isShowingTagsView && (
+                  <div
+                    data-veritone-component="mdp-category-view"
+                    className={styles.engineCategoryView}
+                  >
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'transcript' && (
+                        <TranscriptEngineOutput
+                          tdo={tdo}
+                          showEditButton={this.showEditButton()}
+                          disableEditButton={this.isEditModeButtonDisabled()}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          mediaPlayerTimeIntervalMs={500}
+                          engines={selectedEngineCategory.engines}
+                          combineEngines={combineEngines}
+                          onEngineChange={this.handleSelectEngine}
+                          onCombineEngineChange={this.handleSelectCombineEngine}
+                          setSelectedCombineViewTypeId={
+                            this.handleSelectCombineViewType
+                          }
+                          selectedEngineId={selectedEngineId}
+                          selectedCombineEngineId={selectedCombineEngineId}
+                          selectedCombineViewTypeId={selectedCombineViewTypeId}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          togglePlayback={this.handleToggleMediaPlayerPlayback}
+                          neglectableTimeMs={100}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                          bulkEditEnabled={bulkEditEnabled}
+                          moreMenuItems={moreMenuItems}
+                          combineViewTypes={this.props.combineViewTypes}
+                          onRestoreOriginalClick={this.onRestoreOriginalClick}
+                          speakerData={selectedCombineEngineResults}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'face' && (
+                        <FaceEngineOutput
+                          tdo={tdo}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          showEditButton={this.showEditButton()}
+                          disableEditButton={this.isEditModeButtonDisabled()}
+                          disableEdit={this.handleDisableEditBtn}
+                          onFaceOccurrenceClicked={
+                            this.handleUpdateMediaPlayerTime
+                          }
+                          outputNullState={this.buildEngineNullStateComponent()}
+                          moreMenuItems={moreMenuItems}
+                          onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'object' && (
+                        <ObjectDetectionEngineOutput
+                          data={selectedEngineResults}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          onObjectClick={this.handleUpdateMediaPlayerTime}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'logo' && (
+                        <LogoDetectionEngineOutput
+                          data={selectedEngineResults}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          onEntrySelected={this.handleUpdateMediaPlayerTime}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'ocr' && (
+                        <OCREngineOutputView
+                          data={selectedEngineResults}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          onEngineChange={this.handleSelectEngine}
+                          selectedEngineId={selectedEngineId}
+                          onOcrClicked={this.handleUpdateMediaPlayerTime}
+                          currentMediaPlayerTime={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'fingerprint' && (
+                        <FingerprintEngineOutput
+                          data={selectedEngineResults}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          entities={entities}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'translate' && (
+                        <TranslationEngineOutput
+                          data={selectedEngineResults}
+                          onTranslateClicked={this.handleUpdateMediaPlayerTime}
+                          className={styles.engineOuputContainer}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          mediaPlayerTimeIntervalMs={500}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'sentiment' && (
+                        <SentimentEngineOutput
+                          data={selectedEngineResults}
+                          className={cx(
+                            styles.engineOuputContainer,
+                            styles.sentimentChartViewRoot
+                          )}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'geolocation' && (
+                        <GeoEngineOutput
+                          data={selectedEngineResults}
+                          startTimeStamp={
+                            tdo && tdo.startDateTime ? tdo.startDateTime : null
+                          }
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          className={styles.engineOuputContainer}
+                          apiKey={googleMapsApiKey}
+                          onClick={this.handleUpdateMediaPlayerTime}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                    {selectedEngineCategory &&
+                      selectedEngineCategory.categoryType === 'correlation' && (
+                        <StructuredDataEngineOutput
+                          data={selectedEngineResults}
+                          schemasById={schemasById}
+                          engines={selectedEngineCategory.engines}
+                          selectedEngineId={selectedEngineId}
+                          onEngineChange={this.handleSelectEngine}
+                          onExpandClick={this.toggleExpandedMode}
+                          isExpandedMode={isExpandedMode}
+                          onSdoClick={this.handleUpdateMediaPlayerTime}
+                          mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                          outputNullState={this.buildEngineNullStateComponent()}
+                        />
+                      )}
+                  </div>
+                )}
               {get(tdo, 'id') &&
                 !selectedEngineId && (
                   <div

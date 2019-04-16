@@ -8,7 +8,7 @@ import {
   ForwardControl,
   PlayToggle,
   BigPlayButton
-} from 'video-react/dist/video-react.es.js';
+} from 'video-react/dist/video-react.cjs.js';
 
 import VideoSource from './VideoSource.js';
 import RestartMediaButton from './RestartMediaButton.js';

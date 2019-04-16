@@ -3,6 +3,7 @@ import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
 import { getEditModeEnabled as isFaceEditEnabled } from './faceEngineOutput';
 import { getEditModeEnabled as isTranscriptEditEnabled } from './transcriptWidget';
+import { tdoInfoQueryClause } from './saga';
 
 export const namespace = 'mediaDetails';
 
@@ -55,6 +56,11 @@ export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAI
 export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
 export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE`;
 export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
+export const ENABLE_TAGS_VIEW = `${namespace}_ENABLE_TAGS_VIEW`;
+export const SET_EDIT_TAGS_MODE = `${namespace}_SET_EDIT_TAGS_MODE`;
+export const UPDATE_TDO_TAGS = `${namespace}_UPDATE_TDO_TAGS`;
+export const UPDATE_TDO_TAGS_SUCCESS = `${namespace}_UPDATE_TDO_TAGS_SUCCESS`;
+export const UPDATE_TDO_TAGS_FAILURE = `${namespace}_UPDATE_TDO_TAGS_FAILURE`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -102,7 +108,9 @@ const defaultMDPState = {
         withSpeakerData: true
       }
     }
-  ]
+  ],
+  showTagsView: false,
+  editingTags: false
 };
 
 const defaultState = {};
@@ -433,7 +441,8 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         selectedEngineCategory: {
           ...payload
-        }
+        },
+        showTagsView: false
       }
     };
   },
@@ -748,9 +757,18 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [CANCEL_EDIT](state) {
+  [CANCEL_EDIT](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
-      ...state
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editingTags: false
+      }
     };
   },
   [INSERT_INTO_INDEX_FAILURE](
@@ -776,6 +794,89 @@ export default createReducer(defaultState, {
       ...state,
       error: errorMessage || 'unknown error'
     };
+  },
+  [ENABLE_TAGS_VIEW](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        showTagsView: true
+      }
+    };
+  },
+  [SET_EDIT_TAGS_MODE](
+    state,
+    {
+      payload: { editingTags },
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editingTags
+      }
+    };
+  },
+  [UPDATE_TDO_TAGS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: null
+      }
+    };
+  },
+  [UPDATE_TDO_TAGS_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { variables }
+    }
+  ) {
+    const tdo = get(payload, 'updateTDO');
+    const widgetId = get(variables, 'widgetId');
+
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        tdo: {
+          ...state[widgetId].tdo,
+          ...tdo,
+          details: {
+            ...tdo.details
+          }
+        },
+        editingTags: false
+      }
+    };
+  },
+  [UPDATE_TDO_TAGS_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'unknown error'
+      }
+    };
   }
 });
 
@@ -796,8 +897,12 @@ export const getSelectedCombineEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedCombineEngineId']);
 export const getSelectedCombineViewTypeId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedCombineViewTypeId']);
+export const isEditingTags = (state, widgetId) =>
+  get(local(state), [widgetId, 'editingTags']);
 export const isEditModeEnabled = (state, widgetId) =>
-  isTranscriptEditEnabled(state) || isFaceEditEnabled(state);
+  isTranscriptEditEnabled(state) ||
+  isFaceEditEnabled(state) ||
+  isEditingTags(state, widgetId);
 export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
@@ -844,6 +949,8 @@ export const getCombineViewTypes = (state, widgetId) => {
     return viewTypes.filter(view => !view.combine);
   }
 };
+export const isShowingTagsView = (state, widgetId) =>
+  get(local(state), [widgetId, 'showTagsView']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1067,6 +1174,17 @@ export const emitEntityUpdatedEventFailure = error => ({
   meta: { error }
 });
 
+export const enableTagsView = widgetId => ({
+  type: ENABLE_TAGS_VIEW,
+  meta: { widgetId }
+});
+
+export const setEditTagsMode = (editingTags, widgetId) => ({
+  type: SET_EDIT_TAGS_MODE,
+  payload: { editingTags },
+  meta: { widgetId }
+});
+
 export const createQuickExport = (
   tdoId,
   formatTypes,
@@ -1130,6 +1248,39 @@ export const createQuickExport = (
       includeMedia: false,
       outputConfigurations,
       tdoData: { tdoId }
+    },
+    dispatch,
+    getState
+  });
+};
+
+export const updateTdo = ({ tags }, widgetId) => async (dispatch, getState) => {
+  const metaData = getTdoMetadata(getState(), widgetId);
+  const tdoId = getTdo(getState(), widgetId).id;
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
+    updateTDO( input: {
+      id: $tdoId
+      details: $details
+    })
+    {
+      ${tdoInfoQueryClause}
+    }
+  }`;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      UPDATE_TDO_TAGS,
+      UPDATE_TDO_TAGS_SUCCESS,
+      UPDATE_TDO_TAGS_FAILURE
+    ],
+    query: updateTdoQuery,
+    variables: {
+      tdoId,
+      details: {
+        ...metaData,
+        tags
+      },
+      widgetId
     },
     dispatch,
     getState
