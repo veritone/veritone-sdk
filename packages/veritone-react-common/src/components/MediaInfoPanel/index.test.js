@@ -114,7 +114,7 @@ describe('MediaInfoPanel', () => {
     expect(wrapper.find('.infoPanelHeader').text()).toEqual('Metadata');
 
     const infoFields = wrapper.find('.infoField');
-    expect(infoFields.length).toEqual(6);
+    expect(infoFields.length).toEqual(5);
     expect(
       infoFields
         .at(0)
@@ -166,32 +166,18 @@ describe('MediaInfoPanel', () => {
     expect(
       infoFields
         .at(4)
-        .find('.infoFieldLabel')
-        .text()
-    ).toEqual('Tags');
-    expect(
-      infoFields
-        .at(4)
-        .find('.infoFieldData')
-        .text()
-    ).toEqual(
-      'tag1, longer tag, a bit longer tag, very very very very very very very very very very very very very very long tag, tag 3, tag 4, tag 5, tag 6, tag 7, tag 8, tag 9, tag 0, hakuna, matata, customTag:one'
-    );
-    expect(
-      infoFields
-        .at(5)
         .find('.infoFieldData')
         .text()
     ).toEqual('draft');
     expect(
       infoFields
-        .at(5)
+        .at(4)
         .find('.infoFieldLabel')
         .text()
     ).toEqual('Redaction Status');
     expect(
       infoFields
-        .at(5)
+        .at(4)
         .find('.infoFieldData')
         .text()
     ).toEqual('draft');
@@ -214,11 +200,6 @@ describe('MediaInfoPanel', () => {
       .find('[aria-label="Edit"]')
       .first()
       .simulate('click');
-    expect(wrapper.find('#menu-list-grow').exists()).toEqual(true);
-    const moreMenuItems = wrapper.find('#menu-list-grow').find('li');
-    expect(moreMenuItems.length).toEqual(2);
-    expect(moreMenuItems.at(0).text()).toEqual('Edit Metadata');
-    expect(moreMenuItems.at(1).text()).toEqual('Edit Tags');
 
     const closeButton = wrapper
       .find('.infoPanelHeader')
