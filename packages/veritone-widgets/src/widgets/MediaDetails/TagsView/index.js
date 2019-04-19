@@ -19,14 +19,35 @@ export default class TagsView extends React.Component {
     onSubmit: func
   };
 
+  state = {
+    redactTags: [],
+    noRedactTags: []
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      redactTags: props.tags.filter(item => item.hasOwnProperty('redactionStatus')),
+      noRedactTags: props.tags.filter(item => !item.hasOwnProperty('redactionStatus'))
+    }
+  };
+
+  handleOnSubmit = ({ tags }) => {
+    const { onSubmit } = this.props;
+    const { redactTags } = this.state;
+
+    onSubmit && onSubmit({tags: tags.concat(redactTags)});
+  };
+
   render() {
     const {
       showEditButton,
       editModeEnabled,
-      onEditButtonClick,
-      tags,
-      onSubmit
+      onEditButtonClick
     } = this.props;
+    const {
+      noRedactTags
+    } = this.state;
+
     return (
       <Grid
         className={styles.tagsView}
@@ -43,7 +64,7 @@ export default class TagsView extends React.Component {
           <Grid item>
             {showEditButton &&
               !editModeEnabled &&
-              !!tags.length && (
+              !!noRedactTags.length && (
                 <IconButton
                   aria-label="Edit Mode"
                   onClick={onEditButtonClick}
@@ -74,9 +95,8 @@ export default class TagsView extends React.Component {
             alignItems="flex-start"
           >
             {!editModeEnabled &&
-              !!get(tags, 'length') &&
-              tags
-                .filter(item => !item.hasOwnProperty('redactionStatus'))
+              !!get(noRedactTags, 'length') &&
+                noRedactTags
                 .map(tag => {
                   return tag.hasOwnProperty('value') ? (
                     <Grid
@@ -101,7 +121,7 @@ export default class TagsView extends React.Component {
                   ) : null;
                 })}
             {!editModeEnabled &&
-              !get(tags, 'length') && (
+              !get(noRedactTags, 'length') && (
                 <Grid
                   className={styles.noTags}
                   item
@@ -149,8 +169,8 @@ export default class TagsView extends React.Component {
             {editModeEnabled && (
               <TagEditForm
                 form="tagEditFormMDP"
-                initialValues={{ tags }}
-                onSubmit={onSubmit}
+                initialValues={{ tags: noRedactTags }}
+                onSubmit={this.handleOnSubmit}
                 onCancel={onEditButtonClick}
               />
             )}

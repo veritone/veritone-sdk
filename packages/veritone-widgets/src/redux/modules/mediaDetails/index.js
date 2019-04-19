@@ -321,20 +321,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO](
-    state,
-    {
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: null
-      }
-    };
-  },
   [UPDATE_TDO_CONTENT_TEMPLATES](
     state,
     {

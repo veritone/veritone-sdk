@@ -1669,7 +1669,7 @@ class MediaDetailsWidget extends React.Component {
                 )}
               {this.props.isShowingTagsView && (
                 <TagsView
-                  tags={get(tdo, 'details.tags')}
+                  tags={get(tdo, 'details.tags', [])}
                   editModeEnabled={isEditModeEnabled}
                   showEditButton={this.showEditButton()}
                   // eslint-disable-next-line

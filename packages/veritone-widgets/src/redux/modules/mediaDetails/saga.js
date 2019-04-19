@@ -394,7 +394,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
     );
   }
 
-  yield put(updateTdoSuccess(widgetId, response.data));
+  yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
   yield call(insertIntoIndexSaga, tdoId);
 }
 
