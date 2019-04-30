@@ -3,9 +3,10 @@ import { noop, startsWith, endsWith } from 'lodash';
 import Button from '@material-ui/core/Button';
 import { DropTarget } from 'react-dnd';
 import { string, func, arrayOf, bool } from 'prop-types';
-import mime from 'mime-types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 const { FILE } = NativeTypes;
+
+import ExtensionPanel from './ExtensionPanel';
 
 import styles from './styles.scss';
 
@@ -71,6 +72,10 @@ class FileUploader extends Component {
     onFilesRejected: noop
   };
 
+  state = {
+    showExtensionList: false
+  };
+
   handleFileSelection = () => {
     if (this._input.files.length > 0) {
       this.props.onFilesSelected(Array.from(this._input.files));
@@ -79,45 +84,53 @@ class FileUploader extends Component {
     this._input.value = null;
   };
 
+  openExtensionList = () => {
+    this.setState({ showExtensionList: true });
+  };
+
+  closeExtensionList = () => {
+    this.setState({ showExtensionList: false });
+  };
+
   setInputRef = r => (this._input = r);
 
   render() {
     const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
+    const { showExtensionList } = this.state;
 
-    const readableTypeNames = {
-      'video/*': 'video',
-      'audio/*': 'audio',
-      'image/*': 'image'
-    };
-    const readableTypes = acceptedFileTypes
-      .map(t => readableTypeNames[t] || mime.extension(t) || t)
-      .filter(Boolean)
-      .join(', ');
-
-    const acceptMessage = acceptedFileTypes.length
-      ? `Drag & Drop <${readableTypes}> files to upload, or`
-      : 'Drag & Drop file(s) to upload, or';
+    const acceptMessage = 'Drag & Drop file(s) to upload, or';
 
     return connectDropTarget(
       <div className={styles.fileUploader}>
-        <span className={styles.fileUploadIcon}>
-          <i className="icon-cloud_upload" />
-        </span>
-        <span className={styles.fileUploaderSubtext}>{acceptMessage}</span>
-        <input
-          accept={acceptedFileTypes.join(',')}
-          style={{ display: 'none' }}
-          id="file"
-          multiple={this.props.multiple}
-          type="file"
-          onChange={this.handleFileSelection}
-          ref={this.setInputRef}
-        />
-        <label htmlFor="file">
-          <Button variant="raised" color="primary" component="span">
-            Choose File
-          </Button>
-        </label>
+        { showExtensionList ? (
+            <ExtensionPanel
+              acceptedFileTypes={acceptedFileTypes}
+              closeExtensionList={this.closeExtensionList} />
+          ) : (
+            <div className={styles.uploaderContainer}>
+              { !!acceptedFileTypes.length && (
+                <span className={styles.extensionListOpenButton} onClick={this.openExtensionList}>Extension Types</span>
+              )}
+              <span className={styles.fileUploadIcon}>
+                <i className="icon-cloud_upload" />
+              </span>
+              <span className={styles.fileUploaderSubtext}>{acceptMessage}</span>
+              <input
+                accept={acceptedFileTypes.join(',')}
+                style={{ display: 'none' }}
+                id="file"
+                multiple={this.props.multiple}
+                type="file"
+                onChange={this.handleFileSelection}
+                ref={this.setInputRef}
+              />
+              <label htmlFor="file">
+                <Button variant="raised" color="primary" component="span">
+                  Choose File
+                </Button>
+              </label>
+            </div>
+        )}
         {isOver && <div className={styles.uploaderOverlay} />}
       </div>
     );
