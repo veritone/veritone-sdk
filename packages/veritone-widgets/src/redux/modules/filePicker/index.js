@@ -133,9 +133,13 @@ export const uploadRequest = (id, files, callback) => ({
   meta: { id }
 });
 
-export const uploadProgress = (id, fileKey, progressPercent) => ({
+export const uploadProgress = (id, fileKey, data) => ({
   type: UPLOAD_PROGRESS,
-  payload: clamp(Math.round(progressPercent), 100),
+  payload: {
+    name: data.name,
+    type: data.type,
+    percent: clamp(Math.round(data.percent), 100)
+  },
   meta: { fileKey, id }
 });
 
@@ -158,6 +162,16 @@ export const progressPercent = (state, id) => {
   const rounded = Math.round(meanProgress);
   return isNaN(rounded) ? 0 : rounded;
 };
+export const percentByFiles = (state, id) => {
+  const currentFiles = get(local(state), [id, 'progressPercentByFileKey'], {});
+  return Object.keys(currentFiles).map(key => {
+    const value = currentFiles[key];
+    return {
+      key,
+      value
+    };
+  })
+}
 export const didSucceed = (state, id) => !!get(local(state), [id, 'success']);
 export const didError = (state, id) => !!get(local(state), [id, 'error']);
 export const didWarn = (state, id) => !!get(local(state), [id, 'warning']);

@@ -22,12 +22,18 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
     text: []
   };
   acceptedFileTypes.forEach(t => {
+    let wasCategorized = false;
     const mappedType = readableTypeNames[t] || mime.extension(t) || t;
     Object.keys(typeMapper).forEach(key => {
       if (t.includes(key)) {
         isArray(typeMapper[key]) && typeMapper[key].push(mappedType.split('/').slice(-1)[0]);
+        wasCategorized = true;
       }
     });
+    if (!wasCategorized) {
+      // Default insert into text category
+      typeMapper.text.push(mappedType.split('/').slice(-1)[0]);
+    }
   });
 
   return (
@@ -51,12 +57,12 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
               className={cx(styles.extensionTypeContainer, styles[key])}
               container
               spacing={8}>
-              <Grid item xs={2} spacing={8}>
+              <Grid item xs={8} sm={6} md={4}>
                 <span className={styles.mediaTypeKey}>{key}</span>
               </Grid>
               {
                 uniq(typeMapper[key]).map(ext => (
-                  <Grid key={`${key}-extension-${ext}`} item xs={2} spacing={8}>
+                  <Grid key={`${key}-extension-${ext}`} item xs={8} sm={6} md={4}>
                     <span>{ext}</span>
                   </Grid>
                 ))

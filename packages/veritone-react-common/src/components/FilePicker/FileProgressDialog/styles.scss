@@ -1,0 +1,124 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.container {
+  $audio-color: #00BFA5;
+  $video-color: #E81D63;
+  $text-color: #4A4A4A;
+  $image-color: #4CAF4F;
+  position: relative;
+
+  .fileProgressContainer {
+    $progressItemHeight: 40px;
+    max-height: calc(#{$progressItemHeight} * 3);
+    overflow-y: auto;
+
+    .fileProgressItem {
+      border-bottom: 1px solid #E0E0E0;
+
+      .fileName {
+        @include mui-text('body1');
+        display: inline-block;
+        color: $light-black;
+        padding-left: 10px;
+
+      }
+      .fileIconContainer {
+        $outter-padding: 10px;
+        border-radius: 50%;
+        height: calc(#{$progressItemHeight} - #{$outter-padding});
+        width: calc(#{$progressItemHeight} - #{$outter-padding});
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 5px;
+
+        .fileIcon {
+          display: block;
+          margin: 0px auto;
+          margin-top: 3px;
+          color: white;   
+        }
+        &.audio {
+          background-color: $audio-color;
+        }
+        &.video {
+          background-color: $video-color;
+        }
+        &.image {
+          background-color: $image-color;
+        }
+        &.text {
+          background-color: $text-color;
+        }
+      }
+      .fileProgressItemOverlay {
+        height: $progressItemHeight;
+        line-height: $progressItemHeight;
+        float: left;
+        position: relative;
+        margin-top: -$progressItemHeight;
+        z-index: 1;
+      }
+      .fileProgressBar {
+        height: $progressItemHeight;
+        background-color: white;
+      }
+      .fileProgressBarPrimary {
+        background-color: rgba(33,150,243,0.12);
+      }
+    }
+  }
+
+  .circularProgressContainer {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .circularProgress {
+      position: relative;
+      top: -22px;
+      //left: -12px;
+      //z-index: 1;
+    }
+  }
+
+  .textContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    .percentageContainer {
+      height: 125px;
+      display: flex;
+      align-items: center;
+
+      .percentage {
+        @include mui-text('display1');
+        font-weight: 200 !important;
+      }
+    }
+
+    .resolutionIconContainer {
+      height: 125px;
+
+      .resolutionIcon {
+        height: 125px;
+        width: 125px;
+      }
+    }
+
+    .progressMessage {
+      @include mui-text('subhead');
+
+      height: 40px;
+      color: $dark-black;
+      text-align: center;
+    }
+  }
+}

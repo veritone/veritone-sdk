@@ -99,7 +99,11 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
-      yield put(uploadProgress(id, key, 100));
+      yield put(uploadProgress(id, key, {
+        name: file.name,
+        type: file.type,
+        percent: 100
+      }));
 
       result.push({
         key,
@@ -116,7 +120,11 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       continue;
     }
 
-    yield put(uploadProgress(id, key, progress));
+    yield put(uploadProgress(id, key, {
+      name: file.name,
+      type: file.type,
+      percent: progress
+    }));
   }
 
   const isError = result.every(e => e.error);

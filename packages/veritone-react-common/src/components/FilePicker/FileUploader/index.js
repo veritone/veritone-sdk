@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { noop, startsWith, endsWith } from 'lodash';
+import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import { DropTarget } from 'react-dnd';
 import { string, func, arrayOf, bool } from 'prop-types';
@@ -98,7 +99,8 @@ class FileUploader extends Component {
     const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
     const { showExtensionList } = this.state;
 
-    const acceptMessage = 'Drag & Drop file(s) to upload, or';
+    const acceptMessage = 'Drag & Drop';
+    const subMessage = 'your file(s) here, or ';
 
     return connectDropTarget(
       <div className={styles.fileUploader}>
@@ -112,9 +114,19 @@ class FileUploader extends Component {
                 <span className={styles.extensionListOpenButton} onClick={this.openExtensionList}>Extension Types</span>
               )}
               <span className={styles.fileUploadIcon}>
-                <i className="icon-cloud_upload" />
+                <i className="icon-ingest" />
               </span>
-              <span className={styles.fileUploaderSubtext}>{acceptMessage}</span>
+              <span className={styles.fileUploaderAcceptText}>{acceptMessage}</span>
+
+              <label htmlFor="file">
+                <Button
+                  component="span"
+                  disableFocusRipple
+                  disableRipple>
+                  <span className={styles.fileUploaderSubtext}>{subMessage}</span>
+                  <span className={cx(styles.fileUploaderSubtext, styles.subtextBlue)}>browse</span>
+                </Button>
+              </label>
               <input
                 accept={acceptedFileTypes.join(',')}
                 style={{ display: 'none' }}
@@ -124,11 +136,6 @@ class FileUploader extends Component {
                 onChange={this.handleFileSelection}
                 ref={this.setInputRef}
               />
-              <label htmlFor="file">
-                <Button variant="raised" color="primary" component="span">
-                  Choose File
-                </Button>
-              </label>
             </div>
         )}
         {isOver && <div className={styles.uploaderOverlay} />}

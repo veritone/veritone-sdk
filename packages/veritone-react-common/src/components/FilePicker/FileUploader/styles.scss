@@ -15,15 +15,24 @@
 }
 
 .fileUploadIcon {
-  color: #9a9a9a;
+  color: $blue-1;
+  @include mui-text('display4');
+}
 
+.fileUploaderAcceptText {
+  color: $blue-1;
+  cursor: default;
   @include mui-text('display2');
 }
 
 .fileUploaderSubtext {
-  @include mui-text('subhead');
-  margin-bottom: $file-picker-margin;
+  @include mui-text('body1');
   text-align: center;
+  text-transform: none;
+  &.subtextBlue {
+    margin-left: 5px;
+    color: $blue-1;
+  }
 }
 
 .uploaderOverlay {

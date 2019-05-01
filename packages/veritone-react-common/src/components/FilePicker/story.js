@@ -1,8 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { number, select, text, boolean, object } from '@storybook/addon-knobs';
 
 import FilePicker from './';
+import FileProgressDialog from './FileProgressDialog';
 
 const allFormats = [
   'application/json',
@@ -44,6 +46,13 @@ const allFormats = [
   'video/x-msvideo'
 ];
 
+const complete = boolean('complete');
+const completeStatus = select('completeStatus', {
+  success: 'success',
+  failure: 'failure',
+  warning: 'warning'
+});
+
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker
@@ -65,5 +74,41 @@ storiesOf('FilePicker', module)
       accept={allFormats}
       onPickFiles={action('upload files')}
       onRequestClose={action('close modal')}
+    />
+  )).add('File Progress Dialog', () => (
+    <FileProgressDialog
+      percentByFiles={object('percentByFiles', [{
+        key: 'audio_file.flac',
+        value: {
+          type: 'audio/flac',
+          percent: 10
+        }
+      }, {
+        key: 'video_file.mp4',
+        value: {
+          type: 'video/mp4',
+          percent: 20
+        }
+      }, {
+        key: 'image_file.png',
+        value: {
+          type: 'image/gif',
+          percent: 80
+        }
+      }, {
+        key: 'text_file.png',
+        value: {
+          type: 'application',
+          percent: 90
+        }
+      }])}
+      percentComplete={number('percentComplete', 20, {
+        range: true,
+        min: 0,
+        max: 100,
+        step: 1
+      })}
+      progressMessage={text('progressMessage', 'retrieving signed URLs')}
+      completeStatus={complete ? completeStatus : null}
     />
   ));

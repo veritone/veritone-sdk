@@ -6,7 +6,7 @@ import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
 import {
   FilePicker as FilePickerComponent,
-  ProgressDialog
+  FileProgressDialog
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
@@ -21,7 +21,9 @@ import widget from '../../shared/widget';
   (state, { id }) => ({
     open: filePickerModule.isOpen(state, id),
     pickerState: filePickerModule.state(state, id),
+
     progressPercent: filePickerModule.progressPercent(state, id),
+    percentByFiles: filePickerModule.percentByFiles(state, id),
     success: filePickerModule.didSucceed(state, id),
     error: filePickerModule.didError(state, id),
     warning: filePickerModule.didWarn(state, id),
@@ -98,7 +100,8 @@ class FilePicker extends React.Component {
 
     return (
       <Dialog open={this.props.open}>
-        <ProgressDialog
+        <FileProgressDialog
+          percentByFiles={this.props.percentByFiles}
           percentComplete={this.props.progressPercent}
           progressMessage={this.props.statusMessage}
           completeStatus={completeStatus}
