@@ -63,7 +63,7 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
               {
                 uniq(typeMapper[key]).map(ext => (
                   <Grid key={`${key}-extension-${ext}`} item xs={8} sm={6} md={4}>
-                    <span>{ext}</span>
+                    <span className={styles.mediaExtension}>{ext}</span>
                   </Grid>
                 ))
               }

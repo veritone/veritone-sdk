@@ -17,6 +17,8 @@ import VideoIcon from '@material-ui/icons/LocalMovies';
 import ImageIcon from '@material-ui/icons/Photo';
 import TextIcon from '@material-ui/icons/ShortText';
 
+import { formatBytes } from '../../../helpers/format.js';
+
 import styles from './styles.scss';
 
 export default class FileProgressDialog extends React.Component {
@@ -27,7 +29,7 @@ export default class FileProgressDialog extends React.Component {
         name: string,
         type: string,
         percent: number
-      })
+      }).isRequired
     })),
     height: number,
     width: number,
@@ -61,6 +63,12 @@ export default class FileProgressDialog extends React.Component {
               <div className={styles.fileProgressItemOverlay}>
                 { this.getFileMediaIcon(file) }
                 <span className={styles.fileName}>{file.value.name || file.key}</span>
+                <div className={styles.sizeContainer}>
+                  <span className={styles.fileSize}>{formatBytes(file.value.size)}</span>
+                </div>
+              </div>
+              <div className={styles.progressTextOverlay} style={{ marginLeft: `${file.value.percent}%` }}>
+                <span className={styles.progressText}>{file.value.percent}%</span>
               </div>
             </div>
           ))

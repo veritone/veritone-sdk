@@ -102,6 +102,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       yield put(uploadProgress(id, key, {
         name: file.name,
         type: file.type,
+        size: file.size,
         percent: 100
       }));
 
@@ -123,6 +124,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     yield put(uploadProgress(id, key, {
       name: file.name,
       type: file.type,
+      size: file.size,
       percent: progress
     }));
   }

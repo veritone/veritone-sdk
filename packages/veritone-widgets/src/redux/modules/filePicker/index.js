@@ -138,6 +138,7 @@ export const uploadProgress = (id, fileKey, data) => ({
   payload: {
     name: data.name,
     type: data.type,
+    size: data.size,
     percent: clamp(Math.round(data.percent), 100)
   },
   meta: { fileKey, id }

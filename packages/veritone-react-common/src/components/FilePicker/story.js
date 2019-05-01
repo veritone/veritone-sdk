@@ -81,25 +81,29 @@ storiesOf('FilePicker', module)
         key: 'audio_file.flac',
         value: {
           type: 'audio/flac',
-          percent: 10
+          percent: 10,
+          size: 82356235
         }
       }, {
         key: 'video_file.mp4',
         value: {
           type: 'video/mp4',
-          percent: 20
+          percent: 20,
+          size: 23856925352
         }
       }, {
         key: 'image_file.png',
         value: {
           type: 'image/gif',
-          percent: 80
+          percent: 80,
+          size: 38529
         }
       }, {
-        key: 'text_file.png',
+        key: 'text_file.txt',
         value: {
-          type: 'application',
-          percent: 90
+          type: 'application/text',
+          percent: 90,
+          size: 569182
         }
       }])}
       percentComplete={number('percentComplete', 20, {
