@@ -46,13 +46,6 @@ const allFormats = [
   'video/x-msvideo'
 ];
 
-const complete = boolean('complete');
-const completeStatus = select('completeStatus', {
-  success: 'success',
-  failure: 'failure',
-  warning: 'warning'
-});
-
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker
@@ -106,13 +99,10 @@ storiesOf('FilePicker', module)
           size: 569182
         }
       }])}
-      percentComplete={number('percentComplete', 20, {
-        range: true,
-        min: 0,
-        max: 100,
-        step: 1
+      completeStatus={select('completeStatus', {
+        success: 'success',
+        failure: 'failure',
+        warning: 'warning'
       })}
-      progressMessage={text('progressMessage', 'retrieving signed URLs')}
-      completeStatus={complete ? completeStatus : null}
     />
   ));

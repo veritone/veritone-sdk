@@ -87,7 +87,7 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         progressPercentByFileKey: {
-          ...state.progressPercentByFileKey,
+          ...state[id].progressPercentByFileKey,
           [fileKey]: payload
         }
       }

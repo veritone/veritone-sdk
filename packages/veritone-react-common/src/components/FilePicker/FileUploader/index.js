@@ -113,8 +113,8 @@ class FileUploader extends Component {
               { !!acceptedFileTypes.length && (
                 <span className={styles.extensionListOpenButton} onClick={this.openExtensionList}>Extension Types</span>
               )}
-              <span className={styles.fileUploadIcon}>
-                <i className="icon-ingest" />
+              <span>
+                <i className={cx(styles.fileUploadIcon, 'icon-ingest')} />
               </span>
               <span className={styles.fileUploaderAcceptText}>{acceptMessage}</span>
 

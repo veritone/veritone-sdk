@@ -33,6 +33,7 @@ export default class FileProgressDialog extends React.Component {
     })),
     height: number,
     width: number,
+    progressMessage: string,
     completeStatus: oneOf(['success', 'failure', 'warning'])
   };
 
@@ -51,7 +52,7 @@ export default class FileProgressDialog extends React.Component {
       <div className={styles.fileProgressContainer}>
         {
           percentByFiles.map(file => (
-            <div className={styles.fileProgressItem}>
+            <div key={file.key} className={styles.fileProgressItem}>
               <LinearProgress
                 className={styles.fileProgressBar}
                 classes={{
@@ -151,15 +152,22 @@ export default class FileProgressDialog extends React.Component {
   }
 
   render() {
+    const transparentBg = this.props.completeStatus ? {
+      backgroundColor: 'transparent',
+      boxShadow: 'none'
+    } : {};
     return (
       <Paper
         classes={{ root: styles.container }}
-        style={{ height: this.props.height, width: this.props.width }}
+        style={{ height: this.props.height, width: this.props.width, ...transparentBg }}
       >
         <div>
           {this.props.completeStatus
             ? this.renderComplete()
             : this.renderProgress()}
+          <div className={styles.progressMessage}>
+            {this.props.progressMessage}
+          </div>
         </div>
       </Paper>
     );

@@ -12,11 +12,20 @@
   padding-bottom: 15px;
   width: 100%;
   position: relative;
-}
 
-.fileUploadIcon {
-  color: $blue-1;
-  @include mui-text('display4');
+  .uploaderContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .fileUploadIcon {
+      color: $blue-1 !important;
+      font-size: 112px !important;
+      line-height: 112px !important;
+    }
+  }
 }
 
 .fileUploaderAcceptText {
@@ -29,6 +38,7 @@
   @include mui-text('body1');
   text-align: center;
   text-transform: none;
+  margin-bottom: 0 !important;
   &.subtextBlue {
     margin-left: 5px;
     color: $blue-1;
@@ -46,14 +56,6 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
-}
-
-.uploaderContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .extensionListOpenButton {

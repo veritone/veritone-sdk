@@ -13,6 +13,8 @@ import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
 
+import styles from './styles.scss';
+
 // provide id prop on mount
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
@@ -97,9 +99,11 @@ class FilePicker extends React.Component {
       [this.props.error]: 'failure',
       [this.props.warning]: 'warning'
     }[true];
+    const transparentBgClass = this.props.pickerState === 'complete'
+      ? styles.transparentBg : '';
 
     return (
-      <Dialog open={this.props.open}>
+      <Dialog open={this.props.open} classes={{ paper: transparentBgClass }}>
         <FileProgressDialog
           percentByFiles={this.props.percentByFiles}
           percentComplete={this.props.progressPercent}
