@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { get, isArray } from 'lodash';
 import { bool, func, string, arrayOf, shape, number } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -200,7 +200,7 @@ class EngineOutputExport extends Component {
             </Button>
           </Grid>
         </Grid>
-        {errorSnackBars.map(snackBar => {
+        {isArray(errorSnackBars) && errorSnackBars.map(snackBar => {
           return (
             <Snackbar
               key={`snack-bar-${snackBar.id}`}
