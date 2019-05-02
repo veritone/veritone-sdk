@@ -26,11 +26,13 @@ import styles from './styles.scss';
     ),
     expandedCategories: engineOutputExportModule.expandedCategories(state),
     fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state),
-    speakerCategoryType: engineOutputExportModule.speakerCategoryType(state)
+    speakerCategoryType: engineOutputExportModule.speakerCategoryType(state),
+    hasSpeakerData: engineOutputExportModule.hasSpeakerData(state)
   }),
   {
     fetchEngineRuns: engineOutputExportModule.fetchEngineRuns,
-    toggleConfigExpand: engineOutputExportModule.toggleConfigExpand
+    toggleConfigExpand: engineOutputExportModule.toggleConfigExpand,
+    setHasSpeakerData: engineOutputExportModule.setHasSpeakerData
   },
   null,
   { withRef: true }
@@ -57,11 +59,29 @@ export default class EngineCategoryConfigList extends Component {
     fetchEngineRuns: func,
     fetchingEngineRuns: bool,
     toggleConfigExpand: func,
+    setHasSpeakerData: func,
+    hasSpeakerData: bool,
     speakerCategoryType: string
   };
 
   componentDidMount() {
     this.props.fetchEngineRuns(this.props.tdos);
+  }
+
+  componentDidUpdate() {
+    // Detect if speaker data is available
+    const { speakerCategoryType, outputConfigsByCategoryId } = this.props;
+    let hasSpeakerDataBeenSet = this.props.hasSpeakerData;
+    Object.keys(outputConfigsByCategoryId).forEach(categoryId => {
+      const categoryEngines = outputConfigsByCategoryId[categoryId];
+      categoryEngines.forEach(engine => {
+        const isSpeakerCategory = engine.categoryType === speakerCategoryType;
+        if (isSpeakerCategory && !hasSpeakerDataBeenSet) {
+          hasSpeakerDataBeenSet = true;
+          this.props.setHasSpeakerData(true);
+        }
+      });
+    });
   }
 
   render() {
