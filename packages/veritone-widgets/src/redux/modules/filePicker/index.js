@@ -153,6 +153,8 @@ export const uploadComplete = (id, result, { warn, error }) => ({
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const state = (state, id) =>
   get(local(state), [id, 'state'], 'selecting');
+
+// Keep this in case we want to go back to using mean percentage progresses
 export const progressPercent = (state, id) => {
   const currentProgress = get(local(state), [id, 'progressPercentByFileKey']);
   if (!currentProgress) {

@@ -4,7 +4,6 @@ import Paper from '@material-ui/core/Paper';
 import { get } from 'lodash';
 import cx from 'classnames';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import RemoveCircle from '@material-ui/icons/RemoveCircle';
 import Warning from '@material-ui/icons/Warning';
@@ -133,7 +132,6 @@ export default class FileProgressDialog extends React.Component {
       text: (<TextIcon className={styles.fileIcon} />)
     };
     const iconKeys = Object.keys(icons);
-    let wasCategorized = false;
     for (let index in iconKeys) {
       const key = iconKeys[index];
       if (type && type.includes(key)) {

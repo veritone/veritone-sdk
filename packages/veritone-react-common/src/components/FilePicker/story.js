@@ -1,10 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { number, select, text, boolean, object } from '@storybook/addon-knobs';
+import { select, object } from '@storybook/addon-knobs';
 
-import FilePicker from './';
 import FileProgressDialog from './FileProgressDialog';
+import FilePicker from './';
 
 const allFormats = [
   'application/json',

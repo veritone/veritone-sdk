@@ -1,5 +1,7 @@
+import { isUndefined } from 'lodash';
+
 export function formatBytes(bytes, decimals = 2) {
-  if (typeof bytes === 'undefined') {
+  if (isUndefined(bytes)) {
     return 'Size Undetected';
   }
   if (bytes === 0) {

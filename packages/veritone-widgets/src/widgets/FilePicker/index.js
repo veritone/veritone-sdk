@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { noop } from 'lodash';
-import { bool, func, oneOf, number, string } from 'prop-types';
+import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
@@ -23,8 +23,6 @@ import styles from './styles.scss';
   (state, { id }) => ({
     open: filePickerModule.isOpen(state, id),
     pickerState: filePickerModule.state(state, id),
-
-    progressPercent: filePickerModule.progressPercent(state, id),
     percentByFiles: filePickerModule.percentByFiles(state, id),
     success: filePickerModule.didSucceed(state, id),
     error: filePickerModule.didError(state, id),
@@ -52,7 +50,15 @@ class FilePicker extends React.Component {
     endPick: func,
     uploadRequest: func,
     pickerState: oneOf(['selecting', 'uploading', 'complete']),
-    progressPercent: number,
+    percentByFiles: arrayOf(shape({
+      key: string.isRequired,
+      value: shape({
+        name: string,
+        size: number,
+        type: string,
+        percent: number
+      }).isRequired
+    })),
     success: bool,
     error: bool,
     warning: bool,
@@ -65,7 +71,8 @@ class FilePicker extends React.Component {
   static defaultProps = {
     open: false,
     onPickCancelled: noop,
-    onPick: noop
+    onPick: noop,
+    percentByFiles: []
   };
 
   handlePick = () => {
@@ -106,7 +113,6 @@ class FilePicker extends React.Component {
       <Dialog open={this.props.open} classes={{ paper: transparentBgClass }}>
         <FileProgressDialog
           percentByFiles={this.props.percentByFiles}
-          percentComplete={this.props.progressPercent}
           progressMessage={this.props.statusMessage}
           completeStatus={completeStatus}
         />
