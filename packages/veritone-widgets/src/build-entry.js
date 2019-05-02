@@ -22,4 +22,5 @@ export EngineOutputExport, {
   EngineOutputExportWidget
 } from './widgets/EngineOutputExport';
 export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
+export engineOutputExportSaga from './redux/modules/engineOutputExport/saga';
 export { UserProfileWidget } from './widgets/UserProfile';
