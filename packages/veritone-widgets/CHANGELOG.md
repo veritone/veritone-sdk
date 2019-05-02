@@ -195,3 +195,6 @@ const MyPage = () => (
 
 ## 7.1.0
 * Add support for Azure storage blobs via File Picker
+
+## 7.1.1
+* Fix/Update engineOutputExport and export its saga
