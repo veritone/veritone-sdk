@@ -99,6 +99,7 @@ storiesOf('FilePicker', module)
           size: 569182
         }
       }])}
+      progressMessage={'Upload Message Here'}
       completeStatus={select('completeStatus', {
         success: 'success',
         failure: 'failure',

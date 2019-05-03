@@ -21,7 +21,9 @@ import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
   // fixme -- handle this better
-  yield call(delay, warning || error ? 1500 : 500);
+  if (warning || error) {
+    yield call(delay, 2000);
+  }
   yield put(endPick(id));
   yield call(callback, result, { warning, error, cancelled: false });
 }
@@ -100,9 +102,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
 
     if (success || error) {
       yield put(uploadProgress(id, key, {
-        name: file.name,
-        type: file.type,
-        size: file.size,
+        ...file,
         percent: 100
       }));
 
@@ -122,9 +122,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     }
 
     yield put(uploadProgress(id, key, {
-      name: file.name,
-      type: file.type,
-      size: file.size,
+      ...file,
       percent: progress
     }));
   }

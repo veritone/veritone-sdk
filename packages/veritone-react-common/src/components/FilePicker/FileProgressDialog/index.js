@@ -161,11 +161,15 @@ export default class FileProgressDialog extends React.Component {
       >
         <div>
           {this.props.completeStatus
-            ? this.renderComplete()
-            : this.renderProgress()}
-          <div className={styles.progressMessage}>
-            {this.props.progressMessage}
-          </div>
+            ? (
+              <div>
+                {this.renderComplete()}
+                <div className={styles.progressMessage}>
+                  {this.props.progressMessage}
+                </div>
+              </div>
+            ) : this.renderProgress()
+          }
         </div>
       </Paper>
     );
