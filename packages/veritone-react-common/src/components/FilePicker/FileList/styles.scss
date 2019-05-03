@@ -13,8 +13,9 @@ $preview-size: 40px;
 .fileList {
   flex: 0 0 50%;
   position: relative;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-left: 15px;
+  height: 100%;
 }
 
 .item {

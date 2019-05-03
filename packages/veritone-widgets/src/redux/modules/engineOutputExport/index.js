@@ -19,6 +19,7 @@ export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
 export const APPLY_SPEAKER_TOGGLE = `vtn/${namespace}/APPLY_SPEAKER_TOGGLE`;
 export const STORE_SPEAKER_TOGGLE = `vtn/${namespace}/STORE_SPEAKER_TOGGLE`;
+export const STORE_HAS_SPEAKER_DATA = `vtn/${namespace}/STORE_HAS_SPEAKER_DATA`;
 
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_SUCCESS = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_SUCCESS`;
@@ -72,7 +73,6 @@ export default createReducer(defaultState, {
       }
       return accumulator;
     }, {});
-    let hasSpeakerData = false;
     forEach(enginesRan, engineRun => {
       if (get(engineRun, 'category.exportFormats.length')) {
         if (isBulkExport) {
@@ -92,9 +92,6 @@ export default createReducer(defaultState, {
         }
         categoryLookup[engineRun.category.id] = engineRun.category;
         expandedCategories[engineRun.category.id] = false;
-        if (get(engineRun, 'category.categoryType') === 'speaker') {
-          hasSpeakerData = true;
-        }
       }
     });
     newOutputConfigurations = uniqWith(
@@ -123,8 +120,7 @@ export default createReducer(defaultState, {
       expandedCategories: expandedCategories,
       isBulkExport,
       fetchEngineRunsFailed: false,
-      includeMedia: false,
-      hasSpeakerData
+      includeMedia: false
     };
   },
   [FETCH_ENGINE_RUNS_FAILURE](state) {
@@ -256,6 +252,17 @@ export default createReducer(defaultState, {
         ...state.speakerToggleCache,
         ...config
       }
+    };
+  },
+  [STORE_HAS_SPEAKER_DATA](
+    state,
+    {
+      payload: { hasSpeakerData }
+    }
+  ) {
+    return {
+      ...state,
+      hasSpeakerData
     };
   },
   [APPLY_SUBTITLE_CONFIGS](
@@ -586,6 +593,15 @@ export const storeSpeakerToggle = (categoryId, config) => {
     payload: {
       categoryId,
       config
+    }
+  };
+};
+
+export const setHasSpeakerData = hasSpeakerData => {
+  return {
+    type: STORE_HAS_SPEAKER_DATA,
+    payload: {
+      hasSpeakerData
     }
   };
 };
