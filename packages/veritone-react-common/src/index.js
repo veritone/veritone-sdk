@@ -1,5 +1,4 @@
 import '../src/styles/global.scss';
-import SelectionButton from './components/SelectionButton';
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
