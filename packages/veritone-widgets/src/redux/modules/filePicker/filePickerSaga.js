@@ -182,9 +182,7 @@ function* watchRetryDone() {
     const completedUploads = uploads.filter(upload => !upload.error);
 
     yield put(endPick(id));
-    if (completedUploads.length) {
-      yield call(callback, completedUploads, { cancelled: false });
-    }
+    yield call(callback, completedUploads, { cancelled: !completedUploads.length });
   });
 }
 
