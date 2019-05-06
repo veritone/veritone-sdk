@@ -102,7 +102,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   let result = [];
 
   while (result.length !== files.length) {
-    let {
+    const {
       progress = 0,
       error,
       success,
@@ -111,9 +111,6 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
-      if (Math.random(0, 1) > 0.5) {
-        error = 'fake error';
-      }
       yield put(uploadProgress(id, key, {
         name: file.name,
         type: file.type,
