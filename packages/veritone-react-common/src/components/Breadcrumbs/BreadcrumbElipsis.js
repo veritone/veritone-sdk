@@ -2,15 +2,15 @@ import React from 'react';
 import { func } from 'prop-types';
 import classNames from 'classnames';
 
-import styles from './BreadcrumbElipsis.scss';
+import styles from './Breadcrumbs.scss';
 
 
 const BreadcrumbElipsis = ({ onClick }) => (
   <span className={classNames(
-    'icon-more_vert',
-    styles['icon-rotate'],
-    styles['icon-spread']
-  )}
+      'icon-more_vert',
+      styles['icon-rotate'],
+      styles['icon-spread']
+    )}
     onClick={onClick}
   />
 );

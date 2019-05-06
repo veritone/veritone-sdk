@@ -6,16 +6,15 @@ import styles from './BreadcrumbItem.scss';
 
 import breadcrumbItem from './breadcrumbItemShape';
 
-const BreadcrumbItem = ({ label, id, index, onClick, isHidden = false }) => (
+const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) => (
   isHidden ? (
     <MenuItem
       onClick={onClick}
       data-id={id}
       data-index={index}
+      className={styles['crumb-item']}
     >
       <span
-        data-id={id}
-        data-index={index}
         className={classNames('icon-empty-folder', styles['font-icon'])}
       />
       {label}
@@ -23,11 +22,14 @@ const BreadcrumbItem = ({ label, id, index, onClick, isHidden = false }) => (
   ) : (
       <span
         onClick={onClick}
-        className={styles['crumb-item']}
         data-id={id}
         data-index={index}
+        className={styles['crumb-item']}
       >
-        {label}
+        {icon}
+        <span>
+          {label}
+        </span>
       </span>
     )
 )
