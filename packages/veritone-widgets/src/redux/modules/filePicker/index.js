@@ -4,6 +4,7 @@ const { createReducer } = helpers;
 
 export const PICK_START = 'PICK_START';
 export const PICK_END = 'PICK_END';
+export const RETRY_REQUEST = 'RETRY_REQUEST';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
@@ -54,6 +55,24 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [RETRY_REQUEST](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        state: 'uploading',
+        progressPercentByFileKey: {},
+        success: null,
+        error: null,
+        warning: null
+      }
+    }
+  },
   [UPLOAD_REQUEST](
     state,
     {
@@ -97,19 +116,27 @@ export default createReducer(defaultState, {
     state,
     {
       payload,
-      meta: { warn, error, id }
+      meta: { warning, error, id }
     }
   ) {
     const errorMessage = get(error, 'message', error); // Error or string
+    // Extract failed files to be reuploaded
+    const failedFiles = payload
+      .filter(result => result.error)
+      .map(result => result.file);
+    // Combine existing uploadResult if any
+    const prevUploadResult = (get(state, [id, 'uploadResult']) || [])
+      .filter(result => !result.error);
     return {
       ...state,
       [id]: {
         ...state[id],
-        success: !(warn || error) || null,
+        success: !(warning || error) || null,
         error: error ? errorMessage : null,
-        warning: warn || null,
+        warning: warning || null,
         state: 'complete',
-        uploadResult: payload
+        uploadResult: prevUploadResult.concat(payload),
+        failedFiles
       }
     };
   }
@@ -124,6 +151,12 @@ export const pick = id => ({
 
 export const endPick = id => ({
   type: PICK_END,
+  meta: { id }
+});
+
+export const retryRequest = (id, callback) => ({
+  type: RETRY_REQUEST,
+  payload: { callback },
   meta: { id }
 });
 
@@ -142,10 +175,10 @@ export const uploadProgress = (id, fileKey, data) => ({
   meta: { fileKey, id }
 });
 
-export const uploadComplete = (id, result, { warn, error }) => ({
+export const uploadComplete = (id, result, { warning, error }) => ({
   type: UPLOAD_COMPLETE,
   payload: result,
-  meta: { warn, error, id }
+  meta: { warning, error, id }
 });
 
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
@@ -173,6 +206,11 @@ export const percentByFiles = (state, id) => {
     };
   })
 }
+export const failedFiles = (state, id) => {
+  const failedFiles = get(local(state), [id, 'failedFiles'], []);
+  return failedFiles;
+};
+export const uploadResult = (state, id) => get(local(state), [id, 'uploadResult']);
 export const didSucceed = (state, id) => !!get(local(state), [id, 'success']);
 export const didError = (state, id) => !!get(local(state), [id, 'error']);
 export const didWarn = (state, id) => !!get(local(state), [id, 'warning']);

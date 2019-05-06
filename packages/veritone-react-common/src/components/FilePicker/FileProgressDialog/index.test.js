@@ -1,33 +1,30 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import { noop } from 'lodash';
 
 import FileProgressDialog from './';
 
 describe('FileProgressDialog', function() {
-  // it('shows the percentComplete when not done', function() {
-  //   const wrapper = mount(<FileProgressDialog percentComplete={50} />);
-
-  //   expect(wrapper.text()).toBe('50%');
-  // });
 
   it('shows the progressMessage', function() {
     const wrapper = mount(
-      <FileProgressDialog percentComplete={50} progressMessage="test-progress" />
+      <FileProgressDialog
+        progressMessage="test-progress"
+        onRequestClose={noop}
+        completeStatus={'failure'}
+        retryRequest={noop} />
     );
 
     expect(wrapper.text().match(/test-progress/)).toBeTruthy();
   });
 
-  it('shows the success icon with props.completeStatus == "success"', function() {
-    const wrapper = mount(<FileProgressDialog completeStatus="success" />);
-
-    expect(wrapper.find('[data-testtarget="failureIcon"]')).toHaveLength(0);
-    expect(wrapper.find('[data-testtarget="warnIcon"]')).toHaveLength(0);
-    expect(wrapper.find('[data-testtarget="successIcon"]').length).toBeTruthy();
-  });
-
   it('shows the failure icon with props.completeStatus == "failure"', function() {
-    const wrapper = mount(<FileProgressDialog completeStatus="failure" />);
+    const wrapper = mount(
+      <FileProgressDialog
+        completeStatus="failure"
+        onRequestClose={noop}
+        retryRequest={noop} />
+    );
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="warnIcon"]')).toHaveLength(0);
@@ -35,7 +32,12 @@ describe('FileProgressDialog', function() {
   });
 
   it('shows the failure icon with props.completeStatus == "warning"', function() {
-    const wrapper = mount(<FileProgressDialog completeStatus="warning" />);
+    const wrapper = mount(
+      <FileProgressDialog
+        completeStatus="warning"
+        onRequestClose={noop}
+        retryRequest={noop} />
+    );
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="failureIcon"]')).toHaveLength(0);

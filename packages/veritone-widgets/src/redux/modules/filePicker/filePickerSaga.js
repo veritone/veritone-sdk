@@ -7,7 +7,6 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
@@ -16,16 +15,26 @@ const { auth: authModule, config: configModule } = modules;
 import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
+import {
+  UPLOAD_REQUEST,
+  RETRY_REQUEST,
+  uploadProgress,
+  uploadComplete,
+  endPick,
+  failedFiles,
+  uploadResult
+} from './';
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
   // fixme -- handle this better
   if (warning || error) {
-    yield call(delay, 2000);
+    return;
   }
   yield put(endPick(id));
-  yield call(callback, result, { warning, error, cancelled: false });
+  // Get accumulated results, not just what's in the current upload/retry request
+  const totalResults = yield select(uploadResult, id);
+  yield call(callback, totalResults, { warning, error, cancelled: false });
 }
 
 function* uploadFileSaga(id, fileOrFiles, callback = noop) {
@@ -102,7 +111,10 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
 
     if (success || error) {
       yield put(uploadProgress(id, key, {
-        ...file,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        error,
         percent: 100
       }));
 
@@ -115,14 +127,17 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         type: file.type,
         error: error || false,
         unsignedUrl: error ? null : unsignedUrl,
-        getUrl: error ? null : getUrl
+        getUrl: error ? null : getUrl,
+        file
       });
 
       continue;
     }
 
     yield put(uploadProgress(id, key, {
-      ...file,
+      name: file.name,
+      type: file.type,
+      size: file.size,
       percent: progress
     }));
   }
@@ -149,6 +164,18 @@ function* watchUploadRequest() {
   });
 }
 
+function* watchRetryRequest() {
+  yield takeEvery(RETRY_REQUEST, function*(action) {
+    const { callback } = action.payload;
+    const { id } = action.meta;
+    const erroredFiles = yield select(failedFiles, id) || [];
+    yield call(uploadFileSaga, id, erroredFiles, callback);
+  });
+}
+
 export default function* root() {
-  yield all([fork(watchUploadRequest)]);
+  yield all([
+    fork(watchUploadRequest),
+    fork(watchRetryRequest)
+  ]);
 }

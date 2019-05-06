@@ -1,15 +1,19 @@
 import React from 'react';
-import { number, string, oneOf, arrayOf, shape } from 'prop-types';
+import { number, string, oneOf, arrayOf, shape, any, func } from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import { get } from 'lodash';
 import cx from 'classnames';
+import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CheckCircle from '@material-ui/icons/CheckCircle';
-import RemoveCircle from '@material-ui/icons/RemoveCircle';
+import Info from '@material-ui/icons/Info';
 import Warning from '@material-ui/icons/Warning';
 import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
-import yellow from '@material-ui/core/colors/yellow';
+
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 
 import AudioIcon from '@material-ui/icons/PlayCircleOutline';
 import VideoIcon from '@material-ui/icons/LocalMovies';
@@ -27,9 +31,13 @@ export default class FileProgressDialog extends React.Component {
       value: shape({
         name: string,
         type: string,
-        percent: number
+        size: number,
+        percent: number,
+        error: any
       }).isRequired
     })),
+    onRequestClose: func.isRequired,
+    retryRequest: func.isRequired,
     height: number,
     width: number,
     progressMessage: string,
@@ -50,7 +58,7 @@ export default class FileProgressDialog extends React.Component {
     return (
       <div className={styles.fileProgressContainer}>
         {
-          percentByFiles.map(file => (
+          percentByFiles.filter(file => !get(file, 'value.error')).map(file => (
             <div key={file.key} className={styles.fileProgressItem}>
               <LinearProgress
                 className={styles.fileProgressBar}
@@ -82,7 +90,7 @@ export default class FileProgressDialog extends React.Component {
       success: (
         <CheckCircle
           classes={{
-            root: styles.resolutionIcon
+            root: styles.resolveIcon
           }}
           style={{
             fill: green[500]
@@ -92,12 +100,12 @@ export default class FileProgressDialog extends React.Component {
       ),
 
       failure: (
-        <RemoveCircle
+        <Info
           classes={{
-            root: styles.resolutionIcon
+            root: styles.resolveIcon
           }}
           style={{
-            fill: red[500]
+            color: '#F44336'
           }}
           data-testtarget="failureIcon"
         />
@@ -106,21 +114,69 @@ export default class FileProgressDialog extends React.Component {
       warning: (
         <Warning
           classes={{
-            root: styles.resolutionIcon
+            root: styles.resolveIcon
           }}
           style={{
-            fill: yellow[500]
+            color: '#ffc107'
           }}
           data-testtarget="warnIcon"
         />
       )
     }[this.props.completeStatus];
 
-    return (
-      <div className={styles.textContainer}>
-        <div className={styles.resolutionIconContainer}>{icon}</div>
-      </div>
-     );
+    const {
+      percentByFiles
+    } = this.props;
+
+    const completeDialog = this.props.completeStatus !== 'success' ? (
+      <Card className={styles.resolveContainer}>
+        <CardHeader
+          className={styles.resolveHeader}
+          avatar={icon}
+          title={`Upload ${this.props.completeStatus}`} />
+        <CardContent style={{ padding: 0 }}>
+          <div className={styles.progressMessage}>
+            {this.props.progressMessage}
+          </div>
+          {
+            percentByFiles.filter(file => get(file, 'value.error')).map(file => (
+              <div key={file.key} className={styles.fileProgressItem}>
+                <LinearProgress
+                  className={styles.fileProgressBar}
+                  classes={{
+                    barColorPrimary: styles.fileProgressBarPrimary,
+                    barColorSecondary: styles.fileProgressBarSecondary
+                  }}
+                  variant="determinate"
+                  value={0} />
+                <div className={styles.fileProgressItemOverlay}>
+                  { this.getFileMediaIcon(file) }
+                  <span className={styles.fileName}>{file.value.name || file.key}</span>
+                  <div className={styles.sizeContainer}>
+                    <span className={styles.fileSize}>{formatBytes(file.value.size)}</span>
+                  </div>
+                </div>
+
+              </div>
+            ))
+          }
+        </CardContent>
+        <CardActions className={styles.resolveActions}>
+          <Button
+            onClick={this.props.onRequestClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.props.retryRequest}>
+            Retry All
+          </Button>
+        </CardActions>
+      </Card>
+    ) : null;
+
+    return completeDialog
   }
 
   getFileMediaIcon = file => {
@@ -150,25 +206,14 @@ export default class FileProgressDialog extends React.Component {
   }
 
   render() {
-    const transparentBg = this.props.completeStatus ? {
-      backgroundColor: 'transparent',
-      boxShadow: 'none'
-    } : {};
     return (
       <Paper
         classes={{ root: styles.container }}
-        style={{ height: this.props.height, width: this.props.width, ...transparentBg }}
+        style={{ height: this.props.height, width: this.props.width }}
       >
         <div>
           {this.props.completeStatus
-            ? (
-              <div>
-                {this.renderComplete()}
-                <div className={styles.progressMessage}>
-                  {this.props.progressMessage}
-                </div>
-              </div>
-            ) : this.renderProgress()
+            ? this.renderComplete() : this.renderProgress()
           }
         </div>
       </Paper>

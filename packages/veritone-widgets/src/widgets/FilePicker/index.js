@@ -32,7 +32,8 @@ import styles from './styles.scss';
   {
     pick: filePickerModule.pick,
     endPick: filePickerModule.endPick,
-    uploadRequest: filePickerModule.uploadRequest
+    uploadRequest: filePickerModule.uploadRequest,
+    retryRequest: filePickerModule.retryRequest
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -49,6 +50,7 @@ class FilePicker extends React.Component {
     pick: func,
     endPick: func,
     uploadRequest: func,
+    retryRequest: func,
     pickerState: oneOf(['selecting', 'uploading', 'complete']),
     percentByFiles: arrayOf(shape({
       key: string.isRequired,
@@ -100,6 +102,15 @@ class FilePicker extends React.Component {
     );
   };
 
+  handleRetry = () => {
+    const {
+      id,
+      retryRequest,
+      onPick
+    } = this.props;
+    retryRequest && retryRequest(id, onPick);
+  };
+
   renderProgressDialog = () => {
     let completeStatus = {
       [this.props.success]: 'success',
@@ -114,6 +125,8 @@ class FilePicker extends React.Component {
         <FileProgressDialog
           percentByFiles={this.props.percentByFiles}
           progressMessage={this.props.statusMessage}
+          retryRequest={this.handleRetry}
+          onRequestClose={this.cancel}
           completeStatus={completeStatus}
         />
       </Dialog>

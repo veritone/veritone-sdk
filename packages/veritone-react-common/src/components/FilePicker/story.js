@@ -98,12 +98,22 @@ storiesOf('FilePicker', module)
           percent: 90,
           size: 569182
         }
+      }, {
+        key: 'error_file.bin',
+        value: {
+          type: 'application/json',
+          percent: 69,
+          size: 56283756,
+          error: true
+        }
       }])}
-      progressMessage={'Upload Message Here'}
+      progressMessage={`We couldn't upload these files.`}
       completeStatus={select('completeStatus', {
         success: 'success',
         failure: 'failure',
         warning: 'warning'
       })}
+      retryRequest={action('Retry Request')}
+      onRequestClose={action('Request Close')}
     />
   ));
