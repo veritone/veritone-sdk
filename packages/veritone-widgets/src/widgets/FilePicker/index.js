@@ -180,7 +180,9 @@ class FilePickerWidgetComponent extends React.Component {
     _widgetId: string.isRequired,
     pick: func.isRequired,
     endPick: func.isRequired,
-    uploadRequest: func.isRequired
+    uploadRequest: func.isRequired,
+    retryRequest: func.isRequired,
+    retryDone: func.isRequired
   };
 
   pickCallback = noop;
