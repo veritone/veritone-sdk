@@ -10,7 +10,7 @@ describe('FileProgressDialog', function() {
     const wrapper = mount(
       <FileProgressDialog
         progressMessage="test-progress"
-        onRequestClose={noop}
+        onRetryDone={noop}
         completeStatus={'failure'}
         retryRequest={noop} />
     );
@@ -22,7 +22,7 @@ describe('FileProgressDialog', function() {
     const wrapper = mount(
       <FileProgressDialog
         completeStatus="failure"
-        onRequestClose={noop}
+        onRetryDone={noop}
         retryRequest={noop} />
     );
 
@@ -35,7 +35,7 @@ describe('FileProgressDialog', function() {
     const wrapper = mount(
       <FileProgressDialog
         completeStatus="warning"
-        onRequestClose={noop}
+        onRetryDone={noop}
         retryRequest={noop} />
     );
 

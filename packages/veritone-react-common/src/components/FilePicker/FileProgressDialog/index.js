@@ -36,7 +36,7 @@ export default class FileProgressDialog extends React.Component {
         error: any
       }).isRequired
     })),
-    onRequestClose: func.isRequired,
+    onRetryDone: func.isRequired,
     retryRequest: func.isRequired,
     height: number,
     width: number,
@@ -163,8 +163,8 @@ export default class FileProgressDialog extends React.Component {
         </CardContent>
         <CardActions className={styles.resolveActions}>
           <Button
-            onClick={this.props.onRequestClose}>
-            Cancel
+            onClick={this.props.onRetryDone}>
+            Done
           </Button>
           <Button
             variant="contained"

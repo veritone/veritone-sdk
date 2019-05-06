@@ -18,6 +18,7 @@ import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   UPLOAD_REQUEST,
   RETRY_REQUEST,
+  RETRY_DONE,
   uploadProgress,
   uploadComplete,
   endPick,
@@ -101,7 +102,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   let result = [];
 
   while (result.length !== files.length) {
-    const {
+    let {
       progress = 0,
       error,
       success,
@@ -110,6 +111,9 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
+      if (Math.random(0, 1) > 0.5) {
+        error = 'fake error';
+      }
       yield put(uploadProgress(id, key, {
         name: file.name,
         type: file.type,
@@ -173,9 +177,24 @@ function* watchRetryRequest() {
   });
 }
 
+function* watchRetryDone() {
+  yield takeEvery(RETRY_DONE, function*(action) {
+    const { callback } = action.payload;
+    const { id } = action.meta;
+    const uploads = yield select(uploadResult, id) || [];
+    const completedUploads = uploads.filter(upload => !upload.error);
+
+    yield put(endPick(id));
+    if (completedUploads.length) {
+      yield call(callback, completedUploads, { cancelled: false });
+    }
+  });
+}
+
 export default function* root() {
   yield all([
     fork(watchUploadRequest),
-    fork(watchRetryRequest)
+    fork(watchRetryRequest),
+    fork(watchRetryDone)
   ]);
 }

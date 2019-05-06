@@ -5,6 +5,7 @@ const { createReducer } = helpers;
 export const PICK_START = 'PICK_START';
 export const PICK_END = 'PICK_END';
 export const RETRY_REQUEST = 'RETRY_REQUEST';
+export const RETRY_DONE = 'RETRY_DONE';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
@@ -72,6 +73,20 @@ export default createReducer(defaultState, {
         warning: null
       }
     }
+  },
+  [RETRY_DONE](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        state: 'complete'
+      }
+    };
   },
   [UPLOAD_REQUEST](
     state,
@@ -156,6 +171,12 @@ export const endPick = id => ({
 
 export const retryRequest = (id, callback) => ({
   type: RETRY_REQUEST,
+  payload: { callback },
+  meta: { id }
+});
+
+export const retryDone = (id, callback) => ({
+  type: RETRY_DONE,
   payload: { callback },
   meta: { id }
 });
