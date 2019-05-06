@@ -53,7 +53,7 @@ function logPickResult(result, { warning, error, cancelled }) {
 
 storiesOf('FilePicker', module).add('Base', () => {
   const props = {
-    accept: ['image/*'],
+    // accept: ['image/*'],
     // allowUrlUpload: false
     multiple: true
   };

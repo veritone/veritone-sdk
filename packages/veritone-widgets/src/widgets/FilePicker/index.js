@@ -1,17 +1,19 @@
 import React, { Fragment } from 'react';
 import { noop } from 'lodash';
-import { bool, func, oneOf, number, string } from 'prop-types';
+import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
 import {
   FilePicker as FilePickerComponent,
-  ProgressDialog
+  FileProgressDialog
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
+
+import styles from './styles.scss';
 
 // provide id prop on mount
 @withPropsOnChange([], ({ id }) => ({
@@ -21,7 +23,7 @@ import widget from '../../shared/widget';
   (state, { id }) => ({
     open: filePickerModule.isOpen(state, id),
     pickerState: filePickerModule.state(state, id),
-    progressPercent: filePickerModule.progressPercent(state, id),
+    percentByFiles: filePickerModule.percentByFiles(state, id),
     success: filePickerModule.didSucceed(state, id),
     error: filePickerModule.didError(state, id),
     warning: filePickerModule.didWarn(state, id),
@@ -30,14 +32,18 @@ import widget from '../../shared/widget';
   {
     pick: filePickerModule.pick,
     endPick: filePickerModule.endPick,
-    uploadRequest: filePickerModule.uploadRequest
+    uploadRequest: filePickerModule.uploadRequest,
+    retryRequest: filePickerModule.retryRequest,
+    retryDone: filePickerModule.retryDone
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
     ...stateProps,
     ...dispatchProps,
     // allow widget version of FilePicker to override uploadRequest
-    uploadRequest: ownProps.uploadRequest || dispatchProps.uploadRequest
+    uploadRequest: ownProps.uploadRequest || dispatchProps.uploadRequest,
+    retryRequest: ownProps.retryRequest || dispatchProps.retryRequest,
+    retryDone: ownProps.retryDone || dispatchProps.retryDone
   })
 )
 class FilePicker extends React.Component {
@@ -47,8 +53,18 @@ class FilePicker extends React.Component {
     pick: func,
     endPick: func,
     uploadRequest: func,
+    retryRequest: func,
+    retryDone: func,
     pickerState: oneOf(['selecting', 'uploading', 'complete']),
-    progressPercent: number,
+    percentByFiles: arrayOf(shape({
+      key: string.isRequired,
+      value: shape({
+        name: string,
+        size: number,
+        type: string,
+        percent: number
+      }).isRequired
+    })),
     success: bool,
     error: bool,
     warning: bool,
@@ -61,7 +77,8 @@ class FilePicker extends React.Component {
   static defaultProps = {
     open: false,
     onPickCancelled: noop,
-    onPick: noop
+    onPick: noop,
+    percentByFiles: []
   };
 
   handlePick = () => {
@@ -89,18 +106,40 @@ class FilePicker extends React.Component {
     );
   };
 
+  handleRetryDone = () => {
+    const {
+      id,
+      onPick,
+      retryDone
+    } = this.props;
+    retryDone && retryDone(id, onPick);
+  };
+
+  handleRetry = () => {
+    const {
+      id,
+      retryRequest,
+      onPick
+    } = this.props;
+    retryRequest && retryRequest(id, onPick);
+  };
+
   renderProgressDialog = () => {
     let completeStatus = {
       [this.props.success]: 'success',
       [this.props.error]: 'failure',
       [this.props.warning]: 'warning'
     }[true];
+    const transparentBgClass = this.props.pickerState === 'complete'
+      ? styles.transparentBg : '';
 
     return (
-      <Dialog open={this.props.open}>
-        <ProgressDialog
-          percentComplete={this.props.progressPercent}
+      <Dialog open={this.props.open} classes={{ paper: transparentBgClass }}>
+        <FileProgressDialog
+          percentByFiles={this.props.percentByFiles}
           progressMessage={this.props.statusMessage}
+          retryRequest={this.handleRetry}
+          onRetryDone={this.handleRetryDone}
           completeStatus={completeStatus}
         />
       </Dialog>
@@ -129,7 +168,9 @@ class FilePicker extends React.Component {
   {
     pick: filePickerModule.pick,
     endPick: filePickerModule.endPick,
-    uploadRequest: filePickerModule.uploadRequest
+    uploadRequest: filePickerModule.uploadRequest,
+    retryRequest: filePickerModule.retryRequest,
+    retryDone: filePickerModule.retryDone
   },
   null,
   { withRef: true }
@@ -139,7 +180,9 @@ class FilePickerWidgetComponent extends React.Component {
     _widgetId: string.isRequired,
     pick: func.isRequired,
     endPick: func.isRequired,
-    uploadRequest: func.isRequired
+    uploadRequest: func.isRequired,
+    retryRequest: func.isRequired,
+    retryDone: func.isRequired
   };
 
   pickCallback = noop;
@@ -163,12 +206,22 @@ class FilePickerWidgetComponent extends React.Component {
     this.props.uploadRequest(id, files, this.pickCallback);
   };
 
+  handleRetryRequest = id => {
+    this.props.retryRequest(id, this.pickCallback);
+  }
+
+  handleRetryDone = id => {
+    this.props.retryDone(id, this.pickCallback);
+  }
+
   render() {
     return (
       <FilePicker
         id={this.props._widgetId}
         {...this.props}
         uploadRequest={this.handleUploadRequest}
+        retryRequest={this.handleRetryRequest}
+        retryDone={this.handleRetryDone}
         onPickCancelled={this.callCancelledCallback}
       />
     );
