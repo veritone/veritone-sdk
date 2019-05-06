@@ -41,7 +41,9 @@ import styles from './styles.scss';
     ...stateProps,
     ...dispatchProps,
     // allow widget version of FilePicker to override uploadRequest
-    uploadRequest: ownProps.uploadRequest || dispatchProps.uploadRequest
+    uploadRequest: ownProps.uploadRequest || dispatchProps.uploadRequest,
+    retryRequest: ownProps.retryRequest || dispatchProps.retryRequest,
+    retryDone: ownProps.retryDone || dispatchProps.retryDone
   })
 )
 class FilePicker extends React.Component {
@@ -166,7 +168,9 @@ class FilePicker extends React.Component {
   {
     pick: filePickerModule.pick,
     endPick: filePickerModule.endPick,
-    uploadRequest: filePickerModule.uploadRequest
+    uploadRequest: filePickerModule.uploadRequest,
+    retryRequest: filePickerModule.retryRequest,
+    retryDone: filePickerModule.retryDone
   },
   null,
   { withRef: true }
@@ -200,12 +204,22 @@ class FilePickerWidgetComponent extends React.Component {
     this.props.uploadRequest(id, files, this.pickCallback);
   };
 
+  handleRetryRequest = id => {
+    this.props.retryRequest(id, this.pickCallback);
+  }
+
+  handleRetryDone = id => {
+    this.props.retryDone(id, this.pickCallback);
+  }
+
   render() {
     return (
       <FilePicker
         id={this.props._widgetId}
         {...this.props}
         uploadRequest={this.handleUploadRequest}
+        retryRequest={this.handleRetryRequest}
+        retryDone={this.handleRetryDone}
         onPickCancelled={this.callCancelledCallback}
       />
     );
