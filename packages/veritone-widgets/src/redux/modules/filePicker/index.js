@@ -1,4 +1,5 @@
 import { clamp, mean, isNaN, get } from 'lodash';
+import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -6,6 +7,7 @@ export const PICK_START = 'PICK_START';
 export const PICK_END = 'PICK_END';
 export const RETRY_REQUEST = 'RETRY_REQUEST';
 export const RETRY_DONE = 'RETRY_DONE';
+export const ABORT_REQUEST = 'ABORT_REQUEST';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
@@ -55,6 +57,36 @@ export default createReducer(defaultState, {
         open: false
       }
     };
+  },
+  [ABORT_REQUEST](
+    state,
+    {
+      meta: { id, fileKey }
+    }
+  ) {
+    let newProgressPercentByFileKey = get(state, [id, 'progressPercentByFileKey'], {});
+    if (fileKey) {
+      newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
+        [fileKey]: {
+          aborted: { $set: true }
+        }
+      });
+    } else {
+      Object.keys(get(state, [id, 'progressPercentByFileKey'], {})).forEach(fileKey => {
+        newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
+          [fileKey]: {
+            aborted: { $set: true }
+          }
+        });
+      });
+    }
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        progressPercentByFileKey: newProgressPercentByFileKey
+      }
+    }
   },
   [RETRY_REQUEST](
     state,
@@ -122,7 +154,10 @@ export default createReducer(defaultState, {
         ...state[id],
         progressPercentByFileKey: {
           ...state[id].progressPercentByFileKey,
-          [fileKey]: payload
+          [fileKey]: {
+            ...state[id].progressPercentByFileKey[fileKey],
+            ...payload
+          }
         }
       }
     };
@@ -173,6 +208,11 @@ export const retryRequest = (id, callback) => ({
   type: RETRY_REQUEST,
   payload: { callback },
   meta: { id }
+});
+
+export const abortRequest = (id, fileKey) => ({
+  type: ABORT_REQUEST,
+  meta: { id, fileKey }
 });
 
 export const retryDone = (id, callback) => ({

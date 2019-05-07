@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
-import { string, func, bool } from 'prop-types';
+import { string, func, bool, node } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -12,7 +12,10 @@ class FilePickerHeader extends Component {
     onSelectTab: func,
     onClose: func,
     allowUrlUpload: bool,
-    title: string
+    hideTabs: bool,
+    titleIcon: node,
+    title: string,
+    message: string
   };
 
   static defaultProps = {
@@ -26,24 +29,46 @@ class FilePickerHeader extends Component {
   render() {
     return (
       <div className={styles.filePickerHeader}>
-        <span className={styles.filePickerTitle}>{this.props.title}</span>
-        <IconButton
-          classes={{
-            root: styles.filePickerCloseButton
-          }}
-          onClick={this.props.onClose}
-        >
-          <i className="icon-close-exit" />
-        </IconButton>
-        <Tabs
-          value={this.props.selectedTab}
-          indicatorColor="primary"
-          onChange={this.handleTabChange}
-          className={styles.filePickerTabs}
-        >
-          <Tab label="Upload" value="upload" />
-          {this.props.allowUrlUpload && <Tab label="By URL" value="by-url" />}
-        </Tabs>
+        <span className={styles.filePickerTitle}>
+          {
+            this.props.titleIcon && (
+              <div className={styles.titleIconContainer}>
+                {this.props.titleIcon}
+              </div>
+            )
+          }
+          {this.props.title}
+        </span>
+        { this.props.onClose && (
+          <IconButton
+            classes={{
+              root: styles.filePickerCloseButton
+            }}
+            onClick={this.props.onClose}
+          >
+            <i className="icon-close-exit" />
+          </IconButton>
+        )}
+        {
+          this.props.message && (
+            <div className={styles.filePickerMessage}>
+              {this.props.message}
+            </div>
+          )
+        }
+        {
+          !this.props.hideTabs && (
+            <Tabs
+              value={this.props.selectedTab}
+              indicatorColor="primary"
+              onChange={this.handleTabChange}
+              className={styles.filePickerTabs}
+            >
+              <Tab label="Upload" value="upload" />
+              {this.props.allowUrlUpload && <Tab label="By URL" value="by-url" />}
+            </Tabs>
+          )
+        }
       </div>
     );
   }

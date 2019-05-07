@@ -2,7 +2,9 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { noop } from 'lodash';
 
-import FileListItem, { formatBytes } from './FileListItem';
+import { formatBytes } from '../../../helpers/format.js';
+
+import FileListItem from './FileListItem';
 import FileList from './';
 
 let createMockFile = (name, size, mimeType) => {

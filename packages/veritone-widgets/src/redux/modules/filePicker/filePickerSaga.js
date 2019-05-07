@@ -7,7 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop } from 'lodash';
+import { isArray, noop, get } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
@@ -16,6 +16,7 @@ import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
+  ABORT_REQUEST,
   UPLOAD_REQUEST,
   RETRY_REQUEST,
   RETRY_DONE,
@@ -25,6 +26,8 @@ import {
   failedFiles,
   uploadResult
 } from './';
+
+let requestMap;
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
@@ -94,7 +97,9 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
 
   let resultChan;
   try {
-    resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
+    const uploadChannelResult = yield call(uploadFilesChannel, uploadDescriptors, files);
+    resultChan = uploadChannelResult.channel;
+    requestMap = uploadChannelResult.requestMap;
   } catch (error) {
     return yield* finishUpload(id, null, { error }, callback);
   }
@@ -186,10 +191,27 @@ function* watchRetryDone() {
   });
 }
 
+function* watchAbortions() {
+  yield takeEvery(ABORT_REQUEST, function*(action) {
+    const { id, fileKey } = action.meta;
+    // Abort requests somehow
+    if (fileKey && requestMap[fileKey]) {
+      requestMap[fileKey].abort && requestMap[fileKey].abort();
+      delete requestMap[fileKey];
+    } else {
+      Object.keys(requestMap).forEach(fileKey => {
+        requestMap[fileKey].abort && requestMap[fileKey].abort();
+        delete requestMap[fileKey];
+      });
+    }
+  });
+}
+
 export default function* root() {
   yield all([
     fork(watchUploadRequest),
     fork(watchRetryRequest),
-    fork(watchRetryDone)
+    fork(watchRetryDone),
+    fork(watchAbortions)
   ]);
 }

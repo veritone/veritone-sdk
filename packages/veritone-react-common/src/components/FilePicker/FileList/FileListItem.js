@@ -5,16 +5,7 @@ import { shape, func, number, string } from 'prop-types';
 
 import styles from './styles.scss';
 
-export const formatBytes = bytes => {
-  if (bytes === 0) {
-    return '0 Bytes';
-  }
-
-  let k = 1000,
-    sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-    i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+import { formatBytes } from '../../../helpers/format.js';
 
 class FileListItem extends Component {
   static propTypes = {

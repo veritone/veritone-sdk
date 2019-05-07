@@ -4,131 +4,25 @@
 .container {
   $progressItemBorder: 1px solid #E0E0E0;
   $progressItemHeight: 40px;
-  $audio-color: #00BFA5;
-  $video-color: #E81D63;
-  $text-color: #4A4A4A;
-  $image-color: #4CAF4F;
   position: relative;
+  padding-bottom: 20px;
 
-  .fileProgressContainer {
-    max-height: calc(#{$progressItemHeight} * 3);
+  .contentFlexer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  .progressListContainer {
+    max-height: calc(#{$progressItemHeight} * 6);
     overflow-y: auto;
     overflow-x: hidden;
   }
-
-  .fileProgressItem {
-    border-bottom: $progressItemBorder;
-    overflow: hidden;
-
-    .fileName {
-      @include mui-text('body1');
-      display: inline-block;
-      color: $light-black;
-      padding-left: 10px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      width: 80%;
-      white-space: nowrap;
-      line-height: $progressItemHeight;
-      vertical-align: text-top;
-    }
-    .sizeContainer {
-      display: inline-block;
-      text-align: center;
-      width: calc(20% - 40px);
-      .fileSize {
-        @include mui-text('body1');
-        color: $light-black;
-      }
-    }
-    .fileIconContainer {
-      $outter-padding: 10px;
-      border-radius: 50%;
-      height: calc(#{$progressItemHeight} - #{$outter-padding});
-      width: calc(#{$progressItemHeight} - #{$outter-padding});
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 5px;
-
-      .fileIcon {
-        display: block;
-        margin: 0 auto;
-        margin-top: 3px;
-        color: white;   
-      }
-      &.audio {
-        background-color: $audio-color;
-      }
-      &.video {
-        background-color: $video-color;
-      }
-      &.image {
-        background-color: $image-color;
-      }
-      &.text {
-        background-color: $text-color;
-      }
-    }
-    .fileProgressItemOverlay {
-      height: $progressItemHeight;
-      line-height: $progressItemHeight;
-      float: left;
-      position: relative;
-      margin-top: -$progressItemHeight;
-      z-index: 1;
-      width: 100%;
-      white-space: nowrap;
-    }
-    .progressTextOverlay {
-      margin-top: -$progressItemHeight;
-      position: relative;
-      float: left;
-      width: 100%;
-      .progressText {
-        @include mui-text('headline');
-        color: rgba(33,150,243,0.38);
-        line-height: $progressItemHeight !important;
-        height: $progressItemHeight;
-        margin-left: -70px;
-      }
-    }
-    .fileProgressBar {
-      height: $progressItemHeight;
-      background-color: white;
-    }
-    .fileProgressBarPrimary {
-      background-color: rgba(33,150,243,0.12);
-    }
-  }
-
-  .resolveContainer {
-    height: 100%;
-
-    .resolveHeader {
-      $header-height: 28px;
-      padding: 20px;
-      padding-bottom: 0;
-      text-transform: capitalize;
-      * {
-        line-height: $header-height;
-        vertical-align: top;
-        display: inline-block;
-      }
-      .resolveIcon {
-        font-size: 28px;
-      }
-    }
-    .progressMessage {
-      padding: 20px;
-      padding-left: 64px;
-      @include mui-text('subhead');
-      color: $dark-black;
-      border-bottom: $progressItemBorder;
-    }
-    .resolveActions {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-    }
+  .resolveActions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 20px;
+    padding-bottom: 0;
   }
 }

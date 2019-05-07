@@ -12,6 +12,7 @@ export default function uploadFilesChannel(
     throw new Error('Need an upload descriptor for each file to be uploaded!');
   }
 
+  const requestMap = {};
   const chan = channel(buffers.sliding(2));
   let remainingFiles = files.length;
 
@@ -21,23 +22,17 @@ export default function uploadFilesChannel(
     { lengthComputable, loaded, total }
   ) => {
     if (lengthComputable) {
-      // todo: if multiple files with drastically different sizes are
-      // uploaded at the same time, the mean percentage isn't a good
-      // representation of remaining time.
-      // ie. given files of size [1, 1, 10], with progress [100, 100, 20]%,
-      // mean(100, 100, 20) ~= 75%, but the true remaining time should be
-      // calculated on remaining/total size (1+1+2) / (1+1+10) = 33%
       const progress = loaded / total * 100;
       chan.put({ progress, file, descriptor });
     }
   };
 
   const onStatusCodeFailure = (file, descriptor) => {
-    chan.put({ error: new Error('Upload failed'), file, descriptor });
+    chan.put({ error: 'Upload failed', file, descriptor });
   };
 
   const onXHRError = (file, descriptor, e) => {
-    chan.put({ error: new Error('File upload error'), file, descriptor });
+    chan.put({ error: 'File upload error', file, descriptor });
   };
 
   const onFileReadyStateChange = (
@@ -47,6 +42,8 @@ export default function uploadFilesChannel(
   ) => {
     if (readyState === XMLHttpRequest.DONE) {
       remainingFiles -= 1;
+      // Remove from requestMap cuz it finished
+      delete requestMap[descriptor.key];
 
       if (status >= 200 && status < 300) {
         chan.put({ success: true, file, descriptor });
@@ -77,7 +74,11 @@ export default function uploadFilesChannel(
       file,
       descriptor
     );
-    // xhr.upload.addEventListener('abort', onFailure.bind(null, file, descriptor));
+
+    // Add to requestMap to enable abortions
+    if (descriptor.key) {
+      requestMap[descriptor.key] = xhr;
+    }
 
     xhr.open(method, descriptor.url, true);
     // Need this header for azure
@@ -85,5 +86,8 @@ export default function uploadFilesChannel(
     xhr.send(file);
   });
 
-  return chan;
+  return {
+    channel: chan,
+    requestMap
+  };
 }

@@ -31,7 +31,7 @@
 .fileUploaderAcceptText {
   color: $blue-1;
   cursor: default;
-  @include mui-text('display2');
+  @include mui-text('headline');
 }
 
 .fileUploaderSubtext {

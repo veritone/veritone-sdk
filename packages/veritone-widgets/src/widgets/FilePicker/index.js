@@ -4,6 +4,7 @@ import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import {
   FilePicker as FilePickerComponent,
   FileProgressDialog
@@ -32,6 +33,7 @@ import styles from './styles.scss';
   {
     pick: filePickerModule.pick,
     endPick: filePickerModule.endPick,
+    abortRequest: filePickerModule.abortRequest,
     uploadRequest: filePickerModule.uploadRequest,
     retryRequest: filePickerModule.retryRequest,
     retryDone: filePickerModule.retryDone
@@ -43,7 +45,8 @@ import styles from './styles.scss';
     // allow widget version of FilePicker to override uploadRequest
     uploadRequest: ownProps.uploadRequest || dispatchProps.uploadRequest,
     retryRequest: ownProps.retryRequest || dispatchProps.retryRequest,
-    retryDone: ownProps.retryDone || dispatchProps.retryDone
+    retryDone: ownProps.retryDone || dispatchProps.retryDone,
+    abortRequest: ownProps.abortRequest || dispatchProps.abortRequest
   })
 )
 class FilePicker extends React.Component {
@@ -52,6 +55,7 @@ class FilePicker extends React.Component {
     open: bool,
     pick: func,
     endPick: func,
+    abortRequest: func,
     uploadRequest: func,
     retryRequest: func,
     retryDone: func,
@@ -71,14 +75,18 @@ class FilePicker extends React.Component {
     statusMessage: string,
     renderButton: func,
     onPickCancelled: func,
-    onPick: func
+    onPick: func,
+    height: number,
+    width: number
   };
 
   static defaultProps = {
     open: false,
     onPickCancelled: noop,
     onPick: noop,
-    percentByFiles: []
+    percentByFiles: [],
+    height: 450,
+    width: 600
   };
 
   handlePick = () => {
@@ -124,20 +132,27 @@ class FilePicker extends React.Component {
     retryRequest && retryRequest(id, onPick);
   };
 
+  handleAbort = fileKey => {
+    const { id, abortRequest } = this.props;
+    abortRequest && abortRequest(id, fileKey);
+  }
+
   renderProgressDialog = () => {
     let completeStatus = {
       [this.props.success]: 'success',
       [this.props.error]: 'failure',
       [this.props.warning]: 'warning'
     }[true];
-    const transparentBgClass = this.props.pickerState === 'complete'
-      ? styles.transparentBg : '';
 
     return (
-      <Dialog open={this.props.open} classes={{ paper: transparentBgClass }}>
+      <Dialog open={this.props.open}>
         <FileProgressDialog
+          height={this.props.height}
+          width={this.props.width}
+          onClose={this.cancel}
           percentByFiles={this.props.percentByFiles}
           progressMessage={this.props.statusMessage}
+          handleAbort={this.handleAbort}
           retryRequest={this.handleRetry}
           onRetryDone={this.handleRetryDone}
           completeStatus={completeStatus}
@@ -170,7 +185,8 @@ class FilePicker extends React.Component {
     endPick: filePickerModule.endPick,
     uploadRequest: filePickerModule.uploadRequest,
     retryRequest: filePickerModule.retryRequest,
-    retryDone: filePickerModule.retryDone
+    retryDone: filePickerModule.retryDone,
+    abortRequest: filePickerModule.abortRequest
   },
   null,
   { withRef: true }
@@ -182,7 +198,8 @@ class FilePickerWidgetComponent extends React.Component {
     endPick: func.isRequired,
     uploadRequest: func.isRequired,
     retryRequest: func.isRequired,
-    retryDone: func.isRequired
+    retryDone: func.isRequired,
+    abortRequest: func.isRequired
   };
 
   pickCallback = noop;
