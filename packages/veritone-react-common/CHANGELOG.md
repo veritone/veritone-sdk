@@ -184,5 +184,9 @@
 * TimeRangePicker: add support for time zones; add readOnly prop
 * Update veritone-icons css file
 
+## 7.0.1
+* Update file picker to use an overflow when multiple files exceed the modal height
+
 ## 7.1.0
 * Added a radio selection button
+

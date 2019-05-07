@@ -1357,14 +1357,6 @@ ajv-keywords@^3.0.0, ajv-keywords@^3.1.0:
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.2.0.tgz#e86b819c602cf8821ad637413698f1dec021847a"
   integrity sha1-6GuBnGAs+IIa1jdBNpjx3sAhhHo=
 
-ajv-merge-patch@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/ajv-merge-patch/-/ajv-merge-patch-4.1.0.tgz#cd580e5860ac53431d6aa901fa3d5e2eb2b74a6c"
-  integrity sha512-0mAYXMSauA8RZ7r+B4+EAOYcZEcO9OK5EiQCR7W7Cv4E44pJj56ZnkKLJ9/PAcOc0dT+LlV9fdDcq2TxVJfOYw==
-  dependencies:
-    fast-json-patch "^2.0.6"
-    json-merge-patch "^0.2.3"
-
 ajv@^4.7.0, ajv@^4.9.1:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.8.tgz#82ffb02b29e662ae53bdc20af15947706739c536"
@@ -6300,13 +6292,6 @@ fast-glob@^2.0.2:
     merge2 "^1.2.1"
     micromatch "^3.1.10"
 
-fast-json-patch@^2.0.6:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/fast-json-patch/-/fast-json-patch-2.0.7.tgz#55864b08b1e50381d2f37fd472bb2e18fe54a733"
-  integrity sha512-DQeoEyPYxdTtfmB3yDlxkLyKTdbJ6ABfFGcMynDqjvGhPYLto/pZyb/dG2Nyd/n9CArjEWN9ZST++AFmgzgbGw==
-  dependencies:
-    deep-equal "^1.0.1"
-
 fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
@@ -10222,13 +10207,6 @@ json-loader@^0.5.4, json-loader@^0.5.7:
   resolved "https://registry.yarnpkg.com/json-loader/-/json-loader-0.5.7.tgz#dca14a70235ff82f0ac9a3abeb60d337a365185d"
   integrity sha512-QLPs8Dj7lnf3e3QYS1zkCo+4ZwqOiF9d/nZnYozTISxXWCfNs9yuky5rJw4/W34s7POaNlbZmQGaB5NiXCbP4w==
 
-json-merge-patch@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/json-merge-patch/-/json-merge-patch-0.2.3.tgz#fa2c6b5af87da77bae2966a589d52e23ed81fe40"
-  integrity sha1-+ixrWvh9p3uuKWalidUuI+2B/kA=
-  dependencies:
-    deep-equal "^1.0.0"
-
 json-parse-better-errors@^1.0.1, json-parse-better-errors@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
@@ -13248,6 +13226,11 @@ prettier@^1.12.1, prettier@^1.13.0:
   version "1.13.5"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.13.5.tgz#7ae2076998c8edce79d63834e9b7b09fead6bfd0"
   integrity sha512-4M90mfvLz6yRf2Dhzd+xPIE6b4xkI8nHMJhsSm9IlfG17g6wujrrm7+H1X8x52tC4cSNm6HmuhCUSNe6Hd5wfw==
+
+prettier@^1.16.4:
+  version "1.17.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.17.0.tgz#53b303676eed22cc14a9f0cec09b477b3026c008"
+  integrity sha512-sXe5lSt2WQlCbydGETgfm1YBShgOX4HxQkFPvbxkcwgDvGDeqVau8h+12+lmSVlP3rHPz0oavfddSZg/q+Szjw==
 
 pretty-bytes@^4.0.2:
   version "4.0.2"
@@ -16958,38 +16941,6 @@ vendors@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.2.tgz#7fcb5eef9f5623b156bcea89ec37d63676f21801"
   integrity sha512-w/hry/368nO21AN9QljsaIhb9ZiZtZARoVH5f3CsFbawdLdayCgKRPup7CggujvySMxx0I91NOyxdVENohprLQ==
-
-veritone-react-common@^6.2.0:
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/veritone-react-common/-/veritone-react-common-6.7.0.tgz#32ac86477549e45dfa611a35f4d3437cc3d239ee"
-  integrity sha512-LfCicNhkg/xS2OItNa6/PbitNNmKjj+y5iQGs1DAk+EY/wCt1LdLfJUG9+voc8XnfXhe7IlnZa2eqgxOsIkJww==
-  dependencies:
-    "@material-ui/core" "^1.0.0"
-    "@material-ui/icons" "^1.0.0"
-    classnames "^2.2.5"
-    clipboard "^2.0.4"
-    date-fns "^1.29.0"
-    google-maps "^3.3.0"
-    lodash "^4.17.4"
-    memoize-one "^4.0.0"
-    mime-types "^2.1.17"
-    pluralize "^7.0.0"
-    prop-types "^15.6.0"
-    react "^16.3.0"
-    react-addons-css-transition-group "^15.6.2"
-    react-dnd "^2.5.4"
-    react-dnd-html5-backend "^2.5.4"
-    react-dnd-test-backend "^2.5.4"
-    react-dom "^16.3.0"
-    react-dotdotdot "^1.2.3"
-    react-infinite-calendar "^2.3.1"
-    react-jss "^8.6.1"
-    react-redux "^5.0.6"
-    react-rnd "^7.4.0"
-    react-transition-group "^2.2.1"
-    recompose "^0.30.0"
-    redux "^4.0.0"
-    redux-form "^7.1.2"
 
 verror@1.10.0:
   version "1.10.0"
