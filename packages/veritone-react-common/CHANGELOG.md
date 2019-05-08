@@ -190,3 +190,9 @@
 ## 7.1.0
 * Added a radio selection button
 
+## 7.2.0
+* Changes to file picker:
+  * Added a non-modal style so it can sit flat in a modal, so we don’t have a modal on top of a modal
+  * Added maxFiles limit. When used, it shows {numberOfFilesToUpload} / {maxFiles}.
+  * Allow the upload button to be set via props, in case we want it to say “Benchmark” or “Process” as the next step instead.
+  * Better error messages when >1 file when multiple is false, better error messages when multiple is true, and maxFiles limit is set.
