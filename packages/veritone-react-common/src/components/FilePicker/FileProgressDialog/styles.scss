@@ -14,6 +14,7 @@
     height: 100%;
   }
   .progressListContainer {
+    min-height: calc(#{$progressItemHeight} * 3);
     max-height: calc(#{$progressItemHeight} * 6);
     overflow-y: auto;
     overflow-x: hidden;

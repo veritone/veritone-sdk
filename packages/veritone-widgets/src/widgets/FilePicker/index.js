@@ -4,7 +4,6 @@ import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import {
   FilePicker as FilePickerComponent,
   FileProgressDialog
@@ -13,8 +12,6 @@ import {
 import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
-
-import styles from './styles.scss';
 
 // provide id prop on mount
 @withPropsOnChange([], ({ id }) => ({

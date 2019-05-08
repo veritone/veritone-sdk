@@ -7,7 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop, get } from 'lodash';
+import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
@@ -193,10 +193,10 @@ function* watchRetryDone() {
 
 function* watchAbortions() {
   yield takeEvery(ABORT_REQUEST, function*(action) {
-    const { id, fileKey } = action.meta;
+    const { fileKey } = action.meta;
     // Abort requests somehow
     if (fileKey && requestMap[fileKey]) {
-      requestMap[fileKey].abort && requestMap[fileKey].abort();
+      yield requestMap[fileKey].abort && requestMap[fileKey].abort();
       delete requestMap[fileKey];
     } else {
       Object.keys(requestMap).forEach(fileKey => {

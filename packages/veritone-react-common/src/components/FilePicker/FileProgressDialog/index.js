@@ -1,11 +1,6 @@
 import React from 'react';
 import { number, string, oneOf, arrayOf, shape, any, func } from 'prop-types';
-import Paper from '@material-ui/core/Paper';
-import { get } from 'lodash';
-import cx from 'classnames';
 import Button from '@material-ui/core/Button';
-import Close from '@material-ui/icons/Close';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Info from '@material-ui/icons/Info';
 import Warning from '@material-ui/icons/Warning';
@@ -13,13 +8,6 @@ import green from '@material-ui/core/colors/green';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
-
-import AudioIcon from '@material-ui/icons/PlayCircleOutline';
-import VideoIcon from '@material-ui/icons/LocalMovies';
-import ImageIcon from '@material-ui/icons/Photo';
-import TextIcon from '@material-ui/icons/ShortText';
-
-import { formatBytes } from '../../../helpers/format.js';
 
 import FilePickerHeader from '../FilePickerHeader';
 import FileProgressList from '../FileProgressList';
@@ -42,7 +30,7 @@ export default class FileProgressDialog extends React.Component {
     onRetryDone: func.isRequired,
     retryRequest: func.isRequired,
     handleAbort: func,
-    height: number,
+    // height: number,
     width: number,
     progressMessage: string,
     completeStatus: oneOf(['success', 'failure', 'warning'])

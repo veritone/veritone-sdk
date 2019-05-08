@@ -3,9 +3,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import { shape, func, number, string } from 'prop-types';
 
-import styles from './styles.scss';
-
 import { formatBytes } from '../../../helpers/format.js';
+
+import styles from './styles.scss';
 
 class FileListItem extends Component {
   static propTypes = {
