@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
-import { string, func, bool, node } from 'prop-types';
+import { string, func, bool, number, node } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -12,9 +12,12 @@ class FilePickerHeader extends Component {
     onSelectTab: func,
     onClose: func,
     allowUrlUpload: bool,
+    multiple: bool,
+    title: string,
+    fileCount: number,
+    maxFiles: number,
     hideTabs: bool,
     titleIcon: node,
-    title: string,
     message: string
   };
 
@@ -38,6 +41,13 @@ class FilePickerHeader extends Component {
             )
           }
           {this.props.title}
+
+          {this.props.multiple &&
+            this.props.maxFiles && (
+              <span className={styles.count}>
+                {this.props.fileCount} / {this.props.maxFiles}
+              </span>
+            )}
         </span>
         { this.props.onClose && (
           <IconButton
@@ -50,11 +60,11 @@ class FilePickerHeader extends Component {
           </IconButton>
         )}
         {
-          this.props.message && (
-            <div className={styles.filePickerMessage}>
-              {this.props.message}
-            </div>
-          )
+            this.props.message && (
+              <div className={styles.filePickerMessage}>
+                {this.props.message}
+              </div>
+            )
         }
         {
           !this.props.hideTabs && (
