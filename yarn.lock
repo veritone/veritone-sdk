@@ -14718,9 +14718,9 @@ vendors@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.2.tgz#7fcb5eef9f5623b156bcea89ec37d63676f21801"
 
-veritone-react-common@^6.2.0:
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/veritone-react-common/-/veritone-react-common-6.7.0.tgz#32ac86477549e45dfa611a35f4d3437cc3d239ee"
+veritone-react-common@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/veritone-react-common/-/veritone-react-common-7.0.1.tgz#f88798eeb11c2dd24f0835396ee6ce686cc08674"
   dependencies:
     "@material-ui/core" "^1.0.0"
     "@material-ui/icons" "^1.0.0"
