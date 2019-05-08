@@ -30,3 +30,4 @@ export EnginePicker, {
   SelectionInfoPanel,
   SelectionInfoPanelWidget
 } from './widgets/EnginePicker';
+export { InfinitePicker } from './widgets/EnginePicker/InfinitePicker';
