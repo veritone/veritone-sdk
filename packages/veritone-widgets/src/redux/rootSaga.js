@@ -7,6 +7,7 @@ const {
 import appRootSaga from './modules/veritoneApp/saga';
 import filePickerRootSaga from './modules/filePicker/filePickerSaga';
 import engineSelectionRootSaga from './modules/engineSelection/saga';
+import multipleEngineSelectionRootSaga from './modules/multipleEngineSelection/saga';
 import engineOutputExportSaga from './modules/engineOutputExport/saga';
 import editProfileRootSaga from './modules/userProfile/saga';
 
@@ -17,6 +18,7 @@ export default function* root() {
     fork(appRootSaga),
     fork(engineSelectionRootSaga),
     fork(engineOutputExportSaga),
-    fork(editProfileRootSaga)
+    fork(editProfileRootSaga),
+    fork(multipleEngineSelectionRootSaga)
   ]);
 }
