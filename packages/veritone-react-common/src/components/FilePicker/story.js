@@ -46,6 +46,44 @@ const allFormats = [
   'video/x-msvideo'
 ];
 
+const percentByFiles = [{
+  key: 'audio_file.flac',
+  value: {
+    type: 'audio/flac',
+    percent: 10,
+    size: 82356235
+  }
+}, {
+  key: 'video_file.mp4',
+  value: {
+    type: 'video/mp4',
+    percent: 20,
+    size: 23856925352
+  }
+}, {
+  key: 'image_file.png',
+  value: {
+    type: 'image/gif',
+    percent: 80,
+    size: 38529
+  }
+}, {
+  key: 'text_file.txt',
+  value: {
+    type: 'application/text',
+    percent: 90,
+    size: 569182
+  }
+}, {
+  key: 'error_file.bin',
+  value: {
+    type: 'application/json',
+    percent: 69,
+    size: 56283756,
+    error: true
+  }
+}];
+
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker
@@ -70,50 +108,18 @@ storiesOf('FilePicker', module)
     />
   )).add('File Progress Dialog', () => (
     <FileProgressDialog
-      percentByFiles={object('percentByFiles', [{
-        key: 'audio_file.flac',
-        value: {
-          type: 'audio/flac',
-          percent: 10,
-          size: 82356235
-        }
-      }, {
-        key: 'video_file.mp4',
-        value: {
-          type: 'video/mp4',
-          percent: 20,
-          size: 23856925352
-        }
-      }, {
-        key: 'image_file.png',
-        value: {
-          type: 'image/gif',
-          percent: 80,
-          size: 38529
-        }
-      }, {
-        key: 'text_file.txt',
-        value: {
-          type: 'application/text',
-          percent: 90,
-          size: 569182
-        }
-      }, {
-        key: 'error_file.bin',
-        value: {
-          type: 'application/json',
-          percent: 69,
-          size: 56283756,
-          error: true
-        }
-      }])}
+      percentByFiles={object('percentByFiles', percentByFiles)}
       progressMessage={`We couldn't upload these files.`}
       completeStatus={select('completeStatus', {
         success: 'success',
         failure: 'failure',
         warning: 'warning'
       })}
+      height={450}
+      width={600}
       retryRequest={action('Retry Request')}
-      onRequestClose={action('Request Close')}
+      onRetryDone={action('Retry Done')}
+      handleAbort={action('Handle abort')}
+      onClose={action('On Close')}
     />
   ));

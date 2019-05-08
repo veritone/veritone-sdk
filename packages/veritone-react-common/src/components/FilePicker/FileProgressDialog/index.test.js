@@ -12,7 +12,8 @@ describe('FileProgressDialog', function() {
         progressMessage="test-progress"
         onRetryDone={noop}
         completeStatus={'failure'}
-        retryRequest={noop} />
+        retryRequest={noop}
+        onClose={noop} />
     );
 
     expect(wrapper.text().match(/test-progress/)).toBeTruthy();
@@ -23,7 +24,8 @@ describe('FileProgressDialog', function() {
       <FileProgressDialog
         completeStatus="failure"
         onRetryDone={noop}
-        retryRequest={noop} />
+        retryRequest={noop}
+        onClose={noop} />
     );
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
@@ -36,7 +38,8 @@ describe('FileProgressDialog', function() {
       <FileProgressDialog
         completeStatus="warning"
         onRetryDone={noop}
-        retryRequest={noop} />
+        retryRequest={noop}
+        onClose={noop} />
     );
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);

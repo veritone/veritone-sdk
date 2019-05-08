@@ -36,7 +36,8 @@ export default {
     'react-virtualized',
     'redux-thunk',
     'video-react',
-    'shaka-player'
+    'shaka-player',
+    'immutability-helper'
   ],
   plugins: [
     replace({
