@@ -7,6 +7,7 @@ import mime from 'mime-types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 const { FILE } = NativeTypes;
 
+import cx from 'classnames';
 import styles from './styles.scss';
 
 const boxTarget = {
@@ -59,6 +60,7 @@ class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
     onFilesSelected: func.isRequired,
+    useFlatStyle: bool,
     // eslint-disable-next-line react/no-unused-prop-types
     onFilesRejected: func,
     isOver: bool.isRequired,
@@ -99,7 +101,12 @@ class FileUploader extends Component {
       : 'Drag & Drop file(s) to upload, or';
 
     return connectDropTarget(
-      <div className={styles.fileUploader}>
+      <div
+        className={cx([
+          styles.fileUploader,
+          { [styles.flat]: this.props.useFlatStyle }
+        ])}
+      >
         <span className={styles.fileUploadIcon}>
           <i className="icon-cloud_upload" />
         </span>
