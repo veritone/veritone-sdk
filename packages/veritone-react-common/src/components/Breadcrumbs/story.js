@@ -4,17 +4,10 @@ import { action } from '@storybook/addon-actions';
 
 import Breadcrumbs from './';
 
-
 storiesOf('Breadcrumbs', module)
   .add('Full path list', () => {
     const pathList = [
-      { id: 'root',
-        icon: <span
-            className="icon-work"
-            style={{ color: '#2196F3', fontSize: '1.5rem'}}
-          />,
-        label: 'root'
-      },
+      { id: 'root' },
       { id: 'first', label: 'Parent' },
       { id: 'second', label: 'Child' },
       { id: 'third', label: 'GrandChild' }

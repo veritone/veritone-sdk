@@ -1,10 +1,9 @@
 import React from 'react';
+import { string, bool, func, node, number } from 'prop-types';
 import classNames from 'classnames';
 import { MenuItem } from '@material-ui/core';
 
 import styles from './BreadcrumbItem.scss';
-
-import breadcrumbItem from './breadcrumbItemShape';
 
 const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) => (
   isHidden ? (
@@ -34,6 +33,13 @@ const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) =
     )
 )
 
-BreadcrumbItem.propTypes = breadcrumbItem;
+BreadcrumbItem.propTypes = {
+  id: string.isRequired,
+  index: number,
+  label: string,
+  isHidden: bool,
+  icon: node,
+  onClick: func,
+};
 
 export default BreadcrumbItem;

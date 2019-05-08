@@ -1,13 +1,12 @@
 import React from 'react';
 import { shape, string, number, arrayOf, oneOfType, node, func } from 'prop-types';
 import { MenuList, Popover } from '@material-ui/core';
+import { ChevronRight, MoreVert } from '@material-ui/icons';
+import classNames from 'classnames';
 
-import BreadcrumbElipsis from './BreadcrumbElipsis';
 import BreadcrumbItem from './BreadcrumbItem';
 
 import styles from './Breadcrumbs.scss';
-
-const DefaultSeparator = () => <span className="icon-keyboard_arrow_right" />;
 
 export default class Breadcrumbs extends React.Component {
   static propTypes = {
@@ -16,12 +15,12 @@ export default class Breadcrumbs extends React.Component {
     })),
     maxItems: number,
     seperator: oneOfType([string, node]),
-    onScrumbClick: func.isRequired
+    onCrumbClick: func.isRequired
   }
 
   static defaultProps = {
     maxItems: 5,
-    seperator: <DefaultSeparator />,
+    seperator: <ChevronRight className={styles['icon-color']} />,
   }
 
   state = {
@@ -35,19 +34,19 @@ export default class Breadcrumbs extends React.Component {
     }));
   }
 
-  clickAwway = () => {
+  clickAway = () => {
     this.anchorEl = null;
     this.setState({
       openSpreadPath: false
     })
   }
 
-  onScrumbClick = (event) => {
+  onCrumbClick = (event) => {
     let elementData = Object.assign({}, event.target.dataset);
     if (Object.keys(elementData).length === 0) {
       elementData = Object.assign({}, event.target.parentNode.dataset);
     }
-    this.props.onScrumbClick(elementData);
+    this.props.onCrumbClick(elementData);
   }
 
   handleClose = (event) => {
@@ -62,11 +61,11 @@ export default class Breadcrumbs extends React.Component {
     } = this.props;
 
     const {
-      0: rootScrumb,
-      1: firstScrumb,
-      [pathList.length - 1]: lastScrumb
+      0: rootCrumb,
+      1: secondCrumb,
+      [pathList.length - 1]: lastCrumb
     } = pathList;
-    const midleScrumbs = pathList.slice(2, pathList.length - 1)
+    const hiddenCrumbs = pathList.slice(2, pathList.length - 1)
 
     return (
       <div className={styles['breadcrumb-container']}>
@@ -79,64 +78,67 @@ export default class Breadcrumbs extends React.Component {
                   {...crumb}
                   index={index}
                   key={crumb.id}
-                  onClick={this.onScrumbClick}
+                  onClick={this.onCrumbClick}
                 />
               </React.Fragment>
             ))
           ) : (
-            <React.Fragment>
-              <BreadcrumbItem
-                {...rootScrumb}
-                index={0}
-                key={rootScrumb.id}
-                onClick={this.onScrumbClick}
-              />
-              {seperator}
-              <BreadcrumbItem
-                {...firstScrumb}
-                index={1}
-                key={firstScrumb.id}
-                onClick={this.onScrumbClick}
-              />
-              {seperator}
-              <BreadcrumbElipsis onClick={this.onSpreadClick} />
-              {seperator}
-              <BreadcrumbItem
-                {...lastScrumb}
-                index={pathList.length - 1}
-                key={lastScrumb.id}
-                onClick={this.onScrumbClick}
-              />
-              <Popover
-                open={Boolean(this.anchorEl)}
-                anchorEl={this.anchorEl}
-                onClick={this.clickAwway}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-              >
-                <MenuList role="menu">
-                  {
-                    midleScrumbs.map(({ id, label }, index) => (
-                      <BreadcrumbItem
-                        key={id}
-                        isHidden
-                        id={id}
-                        index={index + 2}
-                        label={label}
-                        onClick={this.onScrumbClick}
-                      />
-                    ))
-                  }
-                </MenuList>
-              </Popover>
-            </React.Fragment>
-          )
+              <React.Fragment>
+                <BreadcrumbItem
+                  {...rootCrumb}
+                  index={0}
+                  key={rootCrumb.id}
+                  onClick={this.onCrumbClick}
+                />
+                {seperator}
+                <BreadcrumbItem
+                  {...secondCrumb}
+                  index={1}
+                  key={secondCrumb.id}
+                  onClick={this.onCrumbClick}
+                />
+                {seperator}
+                <MoreVert
+                  onClick={this.onSpreadClick}
+                  className={classNames(styles['icon-spread'], styles['icon-color'])}
+                />
+                {seperator}
+                <BreadcrumbItem
+                  {...lastCrumb}
+                  index={pathList.length - 1}
+                  key={lastCrumb.id}
+                  onClick={this.onCrumbClick}
+                />
+                <Popover
+                  open={Boolean(this.anchorEl)}
+                  anchorEl={this.anchorEl}
+                  onClick={this.clickAway}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                >
+                  <MenuList role="menu">
+                    {
+                      hiddenCrumbs.map(({ id, label }, index) => (
+                        <BreadcrumbItem
+                          key={id}
+                          isHidden
+                          id={id}
+                          index={index + 2}
+                          label={label}
+                          onClick={this.onCrumbClick}
+                        />
+                      ))
+                    }
+                  </MenuList>
+                </Popover>
+              </React.Fragment>
+            )
         }
       </div>
     )
