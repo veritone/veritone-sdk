@@ -109,6 +109,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   while (result.length !== files.length) {
     const {
       progress = 0,
+      aborted,
       error,
       success,
       file,
@@ -121,6 +122,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         type: file.type,
         size: file.size,
         error,
+        aborted,
         percent: 100
       }));
 
@@ -131,6 +133,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         fileName: file.name,
         size: file.size,
         type: file.type,
+        aborted,
         error: error || false,
         unsignedUrl: error ? null : unsignedUrl,
         getUrl: error ? null : getUrl,
@@ -147,6 +150,9 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       percent: progress
     }));
   }
+
+  // Remove aborted requests
+  result = result.filter(r => !r.aborted);
 
   const isError = result.every(e => e.error);
   const isWarning = !isError && result.some(e => e.error);

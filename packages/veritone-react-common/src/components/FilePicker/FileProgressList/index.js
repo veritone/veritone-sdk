@@ -32,7 +32,7 @@ export default class FileProgressList extends React.Component {
         size: number,
         percent: number,
         error: string,
-        aborted: bool
+        aborted: string
       }).isRequired
     })),
     showErrors: bool,
@@ -79,7 +79,7 @@ export default class FileProgressList extends React.Component {
 
     const files = !showErrors
       ? percentByFiles
-      : percentByFiles.filter(file => get(file, 'value.error'))
+      : percentByFiles.filter(file => get(file, 'value.error') && !get(file, 'value.aborted'))
 
     return (
       <div>
@@ -89,7 +89,7 @@ export default class FileProgressList extends React.Component {
               <LinearProgress
                 className={styles.fileProgressBar}
                 classes={{
-                  barColorPrimary: (get(file, 'value.error') || get(file, 'value.aborted'))
+                  barColorPrimary: get(file, 'value.error')
                     ? styles.fileProgressBarError
                     : styles.fileProgressBarPrimary
                 }}

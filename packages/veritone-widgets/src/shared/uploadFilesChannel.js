@@ -35,6 +35,10 @@ export default function uploadFilesChannel(
     chan.put({ error: 'File upload error', file, descriptor });
   };
 
+  const onStatusCodeAbort = (file, descriptor) => {
+    chan.put({ error: 'Upload failed', aborted: 'Upload aborted', file, descriptor });
+  }
+
   const onFileReadyStateChange = (
     file,
     descriptor,
@@ -47,6 +51,8 @@ export default function uploadFilesChannel(
 
       if (status >= 200 && status < 300) {
         chan.put({ success: true, file, descriptor });
+      } else if (status == 0) {
+        onStatusCodeAbort(file, descriptor);
       } else {
         onStatusCodeFailure(file, descriptor);
       }
