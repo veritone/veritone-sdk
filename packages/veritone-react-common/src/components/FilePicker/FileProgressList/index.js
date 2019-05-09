@@ -34,7 +34,7 @@ export default class FileProgressList extends React.Component {
         error: string,
         aborted: string
       }).isRequired
-    })),
+    })).isRequired,
     showErrors: bool,
     handleAbort: func
   };
