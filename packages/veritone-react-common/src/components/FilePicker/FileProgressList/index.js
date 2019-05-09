@@ -42,10 +42,10 @@ export default class FileProgressList extends React.Component {
   getFileMediaIcon = file => {
     const type = get(file, 'value.type');
     const icons = {
-      audio: (<AudioIcon className={styles.fileIcon} />),
-      video: (<VideoIcon className={styles.fileIcon} />),
-      image: (<ImageIcon className={styles.fileIcon} />),
-      text: (<TextIcon className={styles.fileIcon} />)
+      audio: (<AudioIcon className={styles.fileIcon} data-test-target="audio" />),
+      video: (<VideoIcon className={styles.fileIcon} data-test-target="video" />),
+      image: (<ImageIcon className={styles.fileIcon} data-test-target="image" />),
+      text: (<TextIcon className={styles.fileIcon} data-test-target="text" />)
     };
     const iconKeys = Object.keys(icons);
     for (let index in iconKeys) {
@@ -85,7 +85,10 @@ export default class FileProgressList extends React.Component {
       <div>
         {
           files.map(file => (
-            <div key={file.key} className={styles.fileProgressItem}>
+            <div
+              key={file.key}
+              className={styles.fileProgressItem}
+              data-test-target={file.key}>
               <LinearProgress
                 className={styles.fileProgressBar}
                 classes={{
