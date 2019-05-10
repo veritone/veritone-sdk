@@ -3,7 +3,7 @@
 
 .fileProgressItem {
   $progressItemBorder: 1px solid #E0E0E0;
-  $progressItemHeight: 40px;
+  $progressItemHeight: 52px;
   $audio-color: #00BFA5;
   $video-color: #E81D63;
   $text-color: #4A4A4A;
@@ -36,10 +36,11 @@
     }
   }
   .fileIconContainer {
-    $outter-padding: 10px;
-    border-radius: 50%;
+    $outter-padding: 16px;
+    border-radius: 100%;
     height: calc(#{$progressItemHeight} - #{$outter-padding});
     width: calc(#{$progressItemHeight} - #{$outter-padding});
+    min-width: calc(#{$progressItemHeight} - #{$outter-padding});
     display: inline-block;
     vertical-align: middle;
     margin-left: 14px;
@@ -47,7 +48,7 @@
     .fileIcon {
       display: block;
       margin: 0 auto;
-      margin-top: 3px;
+      margin-top: 6px;
       color: white;   
     }
     &.audio {

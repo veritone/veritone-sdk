@@ -11,6 +11,7 @@ import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
 import DragDropContext from './DragDropContext';
 import styles from './styles.scss';
+import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
 
 class FilePicker extends Component {
   static propTypes = {
@@ -20,14 +21,22 @@ class FilePicker extends Component {
     height: number,
     onPickFiles: func.isRequired,
     onRequestClose: func.isRequired,
-    allowUrlUpload: bool
+    allowUrlUpload: bool,
+    maxFiles: number,
+    title: string,
+    tooManyFilesErrorMessage: func,
+    oneFileOnlyErrorMessage: string
   };
 
   static defaultProps = {
     width: 600,
     accept: [],
     multiple: false,
-    allowUrlUpload: true
+    allowUrlUpload: true,
+    title: 'File Picker',
+    tooManyFilesErrorMessage: maxFiles =>
+      `You can select up to and including ${maxFiles} files. Please remove any unnecessary files.`,
+    oneFileOnlyErrorMessage: `Only one file can be selected at a time`
   };
 
   state = {
@@ -48,19 +57,28 @@ class FilePicker extends Component {
     const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
     if (this.props.multiple) {
+      if (
+        this.props.maxFiles &&
+        (this.state.files.length >= this.props.maxFiles ||
+          files.length > this.props.maxFiles)
+      ) {
+        // if a file was already staged, or user tried to add more than one file
+        this.setState({
+          errorMessage: this.props.tooManyFilesErrorMessage(this.props.maxFiles)
+        });
+      } else {
+        this.clearErrorMessage();
+      }
+
       this.setState(state => ({
         files: [...state.files, ...files]
       }));
-
-      return this.clearErrorMessage();
     } else {
       // single mode
       if (this.state.files.length >= 1 || files.length > 1) {
         // if a file was already staged, or user tried to add more than one file
         this.setState({
-          errorMessage:
-            'Only a single file is supported for this input;' +
-            ' the first selected file has been staged.'
+          errorMessage: this.props.oneFileOnlyErrorMessage
         });
       } else {
         this.clearErrorMessage();
@@ -112,6 +130,17 @@ class FilePicker extends Component {
     });
   }
 
+  disableNextStep() {
+    if (this.props.multiple && this.props.maxFiles) {
+      return (
+        this.state.files.length > this.props.maxFiles ||
+        this.state.files.length === 0
+      );
+    } else {
+      return this.state.files.length === 0;
+    }
+  }
+
   render() {
     const acceptedFileTypes = (isString(this.props.accept)
       ? [this.props.accept]
@@ -120,30 +149,49 @@ class FilePicker extends Component {
 
     return (
       <Paper
-        classes={{
-          root: styles.filePickerPaperOverride
-        }}
+        classes={
+          this.props.onRequestClose && {
+            root: styles.filePickerPaperOverride
+          }
+        }
         style={{
           height: this.props.height,
           width: this.props.width
         }}
       >
         <div
-          className={styles.filePicker}
+          className={
+            this.props.onRequestClose
+              ? styles.filePicker
+              : styles.filePickerNonModal
+          }
           style={{
             height: '100%'
           }}
         >
-          <FilePickerHeader
-            selectedTab={this.state.selectedTab}
-            onSelectTab={this.handleTabChange}
-            onClose={this.handleCloseModal}
-            allowUrlUpload={this.props.allowUrlUpload}
-          />
+          {this.props.onRequestClose ? (
+            <FilePickerHeader
+              selectedTab={this.state.selectedTab}
+              onSelectTab={this.handleTabChange}
+              onClose={this.handleCloseModal}
+              allowUrlUpload={this.props.allowUrlUpload}
+              title={this.props.title}
+              fileCount={this.state.files.length}
+              maxFiles={this.props.maxFiles}
+              multiple={this.props.multiple}
+            />
+          ) : (
+            <FilePickerFlatHeader
+              title={this.props.title}
+              fileCount={this.state.files.length}
+              maxFiles={this.props.maxFiles}
+            />
+          )}
 
           {this.state.selectedTab === 'upload' && (
             <div className={styles.filePickerBody}>
               <FileUploader
+                useFlatStyle={!this.props.onRequestClose}
                 onFilesSelected={this.handleFilesSelected}
                 onFilesRejected={this.handleFilesRejected}
                 acceptedFileTypes={acceptedFileTypes}
@@ -167,11 +215,13 @@ class FilePicker extends Component {
             </div>
           )}
           <div className={styles.errorMessage}>{this.state.errorMessage}</div>
-          <FilePickerFooter
-            onCancel={this.handleCloseModal}
-            onSubmit={this.handlePickFiles}
-            fileCount={this.state.files.length}
-          />
+          {this.props.onRequestClose && (
+            <FilePickerFooter
+              onCancel={this.handleCloseModal}
+              onSubmit={this.handlePickFiles}
+              disabled={this.disableNextStep()}
+            />
+          )}
         </div>
       </Paper>
     );

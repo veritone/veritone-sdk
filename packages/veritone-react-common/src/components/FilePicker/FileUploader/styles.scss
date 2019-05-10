@@ -34,6 +34,16 @@
   @include mui-text('headline');
 }
 
+.flat {
+  background-color: $fullWhite !important;
+}
+
+.fileUploadIcon {
+  color: #9a9a9a;
+
+  @include mui-text('display2');
+}
+
 .fileUploaderSubtext {
   @include mui-text('body1');
   text-align: center;

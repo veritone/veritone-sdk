@@ -32,9 +32,9 @@ export default class FileProgressList extends React.Component {
         size: number,
         percent: number,
         error: string,
-        aborted: bool
+        aborted: string
       }).isRequired
-    })),
+    })).isRequired,
     showErrors: bool,
     handleAbort: func
   };
@@ -42,10 +42,10 @@ export default class FileProgressList extends React.Component {
   getFileMediaIcon = file => {
     const type = get(file, 'value.type');
     const icons = {
-      audio: (<AudioIcon className={styles.fileIcon} />),
-      video: (<VideoIcon className={styles.fileIcon} />),
-      image: (<ImageIcon className={styles.fileIcon} />),
-      text: (<TextIcon className={styles.fileIcon} />)
+      audio: (<AudioIcon className={styles.fileIcon} data-test-target="audio" />),
+      video: (<VideoIcon className={styles.fileIcon} data-test-target="video" />),
+      image: (<ImageIcon className={styles.fileIcon} data-test-target="image" />),
+      text: (<TextIcon className={styles.fileIcon} data-test-target="text" />)
     };
     const iconKeys = Object.keys(icons);
     for (let index in iconKeys) {
@@ -79,17 +79,20 @@ export default class FileProgressList extends React.Component {
 
     const files = !showErrors
       ? percentByFiles
-      : percentByFiles.filter(file => get(file, 'value.error'))
+      : percentByFiles.filter(file => get(file, 'value.error') && !get(file, 'value.aborted'))
 
     return (
       <div>
         {
           files.map(file => (
-            <div key={file.key} className={styles.fileProgressItem}>
+            <div
+              key={file.key}
+              className={styles.fileProgressItem}
+              data-test-target={file.key}>
               <LinearProgress
                 className={styles.fileProgressBar}
                 classes={{
-                  barColorPrimary: (get(file, 'value.error') || get(file, 'value.aborted'))
+                  barColorPrimary: get(file, 'value.error')
                     ? styles.fileProgressBarError
                     : styles.fileProgressBarPrimary
                 }}

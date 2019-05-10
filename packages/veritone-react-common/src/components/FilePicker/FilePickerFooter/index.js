@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import { number, func } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 import styles from './styles.scss';
 
 class FilePickerFooter extends Component {
   static propTypes = {
-    fileCount: number,
+    disabled: bool,
     onCancel: func,
-    onSubmit: func
+    onSubmit: func,
+    title: string
   };
 
   static defaultProps = {
-    fileCount: 0
+    title: 'Upload'
   };
 
   render() {
@@ -20,11 +21,11 @@ class FilePickerFooter extends Component {
         <Button onClick={this.props.onCancel}>Cancel</Button>
         <Button
           variant="raised"
-          disabled={this.props.fileCount < 1}
+          disabled={this.props.disabled}
           color="primary"
           onClick={this.props.onSubmit}
         >
-          Upload
+          {this.props.title}
         </Button>
       </div>
     );

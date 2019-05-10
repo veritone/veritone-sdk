@@ -31,14 +31,18 @@ let requestMap;
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
-  // fixme -- handle this better
+  
   if (warning || error) {
+    // There are failed uploads, don't close out and display error screen
     return;
   }
   yield put(endPick(id));
   // Get accumulated results, not just what's in the current upload/retry request
+  // If there's no results, then the user must have aborted them all
   const totalResults = yield select(uploadResult, id);
-  yield call(callback, totalResults, { warning, error, cancelled: false });
+  if (totalResults.length) {
+    yield call(callback, totalResults, { warning, error, cancelled: false });
+  }
 }
 
 function* uploadFileSaga(id, fileOrFiles, callback = noop) {
@@ -109,6 +113,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   while (result.length !== files.length) {
     const {
       progress = 0,
+      aborted,
       error,
       success,
       file,
@@ -121,6 +126,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         type: file.type,
         size: file.size,
         error,
+        aborted,
         percent: 100
       }));
 
@@ -131,6 +137,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         fileName: file.name,
         size: file.size,
         type: file.type,
+        aborted,
         error: error || false,
         unsignedUrl: error ? null : unsignedUrl,
         getUrl: error ? null : getUrl,
@@ -148,7 +155,10 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     }));
   }
 
-  const isError = result.every(e => e.error);
+  // Remove aborted requests
+  result = result.filter(r => !r.aborted);
+
+  const isError = result.length && result.every(e => e.error);
   const isWarning = !isError && result.some(e => e.error);
 
   yield* finishUpload(

@@ -61,6 +61,7 @@ class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
     onFilesSelected: func.isRequired,
+    useFlatStyle: bool,
     // eslint-disable-next-line react/no-unused-prop-types
     onFilesRejected: func,
     isOver: bool.isRequired,
@@ -103,7 +104,10 @@ class FileUploader extends Component {
     const subMessage = 'your file(s) here, or ';
 
     return connectDropTarget(
-      <div className={styles.fileUploader}>
+      <div className={cx([
+        styles.fileUploader,
+        { [styles.flat]: this.props.useFlatStyle }
+      ])}>
         { showExtensionList ? (
             <ExtensionPanel
               acceptedFileTypes={acceptedFileTypes}
