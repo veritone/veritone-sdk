@@ -14,6 +14,7 @@ const addingItems = [
   { id: '10', type: 'doc', date: 'Mar 29, 2019 3:34 PM', name: 'maps.xml' },
 ]
 
+
 export default class Home extends React.Component {
   static propTypes = {};
 

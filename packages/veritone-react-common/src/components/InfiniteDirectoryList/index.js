@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, shape, func } from 'prop-types';
+import { arrayOf, string, shape, func, node } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Folder,
@@ -26,7 +26,7 @@ import styles from './styles.scss';
 const muiStyles = () => ({
   tableHeadRow: {
     height: 0,
-    padding: 0
+    padding: 0,
   },
   tableRowHeadColumn: {
     height: 0,
@@ -62,13 +62,13 @@ const FILE_ICONS = {
   'doc': InsertDriveFile
 }
 
+const DEFAULT_THRESHOLD = 80;
+
 const DefaultLoading = () => (
   <div className={styles['loading-container']}>
     <CircularProgress size={50} />
   </div>
 )
-
-const DEFAULT_THRESHOLD = 80;
 
 function FilesTable(props) {
   const {
@@ -80,6 +80,7 @@ function FilesTable(props) {
     onMount,
     loadMore,
     finishedLoading,
+    loadingComponent
   } = props;
 
   return (
@@ -89,7 +90,7 @@ function FilesTable(props) {
         threshold={DEFAULT_THRESHOLD}
         onMount={onMount}
         loadMore={loadMore}
-        loadingComponent={<DefaultLoading />}
+        loadingComponent={loadingComponent}
       >
         <Table>
           <TableHead>
@@ -98,7 +99,7 @@ function FilesTable(props) {
                 headers.map((header) => (
                   <TableCell
                     key={header}
-                    className={classes.tableRowHeadColumn}
+                    className={classNames(classes.tableRowHeadColumn, classes.tableRow)}
                     align="right"
                   >
                     {header}<div className={styles['table-row-text']}>{header}</div>
@@ -151,7 +152,12 @@ FilesTable.propTypes = {
     name: string,
     date: string
   })),
+  loadingComponent: node,
   ...infiniteWrapperShape
+}
+
+FilesTable.defaultProps = {
+  loadingComponent: <DefaultLoading />
 }
 
 export default withStyles(muiStyles)(FilesTable);
