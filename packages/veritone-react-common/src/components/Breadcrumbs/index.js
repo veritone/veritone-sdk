@@ -42,10 +42,7 @@ export default class Breadcrumbs extends React.Component {
   }
 
   onCrumbClick = (event) => {
-    let elementData = Object.assign({}, event.target.dataset);
-    if (Object.keys(elementData).length === 0) {
-      elementData = Object.assign({}, event.target.parentNode.dataset);
-    }
+    let elementData = Object.assign({}, event.currentTarget.dataset);
     this.props.onCrumbClick(elementData);
   }
 
