@@ -46,6 +46,13 @@ const styles = {
   }
 }
 
+const getDuration = (stopTime, startTime)  => {
+  const duration = (
+    (new Date(stopTime)).getTime() - (new Date(startTime)).getTime()
+  ) / 1000;
+  return duration;
+};
+
 
 const MediaInfoPanel = ({ open, classes, selectedItems }) => {
   const selectedItem = selectedItems.length === 1 ? selectedItems[0] : null;
@@ -103,7 +110,12 @@ const MediaInfoPanel = ({ open, classes, selectedItems }) => {
                     <TableCell
                       className={classes.tableCell}
                     >
-                      {selectedItem.mediaEndTime - selectedItem.mediaStartTime}
+                      {
+                        getDuration(
+                          selectedItem.startDateTime,
+                          selectedItem.stopDateTime
+                        )
+                      }
                     </TableCell>
                   </TableRow>
                 </TableBody>
