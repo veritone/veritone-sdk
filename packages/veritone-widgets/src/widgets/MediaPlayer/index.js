@@ -1,5 +1,5 @@
 import React from 'react';
-import { noop } from 'lodash';
+import { get, noop } from 'lodash';
 import {
   arrayOf,
   shape,
@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
 import {
+  MediaPlayer as LibMediaPlayer,
   BoundingPolyOverlay,
   OverlayPositioningProvider
 } from 'veritone-react-common';
@@ -41,6 +42,8 @@ class MediaPlayerComponent extends React.Component {
         uri: string
       })
     ),
+    overlayContentClassName: string,
+    reactPlayerClassName: string,
     boundingPolySeries: arrayOf(
       shape({
         startTimeMs: number.isRequired,
@@ -57,6 +60,7 @@ class MediaPlayerComponent extends React.Component {
     onAddBoundingBox: func,
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
+    onPlayerRefReady: func,
 
     defaultBoundingBoxStyles: objectOf(any),
     stagedBoundingBoxStyles: objectOf(any),
@@ -98,56 +102,10 @@ class MediaPlayerComponent extends React.Component {
     onChangeBoundingBox: noop
   };
 
-  handleAddBoundingBox = newBox => {
-    this.props.onAddBoundingBox(newBox, this.props.currentTime * 1000);
-  };
-
   render() {
-    const { src, streams, ...props } = this.props;
-
-    const currentPolys = getPolysForTime(
-      this.props.boundingPolySeries || [],
-      this.props.currentTime * 1000
-    );
-
     return (
-      <OverlayPositioningProvider
-        contentHeight={this.props.videoHeight}
-        contentWidth={this.props.videoWidth}
-        fixedWidth={!props.fluid}
-      >
-        {this.props.hasStarted && (
-          <BoundingPolyOverlay
-            wrapperStyles={{ zIndex: 100 }}
-            onAddBoundingBox={this.handleAddBoundingBox}
-            onDeleteBoundingBox={this.props.onDeleteBoundingBox}
-            onChangeBoundingBox={this.props.onChangeBoundingBox}
-            initialBoundingBoxPolys={
-              this.props.boundingPolySeries ? currentPolys : undefined
-            }
-            actionMenuItems={this.props.actionMenuItems}
-            addOnly={this.props.addOnly}
-            readOnly={this.props.readOnly || !this.props.paused}
-            autoCommit={this.props.autoCommit}
-            stagedBoundingBoxStyles={props.stagedBoundingBoxStyles}
-            stylesByObjectType={props.stylesByObjectType}
-            defaultBoundingBoxStyles={props.defaultBoundingBoxStyles}
-            autofocus={props.autofocus}
-          />
-        )}
-        <Player
-          className={styles.mediaPlayer}
-          ref={this.props.forwardedRef}
-          store={this.context.store}
-          {...props}
-        >
-          {/* prevent video-react from adding its own control bar */}
-          <ControlBar autoHide className={styles.hiddenDummyControls} />
-
-          <VideoSource isVideoChild src={src} streams={streams} />
-          <BigPlayButton position="center" className={styles.mediaPlayButton} />
-        </Player>
-      </OverlayPositioningProvider>
+      <LibMediaPlayer
+        {...this.props} />
     );
   }
 }
@@ -155,5 +113,6 @@ class MediaPlayerComponent extends React.Component {
 const MediaPlayer = React.forwardRef((props, ref) => {
   return <MediaPlayerComponent {...props} forwardedRef={ref} />;
 });
+MediaPlayer.displayName = 'MediaPlayer';
 
 export { MediaPlayer };

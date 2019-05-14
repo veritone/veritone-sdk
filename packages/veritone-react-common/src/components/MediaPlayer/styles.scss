@@ -18,10 +18,8 @@
 
   .video-react-control-text,
   .video-react-mouse-display,
-  .video-react-mouse-display::after,
   .video-react-play-progress::after {
     font-family: Roboto, sans-serif !important;
-    font-size: 1em !important;
   }
 
   .video-react-slider:focus {
@@ -57,10 +55,8 @@
 
     :global(.video-react-control-text),
     :global(.video-react-mouse-display),
-    :global(.video-react-mouse-display::after),
     :global(.video-react-play-progress::after) {
       font-family: Roboto !important;
-      font-size: 1em !important;
     }
 
     :global(.video-react-slider:focus) {

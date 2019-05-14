@@ -18,6 +18,9 @@ export {
 export notificationsReducer, * as notificationsModule from './redux/modules/notifications';
 export { MediaPlayer } from './widgets/MediaPlayer';
 export MediaPlayerControlBar from './widgets/MediaPlayer/DefaultControlBar';
+export MediaPlayerLightbox, {
+  MediaPlayerLightboxWidget
+} from './widgets/MediaPlayer/Lightbox';
 export EngineOutputExport, {
   EngineOutputExportWidget
 } from './widgets/EngineOutputExport';
