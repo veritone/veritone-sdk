@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { objectOf, any, func, string } from 'prop-types';
+import { objectOf, any, func, string, number } from 'prop-types';
 
 import * as multipleEngineSelectionModule from '../../redux/modules/multipleEngineSelection';
 import widget from '../../shared/widget';
@@ -21,30 +21,30 @@ import styles from './styles.scss';
 
 @connect((state, { ids }) => {
   return {
-    selected: multipleEngineSelectionModule.selectedEngines(state)
+    selectedEngines: multipleEngineSelectionModule.selectedEngines(state)
   };
 })
 class SelectionInfoPanel extends React.PureComponent {
   static propTypes = {
-    selected: objectOf(any),
-    toggleEngine: func,
-    selectSpecial: func,
-    selectSpecialLabel: string,
-    selectSpecialId: string
+    selectedEngines: objectOf(any),
+    toggleEngineSelection: func,
+    selectBaseline: func,
+    baselineEngineId: string,
+    maxSelections: number
   };
 
   static defaultProps = {
-    selectSpecialLabel: 'Baseline'
+    maxSelections: 6
   };
 
   getRemoveHandler = engineId => () => {
-    if (engineId === this.props.selectSpecialId) {
-      this.props.selectSpecial(undefined);
+    if (engineId === this.props.baselineEngineId) {
+      this.props.selectBaseline(undefined);
     }
-    this.props.toggleEngine({ rowId: engineId });
+    this.props.toggleEngineSelection({ rowId: engineId });
   };
 
-  getSelectionHandler = engineId => () => this.props.selectSpecial(engineId);
+  getSelectionHandler = engineId => () => this.props.selectBaseline(engineId);
 
   render() {
     return (
@@ -56,12 +56,12 @@ class SelectionInfoPanel extends React.PureComponent {
               variant="subheading"
               style={{ display: 'inline-block' }}
             >
-              {Object.keys(this.props.selected).length} / 6
+              {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
             </Typography>
           </Typography>
         </div>
         <List>
-          {Object.entries(this.props.selected).map(([engineId, engine]) => {
+          {Object.entries(this.props.selectedEngines).map(([engineId, engine]) => {
             return (
               engine && (
                 <ListItem key={engine.id} divider>
@@ -78,7 +78,7 @@ class SelectionInfoPanel extends React.PureComponent {
                         </ListItemIcon>
                       )}
                     </Grid>
-                    <Grid item xs={this.props.selectSpecial ? 8 : 9}>
+                    <Grid item xs={this.props.selectBaseline ? 8 : 9}>
                       <Typography variant="subheading">
                         {engine.name}
                       </Typography>
@@ -86,13 +86,13 @@ class SelectionInfoPanel extends React.PureComponent {
                         {engine.ownerOrganization.name}
                       </Typography>
                     </Grid>
-                    {this.props.selectSpecial && (
+                    {this.props.selectBaseline && (
                       <Grid item xs={2} className={styles.alignRight}>
                         <SelectionButton
-                          selected={this.props.selectSpecialId === engine.id}
+                          selected={this.props.baselineEngineId === engine.id}
                           toggleSelection={this.getSelectionHandler(engine.id)}
                         >
-                          {this.props.selectSpecialLabel}
+                          Baseline
                         </SelectionButton>
                       </Grid>
                     )}

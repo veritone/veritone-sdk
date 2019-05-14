@@ -27,7 +27,9 @@ storiesOf('EnginePicker', module).add('Single Picker', () => {
   );
 });
 
-storiesOf('EnginePicker', module).add('Multiple Picker', () => {
+
+// Not actually to be used, more of an example of how multiple pickers can be combined together with the selection info panel
+storiesOf('EnginePicker', module).add('Multiple Picker Example', () => {
   const props = {
     onSave: noop,
     onCancel: noop

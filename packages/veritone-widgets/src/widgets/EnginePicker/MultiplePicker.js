@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { guid } from '../../shared/util';
 
-import { any, bool, func, objectOf } from 'prop-types';
+import { any, bool, func, objectOf, number } from 'prop-types';
 
 import * as multipleEngineSelectionModule from '../../redux/modules/multipleEngineSelection';
 
@@ -13,19 +13,24 @@ import SelectionInfoPanel from './SelectionInfoPanel';
 @connect(
   (state, { ids }) => {
     return {
-      selected: multipleEngineSelectionModule.selectedEngines(state, ids),
-      canSelectMore: multipleEngineSelectionModule.canSelectMore(state)
+      selectedEngines: multipleEngineSelectionModule.selectedEngines(state, ids),
+      canSelectMoreEngines: multipleEngineSelectionModule.canSelectMore(state)
     };
   },
   {
-    toggleSelection: multipleEngineSelectionModule.toggleEngine
+    toggleEngineSelection: multipleEngineSelectionModule.toggleEngine
   }
 )
 class MultipleEnginePicker extends React.Component {
   static propTypes = {
-    canSelectMore: bool,
-    selected: objectOf(any),
-    toggleSelection: func
+    canSelectMoreEngines: bool,
+    selectedEngines: objectOf(any),
+    toggleEngineSelection: func,
+    maxSelectedEngines: number
+  };
+
+  static defaultProps = {
+    maxSelectedEngines: 6
   };
 
   constructor(props) {
@@ -44,6 +49,15 @@ class MultipleEnginePicker extends React.Component {
       baselineEngineId: id
     });
   };
+
+  removeSelectedEngine = id => {
+    this.props.toggleEngineSelection(id);
+    if(this.state.baselineEngineId === id) {
+      this.setState({
+        baselineEngineId: undefined
+      });
+    }
+  }
 
   render() {
     return (
@@ -71,11 +85,11 @@ class MultipleEnginePicker extends React.Component {
               }}
             >
               <EnginePicker
-                maxSelections={6}
+                maxSelections={this.props.maxSelectedEngines}
                 toggleGlobally
-                toggleSelection={this.toggleSelection}
-                selected={this.props.selected}
-                canSelectMore={this.props.canSelectMore}
+                toggleSelection={this.props.toggleEngineSelection}
+                selected={this.props.selectedEngines}
+                canSelectMore={this.props.canSelectMoreEngines}
                 id={this.id}
                 title="My Engines"
                 onlyShowMyEngines
@@ -91,11 +105,11 @@ class MultipleEnginePicker extends React.Component {
               }}
             >
               <EnginePicker
-                maxSelections={6}
+                maxSelections={this.props.maxSelectedEngines}
                 toggleGlobally
-                toggleSelection={this.toggleSelection}
-                selected={this.props.selected}
-                canSelectMore={this.props.canSelectMore}
+                toggleSelection={this.props.toggleEngineSelection}
+                selected={this.props.selectedEngines}
+                canSelectMore={this.props.canSelectMoreEngines}
                 id={this.id2}
               />
             </div>
@@ -112,9 +126,10 @@ class MultipleEnginePicker extends React.Component {
           }}
         >
           <SelectionInfoPanel
-            selectSpecial={this.selectBaseline}
-            selectSpecialId={this.state.baselineEngineId}
-            toggleEngine={this.props.toggleSelection}
+            maxSelections={this.props.maxSelectedEngines}
+            selectBaseline={this.selectBaseline}
+            baselineEngineId={this.state.baselineEngineId}
+            toggleEngineSelection={this.removeSelectedEngine}
           />
         </div>
       </div>

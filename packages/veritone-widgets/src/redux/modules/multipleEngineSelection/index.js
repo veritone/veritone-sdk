@@ -13,7 +13,7 @@ export const TOGGLE_ENGINE = `vtn/${namespace}/TOGGLE_ENGINE`;
 
 const defaultState = {};
 const PAGE_SIZE = 100;
-const MAX_SELECTIONS = 6;
+export const MAX_SELECTIONS = 6;
 
 const getPickerID = action => get(action, 'meta.variables.id');
 
