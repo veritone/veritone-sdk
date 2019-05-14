@@ -12,6 +12,10 @@ import engineSelectionReducer, {
   namespace as engineSelectionNamespace
 } from './modules/engineSelection';
 
+import multipleEngineSelectionReducer, {
+  namespace as multipleEngineSelectionNamespace
+} from './modules/multipleEngineSelection';
+
 import notificationsReducer, {
   namespace as notificationsNamespace
 } from './modules/notifications';
@@ -36,6 +40,7 @@ export default function createReducer(asyncReducers) {
     [notificationsNamespace]: notificationsReducer,
     [engineOutputExportNamespace]: engineOutputExportReducer,
     [configNamespace]: configReducer,
+    [multipleEngineSelectionNamespace]: multipleEngineSelectionReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
