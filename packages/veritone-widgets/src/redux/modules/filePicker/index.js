@@ -1,9 +1,13 @@
 import { clamp, mean, isNaN, get } from 'lodash';
+import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const PICK_START = 'PICK_START';
 export const PICK_END = 'PICK_END';
+export const RETRY_REQUEST = 'RETRY_REQUEST';
+export const RETRY_DONE = 'RETRY_DONE';
+export const ABORT_REQUEST = 'ABORT_REQUEST';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
@@ -54,6 +58,68 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [ABORT_REQUEST](
+    state,
+    {
+      meta: { id, fileKey }
+    }
+  ) {
+    let newProgressPercentByFileKey = get(state, [id, 'progressPercentByFileKey'], {});
+    if (fileKey) {
+      newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
+        [fileKey]: {
+          aborted: { $set: true }
+        }
+      });
+    } else {
+      Object.keys(get(state, [id, 'progressPercentByFileKey'], {})).forEach(fileKey => {
+        newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
+          [fileKey]: {
+            aborted: { $set: true }
+          }
+        });
+      });
+    }
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        progressPercentByFileKey: newProgressPercentByFileKey
+      }
+    }
+  },
+  [RETRY_REQUEST](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        state: 'uploading',
+        progressPercentByFileKey: {},
+        success: null,
+        error: null,
+        warning: null
+      }
+    }
+  },
+  [RETRY_DONE](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        state: 'complete'
+      }
+    };
+  },
   [UPLOAD_REQUEST](
     state,
     {
@@ -87,8 +153,11 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         progressPercentByFileKey: {
-          ...state.progressPercentByFileKey,
-          [fileKey]: payload
+          ...state[id].progressPercentByFileKey,
+          [fileKey]: {
+            ...state[id].progressPercentByFileKey[fileKey],
+            ...payload
+          }
         }
       }
     };
@@ -97,19 +166,27 @@ export default createReducer(defaultState, {
     state,
     {
       payload,
-      meta: { warn, error, id }
+      meta: { warning, error, id }
     }
   ) {
     const errorMessage = get(error, 'message', error); // Error or string
+    // Extract failed files to be reuploaded
+    const failedFiles = payload
+      .filter(result => result.error)
+      .map(result => result.file);
+    // Combine existing uploadResult if any
+    const prevUploadResult = (get(state, [id, 'uploadResult']) || [])
+      .filter(result => !result.error);
     return {
       ...state,
       [id]: {
         ...state[id],
-        success: !(warn || error) || null,
+        success: !(warning || error) || null,
         error: error ? errorMessage : null,
-        warning: warn || null,
+        warning: warning || null,
         state: 'complete',
-        uploadResult: payload
+        uploadResult: prevUploadResult.concat(payload),
+        failedFiles
       }
     };
   }
@@ -127,27 +204,49 @@ export const endPick = id => ({
   meta: { id }
 });
 
+export const retryRequest = (id, callback) => ({
+  type: RETRY_REQUEST,
+  payload: { callback },
+  meta: { id }
+});
+
+export const abortRequest = (id, fileKey) => ({
+  type: ABORT_REQUEST,
+  meta: { id, fileKey }
+});
+
+export const retryDone = (id, callback) => ({
+  type: RETRY_DONE,
+  payload: { callback },
+  meta: { id }
+});
+
 export const uploadRequest = (id, files, callback) => ({
   type: UPLOAD_REQUEST,
   payload: { files, callback },
   meta: { id }
 });
 
-export const uploadProgress = (id, fileKey, progressPercent) => ({
+export const uploadProgress = (id, fileKey, data) => ({
   type: UPLOAD_PROGRESS,
-  payload: clamp(Math.round(progressPercent), 100),
+  payload: {
+    ...data,
+    percent: clamp(Math.round(data.percent), 100)
+  },
   meta: { fileKey, id }
 });
 
-export const uploadComplete = (id, result, { warn, error }) => ({
+export const uploadComplete = (id, result, { warning, error }) => ({
   type: UPLOAD_COMPLETE,
   payload: result,
-  meta: { warn, error, id }
+  meta: { warning, error, id }
 });
 
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const state = (state, id) =>
   get(local(state), [id, 'state'], 'selecting');
+
+// Keep this in case we want to go back to using mean percentage progresses
 export const progressPercent = (state, id) => {
   const currentProgress = get(local(state), [id, 'progressPercentByFileKey']);
   if (!currentProgress) {
@@ -158,6 +257,21 @@ export const progressPercent = (state, id) => {
   const rounded = Math.round(meanProgress);
   return isNaN(rounded) ? 0 : rounded;
 };
+export const percentByFiles = (state, id) => {
+  const currentFiles = get(local(state), [id, 'progressPercentByFileKey'], {});
+  return Object.keys(currentFiles).map(key => {
+    const value = currentFiles[key];
+    return {
+      key,
+      value
+    };
+  })
+}
+export const failedFiles = (state, id) => {
+  const failedFiles = get(local(state), [id, 'failedFiles'], []);
+  return failedFiles;
+};
+export const uploadResult = (state, id) => get(local(state), [id, 'uploadResult']);
 export const didSucceed = (state, id) => !!get(local(state), [id, 'success']);
 export const didError = (state, id) => !!get(local(state), [id, 'error']);
 export const didWarn = (state, id) => !!get(local(state), [id, 'warning']);

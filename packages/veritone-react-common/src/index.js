@@ -23,6 +23,7 @@ export ProfileMenu from './components/ProfileMenu';
 export RaisedTextField from './components/RaisedTextField';
 export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
+export FileProgressDialog from './components/FilePicker/FileProgressDialog';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
