@@ -101,7 +101,7 @@ export default class BaseStory extends React.Component {
   render() {
     return (
       <Provider store={this.props.store}>
-        <div>
+        <div style={{ height: '100%', width: '100%' }}>
           <span id="widget" />
 
           {this.state.showingWidget &&

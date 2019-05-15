@@ -250,29 +250,27 @@ describe('Recording', function() {
   });
 
   describe('getRecordingMedia', function() {
-    // This test is failing because of async not calling 'done',
-    //   but it shouldn't call done... just comment out for now...
-    // it('validates recordingId', function() {
-    //   expect(() =>
-    //     recordingHandlers.getRecordingMedia(
-    //       nonStandardHandlerOptions,
-    //       undefined,
-    //       noop
-    //     )
-    //   ).to.throw(/recordingId/);
+    it('validates recordingId', function() {
+      expect(() =>
+        recordingHandlers.getRecordingMedia(
+          nonStandardHandlerOptions,
+          undefined,
+          noop
+        )
+      ).to.throw(/recordingId/);
 
-    //   expect(() =>
-    //     recordingHandlers.getRecordingMedia(nonStandardHandlerOptions, {}, noop)
-    //   ).to.throw(/recordingId/);
+      expect(() =>
+        recordingHandlers.getRecordingMedia(nonStandardHandlerOptions, {}, noop)
+      ).to.throw(/recordingId/);
 
-    //   expect(() =>
-    //     recordingHandlers.getRecordingMedia(
-    //       nonStandardHandlerOptions,
-    //       '2',
-    //       noop
-    //     )
-    //   ).not.to.throw();
-    // });
+      expect(() =>
+        recordingHandlers.getRecordingMedia(
+          nonStandardHandlerOptions,
+          '2',
+          noop
+        )
+      ).not.to.throw();
+    });
 
     it("makes a get request to the recording's media", function(done) {
       const scope = nock(apiBaseUrl)

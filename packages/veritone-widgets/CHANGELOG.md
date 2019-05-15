@@ -201,3 +201,10 @@ const MyPage = () => (
 
 ## 7.1.2
 * Use version of file picker from veritone-react-common with a scrollbar when there are multiple files.
+
+## 7.1.3
+* Namespace global styles used by media player widget
+
+## 7.2.0
+* New multiple engine picker and selected engines info panel
+* Beta: InfinitePicker exported as part of engine picker.
