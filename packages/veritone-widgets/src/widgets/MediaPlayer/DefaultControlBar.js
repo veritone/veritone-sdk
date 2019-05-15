@@ -19,7 +19,7 @@ import {
 } from 'video-react';
 import { shape, objectOf, any, bool } from 'prop-types';
 
-import RestartMediaButton from './RestartMediaButton';
+import { RestartMediaButton } from 'veritone-react-common';
 import styles from './styles.scss';
 
 @connect(

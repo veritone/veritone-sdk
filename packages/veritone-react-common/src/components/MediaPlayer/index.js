@@ -12,8 +12,25 @@ import {
   object,
   oneOfType
 } from 'prop-types';
-import { Player, ControlBar, BigPlayButton } from 'video-react';
+import {
+  Player,
+  ControlBar,
+  BigPlayButton,
+  VolumeMenuButton,
+  ReplayControl,
+  ForwardControl,
+  PlayToggle,
+  playerActions,
+  videoActions,
+  CurrentTimeDisplay,
+  TimeDivider,
+  DurationDisplay,
+  ProgressControl,
+  FullscreenToggle
+} from 'video-react';
+import cx from 'classnames';
 
+import RestartMediaButton from './RestartMediaButton';
 import BoundingPolyOverlay from './../BoundingPolyOverlay/Overlay';
 import OverlayPositioningProvider from './../BoundingPolyOverlay/OverlayPositioningProvider';
 
@@ -75,7 +92,8 @@ export default class MediaPlayerComponent extends React.Component {
     paused: bool,
     currentTime: number,
     autofocus: bool,
-    forwardedRef: objectOf(any)
+    forwardedRef: objectOf(any),
+    useOverlayControlBar: bool
   };
 
   static contextTypes = {
@@ -88,7 +106,8 @@ export default class MediaPlayerComponent extends React.Component {
     fluid: true,
     onAddBoundingBox: noop,
     onDeleteBoundingBox: noop,
-    onChangeBoundingBox: noop
+    onChangeBoundingBox: noop,
+    useOverlayControlBar: false
   };
 
   componentDidMount() {
@@ -110,6 +129,7 @@ export default class MediaPlayerComponent extends React.Component {
       streams,
       overlayContentClassName,
       reactPlayerClassName,
+      useOverlayControlBar,
       ...props
     } = this.props;
 
@@ -151,8 +171,26 @@ export default class MediaPlayerComponent extends React.Component {
           {...props}
         >
           {/* prevent video-react from adding its own control bar */}
-          <ControlBar autoHide className={styles.hiddenDummyControls} />
-
+          <ControlBar
+            className={
+              cx('video-react', styles.mediaPlayerControls)
+            }
+            style={{ position: 'static' }}
+            autoHide
+            disableDefaultControls
+            disableCompletely={!useOverlayControlBar}
+            >
+            <RestartMediaButton order={1.1} />
+            <ReplayControl seconds={10} order={1.2} />
+            <ForwardControl seconds={10} order={1.3} />
+            <PlayToggle order={2} />
+            <CurrentTimeDisplay order={3.1} />
+            <TimeDivider order={3.2} />
+            <DurationDisplay order={3.3} />
+            <ProgressControl order={6} />
+            <VolumeMenuButton vertical order={7} />
+            <FullscreenToggle order={8} />
+          </ControlBar>
           <VideoSource isVideoChild src={src} streams={streams} />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>

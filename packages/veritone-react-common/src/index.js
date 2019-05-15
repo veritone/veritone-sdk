@@ -46,4 +46,5 @@ export StatusPill from './components/StatusPill';
 export ModalHeader from './components/ModalHeader';
 export SelectionButton from './components/SelectionButton';
 export MediaPlayer from './components/MediaPlayer';
+export RestartMediaButton from './components/MediaPlayer/RestartMediaButton';
 export Lightbox from './components/share-components/Lightbox';
