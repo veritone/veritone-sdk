@@ -7,7 +7,7 @@
 * fix bad publish in 1.0.0
 
 ## 2.0.0
-* FilePicker: 
+* FilePicker:
   * ensure endPick() is always called to close the dialog, even when file uploads fail.
   * include original filenames (without server-added UUID) in result payload at the fileName key.
   * (breaking) encode resulting s3 resource URLs with encodeUri
@@ -24,9 +24,9 @@
 
 * VeritoneApp:
   * (breaking) rework veritoneApp.login. It should now be called with either { sessionToken } or { OAuthToken }, instead of the generic { token } param before. If called without a token, the request will be made using a cookie, if one exists. If you need an OAuth token, use the OAuthLoginButton widget (see the various stories in the widgets/ folder for examples)
-  
+
   * Trying to render a widget with its elId set to an element that is not currently in the document will no longer throw an error. This should help in cases where the element needs to be shown or hidden by app code.
-  
+
   * VeritoneApp will now call the method veritoneAppDidAuthenticate() on a widget, if such a method exists, when the app (re-)authenticates. This gives widgets a hook from
     which they can fetch data depencies, knowing auth is available or has changed. Widgets should also do this in componentDidMount(), to handle the case where the app is already authenticated. (see widgets/AppBar for an example)
 
@@ -42,7 +42,7 @@
 ## 3.0.0
 * Replaced webpack with rollup
   * The bundle is now an es module rather than UMD, which should enable tree shaking to a greater extent, reducing the filesize overhead of using the library.
-  * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly. 
+  * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly.
   * A commonJS bundle is also included for older toolchains that do not understand the es module format.
 
 * FilePicker
@@ -198,3 +198,9 @@ const MyPage = () => (
 
 ## 7.1.1
 * Fix/Update engineOutputExport and export its saga
+
+## 7.1.2
+* Use version of file picker from veritone-react-common with a scrollbar when there are multiple files.
+
+## 7.1.3
+* Namespace global styles used by media player widget

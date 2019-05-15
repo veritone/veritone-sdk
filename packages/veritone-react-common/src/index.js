@@ -44,3 +44,4 @@ export OverlayPositioningProvider from './components/BoundingPolyOverlay/Overlay
 export { Interval, defaultIntervals } from 'helpers/date';
 export StatusPill from './components/StatusPill';
 export ModalHeader from './components/ModalHeader';
+export SelectionButton from './components/SelectionButton';

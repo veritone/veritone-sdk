@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
-import { string, func, bool } from 'prop-types';
+import { string, func, bool, number } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -12,7 +12,10 @@ class FilePickerHeader extends Component {
     onSelectTab: func,
     onClose: func,
     allowUrlUpload: bool,
-    title: string
+    multiple: bool,
+    title: string,
+    fileCount: number,
+    maxFiles: number
   };
 
   static defaultProps = {
@@ -26,15 +29,26 @@ class FilePickerHeader extends Component {
   render() {
     return (
       <div className={styles.filePickerHeader}>
-        <span className={styles.filePickerTitle}>{this.props.title}</span>
-        <IconButton
-          classes={{
-            root: styles.filePickerCloseButton
-          }}
-          onClick={this.props.onClose}
-        >
-          <i className="icon-close-exit" />
-        </IconButton>
+        <span className={styles.filePickerTitle}>
+          {this.props.title}
+
+          {this.props.multiple &&
+            this.props.maxFiles && (
+              <span className={styles.count}>
+                {this.props.fileCount} / {this.props.maxFiles}
+              </span>
+            )}
+        </span>
+        {this.props.onClose && (
+          <IconButton
+            classes={{
+              root: styles.filePickerCloseButton
+            }}
+            onClick={this.props.onClose}
+          >
+            <i className="icon-close-exit" />
+          </IconButton>
+        )}
         <Tabs
           value={this.props.selectedTab}
           indicatorColor="primary"

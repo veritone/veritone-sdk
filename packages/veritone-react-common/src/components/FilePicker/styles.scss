@@ -7,6 +7,12 @@
   max-width: 100%;
 }
 
+.filePickerNonModal {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
 .filePickerPaperOverride {
   max-width: 100% !important;
   max-height: 100% !important;
@@ -18,9 +24,11 @@
   flex: 1;
   display: flex;
   padding: $file-picker-margin;
+  overflow-y: auto;
 }
 
 .errorMessage {
   text-align: center;
   color: red;
+  padding-bottom: 0.25em;
 }

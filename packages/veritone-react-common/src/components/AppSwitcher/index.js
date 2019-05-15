@@ -50,7 +50,10 @@ export default class AppSwitcher extends React.Component {
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton onClick={this.openMenu} data-veritone-element="app-switcher-button">
+        <IconButton
+          onClick={this.openMenu}
+          data-veritone-element="app-switcher-button"
+        >
           <AppsIcon nativeColor="white" />
         </IconButton>
         <Menu

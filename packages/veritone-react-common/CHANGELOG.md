@@ -34,7 +34,7 @@
 ## 3.0.0
 * Replaced webpack with rollup
   * The bundle is now an es module rather than UMD, which should enable tree shaking to a greater extent, reducing the filesize overhead of using the library.
-  * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly. 
+  * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly.
   * A commonJS bundle is also included for older toolchains that do not understand the es module format.
 
 * Remove normalize.css to avoid polluting global styles.
@@ -48,7 +48,7 @@
   * (breaking) Added props.onSwitchApp (func), which replaces the original behavior of setting window.location to the app immediately.
 
 ## 4.1.0
-* The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools. 
+* The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
 
 ## 4.2.0
 * Added `NavigationSideBar` component. See the story for more details.
@@ -183,3 +183,16 @@
 * DateTimePicker: add readOnly prop
 * TimeRangePicker: add support for time zones; add readOnly prop
 * Update veritone-icons css file
+
+## 7.0.1
+* Update file picker to use an overflow when multiple files exceed the modal height
+
+## 7.1.0
+* Added a radio selection button
+
+## 7.2.0
+* Changes to file picker:
+  * Added a non-modal style so it can sit flat in a modal, so we don’t have a modal on top of a modal
+  * Added maxFiles limit. When used, it shows {numberOfFilesToUpload} / {maxFiles}.
+  * Allow the upload button to be set via props, in case we want it to say “Benchmark” or “Process” as the next step instead.
+  * Better error messages when >1 file when multiple is false, better error messages when multiple is true, and maxFiles limit is set.
