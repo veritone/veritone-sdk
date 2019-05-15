@@ -123,6 +123,7 @@ const timeSeries = [
 
 import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
+import MediaPlayerLightbox, { MediaPlayerLightboxWidget } from './Lightbox';
 import DefaultControlBar from './DefaultControlBar';
 
 const multipleStreams = [
@@ -162,6 +163,15 @@ class Story extends React.Component {
   /* eslint-disable react/prop-types */
   state = {
     boundingPolySeries: this.props.boundingPolySeries
+  };
+
+  onPlayerRefReady = ref => {
+    this.mediaPlayer = ref;
+    if (!this.mediaPlayer) {
+      console.log(
+        'Troubleshoot this! mediaPlayer ref should be set at this point'
+      );
+    }
   };
 
   playerRef = React.createRef();
@@ -231,6 +241,7 @@ class Story extends React.Component {
           onAddBoundingBox={this.handleAddBoundingBox}
           onDeleteBoundingBox={this.handleDeleteBoundingBox}
           onChangeBoundingBox={this.handleChangeBoundingBox}
+          onPlayerRefReady={this.onPlayerRefReady}
           stylesByObjectType={{
             a: {
               backgroundColor: 'rgba(40, 95, 255, 0.5)'
@@ -250,7 +261,7 @@ class Story extends React.Component {
   }
 }
 
-storiesOf('MediaPlayer', module)
+storiesOf('MediaPlayer Widget', module)
   .add('MP4 (fluid width)', () => (
     <BaseStory
       componentClass={Story}
@@ -353,6 +364,27 @@ storiesOf('MediaPlayer', module)
       }}
     />
   ))
+  .add('Lightbox Widget', () => {
+    return (
+      <BaseStory
+        widget={MediaPlayerLightboxWidget}
+        widgetProps={{
+          live: true,
+          muted: true,
+          autoPlay: true,
+          streams: hlsStream,
+          boundingPolySeries: timeSeries
+        }}
+        componentClass={MediaPlayerLightbox}
+        componentProps={{
+          muted: true,
+          autoPlay: true,
+          streams: multipleStreams,
+          boundingPolySeries: timeSeries
+        }}
+      />
+    );
+  })
   .add('Editable', () => (
     <BaseStory
       componentClass={Story}
