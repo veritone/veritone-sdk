@@ -208,3 +208,8 @@ const MyPage = () => (
 ## 7.2.0
 * New multiple engine picker and selected engines info panel
 * Beta: InfinitePicker exported as part of engine picker.
+
+## 7.3.0
+* Updated/Migrated MediaPlayer widget
+* Added option to use a reskinned native control bar with the MediaPlayer
+* Reskinned and added retry logic to FilePicker
