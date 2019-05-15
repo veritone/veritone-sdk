@@ -20,8 +20,6 @@ import {
   ReplayControl,
   ForwardControl,
   PlayToggle,
-  playerActions,
-  videoActions,
   CurrentTimeDisplay,
   TimeDivider,
   DurationDisplay,
