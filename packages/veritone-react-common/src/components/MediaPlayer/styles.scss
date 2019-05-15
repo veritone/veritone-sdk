@@ -18,8 +18,10 @@
 
   .video-react-control-text,
   .video-react-mouse-display,
+  .video-react-mouse-display::after,
   .video-react-play-progress::after {
     font-family: Roboto, sans-serif !important;
+    font-size: 1em !important;
   }
 
   .video-react-slider:focus {
@@ -38,30 +40,5 @@
     width: 1.5em;
     border-radius: 1em;
     border: none;
-  }
-
-  .mediaPlayerControls {
-    font-size: 12px !important;
-    font-family: Roboto, sans-serif;
-    outline: none !important;
-    :global(.video-react-control) {
-      width: 3em;
-    }
-
-    :global(.video-react-time-control) {
-      padding-left: 0.5em;
-      padding-right: 0.5em;
-    }
-
-    :global(.video-react-control-text),
-    :global(.video-react-mouse-display),
-    :global(.video-react-play-progress::after) {
-      font-family: Roboto !important;
-    }
-
-    :global(.video-react-slider:focus) {
-      text-shadow: none;
-      box-shadow: none;
-    }
   }
 }

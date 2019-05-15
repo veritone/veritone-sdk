@@ -1,5 +1,5 @@
 import React from 'react';
-import { get, noop } from 'lodash';
+import { noop } from 'lodash';
 import {
   arrayOf,
   shape,
@@ -13,17 +13,10 @@ import {
   oneOfType
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { Player, ControlBar, BigPlayButton } from 'video-react';
 
 import {
-  MediaPlayer as LibMediaPlayer,
-  BoundingPolyOverlay,
-  OverlayPositioningProvider
+  MediaPlayer as LibMediaPlayer
 } from 'veritone-react-common';
-import VideoSource from './VideoSource';
-import { getPolysForTime } from './helpers';
-
-import styles from './styles.scss';
 
 @connect(state => ({
   videoHeight: state.player.videoHeight,
