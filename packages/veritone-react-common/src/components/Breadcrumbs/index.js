@@ -24,20 +24,18 @@ export default class Breadcrumbs extends React.Component {
   }
 
   state = {
-    openSpreadPath: false
+    anchorEl: null
   }
 
   onSpreadClick = (event) => {
-    this.anchorEl = event.target;
-    this.setState(({ openSpreadPath }) => ({
-      openSpreadPath: !openSpreadPath
-    }));
+    this.setState({
+      anchorEl: event.currentTarget
+    })
   }
 
   clickAway = () => {
-    this.anchorEl = null;
     this.setState({
-      openSpreadPath: false
+      anchorEl: null
     })
   }
 
@@ -56,6 +54,8 @@ export default class Breadcrumbs extends React.Component {
       maxItems,
       seperator,
     } = this.props;
+
+    const { anchorEl } = this.state;
 
     const {
       0: rootCrumb,
@@ -107,8 +107,8 @@ export default class Breadcrumbs extends React.Component {
                   onClick={this.onCrumbClick}
                 />
                 <Popover
-                  open={Boolean(this.anchorEl)}
-                  anchorEl={this.anchorEl}
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
                   onClick={this.clickAway}
                   anchorOrigin={{
                     vertical: 'bottom',
