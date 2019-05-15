@@ -9,7 +9,8 @@ const styles = {
   button: {
     border: `1px solid ${defaultVSDKTheme.palette.primary.main}`,
     borderRadius: '1px',
-    paddingRight: 16
+    paddingRight: 16,
+    flexBasis: 120
   },
   icon: {
     marginRight: 8
