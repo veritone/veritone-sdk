@@ -9,11 +9,23 @@
   border-bottom: 1px solid $grey-4;
 }
 
+.titleIconContainer {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
 .filePickerTitle {
   flex: auto;
   font-size: 18px;
   padding-left: 20px;
   padding-top: 20px;
+}
+
+.filePickerMessage {
+  margin-left: 55px;
+  padding-bottom: 20px;
+  font-size: 14px;
 }
 
 .filePickerCloseButton {

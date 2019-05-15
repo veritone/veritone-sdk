@@ -29,7 +29,6 @@ class FilePicker extends Component {
   };
 
   static defaultProps = {
-    height: 400,
     width: 600,
     accept: [],
     multiple: false,
