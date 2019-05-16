@@ -89,8 +89,7 @@ export default class DefaultControlBar extends React.Component {
       <div
         className={cx('video-react', {
           'video-react-has-started': hasStarted
-        })}
-        style={{ position: 'static' }}
+        }, styles.externalStyles)}
       >
         <ControlBar
           className={cx(styles.mediaPlayerControls)}

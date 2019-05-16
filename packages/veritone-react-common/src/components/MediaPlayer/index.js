@@ -91,7 +91,8 @@ export default class MediaPlayerComponent extends React.Component {
     currentTime: number,
     autofocus: bool,
     forwardedRef: objectOf(any),
-    useOverlayControlBar: bool
+    useOverlayControlBar: bool,
+    isFullscreen: bool
   };
 
   static contextTypes = {
@@ -128,6 +129,7 @@ export default class MediaPlayerComponent extends React.Component {
       overlayContentClassName,
       reactPlayerClassName,
       useOverlayControlBar,
+      isFullscreen,
       ...props
     } = this.props;
 
@@ -173,10 +175,9 @@ export default class MediaPlayerComponent extends React.Component {
             className={
               cx('video-react', styles.mediaPlayerControls)
             }
-            style={{ position: 'static' }}
             autoHide
             disableDefaultControls
-            disableCompletely={!useOverlayControlBar}
+            disableCompletely={!useOverlayControlBar && !isFullscreen}
             >
             <RestartMediaButton order={1.1} />
             <ReplayControl seconds={10} order={1.2} />
