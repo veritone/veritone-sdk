@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, shape, string, func } from 'prop-types';
-import { get, find } from 'lodash';
+import { get, find, includes } from 'lodash';
 import shaka from 'shaka-player';
 
 export default class VideoSource extends React.Component {
@@ -41,6 +41,16 @@ export default class VideoSource extends React.Component {
       }
       if (!this.player) {
         this.player = new shaka.Player(video);
+        //TODO if session cookie is not available, will need to set Authorization header on request using auth token
+        if (includes(streamUri, 'veritone.com/media-streamer/stream')) {
+          this.player
+            .getNetworkingEngine()
+            .registerRequestFilter(function(type, request) {
+              if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+                request.allowCrossSiteCredentials = true;
+              }
+            });
+        }
       }
       this.player.load(streamUri).catch(err => {
         console.log('error loading video with shaka player', err);
@@ -66,6 +76,12 @@ export default class VideoSource extends React.Component {
     const { video } = this.props;
     if (video && this.state.src && this.state.src !== prevState.src) {
       video.load();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.player) {
+      this.player.unload();
     }
   }
 
