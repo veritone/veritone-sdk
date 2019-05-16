@@ -1,7 +1,22 @@
 import React from 'react';
 import { arrayOf, shape, string, func } from 'prop-types';
-import { get, find, includes } from 'lodash';
+import { includes } from 'lodash';
 import shaka from 'shaka-player';
+
+const supportedProtocols = ['dash', 'hls'];
+
+const getStreams = (streams) => streams
+  .reduce((streamObject, { protocol, uri }) => ({
+    ...streamObject,
+    [protocol]: uri
+  }), {});
+
+const getStreamUri = (streams, protocols) => {
+  const availableProtocol = protocols.find(protocol => streams[protocol]);
+  return availableProtocol && streams[availableProtocol];
+};
+
+const shouldLoad = (value, prevValue) => (value !== prevValue);
 
 export default class VideoSource extends React.Component {
   static propTypes = {
@@ -15,82 +30,88 @@ export default class VideoSource extends React.Component {
         protocol: string.isRequired,
         uri: string.isRequired
       })
-    )
+    ),
   };
+
+  static defaultProps = {
+    streams: []
+  }
 
   state = {
-    src: null
-  };
+    src: undefined,
+    streamUri: undefined,
+    hlsUri: undefined,
+  }
 
-  UNSAFE_componentWillMount() {
+  static getDerivedStateFromProps({ src, streams, video }) {
+    return {
+      src: video ? src : undefined,
+      streamUri: video ? getStreamUri(
+        getStreams(streams),
+        supportedProtocols
+      ) : undefined,
+      hlsUri: (
+        video && video.canPlayType('application/vnd.apple.mpegurl')
+      ) ? (
+        getStreamUri(getStreams(streams), supportedProtocols).hls
+      ) : undefined
+    }
+  }
+
+  componentDidMount() {
     shaka.polyfill.installAll();
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { video, src, streams } = nextProps;
-    const dashUri = this.getStreamUri(streams, 'dash');
-    const hlsUri = this.getStreamUri(streams, 'hls');
-    const streamUri = dashUri || hlsUri;
-    // check if browser supports playing hls & dash with shaka player
-    const browserSupportsShaka = shaka.Player.isBrowserSupported();
-    let sourceUri;
-    if (video && streamUri && browserSupportsShaka) {
-      if (streamUri === this.state.streamUri) {
-        // media already loaded
-        return;
-      }
-      if (!this.player) {
-        this.player = new shaka.Player(video);
-        //TODO if session cookie is not available, will need to set Authorization header on request using auth token
-        if (includes(streamUri, 'veritone.com/media-streamer/stream')) {
-          this.player
-            .getNetworkingEngine()
-            .registerRequestFilter(function(type, request) {
-              if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
-                request.allowCrossSiteCredentials = true;
-              }
-            });
-        }
-      }
-      this.player.load(streamUri).catch(err => {
-        console.log('error loading video with shaka player', err);
-      });
-      this.setState({
-        streamUri: streamUri
-      });
-    } else if (hlsUri && video.canPlayType('application/vnd.apple.mpegurl')) {
-      // iOS does not work with the shaka-player. check if browser has native HLS support,
-      // if it does then set src to HLS manifest (primarily for safari on iOS)
-      sourceUri = hlsUri;
-    } else {
-      sourceUri = src;
-    }
-    if (sourceUri && sourceUri !== this.state.src) {
-      this.setState({
-        src: sourceUri
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
     const { video } = this.props;
-    if (video && this.state.src && this.state.src !== prevState.src) {
-      video.load();
+    if (shaka.Player.isBrowserSupported() && video && this.state.streamUri) {
+      this.player = new shaka.Player(video);
+      this.loadStreams();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.player) {
+      this.loadStreams(prevProps);
     }
   }
 
   componentWillUnmount() {
     if (this.player) {
-      this.player.unload();
+      this.player.unload().then(() => this.player = null );
     }
   }
 
-  getStreamUri(streams, protocol) {
-    const stream = find(streams, { protocol });
-    return get(stream, 'uri');
+  loadStreams = (prevProps = {}) => {
+    const { streams } = this.props;
+    const { streams: prevStreams = [] } = prevProps;
+
+    const streamUri = getStreamUri(getStreams(streams), supportedProtocols);
+    const prevStreamUri = getStreamUri(
+      getStreams(prevStreams), supportedProtocols);
+
+    if (!streamUri && prevStreamUri) {
+      this.unloadStream();
+    }
+
+    if (includes(streamUri, 'veritone.com/media-streamer/stream')) {
+      this.player
+        .getNetworkingEngine()
+        .registerRequestFilter((type, request) => {
+          if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+            request.allowCrossSiteCredentials = true;
+            request['Authorization'] = `Bearer ${
+              localStorage.getItem('OAuthToken')
+            }}`;
+          };
+        });
+    }
+
+    if (shouldLoad(streamUri, prevStreamUri)) {
+      return this.player.load(streamUri).catch(() => this.unloadStream());
+    }
   }
 
   render() {
-    return this.state.src && <source src={this.state.src} />;
+    return (!this.player &&
+      <source src={this.state.streamUri || this.state.src} />
+    );
   }
 }
