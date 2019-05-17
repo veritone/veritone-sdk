@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, shape, func, string, bool, node } from 'prop-types';
+import { arrayOf, shape, func, string, oneOf } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
   AppBar,
@@ -10,7 +10,6 @@ import {
   Button
 } from '@material-ui/core';
 import {
-  Work,
   Sort,
   ViewList,
   ViewModule,
@@ -120,7 +119,6 @@ class HeaderBar extends React.Component {
       classes,
       onUpload,
       onBack,
-      isStream,
       viewType,
       onToggleView,
       onSort,
@@ -128,6 +126,7 @@ class HeaderBar extends React.Component {
       onClear,
       onCrumbClick,
       pathList,
+      currentPickerType
     } = this.props;
     const { anchorEl } = this.state;
     return (
@@ -135,7 +134,7 @@ class HeaderBar extends React.Component {
         <AppBar position="static" color="default">
           <Toolbar className={classes.header}>
             {
-              isStream ? (
+              currentPickerType === 'upload' ? (
                 <Button
                   onClick={onBack}
                   className={cx(classes.button, classes.backButton)}
@@ -160,7 +159,7 @@ class HeaderBar extends React.Component {
             <div className={cx(
               classes.buttonGroup,
               classes.icon,
-              { [classes.disabled]: isStream }
+              { [classes.disabled]: currentPickerType === 'upload' }
               )}
             >
               <SearchInput
@@ -217,24 +216,22 @@ HeaderBar.propTypes = {
   }), {})),
   pathList: arrayOf(shape({
     label: string,
-    icon: node,
     id: string
   })),
   onCrumbClick: func,
   onSearch: func,
   onClear: func,
   onBack: func,
-  isStream: bool,
-  viewType: string,
+  viewType: oneOf('list', 'grid'),
   onToggleView: func,
   onUpload: func,
   onSort: func,
+  currentPickerType: oneOf('folder', 'stream', 'upload')
 };
 
 HeaderBar.defaultProps = {
   pathList: [
     {
-      icon: <Work style={{ color: "#2196F3" }} />,
       label: ''
     }
   ],
