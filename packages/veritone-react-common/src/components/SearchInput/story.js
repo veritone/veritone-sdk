@@ -8,7 +8,7 @@ import SearchInput from './';
 storiesOf('SearchInput', module)
   .add('Basic', () => (
     <SearchInput
-      onChange={action('onSearch')}
+      onSearch={action('onSearch')}
       value={text('value', 'search')}
       onClear={action('onClear')}
     />
