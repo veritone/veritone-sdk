@@ -34,7 +34,7 @@ storiesOf('MediaPlayer', module)
       useOverlayControlBar
     />
   ))
-  .add('DASH, no preload', () => (
+  .add('DASH, no preload, minimal controls', () => (
     <MediaPlayerComponent
       muted
       src={demoMp4}
@@ -43,6 +43,9 @@ storiesOf('MediaPlayer', module)
       fluid
       useOverlayControlBar
       preload={'none'}
+      btnRestart={false}
+      btnReplay={false}
+      btnForward={false}
     />
   ))
   .add('DASH, autoplay', () => (
