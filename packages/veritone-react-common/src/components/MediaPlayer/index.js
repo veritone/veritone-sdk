@@ -91,7 +91,18 @@ export default class MediaPlayerComponent extends React.Component {
     currentTime: number,
     autofocus: bool,
     forwardedRef: objectOf(any),
-    useOverlayControlBar: bool
+    useOverlayControlBar: bool,
+    isFullscreen: bool,
+    btnRestart: bool,
+    btnReplay: bool,
+    btnForward: bool,
+    btnPlayToggle: bool,
+    btnVolume: bool,
+    btnFullscreenToggle: bool,
+    ctrlProgress: bool,
+    displayTime: bool,
+    autoHide: bool,
+    autoHideTime: number
   };
 
   static contextTypes = {
@@ -105,7 +116,17 @@ export default class MediaPlayerComponent extends React.Component {
     onAddBoundingBox: noop,
     onDeleteBoundingBox: noop,
     onChangeBoundingBox: noop,
-    useOverlayControlBar: false
+    useOverlayControlBar: false,
+    btnRestart: true,
+    btnReplay: true,
+    btnForward: true,
+    btnPlayToggle: true,
+    btnVolume: true,
+    btnFullscreenToggle: true,
+    ctrlProgress: true,
+    displayTime: true,
+    autoHide: true,
+    autoHideTime: 1000
   };
 
   componentDidMount() {
@@ -128,6 +149,17 @@ export default class MediaPlayerComponent extends React.Component {
       overlayContentClassName,
       reactPlayerClassName,
       useOverlayControlBar,
+      isFullscreen,
+      btnRestart,
+      btnReplay,
+      btnForward,
+      btnPlayToggle,
+      btnVolume,
+      btnFullscreenToggle,
+      ctrlProgress,
+      displayTime,
+      autoHide,
+      autoHideTime,
       ...props
     } = this.props;
 
@@ -163,33 +195,37 @@ export default class MediaPlayerComponent extends React.Component {
           />
         )}
         <Player
-          className={styles.mediaPlayer + ' ' + reactPlayerClassName}
+          className={cx(styles.mediaPlayer, reactPlayerClassName)}
           ref={this.props.forwardedRef}
           store={this.context.store}
           {...props}
         >
-          {/* prevent video-react from adding its own control bar */}
           <ControlBar
-            className={
-              cx('video-react', styles.mediaPlayerControls)
-            }
-            style={{ position: 'static' }}
-            autoHide
+            className={cx('video-react', styles.mediaPlayerControls)}
+            autoHide={autoHide}
+            autoHideTime={autoHideTime}
             disableDefaultControls
-            disableCompletely={!useOverlayControlBar}
-            >
-            <RestartMediaButton order={1.1} />
-            <ReplayControl seconds={10} order={1.2} />
-            <ForwardControl seconds={10} order={1.3} />
-            <PlayToggle order={2} />
-            <CurrentTimeDisplay order={3.1} />
-            <TimeDivider order={3.2} />
-            <DurationDisplay order={3.3} />
-            <ProgressControl order={6} />
-            <VolumeMenuButton vertical order={7} />
-            <FullscreenToggle order={8} />
+            disableCompletely={!useOverlayControlBar && !isFullscreen}
+          >
+            {btnRestart && <RestartMediaButton order={1.1} />}
+            {btnReplay && <ReplayControl seconds={10} order={1.2} />}
+            {btnForward && <ForwardControl seconds={10} order={1.3} />}
+            {btnPlayToggle && <PlayToggle order={2} />}
+            {displayTime && <CurrentTimeDisplay order={3.1} />}
+            {displayTime && <TimeDivider order={3.2} />}
+            {displayTime && <DurationDisplay order={3.3} />}
+            {ctrlProgress && <ProgressControl order={6} />}
+            {btnVolume && (
+              <VolumeMenuButton vertical={ctrlProgress} order={7} />
+            )}
+            {btnFullscreenToggle && <FullscreenToggle order={8} />}
           </ControlBar>
-          <VideoSource isVideoChild src={src} streams={streams} />
+          <VideoSource
+            isVideoChild
+            src={src}
+            streams={streams}
+            disablePreload={props.preload === 'none' ? true : false}
+          />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>

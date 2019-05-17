@@ -40,9 +40,7 @@ function* finishUpload(id, result, { warning, error }, callback) {
   // Get accumulated results, not just what's in the current upload/retry request
   // If there's no results, then the user must have aborted them all
   const totalResults = yield select(uploadResult, id);
-  if (totalResults.length) {
-    yield call(callback, totalResults, { warning, error, cancelled: false });
-  }
+  yield call(callback, totalResults, { warning, error, cancelled: !totalResults.length });
 }
 
 function* uploadFileSaga(id, fileOrFiles, callback = noop) {
