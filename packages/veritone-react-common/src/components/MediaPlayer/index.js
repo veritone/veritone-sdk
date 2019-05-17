@@ -100,7 +100,9 @@ export default class MediaPlayerComponent extends React.Component {
     btnVolume: bool,
     btnFullscreenToggle: bool,
     ctrlProgress: bool,
-    displayTime: bool
+    displayTime: bool,
+    autoHide: bool,
+    autoHideTime: number
   };
 
   static contextTypes = {
@@ -122,7 +124,9 @@ export default class MediaPlayerComponent extends React.Component {
     btnVolume: true,
     btnFullscreenToggle: true,
     ctrlProgress: true,
-    displayTime: true
+    displayTime: true,
+    autoHide: true,
+    autoHideTime: 1000
   };
 
   componentDidMount() {
@@ -154,6 +158,8 @@ export default class MediaPlayerComponent extends React.Component {
       btnFullscreenToggle,
       ctrlProgress,
       displayTime,
+      autoHide,
+      autoHideTime,
       ...props
     } = this.props;
 
@@ -196,7 +202,8 @@ export default class MediaPlayerComponent extends React.Component {
         >
           <ControlBar
             className={cx('video-react', styles.mediaPlayerControls)}
-            autoHide
+            autoHide={autoHide}
+            autoHideTime={autoHideTime}
             disableDefaultControls
             disableCompletely={!useOverlayControlBar && !isFullscreen}
           >

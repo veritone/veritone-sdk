@@ -17,7 +17,7 @@ import {
   ProgressControl,
   FullscreenToggle
 } from 'video-react';
-import { shape, objectOf, any, bool } from 'prop-types';
+import { shape, objectOf, any, bool, number } from 'prop-types';
 
 import { RestartMediaButton } from 'veritone-react-common';
 import styles from './styles.scss';
@@ -47,7 +47,9 @@ export default class DefaultControlBar extends React.Component {
     btnVolume: bool,
     btnFullscreenToggle: bool,
     ctrlProgress: bool,
-    displayTime: bool
+    displayTime: bool,
+    autoHide: bool,
+    autoHideTime: number
   };
   static defaultProps = {
     btnRestart: true,
@@ -57,7 +59,9 @@ export default class DefaultControlBar extends React.Component {
     btnVolume: true,
     btnFullscreenToggle: true,
     ctrlProgress: true,
-    displayTime: true
+    displayTime: true,
+    autoHide: true,
+    autoHideTime: 1000
   };
 
   render() {
@@ -82,20 +86,27 @@ export default class DefaultControlBar extends React.Component {
       btnVolume,
       btnFullscreenToggle,
       ctrlProgress,
-      displayTime
+      displayTime,
+      autoHide,
+      autoHideTime
     } = this.props;
 
     return (
       <div
-        className={cx('video-react', {
-          'video-react-has-started': hasStarted
-        }, styles.externalStyles)}
+        className={cx(
+          'video-react',
+          {
+            'video-react-has-started': hasStarted
+          },
+          styles.externalStyles
+        )}
       >
         <ControlBar
           className={cx(styles.mediaPlayerControls)}
           // need to provide these manually because ControlBar is
           // supposed to be a child of Player and get them automatically
-          autoHide
+          autoHide={autoHide}
+          autoHideTime={autoHideTime}
           player={player}
           manager={manager}
           actions={actions}

@@ -47,6 +47,8 @@ storiesOf('MediaPlayer', module)
       btnRestart={false}
       btnReplay={false}
       btnForward={false}
+      autoHide
+      autoHideTime={1000}
     />
   ))
   .add('DASH, autoplay', () => (
