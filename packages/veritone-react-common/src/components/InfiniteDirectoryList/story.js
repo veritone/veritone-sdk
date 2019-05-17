@@ -19,22 +19,20 @@ const items = [
 storiesOf('InfiniteDirectoryList', module)
   .add('Basic', () => (
     <InfiniteDirectoryList
-      files={items}
+      items={items}
       headers={['Name', 'Date', 'Type']}
       onMount={action('onMount')}
-      loadMore={action('loadMore')}
-      onHighlightItem={action('onHighlightItem')}
+      triggerPagination={action('loadMore')}
       onSelectItem={action('onSelectItem')}
       finishedLoading={false}
     />
   ))
   .add('Finish loading', () => (
     <InfiniteDirectoryList
-      files={items}
+      items={items}
       headers={['Name', 'Date', 'Type']}
       onMount={action('onMount')}
-      loadMore={action('loadMore')}
-      onHighlightItem={action('onHighlightItem')}
+      triggerPagination={action('loadMore')}
       onSelectItem={action('onSelectItem')}
       finishedLoading
     />
