@@ -42,6 +42,7 @@ storiesOf('MediaPlayer', module)
       readOnly
       fluid
       useOverlayControlBar
+      poster={demoPosterImage}
       preload={'none'}
       btnRestart={false}
       btnReplay={false}

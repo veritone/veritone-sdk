@@ -38,3 +38,9 @@
     }
   }
 }
+
+.mediaPlayer {
+  :global(.video-react-poster) {
+    background-size: cover;
+  }
+}

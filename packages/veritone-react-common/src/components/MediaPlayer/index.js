@@ -189,7 +189,7 @@ export default class MediaPlayerComponent extends React.Component {
           />
         )}
         <Player
-          className={styles.mediaPlayer + ' ' + reactPlayerClassName}
+          className={cx(styles.mediaPlayer, reactPlayerClassName)}
           ref={this.props.forwardedRef}
           store={this.context.store}
           {...props}
