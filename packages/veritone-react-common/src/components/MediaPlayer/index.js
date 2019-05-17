@@ -170,15 +170,12 @@ export default class MediaPlayerComponent extends React.Component {
           store={this.context.store}
           {...props}
         >
-          {/* prevent video-react from adding its own control bar */}
           <ControlBar
-            className={
-              cx('video-react', styles.mediaPlayerControls)
-            }
+            className={cx('video-react', styles.mediaPlayerControls)}
             autoHide
             disableDefaultControls
             disableCompletely={!useOverlayControlBar && !isFullscreen}
-            >
+          >
             <RestartMediaButton order={1.1} />
             <ReplayControl seconds={10} order={1.2} />
             <ForwardControl seconds={10} order={1.3} />
@@ -190,7 +187,12 @@ export default class MediaPlayerComponent extends React.Component {
             <VolumeMenuButton vertical order={7} />
             <FullscreenToggle order={8} />
           </ControlBar>
-          <VideoSource isVideoChild src={src} streams={streams} />
+          <VideoSource
+            isVideoChild
+            src={src}
+            streams={streams}
+            disablePreload={props.preload === 'none' ? true : false}
+          />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>
