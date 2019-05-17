@@ -1,30 +1,3 @@
-.hiddenDummyControls {
-  display: none !important;
-}
-
-:global {
-  .video-react-control {
-    width: 3em;
-  }
-  .video-react-time-control {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-  }
-
-  .video-react-control-text,
-  .video-react-mouse-display,
-  .video-react-mouse-display::after,
-  .video-react-play-progress::after {
-    font-family: Roboto, sans-serif !important;
-    font-size: 1em !important;
-  }
-
-  .video-react-slider:focus {
-    text-shadow: none;
-    box-shadow: none;
-  }
-}
-
 :global(.video-react) {
   .mediaPlayButton:global(.video-react-big-play-button.video-react-big-play-button-center) {
     top: 50%;
@@ -58,7 +31,6 @@
     :global(.video-react-mouse-display::after),
     :global(.video-react-play-progress::after) {
       font-family: Roboto !important;
-      font-size: 1em !important;
     }
 
     :global(.video-react-slider:focus) {
@@ -67,4 +39,3 @@
     }
   }
 }
-
