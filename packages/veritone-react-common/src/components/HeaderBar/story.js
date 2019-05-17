@@ -29,6 +29,5 @@ storiesOf('HeaderBar', module)
       onBack={action('onBack')}
       onClear={action('onClear')}
       onToggleView={action('onToggleView')}
-      searchValue={text('searchValue', 'Search')}
     />
   ))
