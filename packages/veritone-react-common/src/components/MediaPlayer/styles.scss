@@ -13,7 +13,6 @@
 
 :global(.video-react) {
   &.mediaPlayerControls {
-    font-size: 12px !important;
     font-family: Roboto, sans-serif;
     outline: none !important;
     background-color: black;
@@ -31,7 +30,6 @@
     :global(.video-react-mouse-display::after),
     :global(.video-react-play-progress::after) {
       font-family: Roboto !important;
-      font-size: 1em !important;
     }
 
     :global(.video-react-slider:focus) {
