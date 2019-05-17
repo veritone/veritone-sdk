@@ -154,7 +154,11 @@ class HeaderBar extends React.Component {
               )
             }
             <div className={classes.spacer} />
-            <Breadcrumbs pathList={pathList} onCrumbClick={onCrumbClick} />
+            <Breadcrumbs
+              pathList={pathList}
+              onCrumbClick={onCrumbClick}
+              isStream={currentPickerType==='stream'}
+            />
             <div style={{ flexGrow: 1 }} />
             <div className={cx(
               classes.buttonGroup,
