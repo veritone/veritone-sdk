@@ -1,7 +1,6 @@
 import React from 'react';
-import { arrayOf, node, string, func, bool, shape } from 'prop-types';
-
-import { withStyles } from '@material-ui/core/styles';
+import { oneOf, func, bool } from 'prop-types';
+import { Work, Add } from '@material-ui/icons';
 import {
   Divider,
   List,
@@ -10,70 +9,82 @@ import {
   ListItemText
 } from '@material-ui/core';
 
-import classNames from 'classnames';
+import cx from 'classnames';
+import styles from './styles.scss';
 
-const styles = () => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    paddingLeft: 12,
-    paddingRight: 16,
-    backgroundColor: '#E8EAED',
-    boxShadow: '0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.3)'
-  },
-  divider: {
-    marginTop: 16,
-    marginBottom: 20,
-    marginLeft: 12,
-    marginRight: 8
-  },
-  selected: {
-    backgroundColor: 'rgba(33,150,243,0.12)'
-  }
-});
-
-
-const LeftNavigationPanel = ({ pathList, classes }) => (
-  <List component="nav" className={classes.root}>
+const LeftNavigationPanel = ({
+  currentPickerType,
+  showFolder,
+  showStream,
+  showUpload,
+  toggleFolderView,
+  toggleStreamView,
+  toggleUploadView,
+ }) => (
+  <List component="nav" className={styles.root}>
     {
-      pathList.map(({ id, icon, text, onClick, seperated, selected }) => (
-        <React.Fragment key={text}>
-          {seperated && <Divider className={classes.divider} />}
-          <ListItem
-            onClick={onClick}
-            data-id={id}
-            className={classNames({ [classes.selected]: selected })}
-            button
-          >
-            <ListItemIcon>
-              {icon}
-            </ListItemIcon>
-            <ListItemText>
-              {text}
-            </ListItemText>
-          </ListItem>
-        </React.Fragment>
-      ))
+      showFolder && (
+        <ListItem
+          onClick={toggleFolderView}
+          className={cx({ [styles.selected]: currentPickerType === 'folder' })}
+          button
+        >
+          <ListItemIcon>
+            <Work />
+          </ListItemIcon>
+          <ListItemText>
+            My Files
+          </ListItemText>
+        </ListItem>
+      )
+    }
+    {showFolder && <Divider className={styles.divider} /> }
+    {
+      showStream && (
+        <ListItem
+          onClick={toggleStreamView}
+          className={cx({ [styles.selected]: currentPickerType === 'stream' })}
+          button
+        >
+          <ListItemIcon>
+            <div className='icon-streams' />
+          </ListItemIcon>
+          <ListItemText>
+            Stream
+          </ListItemText>
+        </ListItem>
+      )
+    }
+    <div className={styles.spacer} />
+    {
+      showUpload && (
+        <ListItem
+          onClick={toggleStreamView}
+          className={styles['upload-button']}
+          button
+        >
+          <ListItemIcon>
+            <Add />
+          </ListItemIcon>
+          <ListItemText>
+            ADD
+          </ListItemText>
+        </ListItem>
+      )
     }
   </List>
 );
 
 
 LeftNavigationPanel.propTypes = {
-  pathList: arrayOf(shape({
-    id: string.isRequired,
-    icon: node.isRequired,
-    text: string.isRequired,
-    onClick: func,
-    seperated: bool,
-    selected: bool
-  })),
-  classes: shape({
-    root: string,
-    divider: string,
-    selected: string
-  })
+  currentPickerType: oneOf('folder', 'stream', 'upload'),
+  showFolder: bool,
+  showStream: bool,                // Ignore for MVP
+  showUpload: bool,
+  toggleFolderView: func.isRequired,
+  toggleStreamView: func.isRequired,  // Ignore for MVP
+  toggleUploadView: func.isRequired,
 }
 
 
-export default withStyles(styles)(LeftNavigationPanel);
+export default LeftNavigationPanel;
