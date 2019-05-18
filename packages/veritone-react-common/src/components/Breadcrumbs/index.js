@@ -6,7 +6,7 @@ import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
 
 import BreadcrumbItem from './BreadcrumbItem';
 
-import styles from './Breadcrumbs.scss';
+import styles from './styles.scss';
 
 export default class Breadcrumbs extends React.Component {
   static propTypes = {
