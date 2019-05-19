@@ -1,5 +1,6 @@
 import React from 'react';
-import classNames from 'classnames';
+import { debounce } from 'lodash';
+import cx from 'classnames';
 
 import styles from './styles.scss';
 
@@ -9,51 +10,43 @@ export default class InfiniteLoaderWrapper extends React.Component {
   static propTypes = infiniteWrapperShape;
 
   static defaultProps = {
-    threshold: 50,
+    threshold: 80,
     classes: {}
   }
 
-  componentDidMount() {
-    this.props.onMount();
-  }
-
-  getSnapshotBeforeUpdate() {
-    return this.containerRef.current.scrollHeight;
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (snapshot < this.containerRef.current.scrollHeight) {
-      this.loading = false;
-    }
-  }
+  debouncedTriggerPagination = debounce(this.props.triggerPagination, 1000);
 
   onScroll = () => {
     const container = this.containerRef.current;
-    if (!this.loading && !this.props.finishedLoading && (
+    const { isLoading, threshold } = this.props;
+    if (!isLoading && (
       container.scrollTop +
       container.clientHeight >
       container.scrollHeight -
-      this.props.threshold
+      threshold
     )) {
-      this.loading = true;
-      container.scrollTop = container.scrollTop + this.props.threshold
-      this.props.loadMore();
+      // UX improvement: Go to end of container
+      container.scrollTop = container.scrollTop + threshold;
+      this.debouncedTriggerPagination();
     }
   }
-
-  loading = false;
 
   containerRef = React.createRef(null);
 
   render() {
-    const { children, loadingComponent, classes, finishedLoading } = this.props;
+    const { children, loadingComponent, classes, isLoading } = this.props;
 
     return (
-      <div className={classNames(styles['infinte-wrapper'], classes.container)} ref={this.containerRef} onScroll={this.onScroll}>
+      <div className={
+        cx(styles['infinte-wrapper'],
+        classes.container
+      )} ref={this.containerRef} onScroll={this.onScroll}>
         {children}
-        {
-          !finishedLoading && loadingComponent
-        }
+        <div className={styles['loading-container']}>
+          {
+            isLoading && loadingComponent
+          }
+        </div>
       </div>
     )
   }

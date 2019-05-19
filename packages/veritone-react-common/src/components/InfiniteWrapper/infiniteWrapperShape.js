@@ -12,10 +12,9 @@ import {
 
 export default {
   threshold: number,
-  onMount: func,
-  loadMore: func,
-  finishedLoading: bool,
+  isLoading: bool,
   loadingComponent: node,
+  triggerPagination: func.isRequired,
   children: oneOfType([arrayOf(node), object]),
   classes: shape({ container: string })
 }

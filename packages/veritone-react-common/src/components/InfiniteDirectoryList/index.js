@@ -1,4 +1,5 @@
 import React from 'react';
+import { get } from 'lodash';
 import { arrayOf, string, shape, func, node } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -16,7 +17,7 @@ import {
   TableRow
 } from '@material-ui/core';
 
-import classNames from 'classnames';
+import cx from 'classnames';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import infiniteWrapperShape from '../InfiniteWrapper/infiniteWrapperShape';
@@ -45,29 +46,17 @@ const muiStyles = () => ({
     display: 'flex',
     alignItems: 'center'
   },
-  text: {
-    paddingLeft: 12,
-  },
-  Folder: {
-    color: 'rgba(0,0,0,0.87)',
-    fontWeight: 500,
-  },
-  highlighted: {
-    background: '#F0F0F0'
-  },
   selected: {
     background: 'rgba(0,0,0,0.37)'
   }
 });
 
 const FILE_ICONS = {
-  'Folder': Folder,
-  'audio/mp3': KeyboardVoice,
-  'video/mp4': Videocam,
+  'folder': Folder,
+  'audio': KeyboardVoice,
+  'video': Videocam,
   'doc': InsertDriveFile
 }
-
-const DEFAULT_THRESHOLD = 80;
 
 const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
@@ -78,7 +67,7 @@ const DefaultLoading = () => (
   </div>
 )
 
-class FilesTable extends React.Component {
+class InfiniteDirectoryList extends React.Component {
 
   static propTypes = {
     headers: arrayOf(string),
@@ -105,6 +94,7 @@ class FilesTable extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleArrowKey);
+    this.props.triggerPagination();
   }
 
   componentWillUnmount() {
@@ -206,9 +196,8 @@ class FilesTable extends React.Component {
       headers,
       items,
       onSelectItem,
-      onMount,
       triggerPagination,
-      finishedLoading,
+      isLoading,
       loadingComponent
     } = this.props;
 
@@ -217,11 +206,9 @@ class FilesTable extends React.Component {
     return (
       <div className={styles['table-container']}>
         <InfiniteWrapper
-          finishedLoading={finishedLoading}
-          threshold={DEFAULT_THRESHOLD}
-          onMount={onMount}
-          loadMore={triggerPagination}
+          isLoading={isLoading}
           loadingComponent={loadingComponent}
+          triggerPagination={triggerPagination}
         >
           <Table>
             <TableHead>
@@ -230,7 +217,7 @@ class FilesTable extends React.Component {
                   headers.map((header) => (
                     <TableCell
                       key={header}
-                      className={classNames(
+                      className={cx(
                         classes.tableRowHeadColumn,
                         classes.tableRow
                       )}
@@ -246,11 +233,21 @@ class FilesTable extends React.Component {
               </TableRow>
             </TableHead>
             <TableBody className={classes.tablebody}>
-              {items.map(({ id, type, name, date }, index) => {
-                const FileIcon = FILE_ICONS[type]
+              {items.map(({
+                id,
+                type,
+                name,
+                primaryAsset,
+                createdDateTime,
+                modifiedDateTime
+              }, index) => {
+                const FileIcon = type === 'folder' ? Folder :
+                FILE_ICONS[
+                  get(primaryAsset, 'contentType', 'doc').split('/')[0]
+                ];
                 return (
                   <TableRow
-                    className={classNames({
+                    className={cx({
                       [classes.selected]: highlightedItems[id]
                     })}
                     key={id}
@@ -262,21 +259,26 @@ class FilesTable extends React.Component {
                     <TableCell
                       component="th"
                       scope="row"
-                      className={classNames(
+                      className={cx(
                         classes.tableRow,
                         classes.tableRowFirstColumn
                       )}
                     >
                       <FileIcon />
                       <span className={
-                          classNames(classes.text, classes[type])
+                        cx(styles['table-first-column--text'], {
+                          [styles['table-first-column--folder']]: type==='folder'
+                        })
                         }
                       >
                         {name}
                       </span>
                     </TableCell>
                     <TableCell align="right" className={classes.tableRow}>
-                      {date}
+                      {createdDateTime}
+                    </TableCell>
+                    <TableCell align="right" className={classes.tableRow}>
+                      {modifiedDateTime}
                     </TableCell>
                     <TableCell align="right" className={classes.tableRow}>
                       {type}
@@ -292,4 +294,4 @@ class FilesTable extends React.Component {
   }
 }
 
-export default withStyles(muiStyles)(FilesTable);
+export default withStyles(muiStyles)(InfiniteDirectoryList);
