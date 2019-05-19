@@ -1,6 +1,5 @@
 import React from 'react';
 import { arrayOf, shape, func, string, oneOf } from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import {
   AppBar,
   Toolbar,
@@ -18,68 +17,11 @@ import {
   AddBox
 } from '@material-ui/icons'
 import cx from 'classnames';
-import { defaultVSDKTheme } from '../../helpers/withVeritoneSDKThemeProvider';
 
 import Breadcrumbs from '../Breadcrumbs';
 import SearchInput from '../SearchInput';
+import styles from './styles.scss';
 
-const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  header: {
-    backgroundColor: 'white',
-    alignItems: 'stretch',
-    paddingTop: 12,
-    paddingBottom: 12,
-    flexBasis: 66,
-  },
-  button: {
-    flexBasis: 120
-  },
-  uploadButton: {
-    border: `1px solid ${defaultVSDKTheme.palette.primary.main}`,
-    borderRadius: '1px',
-    color: defaultVSDKTheme.palette.primary.main,
-  },
-  backButton: {
-    color: 'rgba(0, 0, 0, 0.54)',
-  },
-  iconButton: {
-    marginRight: 8
-  },
-  icon: {
-    color: 'rgba(0,0,0,0.26)'
-  },
-  divider: {
-    width: 1,
-    backgroundColor: 'rgba(0,0,0,0.26)',
-    marginTop: 5,
-    marginBottom: 5,
-    alignSelf: 'stretch'
-  },
-  buttonGroup: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  sort: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  view: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  spacer: {
-    width: '1rem'
-  },
-  disabled: {
-    pointerEvents: 'none',
-    opacity: 0.5
-  }
-};
 
 class HeaderBar extends React.Component {
 
@@ -116,7 +58,6 @@ class HeaderBar extends React.Component {
 
   render() {
     const {
-      classes,
       onUpload,
       onBack,
       viewType,
@@ -130,45 +71,49 @@ class HeaderBar extends React.Component {
     } = this.props;
     const { anchorEl } = this.state;
     return (
-      <div className={classes.root}>
+      <div className={styles.root}>
         <AppBar position="static" color="default">
-          <Toolbar className={classes.header}>
+          <Toolbar className={styles.header}>
             {
               currentPickerType === 'upload' ? (
                 <Button
                   onClick={onBack}
-                  className={cx(classes.button, classes.backButton)}
+                  className={cx(styles.button, styles['back-button'])}
                 >
-                  <ArrowBack className={classes.iconButton} />
+                  <ArrowBack className={styles['icon-button']} />
                     Back
                 </Button>
               ) : (
                 <Button
                   onClick={onUpload}
-                  className={cx(classes.button, classes.uploadButton)}
+                  className={cx(styles.button, styles['upload-button'])}
                   variant="outlined"
                 >
-                  <AddBox className={classes.iconButton} />
+                  <AddBox className={styles['icon-button']} />
                     Upload
                 </Button>
               )
             }
-            <div className={classes.spacer} />
-            <Breadcrumbs pathList={pathList} onCrumbClick={onCrumbClick} />
+            <div className={styles.spacer} />
+            <Breadcrumbs
+              pathList={pathList}
+              onCrumbClick={onCrumbClick}
+              isStream={currentPickerType==='stream'}
+            />
             <div style={{ flexGrow: 1 }} />
             <div className={cx(
-              classes.buttonGroup,
-              classes.icon,
-              { [classes.disabled]: currentPickerType === 'upload' }
+              styles['button-group'],
+              styles.icon,
+              { [styles.disabled]: currentPickerType === 'upload' }
               )}
             >
               <SearchInput
                 onClear={onClear}
                 onSearch={onSearch}
               />
-              <div className={classes.spacer} />
-              <div className={cx(classes.divider, classes.icon)} />
-              <div className={classes.spacer} />
+              <div className={styles.spacer} />
+              <div className={cx(styles.divider, styles.icon)} />
+              <div className={styles.spacer} />
               <Sort onClick={this.onOpenSort} />
               <ArrowDropDown onClick={this.onOpenSort} />
               {
@@ -210,10 +155,6 @@ class HeaderBar extends React.Component {
 }
 
 HeaderBar.propTypes = {
-  classes: shape(Object.keys(styles).reduce((classesShape, key) => ({
-    ...classesShape,
-    [key]: string
-  }), {})),
   pathList: arrayOf(shape({
     label: string,
     id: string
@@ -237,4 +178,4 @@ HeaderBar.defaultProps = {
   ],
 }
 
-export default withStyles(styles)(HeaderBar);
+export default HeaderBar;
