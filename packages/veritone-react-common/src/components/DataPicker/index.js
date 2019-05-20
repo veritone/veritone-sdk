@@ -64,6 +64,8 @@ class DataPicker extends React.Component {
             viewType={viewType}
             onToggleView={this.toggleViewType}
             currentPickerType={currentPickerType}
+            onUpload={() => this.toggleContentView('upload')}
+            onBack={() => this.toggleContentView('folder')}
           />
           {
             currentPickerType === 'upload' ? (
