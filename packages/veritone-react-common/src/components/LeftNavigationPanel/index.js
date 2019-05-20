@@ -59,7 +59,7 @@ const LeftNavigationPanel = ({
     {
       showUpload && (
         <ListItem
-          onClick={toggleStreamView}
+          onClick={toggleUploadView}
           className={styles['upload-button']}
           button
         >
