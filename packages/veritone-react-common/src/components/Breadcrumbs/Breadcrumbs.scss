@@ -1,0 +1,18 @@
+.breadcrumb-container {
+  display: flex;
+  font-size: 1rem;
+  background-color: #F5F5F5;
+  align-items: center;
+  border-radius: 2px;
+  min-width: 300px;
+}
+
+.icon-color {
+  color: rgba(0, 0, 0, 0.57);
+}
+
+.icon-spread {
+	cursor: pointer;
+	font-weight: bold;
+	transform: rotate(90deg);
+}
