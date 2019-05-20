@@ -1,9 +1,10 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Paper } from '@material-ui/core';
 
 import InfiniteWrapper from '../InfiniteWrapper';
+import NullState from '../NullState';
 import itemShape from './itemShape';
 
 import FolderListView from './FolderListView';
@@ -16,7 +17,7 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
 
 
 // Placehoder states
-const NullState = () => <div>No file or folder</div>;
+// const NullState = () => <div>No file or folder</div>;
 const ErrorState = () => <div>Error Loading data</div>;
 const LoadingState = () => <CircularProgress size={200} />;
 const FolderGridView = () => <div>Folder Grid View</div>
@@ -31,6 +32,7 @@ class FolderViewContainer extends React.Component {
     isError: bool,
     triggerPagination: func,
     selectedItems: arrayOf(itemShape),
+    onUpload: func,
     onCancel: func,
     onSubmit: func
   }
@@ -183,7 +185,8 @@ class FolderViewContainer extends React.Component {
       items,
       triggerPagination,
       onSelectItem,
-      onCancel
+      onCancel,
+      onUpload
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -193,7 +196,21 @@ class FolderViewContainer extends React.Component {
     }
 
     if (items.length === 0 && isLoaded) {
-      return <NullState />;
+      return (
+        <NullState
+          imgProps={{
+            src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
+            alt: 'No files'
+          }}
+          titleText='No files here'
+          btnProps={{
+            text: 'UPLOAD',
+            onClick: onUpload
+          }}
+        >
+          Click upload button to add content
+        </NullState>
+      );
     }
 
     if (items.length === 0 && isLoading) {
@@ -201,7 +218,7 @@ class FolderViewContainer extends React.Component {
     }
 
     return (
-      <div>
+      <Paper>
         <div className={styles['folder-view-container']}>
           <InfiniteWrapper
             isLoading={isLoading}
@@ -233,7 +250,7 @@ class FolderViewContainer extends React.Component {
           onCancel={onCancel}
           disabled={this.noneHighligthedItem(highlightedItems)}
         />
-      </div>
+      </Paper>
     )
   }
 }

@@ -115,10 +115,10 @@ const FolderListView = ({
                   // component="th"
                   scope="row"
                   className={cx(
-                    classes.tableRow,
-                    classes.tableRowFirstColumn
+                    classes.tableRow
                   )}
                 >
+                <div className={styles['table-first-column']}>
                   <FileIcon />
                   <span className={
                     cx(styles['table-first-column--text'], {
@@ -128,6 +128,7 @@ const FolderListView = ({
                   >
                     {name}
                   </span>
+                  </div>
                 </TableCell>
                 <TableCell align="right" className={classes.tableRow}>
                   {createdDateTime}
