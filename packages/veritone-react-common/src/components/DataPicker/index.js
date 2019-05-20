@@ -17,12 +17,19 @@ class DataPicker extends React.Component {
     onSort: func,
     onCrumbClick: func,
     pathList: array,
-    onCancel: func
+    onCancel: func,
+    supportedFormats: array
   }
 
   static defaultProps = {
     items: [],
-    pathList: [{ id: 'root' }]
+    pathList: [{ id: 'root' }],
+    supportedFormats: [
+      'audio/mp4', 'audio/mpeg',
+      'video/api', 'video/mp4', 'video/ogg',
+      'text/css', 'text/txt', 'text/html',
+      'image/jpg', 'image/png', 'image/gif', 'image/webp'
+    ]
   }
 
   state = {
@@ -44,7 +51,7 @@ class DataPicker extends React.Component {
 
   render() {
     const { currentPickerType, viewType } = this.state;
-    const { triggerPagination, items, onSelectItem, onCancel } = this.props;
+    const { triggerPagination, items, onSelectItem, onCancel, supportedFormats, isLoading } = this.props;
 
     console.log(this.state);
 
@@ -59,7 +66,7 @@ class DataPicker extends React.Component {
           toggleStreamView={() => this.toggleContentView('stream')}
           toggleUploadView={() => this.toggleContentView('upload')}
         />
-        <div>
+        <div style={{ flexBasis: 700 }}>
           <HeaderBar
             viewType={viewType}
             onToggleView={this.toggleViewType}
@@ -69,16 +76,23 @@ class DataPicker extends React.Component {
           />
           {
             currentPickerType === 'upload' ? (
-              <FilePicker />
+              <FilePicker
+                multiple
+                accept={supportedFormats}
+                onRequestClose={onCancel}
+                width={700}
+                height={475}
+              />
             ) : (
-                <FolderViewContainer
-                  items={items}
-                  viewType={viewType}
-                  triggerPagination={triggerPagination}
-                  onSelectItem={onSelectItem}
-                  onCancel={onCancel}
-                />
-              )
+              <FolderViewContainer
+                items={items}
+                viewType={viewType}
+                triggerPagination={triggerPagination}
+                onSelectItem={onSelectItem}
+                onCancel={onCancel}
+                isLoading={isLoading}
+              />
+            )
           }
         </div>
       </div>

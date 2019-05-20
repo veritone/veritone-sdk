@@ -6,7 +6,8 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Paper
 } from '@material-ui/core';
 
 import cx from 'classnames';
@@ -21,12 +22,15 @@ const LeftNavigationPanel = ({
   toggleStreamView,
   toggleUploadView,
  }) => (
-  <List component="nav" className={styles.root}>
+   <Paper>
+  <List component="nav" className={styles.aside}>
     {
       showFolder && (
         <ListItem
           onClick={toggleFolderView}
-          className={cx({ [styles.selected]: currentPickerType === 'folder' })}
+          className={cx(
+            { [styles.selected]: currentPickerType === 'folder' },
+            styles['navigation-item'])}
           button
         >
           <ListItemIcon>
@@ -43,10 +47,12 @@ const LeftNavigationPanel = ({
       showStream && (
         <ListItem
           onClick={toggleStreamView}
-          className={cx({ [styles.selected]: currentPickerType === 'stream' })}
+          className={cx(
+            {[styles.selected]: currentPickerType === 'stream' },
+            styles['navigation-item'])}
           button
         >
-          <ListItemIcon>
+          <ListItemIcon className={cx(styles['icon'])}>
             <div className='icon-streams' />
           </ListItemIcon>
           <ListItemText>
@@ -73,6 +79,7 @@ const LeftNavigationPanel = ({
       )
     }
   </List>
+  </Paper>
 );
 
 
@@ -84,6 +91,10 @@ LeftNavigationPanel.propTypes = {
   toggleFolderView: func.isRequired,
   toggleStreamView: func.isRequired,  // Ignore for MVP
   toggleUploadView: func.isRequired,
+}
+
+LeftNavigationPanel.defaultProps = {
+  showFolder: true
 }
 
 

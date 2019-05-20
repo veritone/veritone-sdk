@@ -67,8 +67,8 @@ export default class Breadcrumbs extends React.Component {
     } = pathList;
     const hiddenCrumbs = pathList.slice(2, pathList.length - 1);
     const icon = isStream ? (
-      <div className={cx('icon-streams', 'rootIcon-color')} />
-    ) : <Work className={styles['rootIcon-color']} />;
+      <div className={cx('icon-streams', styles['root-icon'])} />
+    ) : <Work className={styles['root-icon']} />;
 
     return (
       <div className={styles['breadcrumb-container']}>
