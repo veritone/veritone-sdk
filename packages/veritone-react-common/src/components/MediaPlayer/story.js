@@ -31,7 +31,35 @@ storiesOf('MediaPlayer', module)
       src={demoMp4}
       readOnly
       fluid
-      useOverlayControlBar />
+      useOverlayControlBar
+    />
+  ))
+  .add('DASH, no preload, minimal controls', () => (
+    <MediaPlayerComponent
+      muted
+      src={demoMp4}
+      streams={dashStream}
+      readOnly
+      fluid
+      useOverlayControlBar
+      poster={demoPosterImage}
+      preload={'none'}
+      btnRestart={false}
+      btnReplay={false}
+      btnForward={false}
+      autoHide
+      autoHideTime={1000}
+    />
+  ))
+  .add('DASH, autoplay', () => (
+    <MediaPlayerComponent
+      muted
+      autoPlay
+      streams={dashStream}
+      readOnly
+      fluid
+      useOverlayControlBar
+    />
   ))
   .add('DASH (fixed width, pillarboxed)', () => (
     <MediaPlayerComponent
@@ -41,7 +69,8 @@ storiesOf('MediaPlayer', module)
       width={800}
       height={300}
       readOnly
-      useOverlayControlBar />
+      useOverlayControlBar
+    />
   ))
   .add('HLS', () => (
     <MediaPlayerComponent
@@ -50,7 +79,8 @@ storiesOf('MediaPlayer', module)
       streams={hlsStream}
       width={500}
       readOnly
-      useOverlayControlBar />
+      useOverlayControlBar
+    />
   ))
   .add('Audio Only', () => (
     <MediaPlayerComponent
@@ -59,5 +89,6 @@ storiesOf('MediaPlayer', module)
       width={500}
       readOnly
       poster={demoPosterImage}
-      useOverlayControlBar />
-  ))
+      useOverlayControlBar
+    />
+  ));

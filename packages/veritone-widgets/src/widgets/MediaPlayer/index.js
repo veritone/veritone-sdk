@@ -24,7 +24,8 @@ import {
   hasStarted: state.player.hasStarted,
   isActive: state.player.isActive,
   currentTime: state.player.currentTime,
-  paused: state.player.paused
+  paused: state.player.paused,
+  isFullscreen: state.player.isFullscreen
 }))
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
