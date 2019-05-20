@@ -158,6 +158,16 @@ const items = [
   },
 ];
 
+const pathList = [
+  {
+    id: '1'
+  },
+  {
+    label: 'Child',
+    id: '2'
+  }
+]
+
 storiesOf('DataPicker', module)
   .add('Loading', () => (
     <DataPicker
@@ -166,5 +176,10 @@ storiesOf('DataPicker', module)
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
       isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
     />
   ))
