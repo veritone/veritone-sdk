@@ -1,5 +1,14 @@
 import React from 'react';
-import { bool, number, object, node, func, arrayOf } from 'prop-types';
+import {
+  bool,
+  number,
+  objectOf,
+  string,
+  node,
+  func,
+  arrayOf,
+  oneOfType
+} from 'prop-types';
 import { CircularProgress } from '@material-ui/core';
 import { debounce } from 'lodash';
 import cx from 'classnames';
@@ -10,10 +19,13 @@ export default class InfiniteLoaderWrapper extends React.Component {
   static propTypes = {
     isLoading: bool,
     threshold: number,
-    classes: object,
+    classes: objectOf(string),
     loadingComponent: node,
     triggerPagination: func,
-    children: arrayOf(node)
+    children: oneOfType([
+      arrayOf(node),
+      node
+    ])
   };
 
   static defaultProps = {
@@ -23,6 +35,14 @@ export default class InfiniteLoaderWrapper extends React.Component {
       <div className={styles['loading-container']}>
         <CircularProgress size={50} />
       </div>
+  }
+
+  getViewWindow = () => {
+    const boundingClient = this.containerRef.current.getBoundingClientRect();
+    return {
+      top: boundingClient.top,
+      bottom: boundingClient.bottom
+    }
   }
 
   debouncedTriggerPagination = debounce(this.props.triggerPagination, 1000);

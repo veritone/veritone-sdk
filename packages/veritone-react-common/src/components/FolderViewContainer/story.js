@@ -14,7 +14,7 @@ const items = [
   },
   {
     id: '2',
-    type: 'audio/mp3',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
@@ -22,7 +22,7 @@ const items = [
   },
   {
     id: '3',
-    type: 'video/mp4',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
@@ -30,7 +30,7 @@ const items = [
   },
   {
     id: '4',
-    type: 'audio/mp3',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
@@ -38,7 +38,7 @@ const items = [
   },
   {
     id: '5',
-    type: 'doc',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'maps.xml',
@@ -46,7 +46,7 @@ const items = [
   },
   {
     id: '6',
-    type: 'audio/mp3',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
@@ -54,7 +54,7 @@ const items = [
   },
   {
     id: '7',
-    type: 'video/mp4',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
@@ -62,7 +62,7 @@ const items = [
   },
   {
     id: '8',
-    type: 'audio/mp3',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
@@ -70,7 +70,7 @@ const items = [
   },
   {
     id: '9',
-    type: 'doc',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'maps.xml',
@@ -78,7 +78,79 @@ const items = [
   },
   {
     id: '10',
-    type: 'doc',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'maps.xml',
+    primaryAsset: { contentType: 'doc/xml' }
+  },
+  {
+    id: '11',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'An audio.mp3',
+    primaryAsset: { contentType: 'audio/mp3' }
+  },
+  {
+    id: '12',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'Game of thrones.mp4',
+    primaryAsset: { contentType: 'video/mp4' }
+  },
+  {
+    id: '13',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'City of stars.mp3',
+    primaryAsset: { contentType: 'audio/mp3' }
+  },
+  {
+    id: '14',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'maps.xml',
+    primaryAsset: { contentType: 'doc/xml' }
+  },
+  {
+    id: '15',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'An audio.mp3',
+    primaryAsset: { contentType: 'audio/mp3' }
+  },
+  {
+    id: '16',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'Game of thrones.mp4',
+    primaryAsset: { contentType: 'video/mp4' }
+  },
+  {
+    id: '17',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'City of stars.mp3',
+    primaryAsset: { contentType: 'audio/mp3' }
+  },
+  {
+    id: '18',
+    type: 'tdo',
+    createdDateTime: 'Mar 29, 2019 3:34 PM',
+    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    name: 'maps.xml',
+    primaryAsset: { contentType: 'doc/xml' }
+  },
+  {
+    id: '19',
+    type: 'tdo',
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'maps.xml',
@@ -87,15 +159,31 @@ const items = [
 ];
 
 storiesOf('FolderViewContainer', module)
+  .add('Loading', () => (
+    <FolderViewContainer
+      onSelectItem={action('onSelectItem')}
+      triggerPagination={action('triggerPagination')}
+      viewType={text('viewType', 'list')}
+      isLoading
+    />
+  ))
+  .add('Null', () => (
+    <FolderViewContainer
+      onSelectItem={action('onSelectItem')}
+      triggerPagination={action('triggerPagination')}
+      viewType={text('viewType', 'list')}
+      isLoaded
+    />
+  ))
   .add('Basic', () => (
-    <div style={{ position: 'relative', paddingTop: 48, width: '100%' }}>
-      <div style={{ height: 300, overflowY: 'auto' }}>
-        <FolderViewContainer
-          items={items}
-          onSelectItem={action('onSelectItem')}
-          triggerPagination={action('triggerPagination')}
-          viewType={text('viewType', 'list')}
-        />
-      </div>
-    </div>
+    <FolderViewContainer
+      items={items}
+      onSelectItem={action('onSelectItem')}
+      triggerPagination={action('triggerPagination')}
+      viewType={text('viewType', 'list')}
+      isLoading={boolean('isLoading', false)}
+      isError={boolean('isError', false)}
+      onSubmit={action('onSubmit')}
+      onCancel={action('onCancel')}
+    />
   ))

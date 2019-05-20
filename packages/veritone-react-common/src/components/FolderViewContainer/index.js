@@ -1,7 +1,7 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 
-import { CircularProgress } from '@material-ui/icons';
+import { CircularProgress } from '@material-ui/core';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import itemShape from './itemShape';
@@ -16,22 +16,28 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
 
 
 // Placehoder states
-
 const NullState = () => <div>No file or folder</div>;
 const ErrorState = () => <div>Error Loading data</div>;
 const LoadingState = () => <CircularProgress size={200} />;
 const FolderGridView = () => <div>Folder Grid View</div>
 
-
 class FolderViewContainer extends React.Component {
   static propTypes = {
-    viewType: oneOf('list', 'gird'),
+    viewType: oneOf(['list', 'gird']),
     items: arrayOf(itemShape),
     onSelectItem: func,
     isLoading: bool,
     isLoaded: bool,
     isError: bool,
-    triggerPagination: func
+    triggerPagination: func,
+    selectedItems: arrayOf(itemShape),
+    onCancel: func,
+    onSubmit: func
+  }
+
+  static defaultProps = {
+    items: [],
+    selectedItems: []
   }
 
   state = {
@@ -39,6 +45,7 @@ class FolderViewContainer extends React.Component {
   }
 
   componentDidMount() {
+    this.props.triggerPagination();
     document.addEventListener('keydown', this.handleArrowKey);
   }
 
@@ -53,27 +60,51 @@ class FolderViewContainer extends React.Component {
       return;
     }
     if (eventKeyCode === 38) {
+      event.preventDefault();
       if (event.shiftKey) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
-        this.onShiftHighlight(Math.max(currentIndex - 1, 0));
+        const shiftHighlightIndex = Math.max(currentIndex - 1, 0);
+        this.onShiftHighlight(shiftHighlightIndex);
+        this.needScrollIntoView(shiftHighlightIndex);
       } else {
         const currentIndex = Math.max((lastIndex || 0) - 1, 0);
         this.onHighlight(parseInt(currentIndex, 10));
+        this.needScrollIntoView(currentIndex);
       }
-      event.preventDefault();
     }
 
     if (eventKeyCode === 40) {
       const { items } = this.props;
-      const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
+      event.preventDefault();
       if (event.shiftKey) {
-        this.onShiftHighlight(Math.min(currentIndex + 1, items.length - 1));
+        const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
+        const shiftHighlightIndex = Math.min(currentIndex + 1, items.length - 1);
+        this.onShiftHighlight(shiftHighlightIndex);
+        this.needScrollIntoView(shiftHighlightIndex);
       } else {
         const currentIndex = Math.min((lastIndex || 0) + 1, items.length - 1);
         this.onHighlight(currentIndex);
+        this.needScrollIntoView(currentIndex);
       }
     }
-    event.preventDefault();
+  }
+
+  needScrollIntoView = (itemIndex) => {
+    const { items } = this.props;
+    const itemId = items[itemIndex].id;
+    const itemEl = document.getElementById(itemId);
+    const itemElBounding = itemEl.getBoundingClientRect();
+
+    const {
+      top: topView,
+      bottom: bottomView
+    } =  this.scrollRef.current.getViewWindow();
+    if (itemElBounding.top < topView) {
+      itemEl.scrollIntoView();
+    }
+    if (itemElBounding.bottom > bottomView) {
+      itemEl.scrollIntoView({ block: 'end' });
+    }
   }
 
   onShiftHighlight = (index) => {
@@ -136,12 +167,12 @@ class FolderViewContainer extends React.Component {
   }
 
   onSubmit = () => {
-
+    const { highlightedItems } = this.state;
+    this.props.onSubmit(Object.keys(highlightedItems)
+      .filter(key => highlightedItems[key]))
   }
 
-  onCancel = () => {
-
-  }
+  scrollRef = React.createRef();
 
   render() {
     const {
@@ -151,8 +182,11 @@ class FolderViewContainer extends React.Component {
       viewType,
       items,
       triggerPagination,
-      onSelectItem
+      onSelectItem,
+      onCancel
     } = this.props;
+
+    const { highlightedItems } = this.state;
 
     if (isError) {
       return <ErrorState />;
@@ -163,7 +197,7 @@ class FolderViewContainer extends React.Component {
     }
 
     if (items.length === 0 && isLoading) {
-      return <LoadingState />;
+      return <LoadingState />
     }
 
     return (
@@ -172,6 +206,7 @@ class FolderViewContainer extends React.Component {
           <InfiniteWrapper
             isLoading={isLoading}
             triggerPagination={triggerPagination}
+            ref={this.scrollRef}
           >
             {
               viewType==='list' ? (
@@ -179,7 +214,7 @@ class FolderViewContainer extends React.Component {
                   items={items}
                   onHighlightItem={this.onHighlightItem}
                   onSelectItem={onSelectItem}
-                  highlightedItems={this.state.highlightedItems}
+                  highlightedItems={highlightedItems}
                 />
               ) : (
                 <FolderGridView
@@ -194,7 +229,8 @@ class FolderViewContainer extends React.Component {
         <FolderViewFooter
           title='Open'
           onSubmit={this.onSubmit}
-          onCancel={this.onCancel}
+          onCancel={onCancel}
+          disabled={this.noneHighligthedItem(highlightedItems)}
         />
       </div>
     )

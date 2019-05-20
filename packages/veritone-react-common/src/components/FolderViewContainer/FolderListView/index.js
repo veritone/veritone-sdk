@@ -1,6 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
-import { arrayOf, string, shape, func, node, objectOf, bool } from 'prop-types';
+import { arrayOf, string, shape, func, objectOf, bool } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Folder,
@@ -104,6 +104,7 @@ const FolderListView = ({
                 className={cx({
                   [classes.selected]: highlightedItems[id]
                 })}
+                id={id}
                 key={id}
                 data-id={id}
                 data-index={index}
