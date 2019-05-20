@@ -137,7 +137,11 @@ const FolderListView = ({
                   {modifiedDateTime}
                 </TableCell>
                 <TableCell align="right" className={classes.tableRow}>
-                  {type}
+                  {
+                    type === 'folder' ?
+                    'folder' :
+                    get(primaryAsset, 'contentType', 'doc')
+                  }
                 </TableCell>
               </TableRow>
             )
