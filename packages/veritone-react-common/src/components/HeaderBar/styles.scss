@@ -1,18 +1,23 @@
 .root {
   flex-grow: 1;
+  position: relative;
+  z-index: 9;
 }
-
+.headerBar{
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24) !important;
+}
 .header {
   background-color: white;
   align-items: stretch !important;
   padding-top: 12px;
   padding-bottom: 12px;
-  flex-basis: 66px;
+  height: 60px;
+  min-height: 60px;
 }
 
 
 .button {
-  flex-basis: 120 !important;
+  flex-basis: 108px !important;
 }
 
 
