@@ -221,6 +221,7 @@ class FolderViewContainer extends React.Component {
                   items={items}
                   onHighlightItem={this.onHighlightItem}
                   onSelectItem={onSelectItem}
+                  highlightedItems={highlightedItems}
                 />
               )
             }
