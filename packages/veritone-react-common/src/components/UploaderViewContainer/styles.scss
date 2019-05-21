@@ -1,0 +1,23 @@
+.uploader-container {
+  display: flex;
+  flex-flow: column;
+}
+
+.uploader-content {
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
+  padding: 16px;
+}
+
+.uploader-upload-area {
+  flex-grow: 1;
+  display: flex;
+  height: 100%;
+}
+
+.uploader-file-list {
+  height: 200px;
+  overflow-y: auto;
+  margin-top: 24px;
+}
