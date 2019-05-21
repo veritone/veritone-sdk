@@ -18,8 +18,8 @@ const UploadViewContainer = ({
   onCancel,
   onUpload,
   onDeleteFile,
-  multiple
-  containerStyle
+  multiple,
+  containerStyle,
 }) => (
     <div className={styles['uploader-container']} style={containerStyle}>
       <div className={styles['uploader-content']}>
@@ -78,7 +78,11 @@ UploadViewContainer.propTypes = {
 
 UploadViewContainer.defaultProps = {
   accept: [],
-  multiple: true
+  multiple: true,
+  containerStyle: {
+    width: '100%',
+    height: 475
+  }
 }
 
 export default UploadViewContainer;
