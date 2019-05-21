@@ -1,9 +1,10 @@
 import React from 'react';
-import { func, string, array, bool } from 'prop-types';
+import { func, string, array, bool, arrayOf, shape, number } from 'prop-types';
 import { Paper } from '@material-ui/core'
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
-import FilePicker from '../FilePicker';
+// import FilePicker from '../FilePicker';
+import UploaderViewContainer from '../UploaderViewContainer';
 import HeaderBar from '../HeaderBar';
 import styles from './styles.scss';
 
@@ -24,7 +25,18 @@ class DataPicker extends React.Component {
     onCrumbClick: func,
     pathList: array,
     onCancel: func,
-    supportedFormats: array
+    supportedFormats: array,
+    onSelect: func,
+    onRejectFile: func,
+    onDeleteFile: func,
+    percentageUploadingFiles: arrayOf(shape({
+      key: string,
+      value: shape({
+        name: string,
+        percent: number,
+        size: number
+      })
+    }))
   }
 
   static defaultProps = {
@@ -68,7 +80,12 @@ class DataPicker extends React.Component {
       onCrumbClick,
       onSearch,
       onClear,
-      onSort
+      onSort,
+      onSelect,
+      onUpload,
+      onRejectFile,
+      onDeleteFile,
+      percentageUploadingFiles
     } = this.props;
 
     return (
@@ -100,13 +117,19 @@ class DataPicker extends React.Component {
               switch (currentPickerType) {
                 case 'upload':
                   return (
-                    <FilePicker
-                      multiple
-                      accept={supportedFormats}
-                      onRequestClose={onCancel}
-                      height={475}
-                      width="100%"
-                    />
+                    <Paper>
+                      <UploaderViewContainer
+                        multiple
+                        accept={supportedFormats}
+                        onCancel={onCancel}
+                        onUpload={onUpload}
+                        onSelect={onSelect}
+                        onReject={onRejectFile}
+                        onDeleteFile={onDeleteFile}
+                        percentageUploadingFiles={percentageUploadingFiles}
+                        containerStyle={{ height: 475}}
+                      />
+                    </Paper>
                   )
                 case 'folder':
                   return (

@@ -168,8 +168,46 @@ const pathList = [
   }
 ]
 
+const percentByFiles = [{
+  key: 'audio_file.flac',
+  value: {
+    type: 'audio/flac',
+    percent: 10,
+    size: 82356235
+  }
+}, {
+  key: 'video_file.mp4',
+  value: {
+    type: 'video/mp4',
+    percent: 20,
+    size: 23856925352
+  }
+}, {
+  key: 'image_file.png',
+  value: {
+    type: 'image/gif',
+    percent: 80,
+    size: 38529
+  }
+}, {
+  key: 'text_file.txt',
+  value: {
+    type: 'application/text',
+    percent: 90,
+    size: 569182
+  }
+}, {
+  key: 'error_file.bin',
+  value: {
+    type: 'application/json',
+    percent: 69,
+    size: 56283756,
+    error: true
+  }
+}];
+
 storiesOf('DataPicker', module)
-  .add('Loading', () => (
+  .add('Basic', () => (
     <DataPicker
       items={items}
       triggerPagination={action('triggerPagination')}
@@ -181,5 +219,29 @@ storiesOf('DataPicker', module)
       onSearch={action('onSearch')}
       onClear={action('onClear')}
       onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={percentByFiles}
+    />
+  ))
+  .add('No file upload', () => (
+    <DataPicker
+      items={items}
+      triggerPagination={action('triggerPagination')}
+      onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={[]}
     />
   ))
