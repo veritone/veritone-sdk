@@ -1,5 +1,8 @@
+# veritone-redux-common
 
-# License
+Veritone's shared state layer
+
+## License
 Copyright 2017, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
