@@ -7,7 +7,6 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
@@ -16,14 +15,32 @@ const { auth: authModule, config: configModule } = modules;
 import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
+import {
+  ABORT_REQUEST,
+  UPLOAD_REQUEST,
+  RETRY_REQUEST,
+  RETRY_DONE,
+  uploadProgress,
+  uploadComplete,
+  endPick,
+  failedFiles,
+  uploadResult
+} from './';
+
+let requestMap;
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
-  // fixme -- handle this better
-  yield call(delay, warning || error ? 1500 : 500);
+  
+  if (warning || error) {
+    // There are failed uploads, don't close out and display error screen
+    return;
+  }
   yield put(endPick(id));
-  yield call(callback, result, { warning, error, cancelled: false });
+  // Get accumulated results, not just what's in the current upload/retry request
+  // If there's no results, then the user must have aborted them all
+  const totalResults = yield select(uploadResult, id);
+  yield call(callback, totalResults, { warning, error, cancelled: !totalResults.length });
 }
 
 function* uploadFileSaga(id, fileOrFiles, callback = noop) {
@@ -82,7 +99,9 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
 
   let resultChan;
   try {
-    resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
+    const uploadChannelResult = yield call(uploadFilesChannel, uploadDescriptors, files);
+    resultChan = uploadChannelResult.channel;
+    requestMap = uploadChannelResult.requestMap;
   } catch (error) {
     return yield* finishUpload(id, null, { error }, callback);
   }
@@ -92,6 +111,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   while (result.length !== files.length) {
     const {
       progress = 0,
+      aborted,
       error,
       success,
       file,
@@ -99,7 +119,14 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
-      yield put(uploadProgress(id, key, 100));
+      yield put(uploadProgress(id, key, {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        error,
+        aborted,
+        percent: 100
+      }));
 
       result.push({
         key,
@@ -108,18 +135,28 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         fileName: file.name,
         size: file.size,
         type: file.type,
+        aborted,
         error: error || false,
         unsignedUrl: error ? null : unsignedUrl,
-        getUrl: error ? null : getUrl
+        getUrl: error ? null : getUrl,
+        file
       });
 
       continue;
     }
 
-    yield put(uploadProgress(id, key, progress));
+    yield put(uploadProgress(id, key, {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      percent: progress
+    }));
   }
 
-  const isError = result.every(e => e.error);
+  // Remove aborted requests
+  result = result.filter(r => !r.aborted);
+
+  const isError = result.length && result.every(e => e.error);
   const isWarning = !isError && result.some(e => e.error);
 
   yield* finishUpload(
@@ -141,6 +178,48 @@ function* watchUploadRequest() {
   });
 }
 
+function* watchRetryRequest() {
+  yield takeEvery(RETRY_REQUEST, function*(action) {
+    const { callback } = action.payload;
+    const { id } = action.meta;
+    const erroredFiles = yield select(failedFiles, id) || [];
+    yield call(uploadFileSaga, id, erroredFiles, callback);
+  });
+}
+
+function* watchRetryDone() {
+  yield takeEvery(RETRY_DONE, function*(action) {
+    const { callback } = action.payload;
+    const { id } = action.meta;
+    const uploads = yield select(uploadResult, id) || [];
+    const completedUploads = uploads.filter(upload => !upload.error);
+
+    yield put(endPick(id));
+    yield call(callback, completedUploads, { cancelled: !completedUploads.length });
+  });
+}
+
+function* watchAbortions() {
+  yield takeEvery(ABORT_REQUEST, function*(action) {
+    const { fileKey } = action.meta;
+    // Abort requests somehow
+    if (fileKey && requestMap[fileKey]) {
+      yield requestMap[fileKey].abort && requestMap[fileKey].abort();
+      delete requestMap[fileKey];
+    } else {
+      Object.keys(requestMap).forEach(fileKey => {
+        requestMap[fileKey].abort && requestMap[fileKey].abort();
+        delete requestMap[fileKey];
+      });
+    }
+  });
+}
+
 export default function* root() {
-  yield all([fork(watchUploadRequest)]);
+  yield all([
+    fork(watchUploadRequest),
+    fork(watchRetryRequest),
+    fork(watchRetryDone),
+    fork(watchAbortions)
+  ]);
 }

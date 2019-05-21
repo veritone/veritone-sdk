@@ -71,7 +71,12 @@ if [ "$1" = "all" ]; then
 
   aws s3api put-object --bucket $bucketname --key $vWidgetsName --body $vWidgetsName --profile veritone
   rm $vWidgetsName
-  echo "Created veritone-widgets package at https://${bucketname}.s3.amazonaws.com/${vWidgetsName}"
+  vWidgetsS3=https://${bucketname}.s3.amazonaws.com/${vWidgetsName}
+
+  # Re-echo subpackages since we may need to reference them in some cases
+  echo "Created veritone-redux-common package at ${vReduxS3}"
+  echo "Created veritone-react-common package at ${vReactS3}"
+  echo "Created veritone-widgets package at ${vWidgetsS3}"
   echo "Finished - This build of veritone-widgets contains all changes in veritone-react/redux-common"
   # Bail out since we're done!
   exit 1

@@ -12,8 +12,8 @@ export const OverlayPositioningContext = React.createContext({
 });
 export default class OverlayPositioningProvider extends React.Component {
   static propTypes = {
-    contentHeight: number.isRequired,
-    contentWidth: number.isRequired,
+    contentHeight: number,
+    contentWidth: number,
     fixedWidth: bool,
     children: node,
     contentClassName: string
