@@ -18,7 +18,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '3',
@@ -26,7 +27,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' }
+    primaryAsset: { contentType: 'video/mp4' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"    
   },
   {
     id: '4',
@@ -34,7 +36,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '5',
@@ -58,7 +61,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' }
+    primaryAsset: { contentType: 'video/mp4' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '8',
@@ -66,7 +70,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '9',
@@ -74,7 +79,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'maps.xml',
-    primaryAsset: { contentType: 'doc/xml' }
+    primaryAsset: { contentType: 'doc/xml' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '10',
@@ -90,7 +96,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '12',
@@ -106,7 +113,9 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+
   },
   {
     id: '14',
@@ -130,7 +139,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' }
+    primaryAsset: { contentType: 'video/mp4' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '17',
@@ -138,7 +148,8 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3' },
+    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
   },
   {
     id: '18',
