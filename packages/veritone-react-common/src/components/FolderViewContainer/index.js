@@ -1,7 +1,7 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 
-import { CircularProgress, Paper } from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import NullState from '../NullState';
@@ -9,7 +9,9 @@ import MediaInfoPanel from '../MediaInfoPanel';
 import itemShape from './itemShape';
 
 import FolderListView from './FolderListView';
+import FolderLoading from './FolderLoading'
 import FolderViewFooter from './FolderViewFooter';
+import FolderGridView from './FolderGridView';
 import styles from './styles.scss';
 
 
@@ -20,8 +22,7 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
 // Placehoder states
 // const NullState = () => <div>No file or folder</div>;
 const ErrorState = () => <div>Error Loading data</div>;
-const LoadingState = () => <CircularProgress size={200} />;
-const FolderGridView = () => <div>Folder Grid View</div>
+const LoadingState = () => <FolderLoading message="Loading Message" size={100} />;
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
