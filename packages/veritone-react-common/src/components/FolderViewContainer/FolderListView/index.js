@@ -37,7 +37,9 @@ const muiStyles = () => ({
     borderBottom: 0,
     color: 'rgba(0,0,0,0.54)',
     cursor: 'pointer',
-    userSelect: 'none'
+    userSelect: 'none',
+    paddingRight: 0,
+    paddingLeft: 8
   },
   tableRowFirstColumn: {
     display: 'flex',
