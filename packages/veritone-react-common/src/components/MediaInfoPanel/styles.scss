@@ -1,0 +1,30 @@
+.media-panel-container {
+    flex-basis: 0;
+    transition: flex-basis 500ms;
+    background-color: #F4FAFE;
+}
+
+.media-info-container {
+    padding: 0;
+    display: flex;
+    flex-flow: column;
+    max-height: 100%;
+    align-content: flex-start;
+}
+
+.icon-info {
+    font-size: 200px !important;
+    align-self: center;
+    color: lightblue;
+}
+
+.image-preview {
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.info-details {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+

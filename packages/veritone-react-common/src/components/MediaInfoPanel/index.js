@@ -1,7 +1,8 @@
 import React from 'react';
-import { string, arrayOf, shape, bool } from 'prop-types';
+import { string, arrayOf, shape, bool, number } from 'prop-types';
+import { get } from 'lodash';
 import { Transition } from 'react-transition-group';
-import classNames from 'classnames';
+import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Typography,
@@ -10,33 +11,21 @@ import {
   TableCell,
   TableRow
 } from '@material-ui/core';
-import MediaPlayer from './SimpleMediaPlayer';
+import {
+  Folder,
+  InsertDriveFile
+} from '@material-ui/icons';
+import MediaPlayer from '../MediaPlayer';
 
+import styles from './styles.scss';
 
-const styles = {
-  root: {
-    width: 0,
-    flexBasis: 0,
-    overflowX: 'hidden',
-    transition: 'flex-basis 500ms',
-    backgroundColor: '#F4FAFE'
-  },
-  open: {
-
-  },
-  content: {
-    width: 500,
-    padding: '16px 20px 20px 20px',
-    display: 'flex',
-    flexFlow: 'column',
-    maxHeight: '100%',
-    overflowX: 'hidden',
-    overflowY: 'scroll',
-    alignContent: 'flex-start'
-  },
+const muiStyles = {
   tableCell: {
     borderBottom: 0,
     fontSize: 14,
+  },
+  tableCellFirstColumn: {
+    padding: 0
   },
   name: {
     textAlign: 'center',
@@ -47,18 +36,6 @@ const styles = {
     fontSize: 14,
     color: 'rgba(0, 0, 0, 0.37)'
   },
-  entering: {
-    opacity: 1,
-    flex: '0 0 500px',
-    width: 500
-  },
-  entered: {
-    opacity: 1,
-    flex: '0 0 500px',
-    width: 500
-  },
-  exiting: { opacity: 0 },
-  exited: { opacity: 0 },
 }
 
 const tdoShape = shape({
@@ -110,91 +87,155 @@ const formatAsDuration = (seconds) => {
   );
 }
 
-const MediaInfo = ({ selectedItem, classes }) => (
-  <div className={classes.content}>
-    <MediaPlayer
-      src={selectedItem.primaryAsset.signedUri}
-      streams={selectedItem.streams}
-      poster={selectedItem.thumbnailUrl}
-    />
-    <Typography className={classes.name}>
-      {selectedItem.name}</Typography>
-    <Table>
-      <TableBody>
-        <TableRow>
-          <TableCell
-            className={classNames(
-              classes.tableCell, classes.category
+const MediaInfo = ({ selectedItem, classes, width }) => {
+  const itemType = selectedItem.type === 'folder' ?
+    'folder' :
+    get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
+  return (
+    <div className={styles['media-info-container']} style={{ width }}>
+      {
+        (() => {
+          switch (itemType) {
+            case 'folder':
+              return <Folder className={styles['icon-info']} />
+            case 'doc':
+            case 'application':
+              return <InsertDriveFile className={styles['icon-info']} />
+            case 'video':
+            case 'audio':
+              return (
+                <MediaPlayer
+                  src={selectedItem.primaryAsset.signedUri}
+                  streams={selectedItem.streams}
+                  poster={selectedItem.thumbnailUrl}
+                  readOnly
+                  fluid
+                  useOverlayControlBar
+                  preload={'none'}
+                  btnRestart={false}
+                  btnReplay={false}
+                  btnForward={false}
+                  autoHide
+                  autoHideTime={1000}
+                />
+              )
+            case 'image':
+                return <img
+                  src={get(selectedItem, 'primaryAsset.signedUri')}
+                  alt={selectedItem.name}
+                  className={styles['image-preview']}
+                />
+            default:
+              return null;
+          }
+        })()
+      }
+      <Typography className={classes.name}>
+        {selectedItem.name}</Typography>
+      <div className={styles['info-details']}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell
+                className={cx(
+                  classes.tableCell,
+                  classes.category,
+                  classes.tableCellFirstColumn
+                )}
+              >
+                Created
+              </TableCell>
+              <TableCell
+                className={classes.tableCell}
+              >
+                {selectedItem.createdDateTime}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                className={cx(
+                  classes.tableCell,
+                  classes.category,
+                  classes.tableCellFirstColumn
+                )}
+              >
+                Modified
+              </TableCell>
+              <TableCell
+                className={classes.tableCell}
+              >
+                {selectedItem.modifiedDateTime}
+              </TableCell>
+            </TableRow>
+            { (itemType === 'video' || itemType === 'audio') && (
+              <TableRow>
+                <TableCell
+                  className={cx(
+                    classes.tableCell,
+                    classes.category,
+                    classes.tableCellFirstColumn
+                  )}
+                >
+                  Duration
+                </TableCell>
+                <TableCell
+                  className={classes.tableCell}
+                >
+                  {
+                    formatAsDuration(getDuration(
+                      selectedItem.startDateTime,
+                      selectedItem.stopDateTime
+                    ))
+                  }
+                </TableCell>
+              </TableRow>
             )}
-          >
-            Created
-          </TableCell>
-          <TableCell
-            className={classes.tableCell}
-          >
-            {selectedItem.createdDateTime}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell
-            className={classNames(
-              classes.tableCell, classes.category
-            )}
-          >
-            Modified
-          </TableCell>
-          <TableCell
-            className={classes.tableCell}
-          >
-            {selectedItem.modifiedDateTime}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell
-            className={classNames(
-              classes.tableCell, classes.category
-            )}
-          >
-            Duration
-          </TableCell>
-          <TableCell
-            className={classes.tableCell}
-          >
-            {
-              formatAsDuration(getDuration(
-                selectedItem.startDateTime,
-                selectedItem.stopDateTime
-              ))
-            }
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </div>
-);
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  )
+};
 
 MediaInfo.propTypes = {
   selectedItem: tdoShape,
+  width: number,
   classes: shape(Object.keys(styles).reduce((styleShape, key) => ({
     ...styleShape,
     [key]: string
   }), {})),
 }
 
-const MediaInfoPanel = ({ open, classes, selectedItems }) => {
+const transitionStyle = {
+  entering: {
+    opacity: 1,
+    flex: '0 0 500px',
+    width: 450
+  },
+  entered: {
+    opacity: 1,
+    flex: '0 0 500px',
+    width: 450
+  },
+}
+
+const MediaInfoPanel = ({ open, classes, selectedItems, width }) => {
   const selectedItem = selectedItems[0];
   return (
     <Transition in={open && selectedItems.length > 0} timeout={500}>
       {
         state => selectedItems.length > 0 && (
-          <div className={classNames(classes.root, classes[state])}>
+          <div
+            className={cx(styles['media-panel-container'])}
+            style={{...transitionStyle[state], width}}
+          >
             {
               selectedItems.length > 1 ? (
                 <div selectedNumber={selectedItems.length}>
                   You have selected {selectedItems.length} items
                 </div>
               ) : (
-                <MediaInfo selectedItem={selectedItem} classes={classes} />
+                <MediaInfo selectedItem={selectedItem} classes={classes} width={width} />
               )
             }
           </div>
@@ -206,11 +247,16 @@ const MediaInfoPanel = ({ open, classes, selectedItems }) => {
 
 MediaInfoPanel.propTypes = {
   open: bool,
-  classes: shape(Object.keys(styles).reduce((styleShape, key) => ({
+  width: number,
+  classes: shape(Object.keys(muiStyles).reduce((styleShape, key) => ({
     ...styleShape,
     [key]: string
   }), {})),
   selectedItems: arrayOf(tdoShape)
 }
 
-export default withStyles(styles)(MediaInfoPanel);
+MediaInfoPanel.defaultProps = {
+  width: 450
+}
+
+export default withStyles(muiStyles)(MediaInfoPanel);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { boolean, number } from '@storybook/addon-knobs';
 
 import MediaInfoPanel from './';
 
@@ -17,17 +18,54 @@ const tdo = {
   streams: [
     {
       protocol: "hls",
-      uri: "https://api.stage.veritone.com/media-streamer/stream/480974025/master.m3u8"
+      uri: "http://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8"
     },
     {
       protocol: "dash",
-      uri: "https://api.stage.veritone.com/media-streamer/stream/480974025/dash.mpd"
+      uri: "http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd"
     }
   ]
+};
 
+const folderItem = {
+  createdDateTime: "2019-05-10T06:43:39.430Z",
+  modifiedDateTime: "2019-05-10T06:43:39.430Z",
+  name: 'My folder',
+  type: 'folder'
 }
 
+const imageItem = {
+  createdDateTime: "2019-05-10T06:43:39.430Z",
+  modifiedDateTime: "2019-05-10T06:43:39.430Z",
+  name: "Screen Shot 2018-08-02 at 3.42.02 PM.png",
+  primaryAsset: {
+    id: "b9d73e8d-ef0d-402c-82d1-294f6c5d0448",
+    name: "Screen Shot 2018-08-02 at 3.42.02 PM.png",
+    contentType: "image/png",
+    signedUri: "https://cdn.pixabay.com/photo/2019/04/19/14/43/dandelion-4139650__340.jpg"
+  },
+}
+
+
 storiesOf('MediaInfoPanel', module)
-  .add('One selected item', () => (
-    <MediaInfoPanel open selectedItems={[tdo]} />
+  .add('selected media item', () => (
+    <MediaInfoPanel
+      open={boolean('open', false)}
+      selectedItems={[tdo]}
+      width={number('width', 450)}
+    />
+  ))
+  .add('select folder item', () => (
+    <MediaInfoPanel
+      open={boolean('open', false)}
+      selectedItems={[folderItem]}
+      width={number('width', 450)}
+    />
+  ))
+  .add('select image item', () => (
+    <MediaInfoPanel
+      open={boolean('open', false)}
+      selectedItems={[imageItem]}
+      width={number('width', 450)}
+    />
   ))
