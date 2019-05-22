@@ -255,7 +255,11 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          <MediaInfoPanel open selectedItems={selectedItems} width={300} />
+          <MediaInfoPanel
+            open={viewType==='list'}
+            selectedItems={selectedItems}
+            width={300}
+          />
         </div>
         <FolderViewFooter
           title='Open'
