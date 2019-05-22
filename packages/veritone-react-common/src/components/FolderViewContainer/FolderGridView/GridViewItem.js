@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
 import { get } from 'lodash';
+import cx from 'classnames';
 import {
   Card,
   CardContent,
@@ -16,46 +16,7 @@ import {
 } from '@material-ui/icons';
 
 import MediaPlayerComponent from '../../MediaPlayer'
-
-const styles = {
-  card: {
-    maxWidth: 310
-  },
-  media: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 135 // 16:9
-  },
-  name: {
-    display: "inline-block",
-    maxWidth: 240,
-    color: "rgba(0, 0, 0, 0.87)",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    fontSize: 14,
-    fontWeight: 500
-  },
-  cardName: {
-    display: "flex",
-    alignItems: "center"
-  },
-  typeIcon: {
-    marginLeft: 6
-  },
-  timeStyle: {
-    color: "rgba(0, 0, 0, 0.54)",
-    fontSize: "12px",
-  },
-  cardContent: {
-    padding: "12px !important"
-  },
-  iconMedia: {
-    fontSize: "60px",
-    color: "#42A4F5"
-  }
-};
+import styles from './styles.scss';
 
 const FILE_ICONS = {
   'folder': Folder,
@@ -65,14 +26,14 @@ const FILE_ICONS = {
 }
 
 function SimpleMediaCard(props) {
-  const { classes, name, modifiedDateTime, type, primaryAsset, url } = props;
+  const { name, modifiedDateTime, type, primaryAsset, url, isSelected } = props;
   const FileIcon = type === 'folder' ? Folder :
     FILE_ICONS[
     get(primaryAsset, 'contentType', 'doc').split('/')[0]
     ];
   return (
     <div>
-      <Card className={classes.card}>
+      <Card className={cx(styles["item-card"])}>
         {url ?
           <MediaPlayerComponent
             muted
@@ -82,23 +43,23 @@ function SimpleMediaCard(props) {
             src={url}
           />
           :
-          <CardMedia className={classes.media}>
-            <FileIcon className={classes.iconMedia} />
+          <CardMedia className={cx(styles["item-media"])}>
+            <FileIcon className={cx(styles["icon-media"])} />
           </CardMedia>
         }
-        <CardContent className={classes.cardContent}>
+        <CardContent className={cx(styles["item-card-content"], { [styles['item-card-content-selected']]: isSelected })}>
           <Typography
-            className={classes.cardName}
+            className={cx(styles["item-card-name"])}
             gutterBottom
             variant="headline"
             component="h2"
           >
-            <div className={classes.name}>
+            <div className={cx(styles["item-name"])}>
               {name}
             </div>
-            <FileIcon className={classes.typeIcon} />
+            <FileIcon className={cx(styles["type-icon"])} />
           </Typography>
-          <Typography className={classes.timeStyle} component="p">
+          <Typography className={cx(styles["item-timestyle"])} component="p">
             {modifiedDateTime}
           </Typography>
         </CardContent>
@@ -108,12 +69,12 @@ function SimpleMediaCard(props) {
 }
 
 SimpleMediaCard.propTypes = {
-  classes: PropTypes.shape(Object).isRequired,
   name: PropTypes.string.isRequired,
   modifiedDateTime: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   primaryAsset: PropTypes.shape(Object),
-  url: PropTypes.string
+  url: PropTypes.string,
+  isSelected: PropTypes.bool
 };
 
-export default withStyles(styles)(SimpleMediaCard);
+export default SimpleMediaCard;

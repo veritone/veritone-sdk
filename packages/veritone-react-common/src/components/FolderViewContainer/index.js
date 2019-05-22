@@ -237,14 +237,15 @@ class FolderViewContainer extends React.Component {
               ref={this.scrollRef}
             >
               {
-                viewType === 'list' ? (
-                  <FolderListView
-                    items={items}
-                    onHighlightItem={this.onHighlightItem}
-                    onSelectItem={onSelectItem}
-                    highlightedItems={highlightedItems}
-                  />
-                ) : (
+                viewType === 'list' ?
+                  (
+                    <FolderListView
+                      items={items}
+                      onHighlightItem={this.onHighlightItem}
+                      onSelectItem={onSelectItem}
+                      highlightedItems={highlightedItems}
+                    />
+                  ) : (
                     <FolderGridView
                       items={items}
                       onHighlightItem={this.onHighlightItem}
@@ -256,7 +257,7 @@ class FolderViewContainer extends React.Component {
             </InfiniteWrapper>
           </div>
           <MediaInfoPanel
-            open={viewType==='list'}
+            open={viewType === 'list'}
             selectedItems={selectedItems}
             width={300}
           />
