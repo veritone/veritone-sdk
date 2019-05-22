@@ -1,14 +1,17 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 
-import { CircularProgress, Paper } from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import NullState from '../NullState';
+import MediaInfoPanel from '../MediaInfoPanel';
 import itemShape from './itemShape';
 
 import FolderListView from './FolderListView';
+import FolderLoading from './FolderLoading'
 import FolderViewFooter from './FolderViewFooter';
+import FolderGridView from './FolderGridView';
 import styles from './styles.scss';
 
 
@@ -19,8 +22,7 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
 // Placehoder states
 // const NullState = () => <div>No file or folder</div>;
 const ErrorState = () => <div>Error Loading data</div>;
-const LoadingState = () => <CircularProgress size={200} />;
-const FolderGridView = () => <div>Folder Grid View</div>
+const LoadingState = () => <FolderLoading message="Loading Message" size={100} />;
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
@@ -31,7 +33,6 @@ class FolderViewContainer extends React.Component {
     isLoaded: bool,
     isError: bool,
     triggerPagination: func,
-    selectedItems: arrayOf(itemShape),
     onUpload: func,
     onCancel: func,
     onSubmit: func
@@ -43,7 +44,7 @@ class FolderViewContainer extends React.Component {
   }
 
   state = {
-    highlightedItems: {}
+    highlightedItems: {},
   }
 
   componentDidMount() {
@@ -100,7 +101,7 @@ class FolderViewContainer extends React.Component {
     const {
       top: topView,
       bottom: bottomView
-    } =  this.scrollRef.current.getViewWindow();
+    } = this.scrollRef.current.getViewWindow();
     if (itemElBounding.top < topView) {
       itemEl.scrollIntoView();
     }
@@ -217,32 +218,48 @@ class FolderViewContainer extends React.Component {
       return <LoadingState />
     }
 
+    const itemsObject = items.reduce((cumItemsObject, item) => ({
+      ...cumItemsObject,
+      [item.id]: item
+    }), {});
+
+    const selectedItems = Object.keys(highlightedItems)
+      .filter(key => highlightedItems[key])
+      .map(itemId => itemsObject[itemId]);
+
     return (
       <Paper>
-        <div className={styles['folder-view-container']}>
-          <InfiniteWrapper
-            isLoading={isLoading}
-            triggerPagination={triggerPagination}
-            ref={this.scrollRef}
-          >
-            {
-              viewType==='list' ? (
-                <FolderListView
-                  items={items}
-                  onHighlightItem={this.onHighlightItem}
-                  onSelectItem={onSelectItem}
-                  highlightedItems={highlightedItems}
-                />
-              ) : (
-                <FolderGridView
-                  items={items}
-                  onHighlightItem={this.onHighlightItem}
-                  onSelectItem={onSelectItem}
-                  highlightedItems={highlightedItems}
-                />
-              )
-            }
-          </InfiniteWrapper>
+        <div style={{ display: 'flex' }}>
+          <div className={styles['folder-view-container']}>
+            <InfiniteWrapper
+              isLoading={isLoading}
+              triggerPagination={triggerPagination}
+              ref={this.scrollRef}
+            >
+              {
+                viewType === 'list' ? (
+                  <FolderListView
+                    items={items}
+                    onHighlightItem={this.onHighlightItem}
+                    onSelectItem={onSelectItem}
+                    highlightedItems={highlightedItems}
+                  />
+                ) : (
+                    <FolderGridView
+                      items={items}
+                      onHighlightItem={this.onHighlightItem}
+                      onSelectItem={onSelectItem}
+                      highlightedItems={highlightedItems}
+                    />
+                  )
+              }
+            </InfiniteWrapper>
+          </div>
+          <MediaInfoPanel
+            open={viewType==='list'}
+            selectedItems={selectedItems}
+            width={300}
+          />
         </div>
         <FolderViewFooter
           title='Open'

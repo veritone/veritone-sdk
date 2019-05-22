@@ -99,7 +99,7 @@ class DataPicker extends React.Component {
           toggleStreamView={() => this.toggleContentView('stream')}
           toggleUploadView={() => this.toggleContentView('upload')}
         />
-        <div className={styles['data-picer-content-container']}>
+        <div className={styles['data-picker-content-container']}>
           <HeaderBar
             viewType={viewType}
             onToggleView={this.toggleViewType}
