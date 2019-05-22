@@ -64,7 +64,7 @@ const getDuration = (stopTime, startTime) => {
   return Math.floor(duration);
 };
 
-const displayNumber = (number, digits=2) => {
+const displayNumber = (number, digits = 2) => {
   if (number === 0) {
     return '0'.repeat(digits)
   }
@@ -73,7 +73,7 @@ const displayNumber = (number, digits=2) => {
 }
 
 const formatAsDuration = (seconds) => {
-  const hourNumber = Math.floor(seconds/3600);
+  const hourNumber = Math.floor(seconds / 3600);
 
   const minuteNumber = Math.floor((seconds - hourNumber * 3600) / 60);
 
@@ -120,11 +120,11 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
                 />
               )
             case 'image':
-                return <img
-                  src={get(selectedItem, 'primaryAsset.signedUri')}
-                  alt={selectedItem.name}
-                  className={styles['image-preview']}
-                />
+              return <img
+                src={get(selectedItem, 'primaryAsset.signedUri')}
+                alt={selectedItem.name}
+                className={styles['image-preview']}
+              />
             default:
               return null;
           }
@@ -167,7 +167,7 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
                 {selectedItem.modifiedDateTime}
               </TableCell>
             </TableRow>
-            { (itemType === 'video' || itemType === 'audio') && (
+            {(itemType === 'video' || itemType === 'audio') && (
               <TableRow>
                 <TableCell
                   className={cx(
@@ -206,37 +206,40 @@ MediaInfo.propTypes = {
   }), {})),
 }
 
-const transitionStyle = {
+const transitionStyle = (width) => ({
   entering: {
-    opacity: 1,
-    flex: '0 0 500px',
-    width: 450
+    flexBasis: width,
   },
   entered: {
-    opacity: 1,
-    flex: '0 0 500px',
-    width: 450
+    flexBasis: width,
   },
-}
+})
 
 const MediaInfoPanel = ({ open, classes, selectedItems, width }) => {
   const selectedItem = selectedItems[0];
+  const transitionStyleByWidth = transitionStyle(width);
   return (
     <Transition in={open && selectedItems.length > 0} timeout={500}>
       {
-        state => selectedItems.length > 0 && (
+        state => (
           <div
-            className={cx(styles['media-panel-container'])}
-            style={{...transitionStyle[state], width}}
+            className={styles['media-panel-container']}
+            style={
+              transitionStyleByWidth[state]
+            }
           >
             {
               selectedItems.length > 1 ? (
                 <div selectedNumber={selectedItems.length}>
                   You have selected {selectedItems.length} items
                 </div>
-              ) : (
-                <MediaInfo selectedItem={selectedItem} classes={classes} width={width} />
-              )
+              ) : selectedItems.length === 1 ? (
+                <MediaInfo
+                  selectedItem={selectedItem}
+                  classes={classes}
+                  width={width}
+                />
+              ) : null
             }
           </div>
         )
