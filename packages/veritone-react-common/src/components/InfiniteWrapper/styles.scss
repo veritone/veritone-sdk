@@ -1,0 +1,14 @@
+.infinte-wrapper {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.loading--hidden {
+  opacity: 0;
+}
+
+.loading-container {
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+}
