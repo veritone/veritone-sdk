@@ -1,0 +1,20 @@
+# See https://help.github.com/en/articles/about-code-owners.
+
+passport-veritone/** @steveshaffer
+veritone-client-js/** @steveshaffer
+veritone-csp-generator/** @atungw
+veritone-dev-env/** @mikomonday
+veritone-functional-permissions/** @steveshaffer
+veritone-json-schemas/** @atungw
+veritone-oauth-helpers/** @atungw
+veritone-react-common/** @veritone/open-source-ui
+veritone-redux-common/** @veritone/open-source-ui
+veritone-widgets/** @veritone/open-source-ui
+veritone-widgets-server/** @steveshaffer
+
+# package.json changes require special audit and approval
+**/package.json @steveshaffer
+
+# This file
+CODEOWNERS @steveshaffer
+LICENSE @steveshaffer
