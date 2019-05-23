@@ -136,7 +136,7 @@ function* watchPagination() {
     };
     let result = {};
     if (paginationFuncs[pickerType]) {
-      result = yield paginationFuncs[pickerType](currentNode);
+      result = yield paginationFuncs[pickerType](currentNode, id);
     }
 
     if (result.length) {
@@ -149,7 +149,7 @@ function* watchPagination() {
   });
 }
 
-function* fetchFolderPage(currentNode) {
+function* fetchFolderPage(currentNode, id) {
   const {
     graphQLUrl,
     token
@@ -181,13 +181,18 @@ function* fetchFolderPage(currentNode) {
       token
     });
 
-    yield put()
-
     result.nodeItems = get(childFolderResponse, 'data.folder.childFolders.records', []);
+    result.nodeItems.forEach(item => { item.type = 'folder' });
+    // Prevent further pagination
+    if (result.nodeItems.length < DEFAULT_PAGE_SIZE) {
+      result.nodeOffset = -1;
+    } else {
+      result.nodeOffset = nodeOffset + DEFAULT_PAGE_SIZE;
+    }
   } else if (leafOffset >= 0) {
     const query = `{
       folder (id: "${currentFolderId}") {
-        childTDOs (limit: ${DEFAULT_PAGE_SIZE}, offset: ${nodeOffset}) {
+        childTDOs (limit: ${DEFAULT_PAGE_SIZE}, offset: ${leafOffset}) {
           records {
             id
             name
@@ -219,6 +224,12 @@ function* fetchFolderPage(currentNode) {
     });
 
     result.leafItems = get(childTdoResponse, 'data.folder.childTDOs.records', []);
+    result.leafItems.forEach(item => { item.type = 'tdo' });
+    if (result.leafItems.length < DEFAULT_PAGE_SIZE) {
+      result.leafOffset = -1;
+    } else {
+      result.leafOffset = leafOffset + DEFAULT_PAGE_SIZE;
+    }
   }
   return result;
 }

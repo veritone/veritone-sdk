@@ -131,13 +131,17 @@ export default createReducer(defaultState, {
     state,
     payload: {
       nodeItems: [],
-      leafItems: []
+      leafItems: [],
+      nodeOffset: 0,
+      leafOffset: 0
     },
     { meta: { id } }
   ) {
-    // Dive into the tree structure and append pagination results
+    // Dive into the tree structure, append pagination results, and update offsets
     let newState = diveAndSetNodeProps(state, id, 'nodeItems', { $push: nodeItems });
+    newState = diveAndSetNodeProps(state, id, 'nodeOffset', { $set: nodeOffset });
     newState = diveAndSetNodeProps(state, id, 'leafItems', { $push: leafItems });
+    newState = diveAndSetNodeProps(state, id, 'leafOffset', { $set: leafOffset });
     return newState;
   }
 });
@@ -146,8 +150,7 @@ export default createReducer(defaultState, {
 // Returns the original state reference (immutability version)
 function diveAndSetNodeProps(state, id, key, value) {
   const pickerType = get(state, [id, 'currentPickerType']);
-  const currentNamespace = `${pickerType}Data`;
-  const currentPath = get(state, [id, currentNamespace, 'currentPath'], []);
+  const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
   const updatePayload = {};
   let innerRef = updatePayload;
   if (currentPath.length) {
