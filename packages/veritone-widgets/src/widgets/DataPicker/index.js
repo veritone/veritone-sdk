@@ -33,108 +33,42 @@ import styles from './styles.scss';
 }))
 @connect(
   (state, { id }) => ({
-    open: dataPickerModule.isOpen(state, id)
+    open: dataPickerModule.isOpen(state, id),
+    currentPath: dataPickerModule.currentPath(state, id),
+    currentDirectoryItems: dataPickerModule.currentDirectoryItems(state, id)
   }),
   {
-    pick: dataPickerModule.pick
+    pick: dataPickerModule.pick,
+    endPick: dataPickerModule.endPick,
+    triggerPagination: dataPickerModule.fetchPage
   }
 )
 class DataPicker extends React.Component {
   static propTypes = {
     id: string.isRequired,
     open: bool,
+    pick: func,
+    onPick: func.isRequired,
+    onPickCancelled: func,
     enableFolders: bool,
     enableStreams: bool,
     enableUploads: bool,
     multiple: bool,
     acceptedFileTypes: arrayOf(string),
-    onPickData: func.isRequired,
-    currentPickerType: oneOf('folder', 'stream', 'upload'),
-    currentViewType: oneOf('list', 'grid'),
-    folderData: shape({
-        currentPath: arrayOf(string),
-        sortCriteria: arrayOf(
-          shape({
-            field: string,                  // Default 'name'
-            direction: oneOf('asc', 'desc') // Default 'asc'
-          })
-        ),
-        treeItems: shape({
-            id: string.isRequired,
-            type: string.isRequired,            // This will be 'folder' since root folder doesn't have childTdos
-            name: string.isRequired,
-            createdDateTime: string.isRequired,
-            modifiedDateTime: string.isRequired,
-            nodeItems: arrayOf(any),        // This is a recursive structure containing more "treeItems"
-            leafItems: arrayOf(
-              shape({
-                id: string.isRequired,
-                type: string.isRequired,    // This will be 'tdo'
-                name: string.isRequired,
-                primaryAsset: shape({
-                    contentType: string.isRequired,
-                    jsondata: shape(any).isRequired,
-                    signedUri: string
-                }),
-                streams: shape({
-                    uri: string,
-                    protocol: string
-                }),
-                createdDateTime: string.isRequired,
-                modifiedDateTime: string.isRequired
-              })
-            ),
-            nodeOffset: number,             // Default 0, reference to the page for folder query
-            leafOffset: number,             // Default 0, reference to the page for childTDO query
-            isLoading: bool
-        })
-    }),
-    streamData: shape({                           // Ignore this for MVP
-        currentPath: arrayOf(string),
-        sortCriteria: arrayOf(
-          shape({
-            field: string,                  // Default 'name'
-            direction: oneOf('asc', 'desc') // Default 'asc'
-          })
-        ),
-        treeItems: shape({
-            sourceId: string,
-            createdDateTime: string.isRequired,
-            modifiedDateTime: string.isRequired,
-            nodeItems: arrayOf(any),        // Will contain sources and programs/scheduledJobs
-            leafItems: arrayOf(
-              shape({      // Will only be populated within programs/scheduledJobs
-                tdoId: string.isRequired,
-                name: string.isRequired,
-                primaryAsset: shape({
-                    contentType: string.isRequired,
-                    jsondata: shape(any).isRequired,
-                    signedUri: string
-                }),
-                streams: shape({
-                    uri: string,
-                    protocol: string
-                }),
-                createdDateTime: string.isRequired,
-                modifiedDateTime: string.isRequired
-              })
-            ),
-            nodeOffset: number,             // Default 0, reference to the page for folder query
-            leafOffset: number,             // Default 0, reference to the page for childTDO query
-            isLoading: bool
-        })
-    }),
-    uploadData: shape({
-      files: arrayOf(
-        shape({
-          fileName: string.isRequired,
-          size: number.isRequired,
-          type: string.isRequired,
-          unsignedUrl: string.isRequired,
-          getUrl: string.isRequired
-        })
-      ),
-    })
+    currentPickerType: oneOf(['folder', 'stream', 'upload']),
+    currentViewType: oneOf(['list', 'grid']),
+    currentPath: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired
+      })
+    ).isRequired,
+    sortCriteria: arrayOf(
+      shape({
+        field: string,                  // Default 'name'
+        direction: oneOf(['asc', 'desc']) // Default 'asc'
+      })
+    )
   };
 
   static defaultProps = {
@@ -170,12 +104,36 @@ class DataPicker extends React.Component {
   }
 }
 
+@connect(
+  null,
+  {
+    pick: dataPickerModule.pick,
+    endPick: dataPickerModule.endPick
+  },
+  null,
+  { withRef: true }
+)
 class DataPickerWidgetComponent extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
     pick: func.isRequired,
-    endPick: func.isRequired,
-    pickCallback: func.isRequired
+    endPick: func.isRequired
+  };
+
+  pickCallback = noop;
+
+  pick = (callback = noop) => {
+    this.pickCallback = callback;
+    this.props.pick(this.props._widgetId);
+  }
+
+  cancel = () => {
+    this.props.endPick(this.props._widgetId);
+    this.callCancelledCallback();
+  };
+
+  callCancelledCallback = () => {
+    this.pickCallback(null, { cancelled: true });
   };
 
   render() {

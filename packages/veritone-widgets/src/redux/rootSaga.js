@@ -6,6 +6,7 @@ const {
 
 import appRootSaga from './modules/veritoneApp/saga';
 import filePickerRootSaga from './modules/filePicker/filePickerSaga';
+import dataPickerRootSaga from './modules/dataPicker/dataPickerSaga';
 import engineSelectionRootSaga from './modules/engineSelection/saga';
 import engineOutputExportSaga from './modules/engineOutputExport/saga';
 import editProfileRootSaga from './modules/userProfile/saga';
@@ -14,6 +15,7 @@ export default function* root() {
   yield all([
     fork(authRootSaga),
     fork(filePickerRootSaga),
+    fork(dataPickerRootSaga),
     fork(appRootSaga),
     fork(engineSelectionRootSaga),
     fork(engineOutputExportSaga),
