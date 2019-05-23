@@ -19,10 +19,12 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
 
 
-// Placehoder states
-// const NullState = () => <div>No file or folder</div>;
 const ErrorState = () => <div>Error Loading data</div>;
-const LoadingState = () => <FolderLoading message="Loading Message" size={100} />;
+const LoadingState = () => (
+  <FolderLoading
+    message="Loading Message"
+    size={100}
+  />);
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
@@ -62,7 +64,7 @@ class FolderViewContainer extends React.Component {
     if (this.noneHighligthedItem(highlightedItems)) {
       return;
     }
-    if (eventKeyCode === 38) {
+    if (eventKeyCode === 38 && lastIndex !== 0) {
       event.preventDefault();
       if (event.shiftKey) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
@@ -76,12 +78,15 @@ class FolderViewContainer extends React.Component {
       }
     }
 
-    if (eventKeyCode === 40) {
-      const { items } = this.props;
+    const { items } = this.props;
+    if (eventKeyCode === 40 && lastIndex !== items.length - 1) {
       event.preventDefault();
       if (event.shiftKey) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
-        const shiftHighlightIndex = Math.min(currentIndex + 1, items.length - 1);
+        const shiftHighlightIndex = Math.min(
+          currentIndex + 1,
+          items.length - 1
+        );
         this.onShiftHighlight(shiftHighlightIndex);
         this.needScrollIntoView(shiftHighlightIndex);
       } else {
@@ -134,13 +139,13 @@ class FolderViewContainer extends React.Component {
 
   onHighlight = (index) => {
     const itemId = this.props.items[index].id
-    this.setState({
+    this.setState(({ highlightedItems }) => ({
       highlightedItems: {
-        [itemId]: true
+        [itemId]: !highlightedItems[itemId]
       },
       lastIndex: index,
       shiftIndex: index
-    });
+    }));
   }
 
   noneHighligthedItem = (highlightedItems) =>
@@ -193,29 +198,46 @@ class FolderViewContainer extends React.Component {
     const { highlightedItems } = this.state;
 
     if (isError) {
-      return <ErrorState />;
+      return (
+        <Paper>
+          <div className={styles['folder-null-state-container']}>
+            <ErrorState />
+          </div>
+        </Paper>
+      );
     }
 
     if (items.length === 0 && isLoaded) {
       return (
-        <NullState
-          imgProps={{
-            src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
-            alt: 'No files'
-          }}
-          titleText='No files here'
-          btnProps={{
-            text: 'UPLOAD',
-            onClick: onUpload
-          }}
-        >
-          Click upload button to add content
-        </NullState>
+        <Paper>
+          <div className={styles['folder-null-state-container']}>
+            <NullState
+              imgProps={{
+                src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
+                alt: 'No files'
+              }}
+              titleText='No files here'
+              btnProps={{
+                text: 'UPLOAD',
+                onClick: onUpload
+              }}
+              inWidgets
+            >
+              Click upload button to add content
+            </NullState>
+          </div>
+        </Paper>
       );
     }
 
     if (items.length === 0 && isLoading) {
-      return <LoadingState />
+      return (
+        <Paper>
+          <div className={styles['folder-null-state-container']}>
+            <LoadingState />
+          </div>
+        </Paper>
+      )
     }
 
     const itemsObject = items.reduce((cumItemsObject, item) => ({
