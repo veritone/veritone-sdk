@@ -1,12 +1,12 @@
 import React from 'react';
-import { arrayOf, func, objectOf, bool, shape, string } from 'prop-types';
+import { arrayOf, func, objectOf, bool } from 'prop-types';
 import cx from 'classnames';
 
 import itemShape from '../itemShape';
 import GridviewItem from './GridViewItem';
 import styles from './styles.scss';
 
-const FolderListView = ({
+const FolderGridView = ({
   items,
   highlightedItems,
   onHighlightItem,
@@ -14,52 +14,33 @@ const FolderListView = ({
 }) => {
   return (
     <div className={cx(styles["gridview-container"])}>
-      {items.map(({
-        id,
-        type,
-        name,
-        primaryAsset,
-        modifiedDateTime,
-        streams
-      }, index) => {
-        const url = (streams && streams.uri) ? streams.uri : (primaryAsset && primaryAsset.signedUri) ? primaryAsset.signedUri : null;
-        return (
-          <div
-            className={cx(styles["gridview-item"], { [styles['selected']]: highlightedItems[id] })}
-            id={id}
-            key={id}
-            data-id={id}
-            data-index={index}
-            onClick={onHighlightItem}
-            onDoubleClick={onSelectItem}
-          >
-            <GridviewItem
-              type={type}
-              url={url}
-              name={name}
-              modifiedDateTime={modifiedDateTime}
-              primaryAsset={primaryAsset}
-              isSelected={highlightedItems[id]}
-            />
-          </div>)
-      })
-      }
+      {items.map((item, index) => (
+        <div
+          className={cx(styles["gridview-item"], { [styles['selected']]: highlightedItems[item.id] })}
+          id={item.id}
+          key={item.id}
+          data-id={item.id}
+          data-index={index}
+          onClick={onHighlightItem}
+          onDoubleClick={onSelectItem}
+        >
+          <GridviewItem
+            item={item}
+            isSelected={highlightedItems[item.id]}
+          />
+        </div>
+      )
+      )}
     </div>
 
   )
 }
 
-FolderListView.propTypes = {
+FolderGridView.propTypes = {
   onSelectItem: func,
   items: arrayOf(itemShape),
   onHighlightItem: func,
-  highlightedItems: objectOf(bool),
-  primaryAsset: shape({
-    signedUri: string
-  }),
-  streams: shape({
-    uri: string
-  })
+  highlightedItems: objectOf(bool)
 }
 
-export default FolderListView;
+export default FolderGridView;
