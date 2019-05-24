@@ -72,7 +72,11 @@ class HeaderBar extends React.Component {
     const { anchorEl } = this.state;
     return (
       <div className={styles.root}>
-        <AppBar position="static" color="default" className={styles['headerBar']}>
+        <AppBar
+          position="static"
+          color="default"
+          className={styles['headerBar']}
+        >
           <Toolbar className={styles.header}>
             {
               currentPickerType === 'upload' ? (

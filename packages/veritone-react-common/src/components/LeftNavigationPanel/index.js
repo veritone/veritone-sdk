@@ -6,7 +6,8 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Paper
 } from '@material-ui/core';
 
 import cx from 'classnames';
@@ -21,58 +22,64 @@ const LeftNavigationPanel = ({
   toggleStreamView,
   toggleUploadView,
  }) => (
-  <List component="nav" className={styles.root}>
-    {
-      showFolder && (
-        <ListItem
-          onClick={toggleFolderView}
-          className={cx({ [styles.selected]: currentPickerType === 'folder' })}
-          button
-        >
-          <ListItemIcon>
-            <Work />
-          </ListItemIcon>
-          <ListItemText>
-            My Files
-          </ListItemText>
-        </ListItem>
-      )
-    }
-    {showFolder && <Divider className={styles.divider} /> }
-    {
-      showStream && (
-        <ListItem
-          onClick={toggleStreamView}
-          className={cx({ [styles.selected]: currentPickerType === 'stream' })}
-          button
-        >
-          <ListItemIcon>
-            <div className='icon-streams' />
-          </ListItemIcon>
-          <ListItemText>
-            Stream
-          </ListItemText>
-        </ListItem>
-      )
-    }
-    <div className={styles.spacer} />
-    {
-      showUpload && (
-        <ListItem
-          onClick={toggleStreamView}
-          className={styles['upload-button']}
-          button
-        >
-          <ListItemIcon>
-            <Add />
-          </ListItemIcon>
-          <ListItemText>
-            ADD
-          </ListItemText>
-        </ListItem>
-      )
-    }
-  </List>
+  <Paper>
+    <List component="nav" className={styles.aside}>
+      {
+        showFolder && (
+          <ListItem
+            onClick={toggleFolderView}
+            className={cx(
+              { [styles.selected]: currentPickerType === 'folder' },
+              styles['navigation-item'])}
+            button
+          >
+            <ListItemIcon>
+              <Work />
+            </ListItemIcon>
+            <ListItemText>
+              My Files
+            </ListItemText>
+          </ListItem>
+        )
+      }
+      {showFolder && <Divider className={styles.divider} /> }
+      {
+        showStream && (
+          <ListItem
+            onClick={toggleStreamView}
+            className={cx(
+              {[styles.selected]: currentPickerType === 'stream' },
+              styles['navigation-item'])}
+            button
+          >
+            <ListItemIcon className={cx(styles['icon'])}>
+              <div className='icon-streams' />
+            </ListItemIcon>
+            <ListItemText>
+              Stream
+            </ListItemText>
+          </ListItem>
+        )
+      }
+      <div className={styles.spacer} />
+      {
+        showUpload && (
+          <ListItem
+            onClick={toggleUploadView}
+            className={styles['upload-button']}
+            button
+          >
+            <ListItemIcon>
+              <Add />
+            </ListItemIcon>
+            <ListItemText>
+              ADD
+            </ListItemText>
+          </ListItem>
+        )
+      }
+    </List>
+  </Paper>
 );
 
 
@@ -84,6 +91,10 @@ LeftNavigationPanel.propTypes = {
   toggleFolderView: func.isRequired,
   toggleStreamView: func.isRequired,  // Ignore for MVP
   toggleUploadView: func.isRequired,
+}
+
+LeftNavigationPanel.defaultProps = {
+  showFolder: true
 }
 
 

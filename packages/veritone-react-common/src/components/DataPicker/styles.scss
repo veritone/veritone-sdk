@@ -1,0 +1,9 @@
+.data-picker-container {
+    display: flex;
+}
+.data-picker-content-container {
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+    width: 870px;
+}

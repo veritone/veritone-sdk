@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { boolean, text } from '@storybook/addon-knobs';
-import FolderViewContainer from './';
+import DataPicker from './';
 
 const items = [
   {
@@ -18,8 +18,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '3',
@@ -27,8 +26,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"    
+    primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '4',
@@ -36,8 +34,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '5',
@@ -61,8 +58,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '8',
@@ -70,8 +66,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '9',
@@ -79,8 +74,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'maps.xml',
-    primaryAsset: { contentType: 'doc/xml' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '10',
@@ -96,8 +90,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'An audio.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '12',
@@ -113,9 +106,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
-
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '14',
@@ -139,8 +130,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '17',
@@ -148,8 +138,7 @@ const items = [
     createdDateTime: 'Mar 29, 2019 3:34 PM',
     modifiedDateTime: 'Mar 29, 2019 3:34 PM',
     name: 'City of stars.mp3',
-    primaryAsset: { contentType: 'audio/mp3' },
-    fileLocation: "https://api.veritone.com/media-streamer/download/tdo/490514081"
+    primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '18',
@@ -169,32 +158,90 @@ const items = [
   },
 ];
 
-storiesOf('FolderViewContainer', module)
-  .add('Loading', () => (
-    <FolderViewContainer
-      onSelectItem={action('onSelectItem')}
-      triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      isLoading
-    />
-  ))
-  .add('Null', () => (
-    <FolderViewContainer
-      onSelectItem={action('onSelectItem')}
-      triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      isLoaded
-    />
-  ))
+const pathList = [
+  {
+    id: '1'
+  },
+  {
+    label: 'Child',
+    id: '2'
+  }
+]
+
+const percentByFiles = [{
+  key: 'audio_file.flac',
+  value: {
+    type: 'audio/flac',
+    percent: 10,
+    size: 82356235
+  }
+}, {
+  key: 'video_file.mp4',
+  value: {
+    type: 'video/mp4',
+    percent: 20,
+    size: 23856925352
+  }
+}, {
+  key: 'image_file.png',
+  value: {
+    type: 'image/gif',
+    percent: 80,
+    size: 38529
+  }
+}, {
+  key: 'text_file.txt',
+  value: {
+    type: 'application/text',
+    percent: 90,
+    size: 569182
+  }
+}, {
+  key: 'error_file.bin',
+  value: {
+    type: 'application/json',
+    percent: 69,
+    size: 56283756,
+    error: true
+  }
+}];
+
+storiesOf('DataPicker', module)
   .add('Basic', () => (
-    <FolderViewContainer
+    <DataPicker
       items={items}
-      onSelectItem={action('onSelectItem')}
       triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      isLoading={boolean('isLoading', false)}
-      isError={boolean('isError', false)}
-      onSubmit={action('onSubmit')}
       onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={percentByFiles}
+    />
+  ))
+  .add('No file upload', () => (
+    <DataPicker
+      items={items}
+      triggerPagination={action('triggerPagination')}
+      onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={[]}
     />
   ))

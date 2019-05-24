@@ -1,14 +1,26 @@
-.root {
-  width: 100%;
-  max-width: 360px;
-  padding-left: 12px !important;
-  padding-right: 16px !important;
+.aside {
+  width: 220px;
+  padding: 10px!important;
   background-color: #E8EAED;
-  box-shadow: 0 15px 12px 0 rgba(0,0,0,0.22), 0 19px 38px 0 rgba(0,0,0,0.3);
   display: flex;
   flex-flow: column;
+  position: relative;
+  z-index: 10;
+  height: 100%;
 }
 
+.navigation-item {
+  padding: 8px 10px!important;
+  .icon, svg{
+    color: #616e7b;
+    margin-right: 0;
+    font-size: 20px;
+  }
+  span{
+    font-size: 14px;
+    color: #616e7b;
+  }
+}
 .spacer {
   flex-grow: 1;
 }
@@ -21,7 +33,7 @@
 }
 
 .selected {
-  background-color: rgba(33,150,243,0.12) !important;
+  background: #cfdfed!important;
 }
 
 .upload-button {
