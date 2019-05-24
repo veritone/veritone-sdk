@@ -100,7 +100,11 @@ export default createReducer(defaultState, {
         ...state[id],
         folderData: {
           ...state[id].folderData,
-          rootItem: payload,
+          rootItem: {
+            ...payload,
+            nodeItems: [],
+            leafItems: []
+          },
           currentPath: [],
         }
       }
@@ -129,19 +133,21 @@ export default createReducer(defaultState, {
   },
   [LOADED_PAGE](
     state,
-    payload: {
-      nodeItems: [],
-      leafItems: [],
-      nodeOffset: 0,
-      leafOffset: 0
-    },
-    { meta: { id } }
+    {
+      payload: {
+        nodeItems = [],
+        leafItems = [],
+        nodeOffset = 0,
+        leafOffset = 0
+      },
+      meta: { id }
+    }
   ) {
     // Dive into the tree structure, append pagination results, and update offsets
     let newState = diveAndSetNodeProps(state, id, 'nodeItems', { $push: nodeItems });
-    newState = diveAndSetNodeProps(state, id, 'nodeOffset', { $set: nodeOffset });
-    newState = diveAndSetNodeProps(state, id, 'leafItems', { $push: leafItems });
-    newState = diveAndSetNodeProps(state, id, 'leafOffset', { $set: leafOffset });
+    newState = diveAndSetNodeProps(newState, id, 'nodeOffset', { $set: nodeOffset });
+    newState = diveAndSetNodeProps(newState, id, 'leafItems', { $push: leafItems });
+    newState = diveAndSetNodeProps(newState, id, 'leafOffset', { $set: leafOffset });
     return newState;
   }
 });
@@ -150,23 +156,26 @@ export default createReducer(defaultState, {
 // Returns the original state reference (immutability version)
 function diveAndSetNodeProps(state, id, key, value) {
   const pickerType = get(state, [id, 'currentPickerType']);
+
+  if (!id || !key || !value || !get(state, [id, `${pickerType}Data`])) {
+    return state;
+  }
+
   const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
   const updatePayload = {};
   let innerRef = updatePayload;
-  if (currentPath.length) {
-    currentPath.forEach(id => {
-      innerRef[id] = {};
-      innerRef = innerRef[id];
-    });
-    innerRef.isLoading = { $set: true };
-    newState = update(state, {
-      [id]: {
-        [`${pickerType}Data`]: {
-          rootItem: updatePayload
-        }
+  currentPath.forEach(id => {
+    innerRef[id] = {};
+    innerRef = innerRef[id];
+  });
+  innerRef[key] = value;
+  return update(state, {
+    [id]: {
+      [`${pickerType}Data`]: {
+        rootItem: updatePayload
       }
-    });
-  }
+    }
+  });
 }
 
 const local = state => state[namespace];
@@ -180,7 +189,7 @@ export const currentPickerType = (state, id) => get(local(state), [id, 'currentP
 export const currentPath = (state, id) => {
   const pickerType = currentPickerType(state, id);
   const viewPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
-  let treeItems = get(local(state), [id, `${pickerType}Data`, 'treeItems']);
+  let treeItems = get(local(state), [id, `${pickerType}Data`, 'rootItem']);
   // We have the array of ids and need to resolve the node names
   const nodePath = [];
   viewPath.forEach(id => {

@@ -17,10 +17,7 @@ import { withPropsOnChange } from 'recompose';
 import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 
-import {
-  HeaderBar,
-  InfiniteDirectoryList
-} from 'veritone-react-common';
+import { DataPicker as DataPickerComponent } from 'veritone-react-common';
 
 import * as dataPickerModule from '../../redux/modules/dataPicker';
 import { guid } from '../../shared/util';
@@ -35,12 +32,13 @@ import styles from './styles.scss';
   (state, { id }) => ({
     open: dataPickerModule.isOpen(state, id),
     currentPath: dataPickerModule.currentPath(state, id),
-    currentDirectoryItems: dataPickerModule.currentDirectoryItems(state, id)
+    items: dataPickerModule.currentDirectoryItems(state, id),
+    currentPaginationState: dataPickerModule.currentDirectoryPaginationState(state, id)
   }),
   {
     pick: dataPickerModule.pick,
     endPick: dataPickerModule.endPick,
-    triggerPagination: dataPickerModule.fetchPage
+    fetchPage: dataPickerModule.fetchPage
   }
 )
 class DataPicker extends React.Component {
@@ -68,7 +66,35 @@ class DataPicker extends React.Component {
         field: string,                  // Default 'name'
         direction: oneOf(['asc', 'desc']) // Default 'asc'
       })
-    )
+    ),
+    items: arrayOf(
+      shape({
+        id: string.isRequired,
+        type: oneOf('folder', 'source', 'program', 'tdo').isRequired,
+        name: string,
+        startDateTime: string, 
+        stopDateTime: string,
+        thumbnailUrl: string,
+        sourceImageUrl: string,
+        primaryAsset: shape({
+            name: string,
+            contentType: string.isRequired,
+            signedUri: string.isRequired
+        }),
+        streams: shape({
+            uri: string.isRequired,
+            protocol: string.isRequired
+        }),
+        createdDateTime: string.isRequired,
+        modifiedDateTime: string.isRequired
+      })
+    ),
+    currentPaginationState: shape({
+      nodeOffset: number,
+      leafOffset: number,
+      isLoading: bool
+    }),
+    fetchPage: func.isRequired
   };
 
   static defaultProps = {
@@ -80,21 +106,22 @@ class DataPicker extends React.Component {
   };
 
   handlePick = () => {
-    this.props.pick(this.props.id);
+    const { id, pick } = this.props;
+    id && pick && pick(id);
+  }
+
+  triggerPagination = () => {
+    const { id, fetchPage } = this.props;
+    id && fetchPage && fetchPage(id);
   }
 
   render() {
     return (
       <Fragment>
         <Dialog open={this.props.open}>
-          <Grid className={styles.dataPicker} container>
-            <Grid item>
-              {'TEST'}
-            </Grid>
-            <Grid item>
-              {'TEST'}
-            </Grid>
-          </Grid>
+          <DataPickerComponent
+            {...this.props}
+            triggerPagination={this.triggerPagination} />
         </Dialog>
         { this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })

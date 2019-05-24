@@ -28,7 +28,8 @@ import {
   FETCH_PAGE,
   LOADED_PAGE,
   currentDirectoryPaginationState,
-  getCurrentNode
+  getCurrentNode,
+  currentPickerType
 } from './';
 
 const DEFAULT_PAGE_SIZE = 30;
@@ -68,59 +69,76 @@ function* watchPickStart() {
       }
     });
 
-    let currentPickerType;
+    let pickerType;
     if (orgEnableFolders) {
-      currentPickerType = FOLDER_PICKER_TYPE;
+      pickerType = FOLDER_PICKER_TYPE;
     } else if (!orgDisableUploads) {
-      currentPickerType = UPLOAD_PICKER_TYPE;
+      pickerType = UPLOAD_PICKER_TYPE;
     }
 
     yield put({
       type: INIT_PICKER_TYPE,
       meta: { id },
-      payload: currentPickerType
+      payload: pickerType
     });
 
     // Initialize Folder Data
     if (orgEnableFolders) {
-      // Get root folders
-      const rootQuery = `mutation rootFolder {
-        createRootFolders (rootFolderType: cms) {
-          id
-          name
-          createdDateTime
-          modifiedDateTime
-          ownerId
-        }
-      }`;
-      try {
-        const rootFolderResponse = yield call(fetchGraphQLApi, {
-          endpoint: graphQLUrl,
-          query: rootQuery,
-          token
-        })
-        const rootFolder = get(rootFolderResponse, 'data.createRootFolders');
-        const orgRootFolder = rootFolder.find(folder => !folder.ownerId);
-        // Set initial state
-        yield put({
-          type: INIT_FOLDER,
-          meta: { id },
-          payload: orgRootFolder
-        });
-      } catch(error) {
-        // TODO: Set error state
-      }
-
+      yield initializeFolderData(id);
     }
     // Initialize Upload Data
     if (!orgDisableUploads) {
-      yield put({
-        type: INIT_UPLOAD,
-        meta: { id }
-      });
+      yield initializeUploadData(id);
     }
+  });
+}
 
+function* initializeFolderData(id) {
+  const {
+    graphQLUrl,
+    token
+  } = yield getGqlParams();
+  // Get root folders
+  const rootQuery = `mutation rootFolder {
+    createRootFolders (rootFolderType: cms) {
+      id
+      name
+      createdDateTime
+      modifiedDateTime
+      ownerId
+    }
+  }`;
+  try {
+    const rootFolderResponse = yield call(fetchGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: rootQuery,
+      token
+    })
+    const rootFolder = get(rootFolderResponse, 'data.createRootFolders');
+    const orgRootFolder = rootFolder.find(folder => !folder.ownerId);
+    // Set initial state
+    yield put({
+      type: INIT_FOLDER,
+      meta: { id },
+      payload: orgRootFolder
+    });
+    // Initialize first page of root
+    yield put({
+      type: FETCH_PAGE,
+      meta: { id }
+    });
 
+    return true;
+  } catch(error) {
+    // TODO: Set error state
+    return false;
+  }
+}
+
+function* initializeUploadData(id) {
+  yield put({
+    type: INIT_UPLOAD,
+    meta: { id }
   });
 }
 
@@ -129,8 +147,11 @@ function* watchPickStart() {
 function* watchPagination() {
   yield takeEvery(FETCH_PAGE, function*(action) {
     const { id } = action.meta;
-    const pickerType = select(currentPickerType, id);
-    const currentNode = select(getCurrentNode, id);
+    const pickerType = yield select(currentPickerType, id);
+    const currentNode = yield select(getCurrentNode, id);
+    if (!currentNode) {
+      return;
+    }
     const paginationFuncs = {
       [FOLDER_PICKER_TYPE]: fetchFolderPage
     };
@@ -139,7 +160,7 @@ function* watchPagination() {
       result = yield paginationFuncs[pickerType](currentNode, id);
     }
 
-    if (result.length) {
+    if (get(result, 'nodeItems.length') || get(result, 'leafItems.length')) {
       yield put({
         type: LOADED_PAGE,
         meta: { id },
@@ -155,7 +176,7 @@ function* fetchFolderPage(currentNode, id) {
     token
   } = yield getGqlParams();
   const currentFolderId = currentNode.id;
-  const { nodeOffset, leafOffset } = select(currentDirectoryPaginationState, id);
+  const { nodeOffset, leafOffset } = yield select(currentDirectoryPaginationState, id);
   const result = {
     nodeItems: [],
     leafItems: []
