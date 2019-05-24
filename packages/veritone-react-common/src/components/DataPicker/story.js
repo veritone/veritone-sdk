@@ -245,3 +245,23 @@ storiesOf('DataPicker', module)
       percentageUploadingFiles={[]}
     />
   ))
+  .add('Error / Initial loading', () => (
+    <DataPicker
+      items={[]}
+      triggerPagination={action('triggerPagination')}
+      onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      isError={boolean('isError', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={[]}
+    />
+  ))

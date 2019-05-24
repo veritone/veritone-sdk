@@ -251,8 +251,8 @@ class FolderViewContainer extends React.Component {
 
     return (
       <Paper>
-        <div style={{ display: 'flex' }}>
-          <div className={styles['folder-view-container']}>
+        <div className={styles['folder-view-container']}>
+          <div className={styles['folder-view-content']}>
             <InfiniteWrapper
               isLoading={isLoading}
               triggerPagination={triggerPagination}

@@ -29,6 +29,7 @@ class DataPicker extends React.Component {
     onSelect: func,
     onRejectFile: func,
     onDeleteFile: func,
+    isError: bool,
     percentageUploadingFiles: arrayOf(shape({
       key: string,
       value: shape({
@@ -85,7 +86,9 @@ class DataPicker extends React.Component {
       onUpload,
       onRejectFile,
       onDeleteFile,
-      percentageUploadingFiles
+      percentageUploadingFiles,
+      isLoaded,
+      isError
     } = this.props;
 
     return (
@@ -140,6 +143,8 @@ class DataPicker extends React.Component {
                         onSelectItem={onSelectItem}
                         onCancel={onCancel}
                         isLoading={isLoading}
+                        isLoaded={isLoaded}
+                        isError={isError}
                       />
                   )
                 case 'stream':

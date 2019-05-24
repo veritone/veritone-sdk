@@ -19,3 +19,38 @@
   display: flex;
   align-items: center;
 }
+
+.table-icon {
+  color: rgba(0,0,0,0.54);
+}
+
+.table-row-head {
+  height: 0 !important;
+  padding: 0 !important;
+}
+
+.table-row-head--hidden {
+  height: 0 !important;
+  line-height: 0 !important;
+  visibility: hidden;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.table-row {
+  border-bottom: 0 !important;
+  color: rgba(0,0,0,0.54);
+  cursor: pointer;
+  user-select: none;
+  padding-right: 0;
+  padding-left: 8px;
+}
+
+.table-first-column {
+  display: flex;
+  align-items: center;
+}
+
+.selected {
+  background: rgba(0,0,0,0.37)
+}

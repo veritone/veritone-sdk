@@ -1,4 +1,8 @@
 .folder-view-container {
+  display: flex;
+}
+
+.folder-view-content {
   position: relative;
   padding-top: 48px;
   width: 100%;
