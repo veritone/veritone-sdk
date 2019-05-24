@@ -42,8 +42,8 @@
   color: rgba(0,0,0,0.54);
   cursor: pointer;
   user-select: none;
-  padding-right: 0;
-  padding-left: 8px;
+  padding-right: 0 !important;
+  padding-left: 8px !important;
 }
 
 .table-first-column {
