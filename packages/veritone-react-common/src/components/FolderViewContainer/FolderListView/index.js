@@ -1,19 +1,15 @@
 import React from 'react';
 import { get } from 'lodash';
 import { arrayOf, func, objectOf, bool } from 'prop-types';
-import {
-  Folder,
-  InsertDriveFile,
-  KeyboardVoice,
-  Videocam
-} from '@material-ui/icons';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow
-} from '@material-ui/core';
+import Folder from '@material-ui/icons/Folder';
+import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
+import KeyboardVoice from '@material-ui/icons/KeyboardVoice';
+import Videocam from '@material-ui/icons/Videocam';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 import cx from 'classnames';
 

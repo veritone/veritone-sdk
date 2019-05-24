@@ -2,18 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { get } from 'lodash';
 import cx from 'classnames';
-import {
-  Card,
-  CardContent,
-  Typography,
-  CardMedia
-} from "@material-ui/core";
-import {
-  Folder,
-  InsertDriveFile,
-  KeyboardVoice,
-  Videocam
-} from '@material-ui/icons';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import CardMedia from '@material-ui/core/CardMedia';
+import Folder from '@material-ui/icons/Folder';
+import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
+import KeyboardVoice from '@material-ui/icons/KeyboardVoice';
+import Videocam from '@material-ui/icons/Videocam';
 
 import MediaPlayerComponent from '../../MediaPlayer';
 import itemShape from '../itemShape';

@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { string, number } from "prop-types";
-import { CircularProgress } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import styles from './styles.scss'
 
 
