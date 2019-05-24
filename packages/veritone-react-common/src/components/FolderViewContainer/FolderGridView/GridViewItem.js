@@ -15,7 +15,8 @@ import {
   Videocam
 } from '@material-ui/icons';
 
-import MediaPlayerComponent from '../../MediaPlayer'
+import MediaPlayerComponent from '../../MediaPlayer';
+import itemShape from '../itemShape';
 import styles from './styles.scss';
 
 const FILE_ICONS = {
@@ -26,7 +27,13 @@ const FILE_ICONS = {
 }
 
 function SimpleMediaCard(props) {
-  const { name, modifiedDateTime, type, primaryAsset, url, isSelected } = props;
+  const { item, isSelected } = props;
+  const { type, name, primaryAsset, modifiedDateTime, streams } = item;
+  const url = () => {
+    const streamUri = get(streams, 'uri');
+    const signedUri = get(primaryAsset, 'signedUri');
+    return streamUri || signedUri;
+  }
   const FileIcon = type === 'folder' ? Folder :
     FILE_ICONS[
     get(primaryAsset, 'contentType', 'doc').split('/')[0]
@@ -34,13 +41,13 @@ function SimpleMediaCard(props) {
   return (
     <div>
       <Card className={cx(styles["item-card"])}>
-        {url ?
+        {url() ?
           <MediaPlayerComponent
             muted
             readOnly
             fluid
             useOverlayControlBar
-            src={url}
+            src={url()}
           />
           :
           <CardMedia className={cx(styles["item-media"])}>
@@ -69,11 +76,7 @@ function SimpleMediaCard(props) {
 }
 
 SimpleMediaCard.propTypes = {
-  name: PropTypes.string.isRequired,
-  modifiedDateTime: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  primaryAsset: PropTypes.shape(Object),
-  url: PropTypes.string,
+  item: itemShape,
   isSelected: PropTypes.bool
 };
 
