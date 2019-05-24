@@ -3,7 +3,6 @@ import { func, string, array, bool, arrayOf, shape, number } from 'prop-types';
 import { Paper } from '@material-ui/core'
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
-// import FilePicker from '../FilePicker';
 import UploaderViewContainer from '../UploaderViewContainer';
 import HeaderBar from '../HeaderBar';
 import styles from './styles.scss';

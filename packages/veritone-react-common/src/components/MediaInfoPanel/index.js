@@ -130,23 +130,22 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
           }
         })()
       }
-      <Typography className={classes.name}>
+      <Typography className={styles['tdo-name']}>
         {selectedItem.name}</Typography>
       <div className={styles['info-details']}>
-        <Table>
+        <Table className={styles['table-container']}>
           <TableBody>
-            <TableRow>
+            <TableRow className={styles['table-row']}>
               <TableCell
                 className={cx(
-                  classes.tableCell,
-                  classes.category,
-                  classes.tableCellFirstColumn
+                  styles['table-cell'],
+                  styles['table-first-column']
                 )}
               >
                 Created
               </TableCell>
               <TableCell
-                className={classes.tableCell}
+                className={styles['table-cell']}
               >
                 {selectedItem.createdDateTime}
               </TableCell>
@@ -154,33 +153,29 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
             <TableRow>
               <TableCell
                 className={cx(
-                  classes.tableCell,
-                  classes.category,
-                  classes.tableCellFirstColumn
+                  styles['table-cell'],
+                  styles['table-first-column']
                 )}
               >
                 Modified
               </TableCell>
               <TableCell
-                className={classes.tableCell}
+                className={styles['table-cell']}
               >
                 {selectedItem.modifiedDateTime}
               </TableCell>
             </TableRow>
             {(itemType === 'video' || itemType === 'audio') && (
-              <TableRow>
+              <TableRow className={styles['table-row']}>
                 <TableCell
                   className={cx(
-                    classes.tableCell,
-                    classes.category,
-                    classes.tableCellFirstColumn
+                    styles['table-cell'],
+                    styles['table-first-column']
                   )}
                 >
                   Duration
                 </TableCell>
-                <TableCell
-                  className={classes.tableCell}
-                >
+                <TableCell className={styles['table-cell']}>
                   {
                     formatAsDuration(getDuration(
                       selectedItem.startDateTime,

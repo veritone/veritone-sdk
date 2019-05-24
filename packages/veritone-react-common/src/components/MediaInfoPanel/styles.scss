@@ -14,6 +14,35 @@
   align-content: flex-start;
 }
 
+.table-container {
+  margin-top: 1rem;
+}
+
+.table-row {
+  height: 1.5rem !important;
+  border-bottom: 0 !important;
+}
+
+.table-cell {
+  font-size: 14px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: 0 !important;
+}
+
+.table-first-column {
+  padding: 0 !important;
+  padding-left: 0.5rem;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.37);
+}
+
+.tdo-name {
+  text-align: center;
+  margin-top: 1rem !important;
+  font-size: 18px !important;
+}
+
 .icon-info {
   font-size: 200px !important;
   align-self: center;

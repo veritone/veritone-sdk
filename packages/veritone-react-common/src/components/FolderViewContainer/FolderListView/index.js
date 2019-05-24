@@ -1,6 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
-import { arrayOf, string, shape, func, objectOf, bool } from 'prop-types';
+import { arrayOf, func, objectOf, bool } from 'prop-types';
 import {
   Folder,
   InsertDriveFile,
