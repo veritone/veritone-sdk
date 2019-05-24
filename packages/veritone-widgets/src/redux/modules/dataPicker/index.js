@@ -12,6 +12,7 @@ export const INIT_FOLDER = `${namespace}_INIT_FOLDER`;
 export const INIT_UPLOAD = `${namespace}_INIT_UPLOAD`;
 export const FETCH_PAGE = `${namespace}_FETCH_PAGE`;
 export const LOADED_PAGE = `${namespace}_LOADED_PAGE`;
+export const SELECT_NODES = `${namespace}_SELECT_NODES`;
 
 const ITEM_PICK_PROPS = [
   'id',
@@ -25,7 +26,8 @@ const ITEM_PICK_PROPS = [
 
 const defaultState = {
   orgEnableFolders: false,
-  orgEnableUploads: false
+  orgEnableUploads: false,
+  itemData: {}
 };
 
 export default createReducer(defaultState, {
@@ -96,15 +98,14 @@ export default createReducer(defaultState, {
   ) {
     return {
       ...state,
+      itemData: {
+        ...state.itemData,
+        ...payload
+      },
       [id]: {
         ...state[id],
         folderData: {
           ...state[id].folderData,
-          rootItem: {
-            ...payload,
-            nodeItems: [],
-            leafItems: []
-          },
           currentPath: [],
         }
       }
@@ -129,54 +130,99 @@ export default createReducer(defaultState, {
     { meta: { id } }
   ) {
     // Dive into the tree structure and update the loading flag for that nodeItem
-    return diveAndSetNodeProps(state, id, 'isLoading', { $set: true });
+    const itemData = get(state, 'itemData');
+    const pickerType = get(state, [id, 'currentPickerType']);
+
+    if (
+      !id ||
+      !get(state, [id, `${pickerType}Data`])
+    ) {
+      return state;
+    }
+
+    let currentNodeType = pickerType, currentNodeId = 'root';
+    const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
+    if (currentPath.length) {
+      const curDir = currentPath.slice(-1)[0];
+      currentNodeId = curDir.id;
+      currentNodeType = curDir.type;
+    }
+    const currentNodeKey = `${currentNodeType}:${currentNodeId}`
+    return update(state, {
+      itemData: {
+        [currentNodeKey]: {
+          isLoading: { $set: true }
+        }
+      }
+    });
   },
   [LOADED_PAGE](
     state,
     {
       payload: {
-        nodeItems = [],
-        leafItems = [],
+        itemData = {},
+        nodeIds = [],
+        leafIds = [],
         nodeOffset = 0,
         leafOffset = 0
       },
       meta: { id }
     }
   ) {
-    // Dive into the tree structure, append pagination results, and update offsets
-    let newState = diveAndSetNodeProps(state, id, 'nodeItems', { $push: nodeItems });
-    newState = diveAndSetNodeProps(newState, id, 'nodeOffset', { $set: nodeOffset });
-    newState = diveAndSetNodeProps(newState, id, 'leafItems', { $push: leafItems });
-    newState = diveAndSetNodeProps(newState, id, 'leafOffset', { $set: leafOffset });
+    const pickerType = get(state, [id, 'currentPickerType']);
+
+    if (
+      !id ||
+      !get(state, [id, `${pickerType}Data`])
+    ) {
+      return state;
+    }
+
+    let currentNodeType = pickerType, currentNodeId = 'root';
+    const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
+    if (currentPath.length) {
+      const curDir = currentPath.slice(-1)[0];
+      currentNodeId = curDir.id;
+      currentNodeType = curDir.type;
+    }
+    let itemDataSetter = Object.keys(itemData).reduce((acc, key) => {
+      acc[key] = { $set: itemData[key] };
+      return acc;
+    }, {});
+    itemDataSetter[`${currentNodeType}:${currentNodeId}`] = {
+      nodeIds: { $push: nodeIds },
+      leafIds: { $push: leafIds },
+      nodeOffset: { $set: nodeOffset },
+      leafOffset: { $set: leafOffset },
+      isLoading: { $set: false }
+    };
+    const newState = update(state, {
+      itemData: itemDataSetter
+    });
+
+    return newState;
+  },
+  [SELECT_NODES](
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    let newState = state;
+    if (id && isArray(payload)) {
+      const pickerType = get(state, [id, 'currentPickerType']);
+      newState = update(newState, {
+        [id]: {
+          [`${pickerType}Data`]: {
+            currentPath: { $push: payload }
+          }
+        }
+      })
+    }
     return newState;
   }
 });
-
-// This dives into the tree structure and sets the key & value provided.
-// Returns the original state reference (immutability version)
-function diveAndSetNodeProps(state, id, key, value) {
-  const pickerType = get(state, [id, 'currentPickerType']);
-
-  if (!id || !key || !value || !get(state, [id, `${pickerType}Data`])) {
-    return state;
-  }
-
-  const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
-  const updatePayload = {};
-  let innerRef = updatePayload;
-  currentPath.forEach(id => {
-    innerRef[id] = {};
-    innerRef = innerRef[id];
-  });
-  innerRef[key] = value;
-  return update(state, {
-    [id]: {
-      [`${pickerType}Data`]: {
-        rootItem: updatePayload
-      }
-    }
-  });
-}
 
 const local = state => state[namespace];
 
@@ -187,53 +233,57 @@ export const currentPickerType = (state, id) => get(local(state), [id, 'currentP
 
 // Map the path array of ids with the container names
 export const currentPath = (state, id) => {
+  const itemData = get(local(state), 'itemData', {});
   const pickerType = currentPickerType(state, id);
-  const viewPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
-  let treeItems = get(local(state), [id, `${pickerType}Data`, 'rootItem']);
+  const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
   // We have the array of ids and need to resolve the node names
   const nodePath = [];
-  viewPath.forEach(id => {
-    const match = treeItems.find(item => item.id === id);
+  curPath.forEach(id => {
+    const match = itemData[`${pickerType}:${id}`];
     if (match) {
-      nodePath.push(loPick(match, ['id', 'name']));
-      treeItems = match.nodeItems;
+      nodePath.push(loPick(match, ['id', 'type', 'name']));
     }
   });
   return nodePath;
 };
 
 export const getCurrentNode = (state, id) => {
+  const itemData = get(local(state), 'itemData', {});
   const pickerType = get(local(state), [id, 'currentPickerType']);
   const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
-  let treeItems = get(local(state), [id, `${pickerType}Data`, 'rootItem']);
-  curPath.forEach(id => {
-    const node = treeItems.find(item => item.id === id);
-    if (node) {
-      if (index !== curPath.length - 1) {
-        treeItems = node.nodeItems || [];
-      } else {
-        treeItems = node;
-      }
-    }
-  });
-  return treeItems;
+  let currentNodeType = pickerType, currentNodeId = 'root';
+  if (curPath.length) {
+    const curDir = curPath.slice(-1)[0];
+    currentNodeType = curDir.type;
+    currentNodeId = curDir.id;
+  }
+  return itemData[`${currentNodeType}:${currentNodeId}`];
 };
 
 // Traverse the current pickerType dataspaces' treeItems and get the current folders contents
 export const currentDirectoryItems = (state, id) => {
-  const currentNode = getCurrentNode(state, id);
-  const nodeItems = get(currentNode, 'nodeItems', []).map(item => loPick(item, ITEM_PICK_PROPS));
-  const leafItems = get(currentNode, 'leafItems', []).map(item => loPick(item, ITEM_PICK_PROPS));
+  const pickerType = get(local(state), [id, 'currentPickerType']);
+  const itemData = get(local(state), 'itemData', {});
+  let currentNodeId = 'root', currentNodeType = pickerType;
+  const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
+  if (curPath.length) {
+    const curDir = curPath.slice(-1)[0];
+    currentNodeId = curDir.id;
+    currentNodeType = curDir.type;
+  }
+  const currentNode = itemData[`${currentNodeType}:${currentNodeId}`];
+  const nodeItems = get(currentNode, 'nodeIds', [])
+    .map(id => itemData[`${pickerType}:${id}`])
+    .map(item => loPick(item, ITEM_PICK_PROPS));
+  const leafItems = get(currentNode, 'leafIds', [])
+    .map(id => itemData[`tdo:${id}`])
+    .map(item => loPick(item, ITEM_PICK_PROPS));
   return nodeItems.concat(leafItems);
 };
 
-export const currentDirectoryPaginationState = (state, id) => {
+export const currentDirectoryLoading = (state, id) => {
   const currentNode = getCurrentNode(state, id);
-  return {
-    nodeOffset: 0,
-    leafOffset: 0,
-    ...loPick(currentNode, ['nodeOffset', 'leafOffset', 'isLoading'])
-  }
+  return get(currentNode, ['isLoading']);
 };
 
 // ACTIONS
@@ -248,5 +298,9 @@ export const endPick = id => ({
 export const fetchPage = id => ({
   type: FETCH_PAGE,
   meta: { id }
-})
-
+});
+export const selectNodes = (id, items) => ({
+  type: SELECT_NODES,
+  meta: { id },
+  payload: items
+});

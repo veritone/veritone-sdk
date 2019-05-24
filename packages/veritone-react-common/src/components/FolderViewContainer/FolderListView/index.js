@@ -105,6 +105,7 @@ const FolderListView = ({
                 })}
                 id={id}
                 key={id}
+                type={type}
                 data-id={id}
                 data-index={index}
                 onClick={onHighlightItem}

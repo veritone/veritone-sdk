@@ -33,12 +33,13 @@ import styles from './styles.scss';
     open: dataPickerModule.isOpen(state, id),
     currentPath: dataPickerModule.currentPath(state, id),
     items: dataPickerModule.currentDirectoryItems(state, id),
-    currentPaginationState: dataPickerModule.currentDirectoryPaginationState(state, id)
+    isLoading: dataPickerModule.currentDirectoryLoading(state, id)
   }),
   {
     pick: dataPickerModule.pick,
     endPick: dataPickerModule.endPick,
-    fetchPage: dataPickerModule.fetchPage
+    fetchPage: dataPickerModule.fetchPage,
+    selectNodes: dataPickerModule.selectNodes
   }
 )
 class DataPicker extends React.Component {
@@ -81,47 +82,54 @@ class DataPicker extends React.Component {
             contentType: string.isRequired,
             signedUri: string.isRequired
         }),
-        streams: shape({
-            uri: string.isRequired,
-            protocol: string.isRequired
-        }),
+        streams: arrayOf(
+          shape({
+              uri: string.isRequired,
+              protocol: string.isRequired
+          })
+        ),
         createdDateTime: string.isRequired,
         modifiedDateTime: string.isRequired
       })
     ),
-    currentPaginationState: shape({
-      nodeOffset: number,
-      leafOffset: number,
-      isLoading: bool
-    }),
-    fetchPage: func.isRequired
+    isLoading: bool,
+    fetchPage: func.isRequired,
+    selectNodes: func.isRequired
   };
 
   static defaultProps = {
     open: false,
     onPick: noop,
     onPickCancelled: noop,
-    height: 450,
-    width: 600
+    isLoading: false
   };
 
   handlePick = () => {
     const { id, pick } = this.props;
     id && pick && pick(id);
-  }
+  };
 
   triggerPagination = () => {
     const { id, fetchPage } = this.props;
     id && fetchPage && fetchPage(id);
-  }
+  };
+
+  handleNodeSelection = event => {
+    const { id, selectNodes, fetchPage } = this.props;
+    const nodeId = event.currentTarget.getAttribute('id');
+    const type = event.currentTarget.getAttribute('type');
+    id && nodeId && selectNodes(id, [{ id: nodeId, type }]);
+    id && fetchPage && fetchPage(id);
+  };
 
   render() {
     return (
       <Fragment>
-        <Dialog open={this.props.open}>
+        <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
           <DataPickerComponent
             {...this.props}
-            triggerPagination={this.triggerPagination} />
+            triggerPagination={this.triggerPagination}
+            onSelectItem={this.handleNodeSelection} />
         </Dialog>
         { this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })

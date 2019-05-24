@@ -7,7 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop, get } from 'lodash';
+import { isArray, noop, get, pick } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const {
@@ -120,7 +120,13 @@ function* initializeFolderData(id) {
     yield put({
       type: INIT_FOLDER,
       meta: { id },
-      payload: orgRootFolder
+      payload: {
+        [`${FOLDER_PICKER_TYPE}:root`]: {
+          ...orgRootFolder,
+          nodeIds: [],
+          leafIds: []
+        }
+      }
     });
     // Initialize first page of root
     yield put({
@@ -160,7 +166,7 @@ function* watchPagination() {
       result = yield paginationFuncs[pickerType](currentNode, id);
     }
 
-    if (get(result, 'nodeItems.length') || get(result, 'leafItems.length')) {
+    if (get(result, 'nodeIds.length') || get(result, 'leafIds.length')) {
       yield put({
         type: LOADED_PAGE,
         meta: { id },
@@ -178,8 +184,9 @@ function* fetchFolderPage(currentNode, id) {
   const currentFolderId = currentNode.id;
   const { nodeOffset = 0, leafOffset = 0 } = currentNode;
   const result = {
-    nodeItems: [],
-    leafItems: [],
+    itemData: {},
+    nodeIds: [],
+    leafIds: [],
     nodeOffset,
     leafOffset
   };
@@ -204,15 +211,28 @@ function* fetchFolderPage(currentNode, id) {
       token
     });
 
-    result.nodeItems = get(childFolderResponse, 'data.folder.childFolders.records', []);
-    result.nodeItems.forEach(item => { item.type = 'folder' });
+    const childFolders = get(childFolderResponse, 'data.folder.childFolders.records', []);
+    childFolders.forEach(item => {
+      item.type = 'folder';
+      item.nodeIds = [];
+      item.leafIds = [];
+    });
+    result.nodeIds = childFolders.map(folder => folder.id);
+    result.itemData = childFolders.reduce(
+      (acc, folder) => {
+        acc[`${FOLDER_PICKER_TYPE}:${folder.id}`] = folder;
+        return acc;
+      },
+      result.itemData
+    );
     // Prevent further pagination
-    if (result.nodeItems.length < DEFAULT_PAGE_SIZE) {
+    if (result.nodeIds.length < DEFAULT_PAGE_SIZE) {
       result.nodeOffset = -1;
     } else {
       result.nodeOffset = nodeOffset + DEFAULT_PAGE_SIZE;
     }
-  } else if (leafOffset >= 0) {
+  }
+  if (leafOffset >= 0 || (nodeOffset >= 0 && result.nodeIds.length < DEFAULT_PAGE_SIZE)) {
     const query = `{
       folder (id: "${currentFolderId}") {
         childTDOs (limit: ${DEFAULT_PAGE_SIZE}, offset: ${leafOffset}) {
@@ -246,9 +266,17 @@ function* fetchFolderPage(currentNode, id) {
       token
     });
 
-    result.leafItems = get(childTdoResponse, 'data.folder.childTDOs.records', []);
-    result.leafItems.forEach(item => { item.type = 'tdo' });
-    if (result.leafItems.length < DEFAULT_PAGE_SIZE) {
+    const childTDOs = get(childTdoResponse, 'data.folder.childTDOs.records', []);
+    childTDOs.forEach(item => { item.type = 'tdo' });
+    result.leafIds = childTDOs.map(tdo => tdo.id);
+    result.itemData = childTDOs.reduce(
+      (acc, tdo) => {
+        acc[`tdo:${tdo.id}`] = tdo;
+        return acc;
+      },
+      result.itemData
+    );
+    if (result.leafIds.length < DEFAULT_PAGE_SIZE) {
       result.leafOffset = -1;
     } else {
       result.leafOffset = leafOffset + DEFAULT_PAGE_SIZE;
