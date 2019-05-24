@@ -176,10 +176,12 @@ function* fetchFolderPage(currentNode, id) {
     token
   } = yield getGqlParams();
   const currentFolderId = currentNode.id;
-  const { nodeOffset, leafOffset } = yield select(currentDirectoryPaginationState, id);
+  const { nodeOffset = 0, leafOffset = 0 } = currentNode;
   const result = {
     nodeItems: [],
-    leafItems: []
+    leafItems: [],
+    nodeOffset,
+    leafOffset
   };
   if (nodeOffset >= 0) {
     const query = `{

@@ -95,10 +95,9 @@ const FolderListView = ({
             createdDateTime,
             modifiedDateTime
           }, index) => {
+            const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
             const FileIcon = type === 'folder' ? Folder :
-              FILE_ICONS[
-              get(primaryAsset, 'contentType', 'doc').split('/')[0]
-              ];
+              (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
             return (
               <TableRow
                 className={cx({
@@ -118,16 +117,16 @@ const FolderListView = ({
                     classes.tableRow
                   )}
                 >
-                <div className={styles['table-first-column']}>
-                  <FileIcon />
-                  <span className={
-                    cx(styles['table-first-column--text'], {
-                      [styles['table-first-column--folder']]: type === 'folder'
-                    })
-                  }
-                  >
-                    {name}
-                  </span>
+                  <div className={styles['table-first-column']}>
+                    <FileIcon />
+                    <span className={
+                      cx(styles['table-first-column--text'], {
+                        [styles['table-first-column--folder']]: type === 'folder'
+                      })
+                    }
+                    >
+                      {name}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell align="right" className={classes.tableRow}>
