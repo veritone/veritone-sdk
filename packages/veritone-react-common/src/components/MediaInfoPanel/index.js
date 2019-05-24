@@ -4,13 +4,11 @@ import { get } from 'lodash';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import {
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow
-} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import {
   Folder,
   InsertDriveFile

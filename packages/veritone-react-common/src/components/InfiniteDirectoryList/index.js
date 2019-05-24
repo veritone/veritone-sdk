@@ -7,14 +7,12 @@ import {
   KeyboardVoice,
   Videocam
 } from '@material-ui/icons';
-import {
-  CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow
-} from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Table  from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 import classNames from 'classnames';
 

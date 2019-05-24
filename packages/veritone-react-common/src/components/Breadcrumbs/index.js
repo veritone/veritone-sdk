@@ -1,7 +1,8 @@
 import React from 'react';
 import { shape, string, number, arrayOf, oneOfType, node, func, bool } from 'prop-types';
 import cx from 'classnames';
-import { MenuList, Popover } from '@material-ui/core';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
 import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
 
 import BreadcrumbItem from './BreadcrumbItem';

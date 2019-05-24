@@ -1,13 +1,11 @@
 import React from 'react';
 import { arrayOf, shape, func, string, oneOf } from 'prop-types';
-import {
-  AppBar,
-  Toolbar,
-  Popover,
-  MenuList,
-  MenuItem,
-  Button
-} from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Popover from '@material-ui/core/Popover';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
 import {
   Sort,
   ViewList,

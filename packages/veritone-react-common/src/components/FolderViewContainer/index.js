@@ -1,7 +1,7 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 
-import { Paper } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import NullState from '../NullState';
