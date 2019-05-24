@@ -203,6 +203,7 @@ storiesOf('FolderViewContainer', module)
       onSelectItem={action('onSelectItem')}
       triggerPagination={action('triggerPagination')}
       viewType={text('viewType', 'list')}
+      onUpload={action('onUpload')}
       isLoaded
     />
   ))

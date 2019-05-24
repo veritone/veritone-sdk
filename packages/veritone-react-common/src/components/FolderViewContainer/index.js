@@ -37,7 +37,7 @@ class FolderViewContainer extends React.Component {
     triggerPagination: func,
     onUpload: func,
     onCancel: func,
-    onSubmit: func
+    onSubmit: func,
   }
 
   static defaultProps = {

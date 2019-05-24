@@ -167,11 +167,11 @@ HeaderBar.propTypes = {
   onSearch: func,
   onClear: func,
   onBack: func,
-  viewType: oneOf('list', 'grid'),
+  viewType: oneOf(['list', 'grid']),
   onToggleView: func,
   onUpload: func,
   onSort: func,
-  currentPickerType: oneOf('folder', 'stream', 'upload')
+  currentPickerType: oneOf(['folder', 'stream', 'upload'])
 };
 
 HeaderBar.defaultProps = {
