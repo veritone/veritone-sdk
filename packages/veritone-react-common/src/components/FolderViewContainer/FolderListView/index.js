@@ -1,13 +1,10 @@
 import React from 'react';
 import { get } from 'lodash';
-import { arrayOf, string, shape, func, objectOf, bool } from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import {
-  Folder,
-  InsertDriveFile,
-  KeyboardVoice,
-  Videocam
-} from '@material-ui/icons';
+import { arrayOf, func, objectOf, bool } from 'prop-types';
+import Folder from '@material-ui/icons/Folder';
+import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
+import KeyboardVoice from '@material-ui/icons/KeyboardVoice';
+import Videocam from '@material-ui/icons/Videocam';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -19,35 +16,6 @@ import cx from 'classnames';
 import itemShape from '../itemShape';
 import styles from './styles.scss';
 
-const muiStyles = () => ({
-  tableHeadRow: {
-    height: 0,
-    padding: 0,
-  },
-  tableRowHeadColumn: {
-    height: 0,
-    lineHeight: 0,
-    visibility: 'hidden',
-    whiteSpace: 'nowrap',
-    padding: 0
-  },
-  tableRow: {
-    borderBottom: 0,
-    color: 'rgba(0,0,0,0.54)',
-    cursor: 'pointer',
-    userSelect: 'none',
-    paddingRight: 0,
-    paddingLeft: 8
-  },
-  tableRowFirstColumn: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  selected: {
-    background: 'rgba(0,0,0,0.37)'
-  }
-});
-
 const FILE_ICONS = {
   'folder': Folder,
   'audio': KeyboardVoice,
@@ -56,7 +24,6 @@ const FILE_ICONS = {
 }
 
 const FolderListView = ({
-  classes,
   items,
   highlightedItems,
   onHighlightItem,
@@ -66,14 +33,14 @@ const FolderListView = ({
     return (
       <Table>
         <TableHead>
-          <TableRow className={classes.tableHeadRow}>
+          <TableRow className={styles['table-row-head']}>
             {
               headers.map((header) => (
                 <TableCell
                   key={header}
                   className={cx(
-                    classes.tableRowHeadColumn,
-                    classes.tableRow
+                    styles['table-row-head--hidden'],
+                    styles['table-row']
                   )}
                   align="right"
                 >
@@ -101,27 +68,26 @@ const FolderListView = ({
             return (
               <TableRow
                 className={cx({
-                  [classes.selected]: highlightedItems[id]
+                  [styles.selected]: highlightedItems[id]
                 })}
                 id={id}
                 key={id}
                 type={type}
                 data-id={id}
                 data-index={index}
+                data-type={type}
                 onClick={onHighlightItem}
                 onDoubleClick={onSelectItem}
               >
                 <TableCell
-                  // component="th"
                   scope="row"
-                  className={cx(
-                    classes.tableRow
-                  )}
+                  className={styles['table-row']}
                 >
-                  <div className={styles['table-first-column']}>
-                    <FileIcon />
+                <div className={cx(styles['table-first-column'])}>
+                  <FileIcon className={styles['table-icon']}/>
                     <span className={
-                      cx(styles['table-first-column--text'], {
+                      cx(styles['table-first-column--text'],
+                      {
                         [styles['table-first-column--folder']]: type === 'folder'
                       })
                     }
@@ -130,13 +96,13 @@ const FolderListView = ({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell align="right" className={classes.tableRow}>
+                <TableCell align="right" className={styles['table-row']}>
                   {createdDateTime}
                 </TableCell>
-                <TableCell align="right" className={classes.tableRow}>
+                <TableCell align="right" className={styles['table-row']}>
                   {modifiedDateTime}
                 </TableCell>
-                <TableCell align="right" className={classes.tableRow}>
+                <TableCell align="right" className={styles['table-row']}>
                   {
                     type === 'folder' ?
                     'folder' :
@@ -152,13 +118,10 @@ const FolderListView = ({
   }
 
 FolderListView.propTypes = {
-  classes: shape(Object.keys(muiStyles).reduce(
-    (classShape, key) => ({ classShape, [key]: string }), {})
-  ),
   onSelectItem: func,
   items: arrayOf(itemShape),
   onHighlightItem: func,
   highlightedItems: objectOf(bool),
 }
 
-export default withStyles(muiStyles)(FolderListView);
+export default FolderListView;

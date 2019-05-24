@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { boolean, text } from '@storybook/addon-knobs';
+import { boolean } from '@storybook/addon-knobs';
 import DataPicker from './';
 
 const items = [
@@ -233,6 +233,26 @@ storiesOf('DataPicker', module)
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
       isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={[]}
+    />
+  ))
+  .add('Error / Initial loading', () => (
+    <DataPicker
+      items={[]}
+      triggerPagination={action('triggerPagination')}
+      onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      isError={boolean('isError', false)}
       pathList={pathList}
       onCrumbClick={action('onCrumbClick')}
       onSearch={action('onSearch')}

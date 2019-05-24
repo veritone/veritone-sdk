@@ -3,7 +3,6 @@ import { func, string, array, bool, arrayOf, shape, number } from 'prop-types';
 import Paper from '@material-ui/core/Paper'
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
-// import FilePicker from '../FilePicker';
 import UploaderViewContainer from '../UploaderViewContainer';
 import HeaderBar from '../HeaderBar';
 import styles from './styles.scss';
@@ -29,6 +28,7 @@ class DataPicker extends React.Component {
     onSelect: func,
     onRejectFile: func,
     onDeleteFile: func,
+    isError: bool,
     percentageUploadingFiles: arrayOf(shape({
       key: string,
       value: shape({
@@ -85,7 +85,9 @@ class DataPicker extends React.Component {
       onUpload,
       onRejectFile,
       onDeleteFile,
-      percentageUploadingFiles
+      percentageUploadingFiles,
+      isLoaded,
+      isError
     } = this.props;
 
     return (
@@ -140,6 +142,8 @@ class DataPicker extends React.Component {
                         onSelectItem={onSelectItem}
                         onCancel={onCancel}
                         isLoading={isLoading}
+                        isLoaded={isLoaded}
+                        isError={isError}
                       />
                   )
                 case 'stream':

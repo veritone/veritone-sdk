@@ -6,14 +6,12 @@ import Popover from '@material-ui/core/Popover';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
-import {
-  Sort,
-  ViewList,
-  ViewModule,
-  ArrowDropDown,
-  ArrowBack,
-  AddBox
-} from '@material-ui/icons'
+import Sort from '@material-ui/icons/Sort';
+import ViewList from '@material-ui/icons/ViewList';
+import ViewModule from '@material-ui/icons/ViewModule';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+import AddBox from '@material-ui/icons/AddBox';
 import cx from 'classnames';
 
 import Breadcrumbs from '../Breadcrumbs';
@@ -165,11 +163,11 @@ HeaderBar.propTypes = {
   onSearch: func,
   onClear: func,
   onBack: func,
-  viewType: oneOf('list', 'grid'),
+  viewType: oneOf(['list', 'grid']),
   onToggleView: func,
   onUpload: func,
   onSort: func,
-  currentPickerType: oneOf('folder', 'stream', 'upload')
+  currentPickerType: oneOf(['folder', 'stream', 'upload'])
 };
 
 HeaderBar.defaultProps = {

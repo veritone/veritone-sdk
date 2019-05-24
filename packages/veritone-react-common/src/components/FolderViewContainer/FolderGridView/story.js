@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { boolean, text } from '@storybook/addon-knobs';
-import FolderViewContainer from './';
+import FolderGridView from './';
 
 const items = [
   {
@@ -189,33 +189,15 @@ const items = [
   },
 ];
 
-storiesOf('FolderViewContainer', module)
-  .add('Loading', () => (
-    <FolderViewContainer
-      onSelectItem={action('onSelectItem')}
-      triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      isLoading
-    />
-  ))
-  .add('Null', () => (
-    <FolderViewContainer
-      onSelectItem={action('onSelectItem')}
-      triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      onUpload={action('onUpload')}
-      isLoaded
-    />
-  ))
+storiesOf('FolderGridView', module)
   .add('Basic', () => (
-    <FolderViewContainer
+    <FolderGridView
       items={items}
       onSelectItem={action('onSelectItem')}
-      triggerPagination={action('triggerPagination')}
-      viewType={text('viewType', 'list')}
-      isLoading={boolean('isLoading', false)}
-      isError={boolean('isError', false)}
-      onSubmit={action('onSubmit')}
-      onCancel={action('onCancel')}
+      onHighlightItem={action('onHighlightItem')}
+      highlightedItems={{
+        '1': true,
+        '3': true
+      }}
     />
   ))

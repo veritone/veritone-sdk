@@ -3,38 +3,16 @@ import { string, arrayOf, shape, bool, number } from 'prop-types';
 import { get } from 'lodash';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import {
-  Folder,
-  InsertDriveFile
-} from '@material-ui/icons';
+import Folder from '@material-ui/icons/Folder';
+import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import MediaPlayer from '../MediaPlayer';
 
 import styles from './styles.scss';
-
-const muiStyles = {
-  tableCell: {
-    borderBottom: 0,
-    fontSize: 14,
-  },
-  tableCellFirstColumn: {
-    padding: 0
-  },
-  name: {
-    textAlign: 'center',
-    marginTop: 12,
-    fontSize: 18
-  },
-  category: {
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.37)'
-  },
-}
 
 const tdoShape = shape({
   name: string.isRequired,
@@ -44,12 +22,12 @@ const tdoShape = shape({
   sourceImageUrl: string,
   primaryAsset: shape({
     id: string,
-    contentType: string.isRequired,
-    signedUri: string.isRequired
+    contentType: string,
+    signedUri: string
   }),
   streams: arrayOf(shape({
-    uri: string.isRequired,
-    protocol: string.isRequired
+    uri: string,
+    protocol: string
   })),
   createdDateTime: string.isRequired,
   modifiedDateTime: string.isRequired
@@ -85,7 +63,7 @@ const formatAsDuration = (seconds) => {
   );
 }
 
-const MediaInfo = ({ selectedItem, classes, width }) => {
+const MediaInfo = ({ selectedItem, width }) => {
   const itemType = selectedItem.type === 'folder' ?
     'folder' :
     get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
@@ -128,23 +106,22 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
           }
         })()
       }
-      <Typography className={classes.name}>
+      <Typography className={styles['tdo-name']}>
         {selectedItem.name}</Typography>
       <div className={styles['info-details']}>
-        <Table>
+        <Table className={styles['table-container']}>
           <TableBody>
-            <TableRow>
+            <TableRow className={styles['table-row']}>
               <TableCell
                 className={cx(
-                  classes.tableCell,
-                  classes.category,
-                  classes.tableCellFirstColumn
+                  styles['table-cell'],
+                  styles['table-first-column']
                 )}
               >
                 Created
               </TableCell>
               <TableCell
-                className={classes.tableCell}
+                className={styles['table-cell']}
               >
                 {selectedItem.createdDateTime}
               </TableCell>
@@ -152,33 +129,29 @@ const MediaInfo = ({ selectedItem, classes, width }) => {
             <TableRow>
               <TableCell
                 className={cx(
-                  classes.tableCell,
-                  classes.category,
-                  classes.tableCellFirstColumn
+                  styles['table-cell'],
+                  styles['table-first-column']
                 )}
               >
                 Modified
               </TableCell>
               <TableCell
-                className={classes.tableCell}
+                className={styles['table-cell']}
               >
                 {selectedItem.modifiedDateTime}
               </TableCell>
             </TableRow>
             {(itemType === 'video' || itemType === 'audio') && (
-              <TableRow>
+              <TableRow className={styles['table-row']}>
                 <TableCell
                   className={cx(
-                    classes.tableCell,
-                    classes.category,
-                    classes.tableCellFirstColumn
+                    styles['table-cell'],
+                    styles['table-first-column']
                   )}
                 >
                   Duration
                 </TableCell>
-                <TableCell
-                  className={classes.tableCell}
-                >
+                <TableCell className={styles['table-cell']}>
                   {
                     formatAsDuration(getDuration(
                       selectedItem.startDateTime,
@@ -213,7 +186,7 @@ const transitionStyle = (width) => ({
   },
 })
 
-const MediaInfoPanel = ({ open, classes, selectedItems, width }) => {
+const MediaInfoPanel = ({ open, selectedItems, width }) => {
   const selectedItem = selectedItems[0];
   const transitionStyleByWidth = transitionStyle(width);
   return (
@@ -234,7 +207,6 @@ const MediaInfoPanel = ({ open, classes, selectedItems, width }) => {
               ) : selectedItems.length === 1 ? (
                 <MediaInfo
                   selectedItem={selectedItem}
-                  classes={classes}
                   width={width}
                 />
               ) : null
@@ -249,10 +221,6 @@ const MediaInfoPanel = ({ open, classes, selectedItems, width }) => {
 MediaInfoPanel.propTypes = {
   open: bool,
   width: number,
-  classes: shape(Object.keys(muiStyles).reduce((styleShape, key) => ({
-    ...styleShape,
-    [key]: string
-  }), {})),
   selectedItems: arrayOf(tdoShape)
 }
 
@@ -260,4 +228,4 @@ MediaInfoPanel.defaultProps = {
   width: 450
 }
 
-export default withStyles(muiStyles)(MediaInfoPanel);
+export default MediaInfoPanel;

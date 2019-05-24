@@ -82,7 +82,7 @@ const LeftNavigationPanel = ({
 
 
 LeftNavigationPanel.propTypes = {
-  currentPickerType: oneOf('folder', 'stream', 'upload'),
+  currentPickerType: oneOf(['folder', 'stream', 'upload']),
   showFolder: bool,
   showStream: bool,                // Ignore for MVP
   showUpload: bool,
