@@ -186,8 +186,8 @@ const transitionStyle = (width) => ({
   },
 })
 
-const MediaInfoPanel = ({ open, selectedItems, width }) => {
-  const selectedItem = selectedItems[0];
+const MediaInfoPanel = ({ open, selectedItems = [], width }) => {
+  const selectedItem = selectedItems.length ? selectedItems[0] : null;
   const transitionStyleByWidth = transitionStyle(width);
   return (
     <Transition in={open && selectedItems.length > 0} timeout={500}>
@@ -204,7 +204,7 @@ const MediaInfoPanel = ({ open, selectedItems, width }) => {
                 <div selectedNumber={selectedItems.length}>
                   You have selected {selectedItems.length} items
                 </div>
-              ) : selectedItems.length === 1 ? (
+              ) : selectedItem ? (
                 <MediaInfo
                   selectedItem={selectedItem}
                   width={width}

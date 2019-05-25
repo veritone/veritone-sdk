@@ -5,7 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import styles from './BreadcrumbItem.scss';
 
-const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) => (
+const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) => (
   isHidden ? (
     <MenuItem
       onClick={onClick}
@@ -16,7 +16,7 @@ const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) =
       <span
         className={classNames('icon-empty-folder', styles['font-icon'])}
       />
-      {label}
+      {name}
     </MenuItem>
   ) : (
       <span
@@ -27,7 +27,7 @@ const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) =
       >
         {icon}
         <span>
-          {label}
+          {name}
         </span>
       </span>
     )
@@ -36,7 +36,7 @@ const BreadcrumbItem = ({ label, id, index, icon, onClick, isHidden = false }) =
 BreadcrumbItem.propTypes = {
   id: string.isRequired,
   index: number,
-  label: string,
+  name: string,
   isHidden: bool,
   icon: node,
   onClick: func,

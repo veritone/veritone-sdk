@@ -13,7 +13,7 @@ export default class Breadcrumbs extends React.Component {
   static propTypes = {
     pathList: arrayOf(shape({
       id: string.isRequired,
-      label: string
+      name: string
     })),
     maxItems: number,
     seperator: oneOfType([string, node]),
@@ -62,7 +62,7 @@ export default class Breadcrumbs extends React.Component {
     const { anchorEl } = this.state;
 
     const {
-      0: rootCrumb,
+      0: firstCrumb,
       1: secondCrumb,
       [pathList.length - 1]: lastCrumb
     } = pathList;
@@ -73,6 +73,15 @@ export default class Breadcrumbs extends React.Component {
 
     return (
       <div className={styles['breadcrumb-container']}>
+        <React.Fragment key={'root'}>
+          <BreadcrumbItem
+            icon={icon}
+            index={0}
+            key={'root'}
+            onClick={this.onCrumbClick}
+          />
+        </React.Fragment>
+        { !!pathList.length && seperator }
         {
           pathList.length < maxItems ? (
             pathList.map((crumb, index) => (
@@ -81,8 +90,7 @@ export default class Breadcrumbs extends React.Component {
                   index === 0 && (
                     <BreadcrumbItem
                       {...crumb}
-                      icon={icon}
-                      index={index}
+                      index={index + 1}
                       key={crumb.id}
                       onClick={this.onCrumbClick}
                     />
@@ -93,7 +101,7 @@ export default class Breadcrumbs extends React.Component {
                   index > 0 &&
                   <BreadcrumbItem
                     {...crumb}
-                    index={index}
+                    index={index + 1}
                     key={crumb.id}
                     onClick={this.onCrumbClick}
                   />
@@ -103,16 +111,15 @@ export default class Breadcrumbs extends React.Component {
           ) : (
               <React.Fragment>
                 <BreadcrumbItem
-                  {...rootCrumb}
-                  icon={icon}
-                  index={0}
-                  key={rootCrumb.id}
+                  {...firstCrumb}
+                  index={1}
+                  key={firstCrumb.id}
                   onClick={this.onCrumbClick}
                 />
                 {seperator}
                 <BreadcrumbItem
                   {...secondCrumb}
-                  index={1}
+                  index={2}
                   key={secondCrumb.id}
                   onClick={this.onCrumbClick}
                 />
@@ -124,7 +131,7 @@ export default class Breadcrumbs extends React.Component {
                 {seperator}
                 <BreadcrumbItem
                   {...lastCrumb}
-                  index={pathList.length - 1}
+                  index={pathList.length}
                   key={lastCrumb.id}
                   onClick={this.onCrumbClick}
                 />
@@ -143,13 +150,13 @@ export default class Breadcrumbs extends React.Component {
                 >
                   <MenuList role="menu">
                     {
-                      hiddenCrumbs.map(({ id, label }, index) => (
+                      hiddenCrumbs.map(({ id, name }, index) => (
                         <BreadcrumbItem
                           key={id}
                           isHidden
                           id={id}
                           index={index + 2}
-                          label={label}
+                          name={name}
                           onClick={this.onCrumbClick}
                         />
                       ))

@@ -13,6 +13,7 @@ export const INIT_UPLOAD = `${namespace}_INIT_UPLOAD`;
 export const FETCH_PAGE = `${namespace}_FETCH_PAGE`;
 export const LOADED_PAGE = `${namespace}_LOADED_PAGE`;
 export const SELECT_NODES = `${namespace}_SELECT_NODES`;
+export const SELECT_CRUMB = `${namespace}_SELECT_CRUMB`;
 
 const ITEM_PICK_PROPS = [
   'id',
@@ -221,6 +222,28 @@ export default createReducer(defaultState, {
       })
     }
     return newState;
+  },
+  [SELECT_CRUMB] (
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    const pickerType = get(state, [id, 'currentPickerType']);
+    const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
+    let newState = state;
+    if (payload < currentPath.length) {
+      const newPath = currentPath.slice(0, payload);
+      newState = update(newState, {
+        [id]: {
+          [`${pickerType}Data`]: {
+            currentPath: { $set: newPath }
+          }
+        }
+      });
+    }
+    return newState;
   }
 });
 
@@ -238,8 +261,8 @@ export const currentPath = (state, id) => {
   const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
   // We have the array of ids and need to resolve the node names
   const nodePath = [];
-  curPath.forEach(id => {
-    const match = itemData[`${pickerType}:${id}`];
+  curPath.forEach(pathObj => {
+    const match = itemData[`${pickerType}:${pathObj.id}`];
     if (match) {
       nodePath.push(loPick(match, ['id', 'type', 'name']));
     }
@@ -281,9 +304,9 @@ export const currentDirectoryItems = (state, id) => {
   return nodeItems.concat(leafItems);
 };
 
-export const currentDirectoryLoading = (state, id) => {
+export const currentDirectoryLoadingState = (state, id) => {
   const currentNode = getCurrentNode(state, id);
-  return get(currentNode, ['isLoading']);
+  return pick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset']);
 };
 
 // ACTIONS
@@ -303,4 +326,9 @@ export const selectNodes = (id, items) => ({
   type: SELECT_NODES,
   meta: { id },
   payload: items
+});
+export const selectCrumb = (id, index) => ({
+  type: SELECT_CRUMB,
+  meta: { id },
+  payload: index
 });

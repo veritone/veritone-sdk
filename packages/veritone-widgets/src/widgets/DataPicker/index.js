@@ -31,15 +31,16 @@ import styles from './styles.scss';
 @connect(
   (state, { id }) => ({
     open: dataPickerModule.isOpen(state, id),
-    currentPath: dataPickerModule.currentPath(state, id),
+    pathList: dataPickerModule.currentPath(state, id),
     items: dataPickerModule.currentDirectoryItems(state, id),
-    isLoading: dataPickerModule.currentDirectoryLoading(state, id)
+    currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id)
   }),
   {
     pick: dataPickerModule.pick,
     endPick: dataPickerModule.endPick,
     fetchPage: dataPickerModule.fetchPage,
-    selectNodes: dataPickerModule.selectNodes
+    selectNodes: dataPickerModule.selectNodes,
+    selectCrumb: dataPickerModule.selectCrumb
   }
 )
 class DataPicker extends React.Component {
@@ -56,7 +57,7 @@ class DataPicker extends React.Component {
     acceptedFileTypes: arrayOf(string),
     currentPickerType: oneOf(['folder', 'stream', 'upload']),
     currentViewType: oneOf(['list', 'grid']),
-    currentPath: arrayOf(
+    pathList: arrayOf(
       shape({
         id: string.isRequired,
         name: string.isRequired
@@ -92,7 +93,11 @@ class DataPicker extends React.Component {
         modifiedDateTime: string.isRequired
       })
     ),
-    isLoading: bool,
+    currentDirectoryLoadingState: shape({
+      isLoading: bool,
+      nodeOffset: number,
+      leafOffset: number
+    }),
     fetchPage: func.isRequired,
     selectNodes: func.isRequired
   };
@@ -101,7 +106,11 @@ class DataPicker extends React.Component {
     open: false,
     onPick: noop,
     onPickCancelled: noop,
-    isLoading: false
+    currentDirectoryLoadingState: {
+      isLoading: false,
+      nodeOffset: -1,
+      leafOffset: -1
+    }
   };
 
   handlePick = () => {
@@ -110,8 +119,13 @@ class DataPicker extends React.Component {
   };
 
   triggerPagination = () => {
-    const { id, fetchPage } = this.props;
-    id && fetchPage && fetchPage(id);
+    const { id, fetchPage, currentDirectoryLoadingState } = this.props;
+    const { nodeOffset, leafOffset } = currentDirectoryLoadingState;
+    id
+      && nodeOffset >= 0
+      && leafOffset >= 0
+      && fetchPage
+      && fetchPage(id);
   };
 
   handleNodeSelection = event => {
@@ -122,14 +136,22 @@ class DataPicker extends React.Component {
     id && fetchPage && fetchPage(id);
   };
 
+  handleCrumbSelection = crumb => {
+    const { id, selectCrumb } = this.props;
+    id && crumb && selectCrumb && selectCrumb(id, Number(crumb.index));
+  }
+
   render() {
+    const { currentDirectoryLoadingState } = this.props;
     return (
       <Fragment>
         <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
           <DataPickerComponent
             {...this.props}
+            isLoading={currentDirectoryLoadingState.isLoading}
             triggerPagination={this.triggerPagination}
-            onSelectItem={this.handleNodeSelection} />
+            onSelectItem={this.handleNodeSelection}
+            onCrumbClick={this.handleCrumbSelection} />
         </Dialog>
         { this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })
