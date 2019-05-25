@@ -306,7 +306,7 @@ export const currentDirectoryItems = (state, id) => {
 
 export const currentDirectoryLoadingState = (state, id) => {
   const currentNode = getCurrentNode(state, id);
-  return pick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset']);
+  return loPick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset']);
 };
 
 // ACTIONS

@@ -122,8 +122,7 @@ class DataPicker extends React.Component {
     const { id, fetchPage, currentDirectoryLoadingState } = this.props;
     const { nodeOffset, leafOffset } = currentDirectoryLoadingState;
     id
-      && nodeOffset >= 0
-      && leafOffset >= 0
+      && ( nodeOffset >= 0 || leafOffset >= 0 )
       && fetchPage
       && fetchPage(id);
   };
