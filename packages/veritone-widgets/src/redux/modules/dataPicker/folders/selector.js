@@ -20,7 +20,7 @@ export const getFolders = createSelector(
 
 export const getFolderDetail = (id) => createSelector(
   getFolders,
-  (state) => state.folders[id]
+  (state) => state.folders[id] || {}
 )
 
 export const getItems = createSelector(
