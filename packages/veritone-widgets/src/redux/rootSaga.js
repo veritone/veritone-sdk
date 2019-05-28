@@ -9,7 +9,7 @@ import filePickerRootSaga from './modules/filePicker/filePickerSaga';
 import engineSelectionRootSaga from './modules/engineSelection/saga';
 import engineOutputExportSaga from './modules/engineOutputExport/saga';
 import editProfileRootSaga from './modules/userProfile/saga';
-import dataPickerSaga from './modules/dataPicker';
+import dataPickerSaga from './modules/dataPicker/saga';
 
 export default function* root() {
   yield all([

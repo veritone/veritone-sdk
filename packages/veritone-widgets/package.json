@@ -30,7 +30,7 @@
   "scripts": {
     "start": "yarn run start:widget-server; yarn run start:storybook",
     "start:widget-server": "yarn workspace veritone-widgets-server run start &",
-    "start:storybook": "NODE_ENV=test start-storybook -p 3001 -c .storybook",
+    "start:storybook": "NODE_ENV=test start-storybook -p 3000 -c .storybook",
     "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",

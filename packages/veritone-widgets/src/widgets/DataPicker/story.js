@@ -3,7 +3,7 @@ import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import DataPicker from './';
+import DataPicker, { DataPickerWidget } from './';
 
 const DataPickerButton = (
   { handlePickFiles } // eslint-disable-line
@@ -59,7 +59,7 @@ storiesOf('DataPicker', module).add('Base', () => {
 
   return (
     <BaseStory
-    //   widget={DataPickerWidget}
+      widget={DataPickerWidget}
       widgetProps={props}
       widgetInstanceMethods={{
         pick: instance => instance.pick(logPickResult)

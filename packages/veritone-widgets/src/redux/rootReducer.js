@@ -24,7 +24,7 @@ import engineOutputExportReducer, {
   namespace as engineOutputExportNamespace
 } from './modules/engineOutputExport';
 
-// import dataPickerReducer, { namespace as dataPickerNamespace } from './modules/dataPicker';
+import dataPickerReducer, { namespace as dataPickerNamespace } from './modules/dataPicker';
 
 const {
   user: { reducer: userReducer, namespace: userNamespace },
@@ -47,7 +47,7 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
-    // [dataPickerNamespace]: dataPickerReducer,
+    [dataPickerNamespace]: dataPickerReducer,
     player: playerReducer,
     operation: operationReducer,
     form: formReducer,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { func, string, array, bool, arrayOf, shape, number } from 'prop-types';
-import { Paper } from '@material-ui/core'
+import Paper from '@material-ui/core/Paper'
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
 import UploaderViewContainer from '../UploaderViewContainer';
@@ -42,6 +42,7 @@ class DataPicker extends React.Component {
   static defaultProps = {
     items: [],
     pathList: [{ id: 'root' }],
+    currentPickerType: 'folder',
     supportedFormats: [
       'audio/mp4', 'audio/mpeg',
       'video/api', 'video/mp4', 'video/ogg',

@@ -5,7 +5,6 @@ import folderReducer, {
   getItems as getFolderItems,
   namespace as folderNamespace,
   getPathList as getFolderPathList,
-  folderSaga
 } from './folders';
 import { namespace, dataPickerSelector } from './selector';
 
@@ -66,12 +65,5 @@ export { namespace }
 export default combineReducers({
   currentPickerType: pickerTypeReducer,
   currentViewType: viewTypeReducer,
-  'folderData': folderReducer
+  [folderNamespace]: folderReducer
 })
-
-// export default combineReducers({
-//   currentPickerType: pickerTypeReducer,
-//   currentViewType: viewTypeReducer,
-//   [folderNamespace]: folderReducer
-// });
-

@@ -10,7 +10,11 @@ const folderSelector = createSelector(
 
 export const getPathList = createSelector(
   folderSelector,
-  (state) => state.currentPathList
+  (state) => {
+    console.log(state)
+    return [{ id: 'afc' }]
+    // return state.currentPathList
+  }
 )
 
 export const getFolders = createSelector(
