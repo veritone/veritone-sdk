@@ -48,28 +48,12 @@ class DataPicker extends React.Component {
       'video/api', 'video/mp4', 'video/ogg',
       'text/css', 'text/txt', 'text/html',
       'image/jpg', 'image/png', 'image/gif', 'image/webp'
-    ]
-  }
-
-  state = {
-    currentPickerType: 'folder',
-    viewType: 'list'
-  }
-
-  toggleContentView = (pickerType) => {
-    this.setState({
-      currentPickerType: pickerType
-    })
-  }
-
-  toggleViewType = (event) => {
-    this.setState({
-      viewType: event.currentTarget.dataset.type
-    })
+    ],
+    percentageUploadingFiles: []
   }
 
   render() {
-    const { currentPickerType, viewType } = this.state;
+    // const { currentPickerType, viewType } = this.state;
     const {
       triggerPagination,
       items,
@@ -87,8 +71,14 @@ class DataPicker extends React.Component {
       onRejectFile,
       onDeleteFile,
       percentageUploadingFiles,
+      toggleFolderView,
+      toggleStreamView,
+      toggleUploadView,
       isLoaded,
-      isError
+      currentPickerType,
+      isError,
+      currentViewType,
+      toggleViewType
     } = this.props;
 
     return (
@@ -98,17 +88,17 @@ class DataPicker extends React.Component {
           showStream
           showUpload
           currentPickerType={currentPickerType}
-          toggleFolderView={() => this.toggleContentView('folder')}
-          toggleStreamView={() => this.toggleContentView('stream')}
-          toggleUploadView={() => this.toggleContentView('upload')}
+          toggleFolderView={toggleFolderView}
+          toggleStreamView={toggleStreamView}
+          toggleUploadView={toggleUploadView}
         />
         <div className={styles['data-picker-content-container']}>
           <HeaderBar
-            viewType={viewType}
-            onToggleView={this.toggleViewType}
+            viewType={currentViewType}
+            onToggleView={toggleViewType}
             currentPickerType={currentPickerType}
-            onUpload={() => this.toggleContentView('upload')}
-            onBack={() => this.toggleContentView('folder')}
+            onUpload={toggleUploadView}
+            onBack={toggleFolderView}
             pathList={pathList}
             onCrumbClick={onCrumbClick}
             onSearch={onSearch}
@@ -138,7 +128,7 @@ class DataPicker extends React.Component {
                   return (
                       <FolderViewContainer
                         items={items}
-                        viewType={viewType}
+                        viewType={currentViewType}
                         triggerPagination={triggerPagination}
                         onSelectItem={onSelectItem}
                         onCancel={onCancel}
@@ -160,4 +150,4 @@ class DataPicker extends React.Component {
   }
 }
 
-export default DataPicker;
+export default  DataPicker;

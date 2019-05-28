@@ -6,6 +6,7 @@ const { user: userModule, auth: authModule } = modules;
 import * as appModule from './';
 
 export function* handleAppAuth() {
+  console.log('oauth saga')
   try {
     const res = yield put.resolve(userModule.fetchUser());
     if (get(res, 'error')) {

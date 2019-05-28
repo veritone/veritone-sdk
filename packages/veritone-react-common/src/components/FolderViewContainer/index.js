@@ -50,7 +50,8 @@ class FolderViewContainer extends React.Component {
   }
 
   componentDidMount() {
-    this.props.triggerPagination();
+    // this.props.triggerPagination();
+    this.props.onSelectItem();
     document.addEventListener('keydown', this.handleArrowKey);
   }
 

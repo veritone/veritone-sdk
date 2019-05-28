@@ -20,7 +20,8 @@ const FILE_ICONS = {
   'folder': Folder,
   'audio': KeyboardVoice,
   'video': Videocam,
-  'doc': InsertDriveFile
+  'doc': InsertDriveFile,
+  'application': InsertDriveFile
 }
 
 const FolderListView = ({
@@ -63,7 +64,7 @@ const FolderListView = ({
             modifiedDateTime
           }, index) => {
             const FileIcon = type === 'folder' ? Folder :
-              FILE_ICONS[get(primaryAsset, 'contentType', 'doc').split('/')[0]];
+              FILE_ICONS[get(primaryAsset, 'contentType', 'doc/').split('/')[0]];
             return (
               <TableRow
                 className={cx({

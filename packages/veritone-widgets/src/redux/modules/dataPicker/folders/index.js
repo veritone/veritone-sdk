@@ -9,12 +9,13 @@ export const FETCH_FOLDER_REQUEST = 'request fetch folder';
 export const FETCH_FOLDER_SUCCESS = 'request fetch folder success';
 export const FETCH_FOLDER_FAILURE = 'request fetch folder failure';
 export const OPEN_FOLDER = 'open folder';
+export const SELECT_FOLDER = 'select folder';
 export const SELECT_CRUMB_FOLDER = 'select crumb';
 export const SORT_ITEMS = 'sort items';
 export const TRIGGER_PAGGINATION = 'trigger paggination';
 
 export const openFolder = ({ id, name }) => ({
-  type: OPEN_FOLDER,
+  type: SELECT_FOLDER,
   payload: { id, name }
 })
 
@@ -45,7 +46,7 @@ const initialState = {
     isLoading: false,
     isLoaded: false
   },
-  currentPathList: [{id: null }], // initial root pathList
+  currentPathList: [], // initial root pathList
   currentSortType: '',
   currentSortDirection: 'asc'
 }

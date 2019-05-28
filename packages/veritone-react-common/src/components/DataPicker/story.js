@@ -224,6 +224,7 @@ storiesOf('DataPicker', module)
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
       percentageUploadingFiles={percentByFiles}
+      onSelectItem={action('onSelectItem')}
     />
   ))
   .add('No file upload', () => (
@@ -243,6 +244,7 @@ storiesOf('DataPicker', module)
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
       percentageUploadingFiles={[]}
+      onSelectItem={action('onSelectItem')}
     />
   ))
   .add('Error / Initial loading', () => (
@@ -263,5 +265,6 @@ storiesOf('DataPicker', module)
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
       percentageUploadingFiles={[]}
+      onSelectItem={action('onSelectItem')}
     />
   ))

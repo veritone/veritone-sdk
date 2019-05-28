@@ -1,4 +1,8 @@
+import { call } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
+
+import { fetchGraphQL } from '../service';
+
 const {
   auth: authModule,
   config: configModule,
@@ -8,24 +12,27 @@ import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 
 
-export const getRootFolder = () => {
-  const query = `query rootFolders($folderType: RootFolderType) {
-    rootFolders(type: folderType) {
+export function* getRootFolder() {
+  const query = `
+  {
+    rootFolders(type: cms) {
       id
       name
       ownerId
     }
   }`;
-  // return fetchGraphql
+  const rootFolder = yield call(fetchGraphQL, query);
+  return rootFolder;
 };
 
-export const getFolder = (id, folderOffset, tdoOffset) => {
-  const query = `query folder($folderId: ID!, $folderOffset: Int, $tdoOffset: Int) {
-    folder(id: ${id}) {
+export function* getFolder(id, folderOffset=0, tdoOffset=0){
+  const query = `
+  {
+    folder(id: "${id}") {
       id
       name
       createdDateTime
-      modifiedDatTime
+      modifiedDateTime
       childFolders(offset: ${folderOffset}) {
         records {
           id
@@ -58,7 +65,8 @@ export const getFolder = (id, folderOffset, tdoOffset) => {
         }
       }
     }
-  }`
+  }`;
 
-  //return fetchGraphql
+  const folder = yield call(fetchGraphQL, query);
+  return folder;
 }

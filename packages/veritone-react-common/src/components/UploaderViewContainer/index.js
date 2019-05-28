@@ -82,7 +82,8 @@ UploadViewContainer.defaultProps = {
   containerStyle: {
     width: '100%',
     height: 475
-  }
+  },
+  percentageUploadingFiles: []
 }
 
 export default UploadViewContainer;

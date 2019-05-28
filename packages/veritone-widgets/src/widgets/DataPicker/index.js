@@ -32,15 +32,20 @@ import widget from '../../shared/widget';
       return {
         open: true,
         // pathList: [{}],
-        pathList: dataPickerModule.getCurrentPickerType(state),
-        items: []
+        currentViewType: dataPickerModule.getCurrentViewType(state),
+        currentPickerType: dataPickerModule.getCurrentPickerType(state),
+        pathList: dataPickerModule.getPathList(state),
+        items: dataPickerModule.getItems(state),
+        folderState: dataPickerModule.getCurrentState(state)
         // items: dataPickerModule.getItems(state),
       }
 
     // currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id)
     },
   {
-
+    togglePickerType: dataPickerModule.togglePickerType,
+    toggleViewType: dataPickerModule.toggleViewType,
+    openFolder: dataPickerModule.openFolder
     // pick: dataPickerModule.pick,
     // endPick: dataPickerModule.endPick,
     // fetchPage: dataPickerModule.fetchPage,
@@ -145,24 +150,49 @@ class DataPicker extends React.Component {
 //     id && crumb && selectCrumb && selectCrumb(id, Number(crumb.index));
 //   }
 
+  toggleFolderView = () => this.props.togglePickerType('folder')
+  toggleStreamView = () => this.props.togglePickerType('stream')
+  toggleUploadView = () => this.props.togglePickerType('upload')
+  toggleViewType = (event) => {
+    const type = event.currentTarget.dataset.type;
+    this.props.toggleViewType(type);
+  }
+  onSelectItem = (item) => {
+    if (!item) {
+      return this.props.openFolder({}); // open root folder
+    }
+    const { type, id, name } = item;
+    if (type === 'folder') {
+      this.props.openFolder({ id, name });
+    }
+  }
+
   render() {
-    const { pathList } = this.props;
-    console.log('adfad;flkajdf;lakdf', pathList);
+    const { pathList, currentViewType, currentPickerType, folderState, items } = this.props;
     return (
-      <Fragment>
-        <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
+        // <div>test</div>
+    //   <Fragment>
+    //     <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
           <DataPickerComponent
             onCrumbClick={noop}
             triggerPagination={noop}
             pathList={pathList}
-            items={[]}
-            currentPickerType='folder'
+            items={items}
+            currentPickerType={currentPickerType}
+            currentViewType={currentViewType}
+            toggleFolderView={this.toggleFolderView}
+            toggleStreamView={this.toggleStreamView}
+            toggleUploadView={this.toggleUploadView}
+            toggleViewType={this.toggleViewType}
+            percentageUploadingFiles={[]}
+            onSelectItem={this.onSelectItem}
+            {...folderState}
           />
-        </Dialog>
-        { this.props.renderButton &&
-          this.props.renderButton({ handlePickFiles: this.handlePick })
-        }
-      </Fragment>
+    //     </Dialog>
+    //     { this.props.renderButton &&
+    //       this.props.renderButton({ handlePickFiles: this.handlePick })
+    //     }
+    //   </Fragment>
     );
   }
 }
