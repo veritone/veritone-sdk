@@ -213,3 +213,6 @@ const MyPage = () => (
 * Updated/Migrated MediaPlayer widget
 * Added option to use a reskinned native control bar with the MediaPlayer
 * Reskinned and added retry logic to FilePicker
+
+## 7.4.0
+* MediaPlayer: fix controlbar positioning when full screen

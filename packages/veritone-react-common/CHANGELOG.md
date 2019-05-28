@@ -200,3 +200,7 @@
 ## 7.3.0
 * Added MediaPlayer component with skinned native control bar
 * Updated FilePicker UI and upload progress UX
+
+## 7.4.0
+* MediaPlayer: ability to customize control bar
+* MediaPlayer: fix behavior for preload: 'none'
