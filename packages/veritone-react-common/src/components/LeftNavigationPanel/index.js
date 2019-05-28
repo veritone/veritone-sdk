@@ -1,14 +1,13 @@
 import React from 'react';
 import { oneOf, func, bool } from 'prop-types';
-import { Work, Add } from '@material-ui/icons';
-import {
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper
-} from '@material-ui/core';
+import Work from '@material-ui/icons/Work';
+import Add from '@material-ui/icons/Add';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
 
 import cx from 'classnames';
 import styles from './styles.scss';
