@@ -50,7 +50,7 @@ const initialState = {
   currentSortDirection: 'asc'
 }
 
-const folderReducer = createReducer((initialState, {
+const folderReducer = createReducer(initialState, {
   [OPEN_FOLDER]: (state, { payload: { id, name } }) => ({
     ...state,
     currentPathList: [...state.currentPathList, {
@@ -151,7 +151,7 @@ const folderReducer = createReducer((initialState, {
     currentSortType: type,
     currentSortDirection: direction
   })
-}));
+});
 
 export * from './saga';
 export * from './selector';
