@@ -1,8 +1,11 @@
 import React from 'react';
 import { shape, string, number, arrayOf, oneOfType, node, func, bool } from 'prop-types';
 import cx from 'classnames';
-import { MenuList, Popover } from '@material-ui/core';
-import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import ChevronRight from '@material-ui/icons/ChevronRight'
+import MoreHoriz from '@material-ui/icons/MoreHoriz'
+import Work from '@material-ui/icons/Work'
 
 import BreadcrumbItem from './BreadcrumbItem';
 

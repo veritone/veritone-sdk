@@ -1,7 +1,7 @@
 import React from 'react';
 import { string, bool, func, node, number } from 'prop-types';
 import classNames from 'classnames';
-import { MenuItem } from '@material-ui/core';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import styles from './BreadcrumbItem.scss';
 
