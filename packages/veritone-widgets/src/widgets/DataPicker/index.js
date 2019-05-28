@@ -255,13 +255,18 @@ class DataPickerWidgetComponent extends React.Component {
   };
 
   callCancelledCallback = () => {
-    this.pickCallback(null, { cancelled: true });
+    this.pickCallback(null);
   };
+
+  onPick = items => {
+    this.pickCallback && this.pickCallback(items);
+  }
 
   render() {
     return (
       <DataPicker
         id={this.props._widgetId}
+        onPick={this.onPick}
         {...this.props}
       />
     );
