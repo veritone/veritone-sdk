@@ -21,6 +21,7 @@ const { fetchGraphQLApi } = helpers;
 
 import {
   PICK_START,
+  ON_PICK,
   INIT_ORG_CONFIG,
   INIT_PICKER_TYPE,
   INIT_FOLDER,
@@ -28,11 +29,13 @@ import {
   FETCH_PAGE,
   LOADED_PAGE,
   currentDirectoryPaginationState,
+  getItemByTypeAndId,
   getCurrentNode,
   currentPickerType
 } from './';
 
 const DEFAULT_PAGE_SIZE = 30;
+const ROOT_ID = 'root';
 const FOLDER_PICKER_TYPE = 'folder';
 const UPLOAD_PICKER_TYPE = 'upload';
 
@@ -69,17 +72,23 @@ function* watchPickStart() {
       }
     });
 
-    let pickerType;
+    let pickerType, availablePickerTypes = [];
     if (orgEnableFolders) {
-      pickerType = FOLDER_PICKER_TYPE;
-    } else if (!orgDisableUploads) {
-      pickerType = UPLOAD_PICKER_TYPE;
+      pickerType = pickerType || FOLDER_PICKER_TYPE;
+      availablePickerTypes.push(FOLDER_PICKER_TYPE);
+    }
+    if (!orgDisableUploads) {
+      pickerType = pickerType || UPLOAD_PICKER_TYPE;
+      availablePickerTypes.push(UPLOAD_PICKER_TYPE);
     }
 
     yield put({
       type: INIT_PICKER_TYPE,
       meta: { id },
-      payload: pickerType
+      payload: {
+        currentPickerType: pickerType,
+        availablePickerTypes
+      }
     });
 
     // Initialize Folder Data
@@ -93,52 +102,60 @@ function* watchPickStart() {
   });
 }
 
-function* initializeFolderData(id) {
+function* initializeFolderData(id, refreshCache) {
   const {
     graphQLUrl,
     token
   } = yield getGqlParams();
+  const getItem = yield select(getItemByTypeAndId);
+  const cachedFolderData = getItem(FOLDER_PICKER_TYPE, ROOT_ID);
+  let itemDataPayload = {};
   // Get root folders
-  const rootQuery = `mutation rootFolder {
-    createRootFolders (rootFolderType: cms) {
-      id
-      name
-      createdDateTime
-      modifiedDateTime
-      ownerId
-    }
-  }`;
-  try {
-    const rootFolderResponse = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: rootQuery,
-      token
-    })
-    const rootFolder = get(rootFolderResponse, 'data.createRootFolders');
-    const orgRootFolder = rootFolder.find(folder => !folder.ownerId);
-    // Set initial state
-    yield put({
-      type: INIT_FOLDER,
-      meta: { id },
-      payload: {
-        [`${FOLDER_PICKER_TYPE}:root`]: {
+  if (refreshCache || !cachedFolderData) {
+    const rootQuery = `mutation rootFolder {
+      createRootFolders (rootFolderType: cms) {
+        id
+        name
+        createdDateTime
+        modifiedDateTime
+        ownerId
+      }
+    }`;
+    try {
+      const rootFolderResponse = yield call(fetchGraphQLApi, {
+        endpoint: graphQLUrl,
+        query: rootQuery,
+        token
+      })
+      const rootFolder = get(rootFolderResponse, 'data.createRootFolders');
+      const orgRootFolder = rootFolder.find(folder => !folder.ownerId);
+      itemDataPayload = {
+        [`${FOLDER_PICKER_TYPE}:${ROOT_ID}`]: {
           ...orgRootFolder,
           nodeIds: [],
           leafIds: []
         }
-      }
-    });
-    // Initialize first page of root
+      };
+    } catch(error) {
+      // TODO: Set error state
+      return false;
+    }
+  }
+
+  yield put({
+    type: INIT_FOLDER,
+    meta: { id },
+    payload: itemDataPayload
+  });
+  // Initialize first page of root
+  if (refreshCache || !cachedFolderData) {
     yield put({
       type: FETCH_PAGE,
       meta: { id }
     });
-
-    return true;
-  } catch(error) {
-    // TODO: Set error state
-    return false;
   }
+  
+  return true;
 }
 
 function* initializeUploadData(id) {
@@ -166,13 +183,11 @@ function* watchPagination() {
       result = yield paginationFuncs[pickerType](currentNode, id);
     }
 
-    if (get(result, 'nodeIds.length') || get(result, 'leafIds.length')) {
-      yield put({
-        type: LOADED_PAGE,
-        meta: { id },
-        payload: result
-      });
-    }
+    yield put({
+      type: LOADED_PAGE,
+      meta: { id },
+      payload: result
+    });
   });
 }
 
@@ -217,7 +232,8 @@ function* fetchFolderPage(currentNode, id) {
       item.nodeIds = [];
       item.leafIds = [];
     });
-    result.nodeIds = childFolders.map(folder => folder.id);
+    result.nodeIds = childFolders
+      .map(folder => ({ id: folder.id, type: FOLDER_PICKER_TYPE }));
     result.itemData = childFolders.reduce(
       (acc, folder) => {
         acc[`${FOLDER_PICKER_TYPE}:${folder.id}`] = folder;
@@ -268,7 +284,11 @@ function* fetchFolderPage(currentNode, id) {
 
     const childTDOs = get(childTdoResponse, 'data.folder.childTDOs.records', []);
     childTDOs.forEach(item => { item.type = 'tdo' });
-    result.leafIds = childTDOs.map(tdo => tdo.id);
+    result.leafIds = childTDOs
+      .map(tdo => ({
+        id: tdo.id,
+        type: 'tdo'
+    }));
     result.itemData = childTDOs.reduce(
       (acc, tdo) => {
         acc[`tdo:${tdo.id}`] = tdo;

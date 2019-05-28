@@ -5,14 +5,16 @@ const { createReducer } = helpers;
 
 export const namespace = 'dataPicker';
 export const PICK_START = `${namespace}_PICK_START`;
+export const ON_PICK = `${namespace}_ON_PICK`;
 export const PICK_END = `${namespace}_PICK_END`;
 export const INIT_ORG_CONFIG = `${namespace}_INIT_ORG_CONFIG`;
 export const INIT_PICKER_TYPE = `${namespace}_INIT_PICKER_TYPE`;
 export const INIT_FOLDER = `${namespace}_INIT_FOLDER`;
 export const INIT_UPLOAD = `${namespace}_INIT_UPLOAD`;
+export const SET_PICKER_TYPE = `${namespace}_SET_PICKER_TYPE`;
 export const FETCH_PAGE = `${namespace}_FETCH_PAGE`;
 export const LOADED_PAGE = `${namespace}_LOADED_PAGE`;
-export const SELECT_NODES = `${namespace}_SELECT_NODES`;
+export const SELECT_NODE = `${namespace}_SELECT_NODE`;
 export const SELECT_CRUMB = `${namespace}_SELECT_CRUMB`;
 
 const ITEM_PICK_PROPS = [
@@ -45,6 +47,15 @@ export default createReducer(defaultState, {
         open: true
       }
     }
+  },
+  [ON_PICK](
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    return state;
   },
   [PICK_END](
     state,
@@ -86,7 +97,7 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        currentPickerType: payload
+        ...payload
       }
     }
   },
@@ -125,6 +136,21 @@ export default createReducer(defaultState, {
         }
       }
     }
+  },
+  [SET_PICKER_TYPE](
+    state,
+    { 
+      payload,
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        currentPickerType: payload
+      }
+    };
   },
   [FETCH_PAGE](
     state,
@@ -203,7 +229,7 @@ export default createReducer(defaultState, {
 
     return newState;
   },
-  [SELECT_NODES](
+  [SELECT_NODE](
     state,
     {
       meta: { id },
@@ -252,7 +278,13 @@ const local = state => state[namespace];
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const orgEnableFolders = (state) => get(local(state), 'orgEnableFolders');
 export const orgEnableUploads = (state) => get(local(state), 'orgEnableUploads');
+export const availablePickerTypes = (state, id) => get(local(state), [id, 'availablePickerTypes']);
 export const currentPickerType = (state, id) => get(local(state), [id, 'currentPickerType']);
+
+export const getItemByTypeAndId = state => (type, itemId) => {
+  const item = get(local(state), ['itemData', `${type}:${itemId}`]);
+  return item ? loPick(item, ITEM_PICK_PROPS) : undefined;
+}
 
 // Map the path array of ids with the container names
 export const currentPath = (state, id) => {
@@ -295,12 +327,8 @@ export const currentDirectoryItems = (state, id) => {
     currentNodeType = curDir.type;
   }
   const currentNode = itemData[`${currentNodeType}:${currentNodeId}`];
-  const nodeItems = get(currentNode, 'nodeIds', [])
-    .map(id => itemData[`${pickerType}:${id}`])
-    .map(item => loPick(item, ITEM_PICK_PROPS));
-  const leafItems = get(currentNode, 'leafIds', [])
-    .map(id => itemData[`tdo:${id}`])
-    .map(item => loPick(item, ITEM_PICK_PROPS));
+  const nodeItems = get(currentNode, 'nodeIds', []);
+  const leafItems = get(currentNode, 'leafIds', []);
   return nodeItems.concat(leafItems);
 };
 
@@ -314,6 +342,14 @@ export const pick = id => ({
   type: PICK_START,
   meta: { id }
 });
+export const onPick = (id, itemIds, callback) => ({
+  type: ON_PICK,
+  meta: { id },
+  payload: {
+    itemIds,
+    callback
+  }
+});
 export const endPick = id => ({
   type: PICK_END,
   meta: { id }
@@ -322,8 +358,8 @@ export const fetchPage = id => ({
   type: FETCH_PAGE,
   meta: { id }
 });
-export const selectNodes = (id, items) => ({
-  type: SELECT_NODES,
+export const selectNode = (id, items) => ({
+  type: SELECT_NODE,
   meta: { id },
   payload: items
 });
@@ -331,4 +367,9 @@ export const selectCrumb = (id, index) => ({
   type: SELECT_CRUMB,
   meta: { id },
   payload: index
+});
+export const setPickerType = (id, pickerType) => ({
+  type: SET_PICKER_TYPE,
+  meta: { id },
+  payload: pickerType
 });

@@ -18,9 +18,9 @@ class DataPickerComponentStory extends React.Component {
     result: null
   };
 
-  handlePickResult = (files, { warning, error, cancelled }) => {
-    this.props.onPick(files, { warning, error, cancelled });
-    this.setState({ result: files });
+  handlePickResult = (pickedItems) => {
+    this.props.onPick(pickedItems);
+    this.setState({ result: pickedItems });
   };
 
   render() {
@@ -38,17 +38,8 @@ class DataPickerComponentStory extends React.Component {
   }
 }
 
-function logPickResult(result, { warning, error, cancelled }) {
-  console.log(
-    'result:',
-    result,
-    'warning:',
-    warning,
-    'error:',
-    error,
-    'cancelled:',
-    cancelled
-  );
+function logPickResult(result) {
+  console.log('result:', result);
 }
 
 storiesOf('DataPicker', module).add('Base', () => {

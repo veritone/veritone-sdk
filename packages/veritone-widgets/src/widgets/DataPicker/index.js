@@ -32,14 +32,18 @@ import styles from './styles.scss';
   (state, { id }) => ({
     open: dataPickerModule.isOpen(state, id),
     pathList: dataPickerModule.currentPath(state, id),
-    items: dataPickerModule.currentDirectoryItems(state, id),
-    currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id)
+    availablePickerTypes: dataPickerModule.availablePickerTypes(state, id),
+    currentPickerType: dataPickerModule.currentPickerType(state, id),
+    itemRefs: dataPickerModule.currentDirectoryItems(state, id),
+    currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id),
+    getItemByTypeAndId: dataPickerModule.getItemByTypeAndId(state)
   }),
   {
     pick: dataPickerModule.pick,
     endPick: dataPickerModule.endPick,
+    setPickerType: dataPickerModule.setPickerType,
     fetchPage: dataPickerModule.fetchPage,
-    selectNodes: dataPickerModule.selectNodes,
+    selectNode: dataPickerModule.selectNode,
     selectCrumb: dataPickerModule.selectCrumb
   }
 )
@@ -55,6 +59,7 @@ class DataPicker extends React.Component {
     enableUploads: bool,
     multiple: bool,
     acceptedFileTypes: arrayOf(string),
+    availablePickerTypes: arrayOf(string),
     currentPickerType: oneOf(['folder', 'stream', 'upload']),
     currentViewType: oneOf(['list', 'grid']),
     pathList: arrayOf(
@@ -67,6 +72,12 @@ class DataPicker extends React.Component {
       shape({
         field: string,                  // Default 'name'
         direction: oneOf(['asc', 'desc']) // Default 'asc'
+      })
+    ),
+    itemRefs: arrayOf(
+      shape({
+        id: string,
+        type: string
       })
     ),
     items: arrayOf(
@@ -99,23 +110,53 @@ class DataPicker extends React.Component {
       leafOffset: number
     }),
     fetchPage: func.isRequired,
-    selectNodes: func.isRequired
+    selectNode: func.isRequired,
+    getItemByTypeAndId: func.isRequired
   };
 
   static defaultProps = {
     open: false,
     onPick: noop,
     onPickCancelled: noop,
+    availablePickerTypes: [],
     currentDirectoryLoadingState: {
       isLoading: false,
       nodeOffset: -1,
       leafOffset: -1
-    }
+    },
+    itemRefs: []
   };
 
   handlePick = () => {
     const { id, pick } = this.props;
     id && pick && pick(id);
+  };
+
+  handleOnPick = (pickedRefs = []) => {
+    const {
+      id,
+      onPick,
+      getItemByTypeAndId,
+      endPick
+    } = this.props;
+    const items = pickedRefs.map(ref => getItemByTypeAndId(ref.type, ref.id));
+    if (items.length && onPick) {
+      onPick(items);
+      endPick(id);
+    }
+  };
+
+  handleOnCancel = () => {
+    const {
+      id,
+      endPick
+    } = this.props;
+    id && endPick && endPick(id);
+  };
+
+  handleSetPickerType = pickerType => {
+    const { id, setPickerType } = this.props;
+    id && pickerType && setPickerType && setPickerType(id, pickerType);
   };
 
   triggerPagination = () => {
@@ -128,11 +169,18 @@ class DataPicker extends React.Component {
   };
 
   handleNodeSelection = event => {
-    const { id, selectNodes, fetchPage } = this.props;
+    const { id, selectNode, fetchPage } = this.props;
     const nodeId = event.currentTarget.getAttribute('id');
     const type = event.currentTarget.getAttribute('type');
-    id && nodeId && selectNodes(id, [{ id: nodeId, type }]);
-    id && fetchPage && fetchPage(id);
+    const selectedNode = { id: nodeId, type };
+    // Determine whether to "select" or "pick" the nodes
+    if (type !== 'tdo') {
+      id && nodeId && selectNode(id, [selectedNode]);
+      id && fetchPage && fetchPage(id);
+    } else {
+      // Selected an item to open (tdo for now)
+      this.handleOnPick([selectedNode]);
+    }
   };
 
   handleCrumbSelection = crumb => {
@@ -141,14 +189,32 @@ class DataPicker extends React.Component {
   }
 
   render() {
-    const { currentDirectoryLoadingState } = this.props;
+    const {
+      currentDirectoryLoadingState,
+      availablePickerTypes,
+      enableFolders,
+      enableStreams,
+      enableUploads,
+      itemRefs,
+      getItemByTypeAndId
+    } = this.props;
+    const useFolders = availablePickerTypes.includes('folder') && enableFolders;
+    const useStreams = availablePickerTypes.includes('stream') && enableStreams;
+    const useUploads = availablePickerTypes.includes('upload') && enableUploads;
+    const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
     return (
       <Fragment>
         <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
           <DataPickerComponent
             {...this.props}
+            items={items}
             isLoading={currentDirectoryLoadingState.isLoading}
+            showFolder={useFolders}
+            showStream={useStreams}
+            showUpload={useUploads}
+            setPickerType={this.handleSetPickerType}
             triggerPagination={this.triggerPagination}
+            onCancel={this.handleOnCancel}
             onSelectItem={this.handleNodeSelection}
             onCrumbClick={this.handleCrumbSelection} />
         </Dialog>

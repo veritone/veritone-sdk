@@ -15,6 +15,10 @@ const StreamView = () => (
 
 class DataPicker extends React.Component {
   static propTypes = {
+    showFolder: bool,
+    showStream: bool,
+    showUpload: bool,
+    setPickerType: func.isRequired,
     triggerPagination: func.isRequired,
     items: array,
     onSelectItem: func,
@@ -51,14 +55,12 @@ class DataPicker extends React.Component {
   }
 
   state = {
-    currentPickerType: 'folder',
     viewType: 'list'
   }
 
   toggleContentView = (pickerType) => {
-    this.setState({
-      currentPickerType: pickerType
-    })
+    const { setPickerType } = this.props;
+    pickerType && setPickerType && setPickerType(pickerType);
   }
 
   toggleViewType = (event) => {
@@ -68,8 +70,12 @@ class DataPicker extends React.Component {
   }
 
   render() {
-    const { currentPickerType, viewType } = this.state;
+    const { viewType } = this.state;
     const {
+      showFolder,
+      showStream,
+      showUpload,
+      currentPickerType,
       triggerPagination,
       items,
       onSelectItem,
@@ -93,9 +99,9 @@ class DataPicker extends React.Component {
     return (
       <div className={styles['data-picker-container']}>
         <LeftNavigationPanel
-          showFolder
-          showStream
-          showUpload
+          showFolder={showFolder}
+          showStream={showStream}
+          showUpload={showUpload}
           currentPickerType={currentPickerType}
           toggleFolderView={() => this.toggleContentView('folder')}
           toggleStreamView={() => this.toggleContentView('stream')}
