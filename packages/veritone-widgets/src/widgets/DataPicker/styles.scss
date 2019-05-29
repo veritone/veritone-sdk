@@ -1,6 +1,7 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
-.dataPicker {
-
+.dataPickerPaper {
+  max-height: none !important;
+  max-width: none !important;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
+import cx from 'classnames';
 
 import Paper from '@material-ui/core/Paper';
 
@@ -252,7 +253,12 @@ class FolderViewContainer extends React.Component {
     return (
       <Paper>
         <div className={styles['folder-view-container']}>
-          <div className={styles['folder-view-content']}>
+          <div className={cx(
+            styles['folder-view-content'],
+              {
+                [`${styles['panel-open']}`]: viewType === 'list' && selectedItems.length
+              }
+            )}>
             <InfiniteWrapper
               isLoading={isLoading}
               triggerPagination={triggerPagination}
@@ -278,11 +284,13 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          <MediaInfoPanel
-            open={viewType === 'list'}
-            selectedItems={selectedItems}
-            width={300}
-          />
+          { !!selectedItems.length && (
+            <MediaInfoPanel
+              open={viewType === 'list'}
+              selectedItems={selectedItems}
+              width={300}
+            />
+          )}
         </div>
         <FolderViewFooter
           title='Open'

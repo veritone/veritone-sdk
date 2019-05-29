@@ -1,6 +1,7 @@
 import React from 'react';
 import { string, arrayOf, shape, bool, number } from 'prop-types';
 import { get } from 'lodash';
+import { format } from 'date-fns';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import Typography from '@material-ui/core/Typography';
@@ -33,7 +34,11 @@ const tdoShape = shape({
   modifiedDateTime: string.isRequired
 });
 
-const getDuration = (stopTime, startTime) => {
+const formatDateString = date => {
+  return format(date, 'dddd, MMM D, YYYY [at] h:mm A');
+};
+
+const getDuration = (startTime, stopTime) => {
   const duration = (
     (new Date(stopTime)).getTime() - (new Date(startTime)).getTime()
   ) / 1000;
@@ -123,7 +128,7 @@ const MediaInfo = ({ selectedItem, width }) => {
               <TableCell
                 className={styles['table-cell']}
               >
-                {selectedItem.createdDateTime}
+                {formatDateString(selectedItem.createdDateTime)}
               </TableCell>
             </TableRow>
             <TableRow>
@@ -138,7 +143,7 @@ const MediaInfo = ({ selectedItem, width }) => {
               <TableCell
                 className={styles['table-cell']}
               >
-                {selectedItem.modifiedDateTime}
+                {formatDateString(selectedItem.modifiedDateTime)}
               </TableCell>
             </TableRow>
             {(itemType === 'video' || itemType === 'audio') && (
@@ -179,10 +184,10 @@ MediaInfo.propTypes = {
 
 const transitionStyle = (width) => ({
   entering: {
-    flexBasis: width,
+    flexBasis: width + 40,
   },
   entered: {
-    flexBasis: width,
+    flexBasis: width + 40,
   },
 })
 

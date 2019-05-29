@@ -23,6 +23,8 @@ const ITEM_PICK_PROPS = [
   'name',
   'createdDateTime',
   'modifiedDateTime',
+  'startDateTime',
+  'stopDateTime',
   'primaryAsset',
   'streams'
 ];

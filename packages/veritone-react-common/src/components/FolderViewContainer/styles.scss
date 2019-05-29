@@ -7,6 +7,10 @@
   padding-top: 48px;
   width: 100%;
   height: 415px;
+  transition: width 500ms;
+  &.panel-open {
+    width: calc(100% - 340px);
+  }
 }
 
 .folder-null-state-container {

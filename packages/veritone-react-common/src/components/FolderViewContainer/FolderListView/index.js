@@ -1,5 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
+import { format } from 'date-fns';
 import { arrayOf, func, objectOf, bool } from 'prop-types';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
@@ -22,6 +23,10 @@ const FILE_ICONS = {
   'video': Videocam,
   'doc': InsertDriveFile
 }
+
+const formatDateString = date => {
+  return format(date, 'MMM D, YYYY h:mm A');
+};
 
 const FolderListView = ({
   items,
@@ -97,10 +102,10 @@ const FolderListView = ({
                   </div>
                 </TableCell>
                 <TableCell align="right" className={styles['table-row']}>
-                  {createdDateTime}
+                  {formatDateString(createdDateTime)}
                 </TableCell>
                 <TableCell align="right" className={styles['table-row']}>
-                  {modifiedDateTime}
+                  {formatDateString(modifiedDateTime)}
                 </TableCell>
                 <TableCell align="right" className={styles['table-row']}>
                   {

@@ -204,7 +204,9 @@ class DataPicker extends React.Component {
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
     return (
       <Fragment>
-        <Dialog open={this.props.open} styles={{ maxWidth: 'none', maxHeight: 'none' }}>
+        <Dialog open={this.props.open} classes={{
+           paper: styles.dataPickerPaper
+        }}>
           <DataPickerComponent
             {...this.props}
             items={items}
