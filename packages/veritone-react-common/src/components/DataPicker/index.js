@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string, array, bool, arrayOf, shape, number } from 'prop-types';
+import { func, string, array, bool, arrayOf, shape, number, object } from 'prop-types';
 import Paper from '@material-ui/core/Paper'
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
@@ -29,11 +29,12 @@ class DataPicker extends React.Component {
     pathList: array,
     onCancel: func,
     supportedFormats: array,
-    onSelect: func,
+    onFilesSelected: func,
     onRejectFile: func,
-    onDeleteFile: func,
+    onRemoveFile: func,
     isError: bool,
-    percentageUploadingFiles: arrayOf(shape({
+    uploadedFiles: arrayOf(object),
+    percentByFiles: arrayOf(shape({
       key: string,
       value: shape({
         name: string,
@@ -87,11 +88,20 @@ class DataPicker extends React.Component {
       onSearch,
       onClear,
       onSort,
-      onSelect,
+      onFilesSelected,
       onUpload,
+      handleAbort,
+      onRetryDone,
+      retryRequest,
       onRejectFile,
-      onDeleteFile,
-      percentageUploadingFiles,
+      onRemoveFile,
+      uploadPickerState,
+      uploadStatusMsg,
+      uploadSuccess,
+      uploadError,
+      uploadWarning,
+      uploadedFiles,
+      percentByFiles,
       isLoaded,
       isError
     } = this.props;
@@ -128,13 +138,22 @@ class DataPicker extends React.Component {
                     <Paper>
                       <UploaderViewContainer
                         multiple
+                        uploadPickerState={uploadPickerState}
+                        uploadStatusMsg={uploadStatusMsg}
+                        uploadSuccess={uploadSuccess}
+                        uploadWarning={uploadWarning}
+                        uploadError={uploadError}
                         accept={supportedFormats}
                         onCancel={onCancel}
                         onUpload={onUpload}
-                        onSelect={onSelect}
+                        onFilesSelected={onFilesSelected}
+                        handleAbort={handleAbort}
+                        onRetryDone={onRetryDone}
+                        retryRequest={retryRequest}
                         onReject={onRejectFile}
-                        onDeleteFile={onDeleteFile}
-                        percentageUploadingFiles={percentageUploadingFiles}
+                        onRemoveFile={onRemoveFile}
+                        uploadedFiles={uploadedFiles}
+                        percentByFiles={percentByFiles}
                         containerStyle={{ height: 475}}
                       />
                     </Paper>

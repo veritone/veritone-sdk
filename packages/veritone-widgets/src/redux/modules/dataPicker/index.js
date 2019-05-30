@@ -16,6 +16,10 @@ export const FETCH_PAGE = `${namespace}_FETCH_PAGE`;
 export const LOADED_PAGE = `${namespace}_LOADED_PAGE`;
 export const SELECT_NODE = `${namespace}_SELECT_NODE`;
 export const SELECT_CRUMB = `${namespace}_SELECT_CRUMB`;
+export const UPLOAD_TO_TDO = `${namespace}_UPLOAD_TO_TDO`;
+
+export const RETRY_REQUEST = `${namespace}_RETRY_REQUEST`;
+export const RETRY_DONE = `${namespace}_RETRY_DONE`;
 
 const ITEM_PICK_PROPS = [
   'id',
@@ -133,11 +137,18 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        uploadData: {
-          files: []
-        }
+        uploadData: {}
       }
     }
+  },
+  [UPLOAD_TO_TDO](
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    return state;
   },
   [SET_PICKER_TYPE](
     state,
@@ -374,4 +385,24 @@ export const setPickerType = (id, pickerType) => ({
   type: SET_PICKER_TYPE,
   meta: { id },
   payload: pickerType
+});
+export const uploadToTDO = (id, files, callback) => ({
+  type: UPLOAD_TO_TDO,
+  meta: { id },
+  payload: {
+    files,
+    callback
+  }
+});
+
+// These retry actions are wrappers around filepicker retries
+export const retryRequest = (id, callback) => ({
+  type: RETRY_REQUEST,
+  payload: { callback },
+  meta: { id }
+});
+export const retryDone = (id, callback) => ({
+  type: RETRY_DONE,
+  payload: { callback },
+  meta: { id }
 });

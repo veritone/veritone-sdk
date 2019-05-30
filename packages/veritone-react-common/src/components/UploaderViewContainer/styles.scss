@@ -17,7 +17,19 @@
 }
 
 .uploader-file-list {
-  height: 200px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.upload-progress-container {
   overflow-y: auto;
-  margin-top: 24px;
+  max-height: 240px;
+}
+
+.uploader-retry-button-container {
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
 }

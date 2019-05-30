@@ -66,7 +66,7 @@ export default class Breadcrumbs extends React.Component {
       1: secondCrumb,
       [pathList.length - 1]: lastCrumb
     } = pathList;
-    const hiddenCrumbs = pathList.slice(2, pathList.length - 1);
+    const hiddenCrumbs = pathList.slice(1, pathList.length - 1);
     const icon = isStream ? (
       <div className={cx('icon-streams', styles['root-icon'])} />
     ) : <Work className={styles['root-icon']} />;
@@ -75,6 +75,7 @@ export default class Breadcrumbs extends React.Component {
       <div className={styles['breadcrumb-container']}>
         <React.Fragment key={'root'}>
           <BreadcrumbItem
+            id={'root'}
             icon={icon}
             index={0}
             key={'root'}
@@ -114,13 +115,6 @@ export default class Breadcrumbs extends React.Component {
                   {...firstCrumb}
                   index={1}
                   key={firstCrumb.id}
-                  onClick={this.onCrumbClick}
-                />
-                {seperator}
-                <BreadcrumbItem
-                  {...secondCrumb}
-                  index={2}
-                  key={secondCrumb.id}
                   onClick={this.onCrumbClick}
                 />
                 {seperator}

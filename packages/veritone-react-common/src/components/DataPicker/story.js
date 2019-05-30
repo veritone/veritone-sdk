@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { boolean } from '@storybook/addon-knobs';
+import { boolean, select } from '@storybook/addon-knobs';
 import DataPicker from './';
 
 const items = [
@@ -160,11 +160,24 @@ const items = [
 
 const pathList = [
   {
+    name: 'Child 1',
     id: '1'
   },
   {
-    label: 'Child',
+    name: 'Child 2',
     id: '2'
+  },
+  {
+    name: 'Child 3',
+    id: '3'
+  },
+  {
+    name: 'Child 4',
+    id: '4'
+  },
+  {
+    name: 'Child 5',
+    id: '5'
   }
 ]
 
@@ -209,7 +222,20 @@ const percentByFiles = [{
 storiesOf('DataPicker', module)
   .add('Basic', () => (
     <DataPicker
+      showFolder
+      showStream
+      showUpload
       items={items}
+      currentPickerType={select(
+        'currentPickerType', 
+        {
+          folder: 'folder',
+          upload: 'upload',
+          stream: 'stream'
+        },
+        'folder'
+      )}
+      setPickerType={action('setPickerType')}
       triggerPagination={action('triggerPagination')}
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
@@ -229,6 +255,16 @@ storiesOf('DataPicker', module)
   .add('No file upload', () => (
     <DataPicker
       items={items}
+      currentPickerType={select(
+        'currentPickerType', 
+        {
+          folder: 'folder',
+          upload: 'upload',
+          stream: 'stream'
+        },
+        'folder'
+      )}
+      setPickerType={action('setPickerType')}
       triggerPagination={action('triggerPagination')}
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
@@ -248,6 +284,16 @@ storiesOf('DataPicker', module)
   .add('Error / Initial loading', () => (
     <DataPicker
       items={[]}
+      currentPickerType={select(
+        'currentPickerType', 
+        {
+          folder: 'folder',
+          upload: 'upload',
+          stream: 'stream'
+        },
+        'folder'
+      )}
+      setPickerType={action('setPickerType')}
       triggerPagination={action('triggerPagination')}
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}

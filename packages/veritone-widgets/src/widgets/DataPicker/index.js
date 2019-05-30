@@ -9,7 +9,7 @@ import {
   number,
   func
 } from 'prop-types';
-import { noop } from 'lodash';
+import { noop, isArray } from 'lodash';
 
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -20,6 +20,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { DataPicker as DataPickerComponent } from 'veritone-react-common';
 
 import * as dataPickerModule from '../../redux/modules/dataPicker';
+import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
 
@@ -36,7 +37,14 @@ import styles from './styles.scss';
     currentPickerType: dataPickerModule.currentPickerType(state, id),
     itemRefs: dataPickerModule.currentDirectoryItems(state, id),
     currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id),
-    getItemByTypeAndId: dataPickerModule.getItemByTypeAndId(state)
+    getItemByTypeAndId: dataPickerModule.getItemByTypeAndId(state),
+
+    percentByFiles: filePickerModule.percentByFiles(state, id),
+    uploadPickerState: filePickerModule.state(state, id),
+    uploadSuccess: filePickerModule.didSucceed(state, id),
+    uploadError: filePickerModule.didError(state, id),
+    uploadWarning: filePickerModule.didWarn(state, id),
+    uploadStatusMsg: filePickerModule.statusMessage(state, id)
   }),
   {
     pick: dataPickerModule.pick,
@@ -44,7 +52,12 @@ import styles from './styles.scss';
     setPickerType: dataPickerModule.setPickerType,
     fetchPage: dataPickerModule.fetchPage,
     selectNode: dataPickerModule.selectNode,
-    selectCrumb: dataPickerModule.selectCrumb
+    selectCrumb: dataPickerModule.selectCrumb,
+
+    uploadToTDO: dataPickerModule.uploadToTDO,
+    abortRequest: filePickerModule.abortRequest,
+    retryRequest: dataPickerModule.retryRequest,
+    retryDone: dataPickerModule.retryDone
   }
 )
 class DataPicker extends React.Component {
@@ -58,6 +71,7 @@ class DataPicker extends React.Component {
     enableStreams: bool,
     enableUploads: bool,
     multiple: bool,
+    maxItems: number,
     acceptedFileTypes: arrayOf(string),
     availablePickerTypes: arrayOf(string),
     currentPickerType: oneOf(['folder', 'stream', 'upload']),
@@ -127,6 +141,10 @@ class DataPicker extends React.Component {
     itemRefs: []
   };
 
+  state = {
+    uploadedFiles: []
+  };
+
   handlePick = () => {
     const { id, pick } = this.props;
     id && pick && pick(id);
@@ -186,7 +204,84 @@ class DataPicker extends React.Component {
   handleCrumbSelection = crumb => {
     const { id, selectCrumb } = this.props;
     id && crumb && selectCrumb && selectCrumb(id, Number(crumb.index));
+  };
+
+  handleFilesSelected = fileOrFiles => {
+    const {
+      id,
+      multiple,
+      maxItems
+    } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
+
+    const selectedFiles = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
+    const totalFileCount = uploadedFiles.length + selectedFiles.length;
+    if (multiple) {
+      if (totalFileCount > maxItems) {
+        // TODO: Exceeded max selection/uploads
+      }
+    } else {
+      if (totalFileCount > 1) {
+        // TODO: Exceeded max selection/uploads
+      }
+    }
+    this.setState({
+      uploadedFiles: [...uploadedFiles, ...selectedFiles]
+    });
+  };
+
+  handleRemoveFile = index => {
+    const {
+      uploadedFiles
+    } = this.state;
+    if (uploadedFiles[index]) {
+      const clonedFiles = uploadedFiles.slice();
+      clonedFiles.splice(index, 1);
+      this.setState({
+        uploadedFiles: clonedFiles
+      });
+    }
   }
+
+  handleUploadToTDO = () => {
+    const {
+      id,
+      onPick,
+      uploadToTDO
+    } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
+    uploadToTDO && uploadToTDO(id, uploadedFiles, onPick);
+    this.setState({ uploadedFiles: [] });
+  };
+
+  handleRetryDone = () => {
+    // TODO: HOOKUP CALLBACK PROPERLY
+    const {
+      id,
+      onPick,
+      retryDone
+    } = this.props;
+    retryDone && retryDone(id, onPick);
+  };
+
+  handleRetry = () => {
+    // TODO: HOOKUP CALLBACK PROPERLY
+    const {
+      id,
+      retryRequest,
+      onPick
+    } = this.props;
+    retryRequest && retryRequest(id, onPick);
+  };
+
+  handleAbort = fileKey => {
+    const { id, abortRequest } = this.props;
+    abortRequest && abortRequest(id, fileKey);
+  };
 
   render() {
     const {
@@ -198,6 +293,9 @@ class DataPicker extends React.Component {
       itemRefs,
       getItemByTypeAndId
     } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
     const useFolders = availablePickerTypes.includes('folder') && enableFolders;
     const useStreams = availablePickerTypes.includes('stream') && enableStreams;
     const useUploads = availablePickerTypes.includes('upload') && enableUploads;
@@ -210,10 +308,18 @@ class DataPicker extends React.Component {
           <DataPickerComponent
             {...this.props}
             items={items}
+
             isLoading={currentDirectoryLoadingState.isLoading}
             showFolder={useFolders}
             showStream={useStreams}
             showUpload={useUploads}
+            uploadedFiles={uploadedFiles}
+            onFilesSelected={this.handleFilesSelected}
+            onRemoveFile={this.handleRemoveFile}
+            onUpload={this.handleUploadToTDO}
+            handleAbort={this.handleAbort}
+            onRetryDone={this.handleRetryDone}
+            retryRequest={this.handleRetry}
             setPickerType={this.handleSetPickerType}
             triggerPagination={this.triggerPagination}
             onCancel={this.handleOnCancel}

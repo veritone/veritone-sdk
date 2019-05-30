@@ -19,6 +19,13 @@ const {
 import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 
+// Leverage filepicker redux
+import {
+  UPLOAD_REQUEST,
+  RETRY_REQUEST as FP_RETRY_REQUEST,
+  RETRY_DONE as FP_RETRY_DONE
+} from '../filePicker';
+
 import {
   PICK_START,
   ON_PICK,
@@ -26,8 +33,11 @@ import {
   INIT_PICKER_TYPE,
   INIT_FOLDER,
   INIT_UPLOAD,
+  UPLOAD_TO_TDO,
   FETCH_PAGE,
   LOADED_PAGE,
+  RETRY_REQUEST,
+  RETRY_DONE,
   currentDirectoryPaginationState,
   getItemByTypeAndId,
   getCurrentNode,
@@ -154,7 +164,7 @@ function* initializeFolderData(id, refreshCache) {
       meta: { id }
     });
   }
-  
+
   return true;
 }
 
@@ -305,9 +315,69 @@ function* fetchFolderPage(currentNode, id) {
   return result;
 }
 
+function* watchUploadToTDO() {
+  yield takeEvery(UPLOAD_TO_TDO, function* (action) {
+    // Upload files, use s3 urls to create TDOs, and select TDOs
+    const { id } = action.meta;
+    const { files, callback } = action.payload;
+    yield put({
+      type: UPLOAD_REQUEST,
+      meta: { id },
+      payload: {
+        files,
+        callback: createTDOsFromFiles(callback)
+      }
+    });
+  });
+}
+
+function* watchRetryRequest() {
+  yield takeEvery(RETRY_REQUEST, function*(action) {
+    // Wrap filepicker retry request
+    const { callback } = action.payload;
+    const { id } = action.meta;
+
+    yield put({
+      type: FP_RETRY_REQUEST,
+      meta: { id },
+      payload: {
+        callback: createTDOsFromFiles(callback)
+      }
+    });
+  });
+}
+
+function* watchRetryDone() {
+  yield takeEvery(RETRY_DONE, function*(action) {
+    // Wrap filepicker retry done
+    const { callback } = action.payload;
+    const { id } = action.meta;
+
+    yield put({
+      type: FP_RETRY_DONE,
+      meta: { id },
+      payload: {
+        callback: createTDOsFromFiles(callback)
+      }
+    });
+  });
+}
+function createTDOsFromFiles(callback) {
+  return function (signedFiles, { warning, error, cancelled }) {
+    console.log('Create TDO Logic Here');
+    // Create TDO w/ asset to set full primary asset for immediate reprocessing
+    // then launch webstream adapter against it to enable playback
+    
+    callback(signedFiles, { warning, error, cancelled });
+  }
+}
+
 export default function* root() {
   yield all([
     fork(watchPickStart),
-    fork(watchPagination)
+    fork(watchPagination),
+    fork(watchUploadToTDO),
+    fork(watchRetryRequest),
+    fork(watchRetryDone)
   ]);
 }
