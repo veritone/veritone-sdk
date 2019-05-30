@@ -11,6 +11,7 @@ export const ABORT_REQUEST = 'ABORT_REQUEST';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
+export const CLEAR_FILEPICKER_DATA = 'CLEAR_FILEPICKER_DATA';
 
 export const namespace = 'filePicker';
 
@@ -57,6 +58,16 @@ export default createReducer(defaultState, {
         open: false
       }
     };
+  },
+  [CLEAR_FILEPICKER_DATA](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return update(state, {
+      $unset: [id]
+    });
   },
   [ABORT_REQUEST](
     state,

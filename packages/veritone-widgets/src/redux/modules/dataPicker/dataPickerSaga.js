@@ -23,11 +23,13 @@ const { fetchGraphQLApi } = helpers;
 import {
   UPLOAD_REQUEST,
   RETRY_REQUEST as FP_RETRY_REQUEST,
-  RETRY_DONE as FP_RETRY_DONE
+  RETRY_DONE as FP_RETRY_DONE,
+  CLEAR_FILEPICKER_DATA
 } from '../filePicker';
 
 import {
   PICK_START,
+  PICK_END,
   ON_PICK,
   INIT_ORG_CONFIG,
   INIT_PICKER_TYPE,
@@ -48,6 +50,26 @@ const DEFAULT_PAGE_SIZE = 30;
 const ROOT_ID = 'root';
 const FOLDER_PICKER_TYPE = 'folder';
 const UPLOAD_PICKER_TYPE = 'upload';
+const TDO_FRAGMENTS = `
+  id
+  name
+  startDateTime
+  stopDateTime
+  thumbnailUrl
+  sourceImageUrl
+  primaryAsset (assetType: "media") {
+    id
+    name
+    contentType
+    signedUri
+  }
+  createdDateTime
+  modifiedDateTime
+  streams {
+    uri
+    protocol
+  }
+`;
 
 function* getGqlParams() {
   const config = yield select(configModule.getConfig);
@@ -263,24 +285,7 @@ function* fetchFolderPage(currentNode, id) {
       folder (id: "${currentFolderId}") {
         childTDOs (limit: ${DEFAULT_PAGE_SIZE}, offset: ${leafOffset}) {
           records {
-            id
-            name
-            startDateTime
-            stopDateTime
-            thumbnailUrl
-            sourceImageUrl
-            primaryAsset (assetType: "media") {
-              id
-              name
-              contentType
-              signedUri
-            }
-            createdDateTime
-            modifiedDateTime
-            streams {
-              uri
-              protocol
-            }
+            ${TDO_FRAGMENTS}
           }
         }
       }
@@ -325,7 +330,7 @@ function* watchUploadToTDO() {
       meta: { id },
       payload: {
         files,
-        callback: createTDOsFromFiles(callback)
+        callback: createTDOsFromFiles(id, callback)
       }
     });
   });
@@ -341,7 +346,7 @@ function* watchRetryRequest() {
       type: FP_RETRY_REQUEST,
       meta: { id },
       payload: {
-        callback: createTDOsFromFiles(callback)
+        callback: createTDOsFromFiles(id, callback)
       }
     });
   });
@@ -357,19 +362,102 @@ function* watchRetryDone() {
       type: FP_RETRY_DONE,
       meta: { id },
       payload: {
-        callback: createTDOsFromFiles(callback)
+        callback: createTDOsFromFiles(id, callback)
       }
     });
   });
 }
-function createTDOsFromFiles(callback) {
-  return function (signedFiles, { warning, error, cancelled }) {
-    console.log('Create TDO Logic Here');
+function createTDOsFromFiles(id, callback) {
+  return function* (signedFiles, { warning, error, cancelled }) {
     // Create TDO w/ asset to set full primary asset for immediate reprocessing
     // then launch webstream adapter against it to enable playback
-    
-    callback(signedFiles, { warning, error, cancelled });
+    let createdTDOs = [], createdJobIds = [];
+    if (!cancelled && signedFiles.length) {
+      const tdoResponses = yield signedFiles.map(function* (signedFile) {
+        return yield createTDOWithAsset(signedFile);
+      });
+      console.log(tdoResponses);
+      createdTDOs = tdoResponses.map(res => get(res, 'data.createTDOWithAsset'));
+      
+      const jobResponses = yield createdTDOs.map(function* (tdo) {
+        return yield createInitialJob(tdo);
+      });
+      createdJobIds = jobResponses.map(res => get(res, 'data.createJob.id'));
+    }
+    yield put({
+      type: CLEAR_FILEPICKER_DATA,
+      meta: { id }
+    });
+    yield put({
+      type: PICK_END,
+      meta: { id }
+    });
+    callback(createdTDOs, { warning, error, cancelled });
   }
+}
+
+function* createTDOWithAsset(signedFile) {
+  const {
+    graphQLUrl,
+    token
+  } = yield getGqlParams();
+  const query = `mutation ($input: CreateTDOWithAsset!) {
+    createTDOWithAsset(input: $input) {
+      ${TDO_FRAGMENTS}
+    }
+  }`;
+  const variables = {
+    input: {
+      name: signedFile.fileName,
+      contentType: signedFile.type,
+      uri: signedFile.unsignedUrl,
+      startDateTime: new Date().toISOString(),
+      updateStopDateTimeFromAsset: true,
+      sourceId: '-1',
+      isPublic: false,
+      assetType: 'media',
+      addToIndex: true,
+      sourceData: {
+        sourceId: '-1'
+      }
+    }
+  };
+  return yield call(fetchGraphQLApi, {
+    endpoint: graphQLUrl,
+    query,
+    variables,
+    token
+  });
+}
+
+function* createInitialJob(tdo) {
+  const {
+    graphQLUrl,
+    token
+  } = yield getGqlParams();
+  const query = `mutation ($input: CreateJob!) {
+    createJob(input: $input) {
+      id
+    }
+  }`;
+  const variables = {
+    input: {
+      targetId: tdo.id,
+      tasks: [{
+        engineId: '9e611ad7-2d3b-48f6-a51b-0a1ba40feab4', // Webstream Adapter
+        payload: {
+          tdoId: tdo.id,
+          url: tdo.primaryAsset.signedUri
+        }
+      }]
+    }
+  };
+  return yield call(fetchGraphQLApi, {
+    endpoint: graphQLUrl,
+    query,
+    variables,
+    token
+  });
 }
 
 export default function* root() {
