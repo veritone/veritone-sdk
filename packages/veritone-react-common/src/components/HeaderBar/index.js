@@ -111,17 +111,19 @@ class HeaderBar extends React.Component {
                 onClear={onClear}
                 onSearch={onSearch}
               />
-              <div className={styles.spacer} />
-              <div className={cx(styles.divider, styles.icon)} />
-              <div className={styles.spacer} />
-              <Sort onClick={this.onOpenSort} />
-              <ArrowDropDown onClick={this.onOpenSort} />
               {
-                viewType === 'list' ? (
-                  <ViewList data-type="grid" onClick={onToggleView} />
-                ) : (
-                  <ViewModule data-type="list" onClick={onToggleView} />
-                )
+                // <div className={styles.spacer} />
+                // <div className={cx(styles.divider, styles.icon)} />
+                // <div className={styles.spacer} />
+                // <Sort onClick={this.onOpenSort} />
+                // <ArrowDropDown onClick={this.onOpenSort} />
+              }
+              {
+                // viewType === 'list' ? (
+                //   <ViewList data-type="grid" onClick={onToggleView} />
+                // ) : (
+                //   <ViewModule data-type="list" onClick={onToggleView} />
+                // )
               }
             </div>
           </Toolbar>

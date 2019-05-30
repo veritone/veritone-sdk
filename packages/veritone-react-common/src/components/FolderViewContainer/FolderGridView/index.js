@@ -18,6 +18,7 @@ const FolderGridView = ({
         <div
           className={cx(styles["gridview-item"], { [styles['selected']]: highlightedItems[item.id] })}
           id={item.id}
+          type={item.type}
           key={item.id}
           data-id={item.id}
           data-index={index}

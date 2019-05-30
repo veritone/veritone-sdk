@@ -30,10 +30,9 @@ function SimpleMediaCard(props) {
     const signedUri = get(primaryAsset, 'signedUri');
     return streamUri || signedUri;
   }
+  const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
   const FileIcon = type === 'folder' ? Folder :
-    FILE_ICONS[
-    get(primaryAsset, 'contentType', 'doc').split('/')[0]
-    ];
+    (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
   return (
     <div>
       <Card className={cx(styles["item-card"])}>

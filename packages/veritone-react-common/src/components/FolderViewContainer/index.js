@@ -29,7 +29,7 @@ const LoadingState = () => (
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
-    viewType: oneOf(['list', 'gird']),
+    viewType: oneOf(['list', 'grid']),
     items: arrayOf(itemShape),
     onSelectItem: func,
     isLoading: bool,
@@ -284,9 +284,9 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          { !!selectedItems.length && (
+          { !!selectedItems.length && viewType === 'list' && (
             <MediaInfoPanel
-              open={viewType === 'list'}
+              open
               selectedItems={selectedItems}
               width={300}
             />
