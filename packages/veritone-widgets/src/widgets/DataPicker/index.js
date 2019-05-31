@@ -9,7 +9,7 @@ import {
   number,
   func
 } from 'prop-types';
-import { noop, isArray } from 'lodash';
+import { noop, isArray, get } from 'lodash';
 
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -186,18 +186,24 @@ class DataPicker extends React.Component {
       && fetchPage(id);
   };
 
-  handleNodeSelection = event => {
+  handleNodeSelection = (selectedNodes = []) => {
     const { id, selectNode, fetchPage } = this.props;
-    const nodeId = event.currentTarget.getAttribute('id');
-    const type = event.currentTarget.getAttribute('type');
-    const selectedNode = { id: nodeId, type };
+    // Don't do anything if mixed types are present
+    const mixedSelection = Object.keys(selectedNodes.reduce((acc, node) => {
+      acc[node.type] = true;
+      return acc;
+    }, {})).length > 1;
+    if (mixedSelection || !selectedNodes.length) {
+      return;
+    }
+    const type = get(selectedNodes, [0, 'type']);
     // Determine whether to "select" or "pick" the nodes
-    if (type !== 'tdo') {
-      id && nodeId && selectNode(id, [selectedNode]);
+    if (type !== 'tdo' && selectedNodes.length === 1) {
+      id && selectNode && selectNode(id, selectedNodes);
       id && fetchPage && fetchPage(id);
-    } else {
+    } else if (type === 'tdo') {
       // Selected an item to open (tdo for now)
-      this.handleOnPick([selectedNode]);
+      this.handleOnPick(selectedNodes);
     }
   };
 

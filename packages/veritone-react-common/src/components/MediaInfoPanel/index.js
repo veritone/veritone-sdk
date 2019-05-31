@@ -206,7 +206,7 @@ const MediaInfoPanel = ({ open, selectedItems = [], width }) => {
           >
             {
               selectedItems.length > 1 ? (
-                <div selectedNumber={selectedItems.length}>
+                <div>
                   You have selected {selectedItems.length} items
                 </div>
               ) : selectedItem ? (

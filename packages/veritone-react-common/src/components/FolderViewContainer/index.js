@@ -176,9 +176,12 @@ class FolderViewContainer extends React.Component {
   }
 
   onSubmit = () => {
+    const { items, onSelectItem } = this.props;
     const { highlightedItems } = this.state;
-    this.props.onSubmit(Object.keys(highlightedItems)
-      .filter(key => highlightedItems[key]))
+    const selectedNodes = items
+      .filter(i => highlightedItems[i.id])
+      .map(i => ({ id: i.id, type: i.type }));
+    onSelectItem && onSelectItem(selectedNodes);
   }
 
   scrollRef = React.createRef();

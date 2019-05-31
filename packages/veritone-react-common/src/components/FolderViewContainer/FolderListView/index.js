@@ -35,92 +35,97 @@ const FolderListView = ({
   onSelectItem
 }) => {
   const headers = ['Name', 'Created Date Time', 'Modified Date Time', 'Type'];
-    return (
-      <Table>
-        <TableHead>
-          <TableRow className={styles['table-row-head']}>
-            {
-              headers.map((header) => (
-                <TableCell
-                  key={header}
-                  className={cx(
-                    styles['table-row-head--hidden'],
-                    styles['table-row']
-                  )}
-                  align="right"
-                >
-                  {header}
-                  <div className={styles['table-row-text']}>
-                    {header}
-                  </div>
-                </TableCell>
-              ))
-            }
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.map(({
-            id,
-            type,
-            name,
-            primaryAsset,
-            createdDateTime,
-            modifiedDateTime
-          }, index) => {
-            const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
-            const FileIcon = type === 'folder' ? Folder :
-              (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
-            return (
-              <TableRow
-                className={cx({
-                  [styles.selected]: highlightedItems[id]
-                })}
-                id={id}
-                key={id}
-                type={type}
-                data-id={id}
-                data-index={index}
-                data-type={type}
-                onClick={onHighlightItem}
-                onDoubleClick={onSelectItem}
+  const handleDoubleClick = event => {
+    const id = event.currentTarget.getAttribute('id');
+    const type = event.currentTarget.getAttribute('type');
+    onSelectItem && onSelectItem([{ id, type }]);
+  };
+  return (
+    <Table>
+      <TableHead>
+        <TableRow className={styles['table-row-head']}>
+          {
+            headers.map((header) => (
+              <TableCell
+                key={header}
+                className={cx(
+                  styles['table-row-head--hidden'],
+                  styles['table-row']
+                )}
+                align="right"
               >
-                <TableCell
-                  scope="row"
-                  className={styles['table-row']}
-                >
-                <div className={cx(styles['table-first-column'])}>
-                  <FileIcon className={styles['table-icon']}/>
-                    <span className={
-                      cx(styles['table-first-column--text'],
-                      {
-                        [styles['table-first-column--folder']]: type === 'folder'
-                      })
-                    }
-                    >
-                      {name}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell align="right" className={styles['table-row']}>
-                  {formatDateString(createdDateTime)}
-                </TableCell>
-                <TableCell align="right" className={styles['table-row']}>
-                  {formatDateString(modifiedDateTime)}
-                </TableCell>
-                <TableCell align="right" className={styles['table-row']}>
-                  {
-                    type === 'folder' ?
-                    'folder' :
-                    get(primaryAsset, 'contentType', 'doc')
+                {header}
+                <div className={styles['table-row-text']}>
+                  {header}
+                </div>
+              </TableCell>
+            ))
+          }
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {items.map(({
+          id,
+          type,
+          name,
+          primaryAsset,
+          createdDateTime,
+          modifiedDateTime
+        }, index) => {
+          const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
+          const FileIcon = type === 'folder' ? Folder :
+            (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
+          return (
+            <TableRow
+              className={cx({
+                [styles.selected]: highlightedItems[id]
+              })}
+              id={id}
+              key={id}
+              type={type}
+              data-id={id}
+              data-index={index}
+              data-type={type}
+              onClick={onHighlightItem}
+              onDoubleClick={handleDoubleClick}
+            >
+              <TableCell
+                scope="row"
+                className={styles['table-row']}
+              >
+              <div className={cx(styles['table-first-column'])}>
+                <FileIcon className={styles['table-icon']}/>
+                  <span className={
+                    cx(styles['table-first-column--text'],
+                    {
+                      [styles['table-first-column--folder']]: type === 'folder'
+                    })
                   }
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    )
-  }
+                  >
+                    {name}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell align="right" className={styles['table-row']}>
+                {formatDateString(createdDateTime)}
+              </TableCell>
+              <TableCell align="right" className={styles['table-row']}>
+                {formatDateString(modifiedDateTime)}
+              </TableCell>
+              <TableCell align="right" className={styles['table-row']}>
+                {
+                  type === 'folder' ?
+                  'folder' :
+                  get(primaryAsset, 'contentType', 'doc')
+                }
+              </TableCell>
+            </TableRow>
+          )
+        })}
+      </TableBody>
+    </Table>
+  );
+};
 
 FolderListView.propTypes = {
   onSelectItem: func,
