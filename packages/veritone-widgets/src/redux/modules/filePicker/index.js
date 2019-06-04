@@ -79,14 +79,14 @@ export default createReducer(defaultState, {
     if (fileKey) {
       newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
         [fileKey]: {
-          aborted: { $set: true }
+          aborted: { $set: 'aborted' }
         }
       });
     } else {
       Object.keys(get(state, [id, 'progressPercentByFileKey'], {})).forEach(fileKey => {
         newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
           [fileKey]: {
-            aborted: { $set: true }
+            aborted: { $set: 'aborted' }
           }
         });
       });

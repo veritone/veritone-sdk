@@ -21,6 +21,9 @@ export const UPLOAD_TO_TDO = `${namespace}_UPLOAD_TO_TDO`;
 export const RETRY_REQUEST = `${namespace}_RETRY_REQUEST`;
 export const RETRY_DONE = `${namespace}_RETRY_DONE`;
 
+export const SET_SEARCH_VALUE = `${namespace}_SET_SEARCH_VALUE`;
+export const CLEAR_SEARCH = `${namespace}_CLEAR_SEARCH`;
+
 const ITEM_PICK_PROPS = [
   'id',
   'type',
@@ -36,7 +39,8 @@ const ITEM_PICK_PROPS = [
 const defaultState = {
   orgEnableFolders: false,
   orgEnableUploads: false,
-  itemData: {}
+  itemData: {},
+  searchData: {}
 };
 
 export default createReducer(defaultState, {
@@ -103,7 +107,8 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        ...payload
+        ...payload,
+        searchValue: ''
       }
     }
   },
@@ -283,6 +288,46 @@ export default createReducer(defaultState, {
       });
     }
     return newState;
+  },
+  [SET_SEARCH_VALUE] (
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        searchValue: payload
+      },
+      searchData: {
+        ...state.searchData,
+        [payload]: {
+          ...state.searchData[payload],
+          results: [
+            ...get(state, ['searchData', payload, 'results'], [])
+          ],
+          offset: get(state, ['searchData', payload, 'offset'], 0),
+          isLoading: false
+        }
+      }
+    };
+  },
+  [CLEAR_SEARCH] (
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        searchValue: ''
+      }
+    }
   }
 });
 
@@ -293,6 +338,7 @@ export const orgEnableFolders = (state) => get(local(state), 'orgEnableFolders')
 export const orgEnableUploads = (state) => get(local(state), 'orgEnableUploads');
 export const availablePickerTypes = (state, id) => get(local(state), [id, 'availablePickerTypes']);
 export const currentPickerType = (state, id) => get(local(state), [id, 'currentPickerType']);
+export const searchValue = (state, id) => get(local(state), [id, 'searchValue'], '');
 
 export const getItemByTypeAndId = state => (type, itemId) => {
   const item = get(local(state), ['itemData', `${type}:${itemId}`]);
@@ -331,9 +377,15 @@ export const getCurrentNode = (state, id) => {
 // Traverse the current pickerType dataspaces' treeItems and get the current folders contents
 export const currentDirectoryItems = (state, id) => {
   const pickerType = get(local(state), [id, 'currentPickerType']);
+  const searchValue = get(local(state), [id, 'searchValue'], '');
   const itemData = get(local(state), 'itemData', {});
+  const searchData = get(local(state), 'searchData', {});
   let currentNodeId = 'root', currentNodeType = pickerType;
   const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
+  // If searchValue populated, display search results
+  if (searchValue) {
+    return get(searchData, [searchValue, 'results'], []);
+  }
   if (curPath.length) {
     const curDir = curPath.slice(-1)[0];
     currentNodeId = curDir.id;
@@ -404,5 +456,16 @@ export const retryRequest = (id, callback) => ({
 export const retryDone = (id, callback) => ({
   type: RETRY_DONE,
   payload: { callback },
+  meta: { id }
+});
+
+// Search Actions
+export const setSearchValue = (id, searchValue) => ({
+  type: SET_SEARCH_VALUE,
+  meta: { id },
+  payload: searchValue
+});
+export const clearSearch = id => ({
+  type: CLEAR_SEARCH,
   meta: { id }
 });

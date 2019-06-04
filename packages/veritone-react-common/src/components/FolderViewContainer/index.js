@@ -146,7 +146,7 @@ class FolderViewContainer extends React.Component {
       },
       lastIndex: index,
       shiftIndex: index
-    }));
+    }), this.reloadPlayer);
   }
 
   noneHighligthedItem = (highlightedItems) =>
@@ -168,7 +168,7 @@ class FolderViewContainer extends React.Component {
           [itemId]: !highlightedItems[itemId]
         },
         shiftIndex: parseInt(index, 10)
-      }))
+      }), this.reloadPlayer)
     }
     if (holdingShift) {
       this.onShiftHighlight(parseInt(index, 10));
@@ -184,7 +184,21 @@ class FolderViewContainer extends React.Component {
     onSelectItem && onSelectItem(selectedNodes);
   }
 
+  reloadPlayer = () => {
+    if (this.mediaPlayer
+      && this.playerRef
+      && this.playerRef.current
+    ) {
+      this.mediaPlayer.load();
+    }
+  }
+
+  onPlayerRefReady = ref => {
+    this.mediaPlayer = ref;
+  }
+
   scrollRef = React.createRef();
+  playerRef = React.createRef();
 
   render() {
     const {
@@ -244,14 +258,7 @@ class FolderViewContainer extends React.Component {
       )
     }
 
-    const itemsObject = items.reduce((cumItemsObject, item) => ({
-      ...cumItemsObject,
-      [item.id]: item
-    }), {});
-
-    const selectedItems = Object.keys(highlightedItems)
-      .filter(key => highlightedItems[key])
-      .map(itemId => itemsObject[itemId]);
+    const selectedItems = items.filter(item => highlightedItems[item.id]);
 
     return (
       <Paper>
@@ -290,6 +297,8 @@ class FolderViewContainer extends React.Component {
           { !!selectedItems.length && viewType === 'list' && (
             <MediaInfoPanel
               open
+              playerRef={this.playerRef}
+              onPlayerRefReady={this.onPlayerRefReady}
               selectedItems={selectedItems}
               width={300}
             />

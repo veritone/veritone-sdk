@@ -27,11 +27,9 @@ class SearchInput extends React.Component {
     }
   }
 
-  onBlur = () => {
-    this.setState({
-      searchValue: ''
-    });
-    this.props.onClear();
+  onClear = event => {
+    const { onClear } = this.props;
+    onClear && onClear();
   }
 
   render() {
@@ -47,10 +45,9 @@ class SearchInput extends React.Component {
           onChange={this.onChange}
           value={this.state.searchValue}
           onKeyPress={this.onKeyPress}
-          onBlur={this.onBlur}
         />
         <div className={styles['clear-icon']}>
-          <ClearIcon onClick={this.onBlur} />
+          <ClearIcon onClick={this.onClear} />
         </div>
       </div>
     )

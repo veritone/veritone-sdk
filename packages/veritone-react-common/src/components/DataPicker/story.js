@@ -8,151 +8,155 @@ const items = [
   {
     id: '1',
     type: 'folder',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'A folder'
   },
   {
     id: '2',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
+    startDateTime: '2019-06-03T21:58:20.000Z',
+    stopDateTime: '2019-06-03T21:59:25.000Z',
     name: 'An audio.mp3',
-    primaryAsset: { contentType: 'audio/mp3' }
+    primaryAsset: { contentType: 'audio/mp3', signedUri: 'https://inspirent.s3.amazonaws.com/assets/100364828/1c94f0bb-d370-4fc2-bcef-ae3d7a3e8437.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQMR5VATUHU3MEGOA%2F20190603%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190603T215541Z&X-Amz-Expires=10800&X-Amz-Signature=e72589639c5fdf4caa8dc8675703e37665e8d4c1d76904d66b648fdee608b9c6&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22jLQvOyXMRNewKVLBlH62.mp4%22' }
   },
   {
     id: '3',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
+    startDateTime: '2019-06-03T21:58:20.000Z',
+    stopDateTime: '2019-06-03T21:59:25.000Z',
     name: 'Game of thrones.mp4',
-    primaryAsset: { contentType: 'video/mp4' }
+    primaryAsset: { contentType: 'video/mp4', signedUri: 'https://inspirent.s3.amazonaws.com/assets/100475387/66c50ed3-d5d8-4a78-a3bc-f226613b7eac.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQMR5VATUHU3MEGOA%2F20190603%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190603T215541Z&X-Amz-Expires=10800&X-Amz-Signature=26dae18984525f04efe4df259b0820467fe8361f8b1a72bf26183a079b8d0aa1&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22k2YOCylXRAmaSzSDYdQi.mp4%22' }
   },
   {
     id: '4',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'City of stars.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '5',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '6',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'An audio.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '7',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'Game of thrones.mp4',
     primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '8',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'City of stars.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '9',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '10',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '11',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'An audio.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '12',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'Game of thrones.mp4',
     primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '13',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'City of stars.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '14',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '15',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'An audio.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '16',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'Game of thrones.mp4',
     primaryAsset: { contentType: 'video/mp4' }
   },
   {
     id: '17',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'City of stars.mp3',
     primaryAsset: { contentType: 'audio/mp3' }
   },
   {
     id: '18',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },
   {
     id: '19',
     type: 'tdo',
-    createdDateTime: 'Mar 29, 2019 3:34 PM',
-    modifiedDateTime: 'Mar 29, 2019 3:34 PM',
+    createdDateTime: '2019-03-29T22:34:00.000Z',
+    modifiedDateTime: '2019-03-29T22:34:00.000Z',
     name: 'maps.xml',
     primaryAsset: { contentType: 'doc/xml' }
   },

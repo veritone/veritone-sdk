@@ -107,10 +107,12 @@ class HeaderBar extends React.Component {
               { [styles.disabled]: currentPickerType === 'upload' }
               )}
             >
-              <SearchInput
-                onClear={onClear}
-                onSearch={onSearch}
-              />
+              {
+                // <SearchInput
+                //   onClear={onClear}
+                //   onSearch={onSearch}
+                // />
+              }
               {
                 // <div className={styles.spacer} />
                 // <div className={cx(styles.divider, styles.icon)} />

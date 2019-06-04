@@ -31,6 +31,7 @@ import styles from './styles.scss';
 }))
 @connect(
   (state, { id }) => ({
+    // General State
     open: dataPickerModule.isOpen(state, id),
     pathList: dataPickerModule.currentPath(state, id),
     availablePickerTypes: dataPickerModule.availablePickerTypes(state, id),
@@ -39,6 +40,7 @@ import styles from './styles.scss';
     currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id),
     getItemByTypeAndId: dataPickerModule.getItemByTypeAndId(state),
 
+    // Upload State
     percentByFiles: filePickerModule.percentByFiles(state, id),
     uploadPickerState: filePickerModule.state(state, id),
     uploadSuccess: filePickerModule.didSucceed(state, id),
@@ -47,6 +49,7 @@ import styles from './styles.scss';
     uploadStatusMsg: filePickerModule.statusMessage(state, id)
   }),
   {
+    // General Actions
     pick: dataPickerModule.pick,
     endPick: dataPickerModule.endPick,
     setPickerType: dataPickerModule.setPickerType,
@@ -54,10 +57,15 @@ import styles from './styles.scss';
     selectNode: dataPickerModule.selectNode,
     selectCrumb: dataPickerModule.selectCrumb,
 
+    // Upload Actions
     uploadToTDO: dataPickerModule.uploadToTDO,
     abortRequest: filePickerModule.abortRequest,
     retryRequest: dataPickerModule.retryRequest,
-    retryDone: dataPickerModule.retryDone
+    retryDone: dataPickerModule.retryDone,
+
+    // Search Actions
+    setSearchValue: dataPickerModule.setSearchValue,
+    clearSearch: dataPickerModule.clearSearch
   }
 )
 class DataPicker extends React.Component {
@@ -289,6 +297,17 @@ class DataPicker extends React.Component {
     abortRequest && abortRequest(id, fileKey);
   };
 
+  handleOnSearch = searchValue => {
+    const { id, setSearchValue} = this.props;
+    setSearchValue && setSearchValue(id, searchValue);
+  };
+
+  handleOnClear = () => {
+    const { id, clearSearch } = this.props;
+    clearSearch && clearSearch();
+  }
+
+
   render() {
     const {
       currentDirectoryLoadingState,
@@ -330,7 +349,9 @@ class DataPicker extends React.Component {
             triggerPagination={this.triggerPagination}
             onCancel={this.handleOnCancel}
             onSelectItem={this.handleNodeSelection}
-            onCrumbClick={this.handleCrumbSelection} />
+            onCrumbClick={this.handleCrumbSelection}
+            onSearch={this.handleOnSearch}
+            onClear={this.handleOnClear} />
         </Dialog>
         { this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })

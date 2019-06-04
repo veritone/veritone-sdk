@@ -40,16 +40,19 @@ import {
   LOADED_PAGE,
   RETRY_REQUEST,
   RETRY_DONE,
+  SET_SEARCH_VALUE,
   currentDirectoryPaginationState,
   getItemByTypeAndId,
   getCurrentNode,
-  currentPickerType
+  currentPickerType,
+  searchValue
 } from './';
 
 const DEFAULT_PAGE_SIZE = 30;
 const ROOT_ID = 'root';
 const FOLDER_PICKER_TYPE = 'folder';
 const UPLOAD_PICKER_TYPE = 'upload';
+const SEARCH_PICKER_TYPE = 'search';
 const TDO_FRAGMENTS = `
   id
   name
@@ -199,17 +202,28 @@ function* initializeUploadData(id) {
 
 // Fetch the next page for the currentPickerType
 //  Folders - fetch subfolders first. once exhausted, then fetch TDOs
+//  Search - if searchValue is populated, fetch search results
 function* watchPagination() {
   yield takeEvery(FETCH_PAGE, function*(action) {
     const { id } = action.meta;
-    const pickerType = yield select(currentPickerType, id);
+    let pickerType = yield select(currentPickerType, id);
     const currentNode = yield select(getCurrentNode, id);
+    const triggerSearch = yield select(searchValue, id);
+
+    const paginationFuncs = {
+      [FOLDER_PICKER_TYPE]: fetchFolderPage,
+      [SEARCH_PICKER_TYPE]: fetchSearchPage
+    };
+
     if (!currentNode) {
       return;
     }
-    const paginationFuncs = {
-      [FOLDER_PICKER_TYPE]: fetchFolderPage
-    };
+
+    // If searchValue is populated then trigger search pagination
+    if (triggerSearch) {
+      pickerType = SEARCH_PICKER_TYPE;
+    }
+
     let result = {};
     if (paginationFuncs[pickerType]) {
       result = yield paginationFuncs[pickerType](currentNode, id);
@@ -318,6 +332,10 @@ function* fetchFolderPage(currentNode, id) {
     }
   }
   return result;
+}
+
+function* fetchSearchPage(currentNode, id) {
+  console.log(currentNode, id);
 }
 
 function* watchUploadToTDO() {
@@ -460,12 +478,25 @@ function* createInitialJob(tdo) {
   });
 }
 
+function* watchOnSearch() {
+  yield takeEvery(SET_SEARCH_VALUE, function* (action) {
+    const { id } = action.meta;
+    const searchValue = action.payload;
+    
+    yield put({
+      type: FETCH_PAGE,
+      meta: { id }
+    });
+  });
+}
+
 export default function* root() {
   yield all([
     fork(watchPickStart),
     fork(watchPagination),
     fork(watchUploadToTDO),
     fork(watchRetryRequest),
-    fork(watchRetryDone)
+    fork(watchRetryDone),
+    fork(watchOnSearch)
   ]);
 }

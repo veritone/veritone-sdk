@@ -11,9 +11,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import MediaPlayer from '../MediaPlayer';
+import MediaPlayerComponent from '../MediaPlayer';
 
 import styles from './styles.scss';
+
+const MediaPlayer = React.forwardRef((props, ref) => (
+  <MediaPlayerComponent {...props} forwardedRef={ref} />
+));
 
 const tdoShape = shape({
   name: string.isRequired,
@@ -68,7 +72,7 @@ const formatAsDuration = (seconds) => {
   );
 }
 
-const MediaInfo = ({ selectedItem, width }) => {
+const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
   const itemType = selectedItem.type === 'folder' ?
     'folder' :
     get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
@@ -86,6 +90,8 @@ const MediaInfo = ({ selectedItem, width }) => {
             case 'audio':
               return (
                 <MediaPlayer
+                  ref={playerRef}
+                  onPlayerRefReady={onPlayerRefReady}
                   src={selectedItem.primaryAsset.signedUri}
                   streams={selectedItem.streams}
                   poster={selectedItem.thumbnailUrl}
@@ -146,25 +152,26 @@ const MediaInfo = ({ selectedItem, width }) => {
                 {formatDateString(selectedItem.modifiedDateTime)}
               </TableCell>
             </TableRow>
-            {(itemType === 'video' || itemType === 'audio') && (
-              <TableRow className={styles['table-row']}>
-                <TableCell
-                  className={cx(
-                    styles['table-cell'],
-                    styles['table-first-column']
-                  )}
-                >
-                  Duration
-                </TableCell>
-                <TableCell className={styles['table-cell']}>
-                  {
-                    formatAsDuration(getDuration(
-                      selectedItem.startDateTime,
-                      selectedItem.stopDateTime
-                    ))
-                  }
-                </TableCell>
-              </TableRow>
+            {
+              (selectedItem.startDateTime && selectedItem.stopDateTime) && (
+                <TableRow className={styles['table-row']}>
+                  <TableCell
+                    className={cx(
+                      styles['table-cell'],
+                      styles['table-first-column']
+                    )}
+                  >
+                    Duration
+                  </TableCell>
+                  <TableCell className={styles['table-cell']}>
+                    {
+                      formatAsDuration(getDuration(
+                        selectedItem.startDateTime,
+                        selectedItem.stopDateTime
+                      ))
+                    }
+                  </TableCell>
+                </TableRow>
             )}
           </TableBody>
         </Table>
@@ -191,7 +198,7 @@ const transitionStyle = (width) => ({
   },
 })
 
-const MediaInfoPanel = ({ open, selectedItems = [], width }) => {
+const MediaInfoPanel = ({ open, selectedItems = [], width, ...props }) => {
   const selectedItem = selectedItems.length ? selectedItems[0] : null;
   const transitionStyleByWidth = transitionStyle(width);
   return (
@@ -213,6 +220,7 @@ const MediaInfoPanel = ({ open, selectedItems = [], width }) => {
                 <MediaInfo
                   selectedItem={selectedItem}
                   width={width}
+                  {...props}
                 />
               ) : null
             }
