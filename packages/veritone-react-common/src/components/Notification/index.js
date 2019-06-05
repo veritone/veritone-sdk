@@ -11,7 +11,7 @@ import styles from './styles.scss';
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notificationPropTypes = shape({
-  istLabel: string,
+  headerText: string,
   showMoreLabel: string,
   showLessLabel: string,
   notifications: notificationListPropTypes
@@ -21,16 +21,16 @@ const SMALL_DISPLAY_SIZE = 3;
 const DISPLAY_SMALL = 'DISPLAY_SMALL';
 const DISPLAY_LARGE = 'DISPLAY_LARGE';
 
-export default class AppSwitcher extends React.Component {
+export default class Notification extends React.Component {
   static propTypes = {
-    listLabel: string,
+    headerText: string,
     showMoreLabel: string,
     showLessLabel: string,
     notifications: notificationListPropTypes
   };
 
   static defaultProps = {
-    listLabel: 'Items in Queue Items in Queue Items in Queue Items in Queue Items in Queue Items in Queue Items in Queue',
+    headerText: 'Items in Queue',
     showMoreLabel: 'View All',
     showLessLabel: 'View Less'
   };
@@ -64,7 +64,7 @@ export default class AppSwitcher extends React.Component {
     } = this.state;
 
     const {
-      listLabel,
+      headerText,
       showMoreLabel,
       showLessLabel,
       notifications
@@ -115,7 +115,7 @@ export default class AppSwitcher extends React.Component {
         >
           <div className={classNames(styles.notificationWindow)}>
             <div className={classNames(styles.header)}>
-              <div className={classNames(styles.label)}>{listLabel}</div>
+              <div className={classNames(styles.label)}>{headerText}</div>
               <div className={classNames(styles.chip)}>{numNotifications}</div>
             </div>
             

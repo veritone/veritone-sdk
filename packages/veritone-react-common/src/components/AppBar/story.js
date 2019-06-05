@@ -118,6 +118,27 @@ storiesOf('AppBar', module)
         ]}
       />
     );
+  })
+  .add('With Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={mockNotifications}
+      />
+    );
   });
 
 const sampleApps = [
@@ -162,3 +183,100 @@ const sampleApps = [
       'https://static.veritone.com/veritone-ui/app-icons-svg/library-app.svg'
   }
 ];
+
+const mockNotifications = {
+  notifications: [
+    {
+      id: '1234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here',
+      extra: 'testing testing'
+    },
+    {
+      id: '2234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      test: 'something esle',
+      bla: 123,
+      callback: action()
+    },
+    {
+      id: '3234',
+      type: 'completed',
+      description1: 'Big Description Goes Here',
+      description2: 'Small Description Goes Here',
+    },
+    {
+      id: '4234',
+      type: 'processing',
+      description1: 'Processing Description 1',
+      description2: 'Processing Description 2',
+    },
+    {
+      id: '5234',
+      type: 'completed',
+      description1: 'Long Description Goes Here, Long Description Goes Here, Long Description Goes Here',
+      description2: 'Long & Small Description Goes Here, Long & Small Description Goes Here, Long & Small Description Goes Here',
+    },
+    {
+      id: '6234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here',
+      extra: 'custom status'
+    },
+    {
+      id: '7234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      callback: action()
+    },
+    {
+      id: '8234',
+      type: 'processing',
+      description1: 'processing Description 1 Goes Here',
+      description2: 'processing Description 2 Goes Here',
+      callback: action()
+    },
+    {
+      id: '9234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      callback: action()
+    }
+  ]
+};
+
+const mockCustomNotifications = {
+  notifications: [
+    {
+      id: '1234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here',
+    },
+    {
+      id: '2234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      callback: action()
+    },
+    {
+      id: '3234',
+      type: 'completed',
+      description1: 'Big Description Goes Here',
+      description2: 'Small Description Goes Here',
+    },
+    {
+      id: '4234',
+      type: 'processing',
+      description1: 'Processing Description 1',
+      description2: 'Processing Description 2',
+    }
+  ]
+};
