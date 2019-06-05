@@ -55,20 +55,23 @@ class FolderViewContainer extends React.Component {
 
   componentDidMount() {
     this.props.triggerPagination();
-    document.addEventListener('keydown', this.handleArrowKey);
+    document.addEventListener('keydown', this.handleKeyPress);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleArrowKey);
+    document.removeEventListener('keydown', this.handleKeyPress);
   }
 
-  handleArrowKey = (event) => {
+  handleKeyPress = (event) => {
     const eventKeyCode = event.keyCode;
     const { lastIndex = 0, shiftIndex, highlightedItems } = this.state;
-    if (this.noneHighligthedItem(highlightedItems)) {
+    const { items } = this.props;
+    if (items.length && this.noneHighligthedItem(highlightedItems)) {
+      this.onHighlight(0);
       return;
     }
-    if (eventKeyCode === 38 && lastIndex !== 0) {
+    // Up
+    if (eventKeyCode === 38 && lastIndex > 0) {
       event.preventDefault();
       if (event.shiftKey) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
@@ -80,10 +83,11 @@ class FolderViewContainer extends React.Component {
         this.onHighlight(parseInt(currentIndex, 10));
         this.needScrollIntoView(currentIndex);
       }
+      return;
     }
 
-    const { items } = this.props;
-    if (eventKeyCode === 40 && lastIndex !== items.length - 1) {
+    // Down
+    if (eventKeyCode === 40 && lastIndex < items.length - 1) {
       event.preventDefault();
       if (event.shiftKey) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
@@ -98,6 +102,12 @@ class FolderViewContainer extends React.Component {
         this.onHighlight(currentIndex);
         this.needScrollIntoView(currentIndex);
       }
+      return;
+    }
+
+    // Enter/Return
+    if (eventKeyCode === 13) {
+      this.onSubmit();
     }
   }
 
