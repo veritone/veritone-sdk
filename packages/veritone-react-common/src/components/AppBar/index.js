@@ -2,6 +2,7 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import HelpIcon from '@material-ui/icons/Help';
 
 import {
   objectOf,
@@ -18,6 +19,7 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
+import Notification, { notificationPropTypes } from 'components/Notification';
 
 import styles from './styles.scss';
 
@@ -55,7 +57,9 @@ export default class AppBar extends React.Component {
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func,
-    additionMenuItems: arrayOf(element)
+    additionMenuItems: arrayOf(element),
+    onHelpClick: func,
+    notification: notificationPropTypes
   };
   static defaultProps = {
     logo: true,
@@ -104,8 +108,23 @@ export default class AppBar extends React.Component {
               </div>
             ))}
 
+            {this.props.notification && (
+              <div>
+                <Notification {...this.props.notification} />
+              </div>
+            )}
+            
+
+            {this.props.onHelpClick && (
+              <div>
+                <IconButton onClick={this.props.onHelpClick}>
+                  <HelpIcon nativeColor="white" />
+                </IconButton>
+              </div>
+            )}
+
             {this.props.appSwitcher && (
-              <div className={styles['iconGroup__icon']}>
+              <div>
                 <AppSwitcher
                   enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
                   enabledApps={this.props.enabledApps}
@@ -129,7 +148,7 @@ export default class AppBar extends React.Component {
             )}
 
             {this.props.closeButton && (
-              <div className={styles['iconGroup__icon']}>
+              <div>
                 <div style={{ marginLeft: 'auto' }}>
                   <IconButton onClick={this.props.onClose}>
                     <CloseIcon nativeColor="white" />
