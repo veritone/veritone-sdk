@@ -1,8 +1,11 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool } from 'prop-types';
 import cx from 'classnames';
+import { get, isArray } from 'lodash';
 
 import Paper from '@material-ui/core/Paper';
+import Refresh from '@material-ui/icons/Refresh';
+import IconButton from '@material-ui/core/IconButton';
 
 import InfiniteWrapper from '../InfiniteWrapper';
 import NullState from '../NullState';
@@ -19,8 +22,6 @@ import styles from './styles.scss';
 const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
 
-
-const ErrorState = () => <div>Error Loading data</div>;
 const LoadingState = () => (
   <FolderLoading
     message="Loading Message"
@@ -39,6 +40,7 @@ class FolderViewContainer extends React.Component {
     onUpload: func,
     onCancel: func,
     onSubmit: func,
+    onError: func
   }
 
   static defaultProps = {
@@ -176,10 +178,18 @@ class FolderViewContainer extends React.Component {
   }
 
   onSubmit = () => {
-    const { items, onSelectItem } = this.props;
+    const { items, onSelectItem, onError } = this.props;
     const { highlightedItems } = this.state;
-    const selectedNodes = items
-      .filter(i => highlightedItems[i.id])
+    const selectedItems = items
+      .filter(i => highlightedItems[i.id]);
+    // Validate selected tdos are accepted content types
+    const hasInvalidItem = selectedItems
+      .filter(i => i.type === 'tdo')
+      .find(i => !this.isAcceptedType(i));
+    if (hasInvalidItem) {
+      return onError && onError();
+    }
+    const selectedNodes = selectedItems
       .map(i => ({ id: i.id, type: i.type }));
     onSelectItem && onSelectItem(selectedNodes);
   }
@@ -196,6 +206,33 @@ class FolderViewContainer extends React.Component {
   onPlayerRefReady = ref => {
     this.mediaPlayer = ref;
   }
+
+  isAcceptedType = item => {
+    const { supportedFormats } = this.props;
+    const itemType = get(item, 'primaryAsset.contentType');
+    if (isArray(supportedFormats) && itemType) {
+      const category = itemType.split('/')[0];
+      return supportedFormats.includes(itemType) || supportedFormats.includes(`${category}/*`);
+    }
+    return false;
+  }
+
+  // Used for double clicks (1 item)
+  handleOnSelectItem = (selectedNodes = []) => {
+    const { onSelectItem, items, onError } = this.props;
+    if (selectedNodes.length) {
+      const item = items.find(i => i.id === selectedNodes[0].id);
+      if (
+        item.type === 'tdo'
+          && this.isAcceptedType(item)
+          || item.type === 'folder'
+      ) {
+        onSelectItem(selectedNodes);
+      } else {
+        onError && onError();
+      }
+    }
+  };
 
   scrollRef = React.createRef();
   playerRef = React.createRef();
@@ -219,7 +256,11 @@ class FolderViewContainer extends React.Component {
       return (
         <Paper>
           <div className={styles['folder-null-state-container']}>
-            <ErrorState />
+            <div>Error Loading data</div>
+            <span>{isError}</span>
+            <IconButton onClick={triggerPagination}>
+              <Refresh />
+            </IconButton>
           </div>
         </Paper>
       );
@@ -280,15 +321,17 @@ class FolderViewContainer extends React.Component {
                     <FolderListView
                       items={items}
                       onHighlightItem={this.onHighlightItem}
-                      onSelectItem={onSelectItem}
+                      onSelectItem={this.handleOnSelectItem}
                       highlightedItems={highlightedItems}
+                      isAcceptedType={this.isAcceptedType}
                     />
                   ) : (
                     <FolderGridView
                       items={items}
                       onHighlightItem={this.onHighlightItem}
-                      onSelectItem={onSelectItem}
+                      onSelectItem={this.handleOnSelectItem}
                       highlightedItems={highlightedItems}
+                      isAcceptedType={this.isAcceptedType}
                     />
                   )
               }

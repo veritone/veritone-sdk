@@ -37,6 +37,7 @@ import {
   INIT_UPLOAD,
   UPLOAD_TO_TDO,
   FETCH_PAGE,
+  ERRORED_PAGE,
   LOADED_PAGE,
   RETRY_REQUEST,
   RETRY_DONE,
@@ -91,6 +92,11 @@ function* watchPickStart() {
   yield takeEvery(PICK_START, function*(action) {
     // Initialize picker if not already loaded
     const { id } = action.meta;
+    const { 
+      enableFolders,
+      enableStreams,
+      enableUploads
+    } = action.payload;
     const {
       graphQLUrl,
       token
@@ -108,11 +114,11 @@ function* watchPickStart() {
     });
 
     let pickerType, availablePickerTypes = [];
-    if (orgEnableFolders) {
+    if (orgEnableFolders && enableFolders) {
       pickerType = pickerType || FOLDER_PICKER_TYPE;
       availablePickerTypes.push(FOLDER_PICKER_TYPE);
     }
-    if (!orgDisableUploads) {
+    if (!orgDisableUploads && enableUploads) {
       pickerType = pickerType || UPLOAD_PICKER_TYPE;
       availablePickerTypes.push(UPLOAD_PICKER_TYPE);
     }
@@ -127,11 +133,11 @@ function* watchPickStart() {
     });
 
     // Initialize Folder Data
-    if (orgEnableFolders) {
+    if (orgEnableFolders && enableFolders) {
       yield initializeFolderData(id);
     }
     // Initialize Upload Data
-    if (!orgDisableUploads) {
+    if (!orgDisableUploads && enableUploads) {
       yield initializeUploadData(id);
     }
   });
@@ -171,9 +177,15 @@ function* initializeFolderData(id, refreshCache) {
           leafIds: []
         }
       };
-    } catch(error) {
+    } catch (error) {
       // TODO: Set error state
-      return false;
+      itemDataPayload = {
+        [`${FOLDER_PICKER_TYPE}:${ROOT_ID}`]: {
+          nodeIds: [],
+          leafIds: [],
+          error
+        }
+      };
     }
   }
 
@@ -224,16 +236,18 @@ function* watchPagination() {
       pickerType = SEARCH_PICKER_TYPE;
     }
 
-    let result = {};
+    let result;
     if (paginationFuncs[pickerType]) {
       result = yield paginationFuncs[pickerType](currentNode, id);
     }
 
-    yield put({
-      type: LOADED_PAGE,
-      meta: { id },
-      payload: result
-    });
+    if (result) {
+      yield put({
+        type: LOADED_PAGE,
+        meta: { id },
+        payload: result
+      }); 
+    }
   });
 }
 
@@ -265,33 +279,45 @@ function* fetchFolderPage(currentNode, id) {
         }
       }
     }`;
+    try {
+      const childFolderResponse = yield call(fetchGraphQLApi, {
+        endpoint: graphQLUrl,
+        query,
+        token
+      });
 
-    const childFolderResponse = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query,
-      token
-    });
-
-    const childFolders = get(childFolderResponse, 'data.folder.childFolders.records', []);
-    childFolders.forEach(item => {
-      item.type = 'folder';
-      item.nodeIds = [];
-      item.leafIds = [];
-    });
-    result.nodeIds = childFolders
-      .map(folder => ({ id: folder.id, type: FOLDER_PICKER_TYPE }));
-    result.itemData = childFolders.reduce(
-      (acc, folder) => {
-        acc[`${FOLDER_PICKER_TYPE}:${folder.id}`] = folder;
-        return acc;
-      },
-      result.itemData
-    );
-    // Prevent further pagination
-    if (result.nodeIds.length < DEFAULT_PAGE_SIZE) {
-      result.nodeOffset = -1;
-    } else {
-      result.nodeOffset = nodeOffset + DEFAULT_PAGE_SIZE;
+      const error = get(childFolderResponse, 'errors[0].message');
+      if (error) {
+        throw error;
+      }
+      const childFolders = get(childFolderResponse, 'data.folder.childFolders.records', []);
+      childFolders.forEach(item => {
+        item.type = 'folder';
+        item.nodeIds = [];
+        item.leafIds = [];
+      });
+      result.nodeIds = childFolders
+        .map(folder => ({ id: folder.id, type: FOLDER_PICKER_TYPE }));
+      result.itemData = childFolders.reduce(
+        (acc, folder) => {
+          acc[`${FOLDER_PICKER_TYPE}:${folder.id}`] = folder;
+          return acc;
+        },
+        result.itemData
+      );
+      // Prevent further pagination
+      if (result.nodeIds.length < DEFAULT_PAGE_SIZE) {
+        result.nodeOffset = -1;
+      } else {
+        result.nodeOffset = nodeOffset + DEFAULT_PAGE_SIZE;
+      }
+    } catch (error) {
+      yield put({
+        type: ERRORED_PAGE,
+        meta: { id },
+        payload: error
+      });
+      return;
     }
   }
   if (leafOffset >= 0 || (nodeOffset >= 0 && result.nodeIds.length < DEFAULT_PAGE_SIZE)) {
@@ -304,31 +330,42 @@ function* fetchFolderPage(currentNode, id) {
         }
       }
     }`;
-
-    const childTdoResponse = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query,
-      token
-    });
-
-    const childTDOs = get(childTdoResponse, 'data.folder.childTDOs.records', []);
-    childTDOs.forEach(item => { item.type = 'tdo' });
-    result.leafIds = childTDOs
-      .map(tdo => ({
-        id: tdo.id,
-        type: 'tdo'
-    }));
-    result.itemData = childTDOs.reduce(
-      (acc, tdo) => {
-        acc[`tdo:${tdo.id}`] = tdo;
-        return acc;
-      },
-      result.itemData
-    );
-    if (result.leafIds.length < DEFAULT_PAGE_SIZE) {
-      result.leafOffset = -1;
-    } else {
-      result.leafOffset = leafOffset + DEFAULT_PAGE_SIZE;
+    try {
+      const childTdoResponse = yield call(fetchGraphQLApi, {
+        endpoint: graphQLUrl,
+        query,
+        token
+      });
+      const error = get(childTdoResponse, 'errors[0].message');
+      if (error) {
+        throw error;
+      }
+      const childTDOs = get(childTdoResponse, 'data.folder.childTDOs.records', []);
+      childTDOs.forEach(item => { item.type = 'tdo' });
+      result.leafIds = childTDOs
+        .map(tdo => ({
+          id: tdo.id,
+          type: 'tdo'
+      }));
+      result.itemData = childTDOs.reduce(
+        (acc, tdo) => {
+          acc[`tdo:${tdo.id}`] = tdo;
+          return acc;
+        },
+        result.itemData
+      );
+      if (result.leafIds.length < DEFAULT_PAGE_SIZE) {
+        result.leafOffset = -1;
+      } else {
+        result.leafOffset = leafOffset + DEFAULT_PAGE_SIZE;
+      }
+    } catch (error) {
+      yield put({
+        type: ERRORED_PAGE,
+        meta: { id },
+        payload: error
+      });
+      return;
     }
   }
   return result;

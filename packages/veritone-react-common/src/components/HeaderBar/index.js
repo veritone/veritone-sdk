@@ -74,26 +74,6 @@ class HeaderBar extends React.Component {
           className={styles['headerBar']}
         >
           <Toolbar className={styles.header}>
-            {
-              currentPickerType === 'upload' ? (
-                <Button
-                  onClick={onBack}
-                  className={cx(styles.button, styles['back-button'])}
-                >
-                  <ArrowBack className={styles['icon-button']} />
-                    Back
-                </Button>
-              ) : (
-                <Button
-                  onClick={onUpload}
-                  className={cx(styles.button, styles['upload-button'])}
-                  variant="outlined"
-                >
-                  <AddBox className={styles['icon-button']} />
-                    Upload
-                </Button>
-              )
-            }
             <div className={styles.spacer} />
             <Breadcrumbs
               pathList={pathList}

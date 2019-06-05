@@ -42,8 +42,17 @@ function logPickResult(result) {
   console.log('result:', result);
 }
 
-storiesOf('DataPicker', module).add('Base', () => {
-  const props = {};
+const sharedProps = {
+  supportedFormats: ['video/*']
+};
+
+storiesOf('DataPicker', module)
+.add('All Views Enabled', () => {
+  const props = {
+    ...sharedProps,
+    enableFolders: true,
+    enableUploads: true
+  };
 
   return (
     <BaseStory
@@ -61,4 +70,50 @@ storiesOf('DataPicker', module).add('Base', () => {
       }}
     />
   );
-});
+})
+.add('Only Folders', () => {
+  const props = {
+    ...sharedProps,
+    enableFolders: true
+  };
+
+  return (
+    <BaseStory
+      widget={DataPickerWidget}
+      widgetProps={props}
+      widgetInstanceMethods={{
+        pick: instance => instance.pick(logPickResult)
+      }}
+      componentClass={DataPickerComponentStory}
+      componentProps={{
+        ...props,
+        renderButton: DataPickerButton,
+        onPickCancelled: (...args) => console.log('cancelled picking', args),
+        onPick: logPickResult
+      }}
+    />
+  );
+})
+.add('Only Upload', () => {
+  const props = {
+    ...sharedProps,
+    enableUploads: true
+  };
+  
+  return (
+    <BaseStory
+      widget={DataPickerWidget}
+      widgetProps={props}
+      widgetInstanceMethods={{
+        pick: instance => instance.pick(logPickResult)
+      }}
+      componentClass={DataPickerComponentStory}
+      componentProps={{
+        ...props,
+        renderButton: DataPickerButton,
+        onPickCancelled: (...args) => console.log('cancelled picking', args),
+        onPick: logPickResult
+      }}
+    />
+  );
+})

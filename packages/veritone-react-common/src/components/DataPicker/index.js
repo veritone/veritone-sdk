@@ -1,6 +1,10 @@
 import React from 'react';
 import { func, string, array, bool, arrayOf, shape, number, object } from 'prop-types';
 import Paper from '@material-ui/core/Paper'
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import LeftNavigationPanel from '../LeftNavigationPanel';
 import FolderViewContainer from '../FolderViewContainer';
 import UploaderViewContainer from '../UploaderViewContainer';
@@ -15,9 +19,6 @@ const StreamView = () => (
 
 class DataPicker extends React.Component {
   static propTypes = {
-    showFolder: bool,
-    showStream: bool,
-    showUpload: bool,
     setPickerType: func.isRequired,
     triggerPagination: func.isRequired,
     items: array,
@@ -30,7 +31,6 @@ class DataPicker extends React.Component {
     onCancel: func,
     supportedFormats: array,
     onFilesSelected: func,
-    onRejectFile: func,
     onRemoveFile: func,
     isError: bool,
     uploadedFiles: arrayOf(object),
@@ -46,7 +46,7 @@ class DataPicker extends React.Component {
 
   static defaultProps = {
     items: [],
-    pathList: [{ id: 'root' }],
+    pathList: [],
     supportedFormats: [
       'audio/mp4', 'audio/mpeg',
       'video/api', 'video/mp4', 'video/ogg',
@@ -56,7 +56,9 @@ class DataPicker extends React.Component {
   }
 
   state = {
-    viewType: 'list'
+    viewType: 'list',
+    showError: false,
+    errorMsg: ''
   }
 
   toggleContentView = (pickerType) => {
@@ -70,12 +72,24 @@ class DataPicker extends React.Component {
     })
   }
 
+  handleShowErrorMsg = errorMsg => () => {
+    this.setState({
+      showError: true,
+      errorMsg
+    });
+  }
+
+  handleCloseErrorMsg = () => {
+    this.setState({
+      showError: false,
+      errorMsg: ''
+    });
+  }
+
   render() {
-    const { viewType } = this.state;
+    const { viewType, showError, errorMsg } = this.state;
     const {
-      showFolder,
-      showStream,
-      showUpload,
+      availablePickerTypes,
       currentPickerType,
       triggerPagination,
       items,
@@ -93,7 +107,6 @@ class DataPicker extends React.Component {
       handleAbort,
       onRetryDone,
       retryRequest,
-      onRejectFile,
       onRemoveFile,
       uploadPickerState,
       uploadStatusMsg,
@@ -108,22 +121,18 @@ class DataPicker extends React.Component {
 
     return (
       <div className={styles['data-picker-container']}>
-        <LeftNavigationPanel
-          showFolder={showFolder}
-          showStream={showStream}
-          showUpload={showUpload}
-          currentPickerType={currentPickerType}
-          toggleFolderView={() => this.toggleContentView('folder')}
-          toggleStreamView={() => this.toggleContentView('stream')}
-          toggleUploadView={() => this.toggleContentView('upload')}
-        />
+        { availablePickerTypes.length > 1 && (
+          <LeftNavigationPanel
+            availablePickerTypes={availablePickerTypes}
+            currentPickerType={currentPickerType}
+            toggleContentView={this.toggleContentView}
+          />
+        )}
         <div className={styles['data-picker-content-container']}>
           <HeaderBar
             viewType={viewType}
             onToggleView={this.toggleViewType}
             currentPickerType={currentPickerType}
-            onUpload={() => this.toggleContentView('upload')}
-            onBack={() => this.toggleContentView('folder')}
             pathList={pathList}
             onCrumbClick={onCrumbClick}
             onSearch={onSearch}
@@ -150,7 +159,7 @@ class DataPicker extends React.Component {
                         handleAbort={handleAbort}
                         onRetryDone={onRetryDone}
                         retryRequest={retryRequest}
-                        onReject={onRejectFile}
+                        onReject={this.handleShowErrorMsg('Unsupported format detected')}
                         onRemoveFile={onRemoveFile}
                         uploadedFiles={uploadedFiles}
                         percentByFiles={percentByFiles}
@@ -161,6 +170,7 @@ class DataPicker extends React.Component {
                 case 'folder':
                   return (
                       <FolderViewContainer
+                        supportedFormats={supportedFormats}
                         items={items}
                         viewType={viewType}
                         triggerPagination={triggerPagination}
@@ -169,6 +179,7 @@ class DataPicker extends React.Component {
                         isLoading={isLoading}
                         isLoaded={isLoaded}
                         isError={isError}
+                        onError={this.handleShowErrorMsg('Unsupported format detected')}
                       />
                   )
                 case 'stream':
@@ -179,6 +190,25 @@ class DataPicker extends React.Component {
             }})()
           }
         </div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          open={showError}
+          autoHideDuration={5000}
+          onClose={this.handleCloseErrorMsg}
+        >
+          <SnackbarContent
+            className={styles['data-picker-error-snack']}
+            message={errorMsg}
+            action={[
+              <IconButton key='close-btn' onClick={this.handleCloseErrorMsg}>
+                <CloseIcon />
+              </IconButton>
+            ]}
+          />
+        </Snackbar>
       </div>
     )
   }

@@ -92,7 +92,9 @@ const UploadViewContainer = ({
                 </div>
               </div>
               {
-                completeStatus && completeStatus !== 'success' && (
+                completeStatus && completeStatus !== 'success'
+                  && percentByFiles && !!percentByFiles.length
+                  && (
                   <div className={styles['uploader-retry-button-container']}>
                     <Button
                       onClick={onRetryDone}>

@@ -1,9 +1,12 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
 .table-first-column--text {
   padding-left: 12px;
 }
 
 .table-first-column--folder {
-  color: rgba(0, 0, 0, 0.87);
+  color: $dark-black;
   font-weight: 500;
 }
 
@@ -21,7 +24,7 @@
 }
 
 .table-icon {
-  color: rgba(0,0,0,0.54);
+  color: $light-black;
 }
 
 .table-row-head {
@@ -39,7 +42,7 @@
 
 .table-row {
   border-bottom: 0 !important;
-  color: rgba(0,0,0,0.54);
+  color: $light-black;
   cursor: pointer;
   user-select: none;
   padding-right: 0 !important;
@@ -52,5 +55,13 @@
 }
 
 .selected {
-  background: rgba(0,0,0,0.37)
+  background: $min-black;
+}
+.unsupported:not(.selected) {
+  td {
+    color: $min-black;
+    svg {
+      color: $min-black;
+    }
+  }
 }

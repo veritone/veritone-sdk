@@ -129,7 +129,8 @@ class DataPicker extends React.Component {
     currentDirectoryLoadingState: shape({
       isLoading: bool,
       nodeOffset: number,
-      leafOffset: number
+      leafOffset: number,
+      error: string
     }),
     fetchPage: func.isRequired,
     selectNode: func.isRequired,
@@ -154,8 +155,18 @@ class DataPicker extends React.Component {
   };
 
   handlePick = () => {
-    const { id, pick } = this.props;
-    id && pick && pick(id);
+    const {
+      id,
+      pick,
+      enableFolders,
+      enableStreams,
+      enableUploads
+    } = this.props;
+    id && pick && pick(id, { 
+      enableFolders,
+      enableStreams,
+      enableUploads
+    });
   };
 
   handleOnPick = (pickedRefs = []) => {
@@ -175,9 +186,11 @@ class DataPicker extends React.Component {
   handleOnCancel = () => {
     const {
       id,
+      abortRequest,
       endPick
     } = this.props;
     id && endPick && endPick(id);
+    id && abortRequest && abortRequest(id);
   };
 
   handleSetPickerType = pickerType => {
@@ -187,7 +200,7 @@ class DataPicker extends React.Component {
 
   triggerPagination = () => {
     const { id, fetchPage, currentDirectoryLoadingState } = this.props;
-    const { nodeOffset, leafOffset } = currentDirectoryLoadingState;
+    const { nodeOffset = 0, leafOffset = 0 } = currentDirectoryLoadingState;
     id
       && ( nodeOffset >= 0 || leafOffset >= 0 )
       && fetchPage
@@ -273,7 +286,6 @@ class DataPicker extends React.Component {
   };
 
   handleRetryDone = () => {
-    // TODO: HOOKUP CALLBACK PROPERLY
     const {
       id,
       onPick,
@@ -283,7 +295,6 @@ class DataPicker extends React.Component {
   };
 
   handleRetry = () => {
-    // TODO: HOOKUP CALLBACK PROPERLY
     const {
       id,
       retryRequest,
@@ -307,23 +318,15 @@ class DataPicker extends React.Component {
     clearSearch && clearSearch();
   }
 
-
   render() {
     const {
       currentDirectoryLoadingState,
-      availablePickerTypes,
-      enableFolders,
-      enableStreams,
-      enableUploads,
       itemRefs,
       getItemByTypeAndId
     } = this.props;
     const {
       uploadedFiles
     } = this.state;
-    const useFolders = availablePickerTypes.includes('folder') && enableFolders;
-    const useStreams = availablePickerTypes.includes('stream') && enableStreams;
-    const useUploads = availablePickerTypes.includes('upload') && enableUploads;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
     return (
       <Fragment>
@@ -333,11 +336,8 @@ class DataPicker extends React.Component {
           <DataPickerComponent
             {...this.props}
             items={items}
-
+            isError={currentDirectoryLoadingState.error}
             isLoading={currentDirectoryLoadingState.isLoading}
-            showFolder={useFolders}
-            showStream={useStreams}
-            showUpload={useUploads}
             uploadedFiles={uploadedFiles}
             onFilesSelected={this.handleFilesSelected}
             onRemoveFile={this.handleRemoveFile}

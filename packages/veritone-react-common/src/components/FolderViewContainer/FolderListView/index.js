@@ -32,7 +32,8 @@ const FolderListView = ({
   items,
   highlightedItems,
   onHighlightItem,
-  onSelectItem
+  onSelectItem,
+  isAcceptedType
 }) => {
   const headers = ['Name', 'Created Date Time', 'Modified Date Time', 'Type'];
   const handleDoubleClick = event => {
@@ -78,7 +79,8 @@ const FolderListView = ({
           return (
             <TableRow
               className={cx({
-                [styles.selected]: highlightedItems[id]
+                [styles.selected]: highlightedItems[id],
+                [styles.unsupported]: type !== 'folder' && !isAcceptedType({ primaryAsset })
               })}
               id={id}
               key={id}

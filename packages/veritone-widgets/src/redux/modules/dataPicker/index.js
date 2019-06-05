@@ -13,6 +13,7 @@ export const INIT_FOLDER = `${namespace}_INIT_FOLDER`;
 export const INIT_UPLOAD = `${namespace}_INIT_UPLOAD`;
 export const SET_PICKER_TYPE = `${namespace}_SET_PICKER_TYPE`;
 export const FETCH_PAGE = `${namespace}_FETCH_PAGE`;
+export const ERRORED_PAGE = `${namespace}_ERRORED_PAGE`;
 export const LOADED_PAGE = `${namespace}_LOADED_PAGE`;
 export const SELECT_NODE = `${namespace}_SELECT_NODE`;
 export const SELECT_CRUMB = `${namespace}_SELECT_CRUMB`;
@@ -185,14 +186,12 @@ export default createReducer(defaultState, {
       return state;
     }
 
-    let currentNodeType = pickerType, currentNodeId = 'root';
-    const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
-    if (currentPath.length) {
-      const curDir = currentPath.slice(-1)[0];
-      currentNodeId = curDir.id;
-      currentNodeType = curDir.type;
-    }
+    const {
+      currentNodeId,
+      currentNodeType
+    } = getCurrentIdAndType(state, id);
     const currentNodeKey = `${currentNodeType}:${currentNodeId}`
+
     return update(state, {
       itemData: {
         [currentNodeKey]: {
@@ -200,6 +199,30 @@ export default createReducer(defaultState, {
         }
       }
     });
+  },
+  [ERRORED_PAGE](
+    state,
+    {
+      meta: { id },
+      payload
+    }
+  ) {
+    const {
+      currentNodeId,
+      currentNodeType
+    } = getCurrentIdAndType(state, id);
+
+    if (currentNodeId && currentNodeType && payload) {
+      return update(state, {
+        itemData: {
+          [`${currentNodeType}:${currentNodeId}`]: {
+            error: { $set: payload },
+            isLoading: { $set: false }
+          }
+        }
+      });
+    }
+    return state;
   },
   [LOADED_PAGE](
     state,
@@ -223,14 +246,11 @@ export default createReducer(defaultState, {
       return state;
     }
 
-    let currentNodeType = pickerType, currentNodeId = 'root';
-    const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
-    if (currentPath.length) {
-      const curDir = currentPath.slice(-1)[0];
-      currentNodeId = curDir.id;
-      currentNodeType = curDir.type;
-    }
-    let itemDataSetter = Object.keys(itemData).reduce((acc, key) => {
+    const {
+      currentNodeId,
+      currentNodeType
+    } = getCurrentIdAndType(state, id);
+    const itemDataSetter = Object.keys(itemData).reduce((acc, key) => {
       acc[key] = { $set: itemData[key] };
       return acc;
     }, {});
@@ -331,6 +351,21 @@ export default createReducer(defaultState, {
   }
 });
 
+function getCurrentIdAndType(state, id) {
+  const pickerType = get(state, [id, 'currentPickerType']);
+  let currentNodeType = pickerType, currentNodeId = 'root';
+  const currentPath = get(state, [id, `${pickerType}Data`, 'currentPath'], []);
+  if (currentPath.length) {
+    const curDir = currentPath.slice(-1)[0];
+    currentNodeId = curDir.id;
+    currentNodeType = curDir.type;
+  }
+  return {
+    currentNodeId,
+    currentNodeType
+  };
+}
+
 const local = state => state[namespace];
 
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
@@ -399,13 +434,14 @@ export const currentDirectoryItems = (state, id) => {
 
 export const currentDirectoryLoadingState = (state, id) => {
   const currentNode = getCurrentNode(state, id);
-  return loPick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset']);
+  return loPick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset', 'error']);
 };
 
 // ACTIONS
-export const pick = id => ({
+export const pick = (id, configuration) => ({
   type: PICK_START,
-  meta: { id }
+  meta: { id },
+  payload: configuration
 });
 export const onPick = (id, itemIds, callback) => ({
   type: ON_PICK,
