@@ -63,7 +63,6 @@ export default class Breadcrumbs extends React.Component {
 
     const {
       0: firstCrumb,
-      1: secondCrumb,
       [pathList.length - 1]: lastCrumb
     } = pathList;
     const hiddenCrumbs = pathList.slice(1, pathList.length - 1);

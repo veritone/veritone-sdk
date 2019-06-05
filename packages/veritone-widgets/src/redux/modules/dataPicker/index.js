@@ -176,13 +176,9 @@ export default createReducer(defaultState, {
     { meta: { id } }
   ) {
     // Dive into the tree structure and update the loading flag for that nodeItem
-    const itemData = get(state, 'itemData');
     const pickerType = get(state, [id, 'currentPickerType']);
-
-    if (
-      !id ||
-      !get(state, [id, `${pickerType}Data`])
-    ) {
+    const currentTypeInitialized = get(state, [id, `${pickerType}Data`]);
+    if (!id || !currentTypeInitialized) {
       return state;
     }
 

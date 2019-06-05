@@ -5,7 +5,6 @@ import {
   oneOf,
   arrayOf,
   shape,
-  any,
   number,
   func
 } from 'prop-types';
@@ -14,7 +13,6 @@ import { noop, isArray, get } from 'lodash';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 
-import Grid from '@material-ui/core/Grid';
 import Dialog from '@material-ui/core/Dialog';
 
 import { DataPicker as DataPickerComponent } from 'veritone-react-common';
@@ -74,10 +72,20 @@ class DataPicker extends React.Component {
     open: bool,
     pick: func,
     onPick: func.isRequired,
+    endPick: func.isRequired,
+    abortRequest: func.isRequired,
+    setPickerType: func.isRequired,
+    selectCrumb: func.isRequired,
     onPickCancelled: func,
     enableFolders: bool,
     enableStreams: bool,
     enableUploads: bool,
+    uploadToTDO: func.isRequired,
+    retryDone: func.isRequired,
+    retryRequest: func.isRequired,
+    setSearchValue: func.isRequired,
+    clearSearch: func.isRequired,
+    renderButton: func,
     multiple: bool,
     maxItems: number,
     acceptedFileTypes: arrayOf(string),
@@ -139,7 +147,6 @@ class DataPicker extends React.Component {
 
   static defaultProps = {
     open: false,
-    onPick: noop,
     onPickCancelled: noop,
     availablePickerTypes: [],
     currentDirectoryLoadingState: {
@@ -217,7 +224,7 @@ class DataPicker extends React.Component {
     if (mixedSelection || !selectedNodes.length) {
       return;
     }
-    const type = get(selectedNodes, [0, 'type']);
+    const type = get(selectedNodes, '[0].type');
     // Determine whether to "select" or "pick" the nodes
     if (type !== 'tdo' && selectedNodes.length === 1) {
       id && selectNode && selectNode(id, selectedNodes);
@@ -235,7 +242,6 @@ class DataPicker extends React.Component {
 
   handleFilesSelected = fileOrFiles => {
     const {
-      id,
       multiple,
       maxItems
     } = this.props;
@@ -314,7 +320,7 @@ class DataPicker extends React.Component {
   };
 
   handleOnClear = () => {
-    const { id, clearSearch } = this.props;
+    const { clearSearch } = this.props;
     clearSearch && clearSearch();
   }
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { oneOf, func, bool, string, arrayOf } from 'prop-types';
-import { Work, Add, AddBox } from '@material-ui/icons';
+import { oneOf, func, string, arrayOf } from 'prop-types';
+import { Work, AddBox } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -22,6 +22,7 @@ const LeftNavigationPanel = ({
         availablePickerTypes.includes('folder') && (
           <div>
             <ListItem
+              /* eslint-disable react/jsx-no-bind */
               onClick={() => toggleContentView('folder')}
               className={cx(
                 { [styles.selected]: currentPickerType === 'folder' },
@@ -42,6 +43,7 @@ const LeftNavigationPanel = ({
       {
         availablePickerTypes.includes('stream') && (
           <ListItem
+            /* eslint-disable react/jsx-no-bind */
             onClick={() => toggleContentView('stream')}
             className={cx(
               {[styles.selected]: currentPickerType === 'stream' },
@@ -62,6 +64,7 @@ const LeftNavigationPanel = ({
         currentPickerType !== 'upload'
           && availablePickerTypes.includes('upload') && (
           <ListItem
+            /* eslint-disable react/jsx-no-bind */
             onClick={() => toggleContentView('upload')}
             className={styles['upload-button']}
             button
@@ -85,10 +88,5 @@ LeftNavigationPanel.propTypes = {
   currentPickerType: oneOf(['folder', 'stream', 'upload']),
   toggleContentView: func.isRequired
 }
-
-LeftNavigationPanel.defaultProps = {
-  showFolder: true
-}
-
 
 export default LeftNavigationPanel;

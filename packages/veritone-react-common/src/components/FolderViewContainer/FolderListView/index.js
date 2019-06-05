@@ -36,7 +36,7 @@ const FolderListView = ({
   isAcceptedType
 }) => {
   const headers = ['Name', 'Created Date Time', 'Modified Date Time', 'Type'];
-  const handleDoubleClick = event => {
+  function handleDoubleClick(event) {
     const id = event.currentTarget.getAttribute('id');
     const type = event.currentTarget.getAttribute('type');
     onSelectItem && onSelectItem([{ id, type }]);
@@ -134,6 +134,7 @@ FolderListView.propTypes = {
   items: arrayOf(itemShape),
   onHighlightItem: func,
   highlightedItems: objectOf(bool),
+  isAcceptedType: func
 }
 
 export default FolderListView;

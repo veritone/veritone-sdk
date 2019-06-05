@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, arrayOf, shape, bool, number } from 'prop-types';
+import { string, arrayOf, shape, bool, number, func, object } from 'prop-types';
 import { get } from 'lodash';
 import { format } from 'date-fns';
 import { Transition } from 'react-transition-group';
@@ -183,10 +183,10 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
 MediaInfo.propTypes = {
   selectedItem: tdoShape,
   width: number,
-  classes: shape(Object.keys(styles).reduce((styleShape, key) => ({
-    ...styleShape,
-    [key]: string
-  }), {})),
+  onPlayerRefReady: func,
+  playerRef: shape({
+    current: object
+  })
 }
 
 const transitionStyle = (width) => ({
@@ -234,7 +234,11 @@ const MediaInfoPanel = ({ open, selectedItems = [], width, ...props }) => {
 MediaInfoPanel.propTypes = {
   open: bool,
   width: number,
-  selectedItems: arrayOf(tdoShape)
+  selectedItems: arrayOf(tdoShape),
+  onPlayerRefReady: func,
+  playerRef: shape({
+    current: object
+  })
 }
 
 MediaInfoPanel.defaultProps = {

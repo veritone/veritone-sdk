@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string, array, bool, arrayOf, shape, number, object } from 'prop-types';
+import { func, string, bool, arrayOf, shape, number, object } from 'prop-types';
 import Paper from '@material-ui/core/Paper'
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
@@ -19,17 +19,30 @@ const StreamView = () => (
 
 class DataPicker extends React.Component {
   static propTypes = {
+    availablePickerTypes: arrayOf(string),
+    currentPickerType: string,
     setPickerType: func.isRequired,
     triggerPagination: func.isRequired,
-    items: array,
+    items: arrayOf(object),
     onSelectItem: func,
     isLoaded: bool,
     isLoading: bool,
     onSort: func,
     onCrumbClick: func,
-    pathList: array,
+    pathList: arrayOf(object),
+    onSearch: func,
+    onClear: func,
+    onUpload: func,
+    handleAbort: func,
+    onRetryDone: func,
+    retryRequest: func,
+    uploadPickerState: string,
+    uploadStatusMsg: string,
+    uploadSuccess: string,
+    uploadError: string,
+    uploadWarning: string,
     onCancel: func,
-    supportedFormats: array,
+    supportedFormats: arrayOf(object),
     onFilesSelected: func,
     onRemoveFile: func,
     isError: bool,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, func, shape, bool, number } from 'prop-types';
+import { arrayOf, string, func, shape, bool, number, object } from 'prop-types';
 
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircle';
@@ -143,7 +143,17 @@ UploadViewContainer.propTypes = {
       size: number,
       error: string
     })
-  }))
+  })),
+  uploadPickerState: string,
+  uploadStatusMsg: string,
+  uploadSuccess: string,
+  uploadWarning: string,
+  uploadError: string,
+  uploadedFiles: arrayOf(object),
+  handleAbort: func,
+  onRetryDone: func,
+  retryRequest: func,
+  onRemoveFile: func
 };
 
 UploadViewContainer.defaultProps = {

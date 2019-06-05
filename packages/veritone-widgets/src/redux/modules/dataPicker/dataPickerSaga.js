@@ -3,11 +3,10 @@ import {
   all,
   call,
   put,
-  take,
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop, get, pick } from 'lodash';
+import { get } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const {
@@ -30,7 +29,6 @@ import {
 import {
   PICK_START,
   PICK_END,
-  ON_PICK,
   INIT_ORG_CONFIG,
   INIT_PICKER_TYPE,
   INIT_FOLDER,
@@ -42,7 +40,6 @@ import {
   RETRY_REQUEST,
   RETRY_DONE,
   SET_SEARCH_VALUE,
-  currentDirectoryPaginationState,
   getItemByTypeAndId,
   getCurrentNode,
   currentPickerType,
@@ -94,13 +91,9 @@ function* watchPickStart() {
     const { id } = action.meta;
     const { 
       enableFolders,
-      enableStreams,
+      // enableStreams,
       enableUploads
     } = action.payload;
-    const {
-      graphQLUrl,
-      token
-    } = yield getGqlParams();
     const orgEnableFolders = yield select(userModule.hasFeature, 'cmsFolders');
     const orgDisableUploads = yield select(userModule.hasFeature, 'disableCmsUpload');
 
@@ -224,7 +217,7 @@ function* watchPagination() {
 
     const paginationFuncs = {
       [FOLDER_PICKER_TYPE]: fetchFolderPage,
-      [SEARCH_PICKER_TYPE]: fetchSearchPage
+      // [SEARCH_PICKER_TYPE]: fetchSearchPage
     };
 
     if (!currentNode) {
@@ -371,9 +364,9 @@ function* fetchFolderPage(currentNode, id) {
   return result;
 }
 
-function* fetchSearchPage(currentNode, id) {
-  console.log(currentNode, id);
-}
+// function* fetchSearchPage(currentNode, id) {
+//   console.log(currentNode, id);
+// }
 
 function* watchUploadToTDO() {
   yield takeEvery(UPLOAD_TO_TDO, function* (action) {
@@ -431,13 +424,13 @@ function createTDOsFromFiles(id, callback) {
       const tdoResponses = yield signedFiles.map(function* (signedFile) {
         return yield createTDOWithAsset(signedFile);
       });
-      console.log(tdoResponses);
       createdTDOs = tdoResponses.map(res => get(res, 'data.createTDOWithAsset'));
       
       const jobResponses = yield createdTDOs.map(function* (tdo) {
         return yield createInitialJob(tdo);
       });
       createdJobIds = jobResponses.map(res => get(res, 'data.createJob.id'));
+      console.log('Created Job Ids: ', createdJobIds);
     }
     yield put({
       type: CLEAR_FILEPICKER_DATA,
@@ -518,7 +511,7 @@ function* createInitialJob(tdo) {
 function* watchOnSearch() {
   yield takeEvery(SET_SEARCH_VALUE, function* (action) {
     const { id } = action.meta;
-    const searchValue = action.payload;
+    // const searchValue = action.payload;
     
     yield put({
       type: FETCH_PAGE,

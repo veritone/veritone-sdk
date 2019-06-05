@@ -1,6 +1,6 @@
 .aside {
   width: 220px;
-  padding: 10px!important;
+  padding: 10px !important;
   background-color: #E8EAED;
   display: flex;
   flex-flow: column;
@@ -10,7 +10,7 @@
 }
 
 .navigation-item {
-  padding: 8px 10px!important;
+  padding: 8px 10px !important;
   .icon, svg{
     color: #616e7b;
     margin-right: 0;
@@ -33,7 +33,7 @@
 }
 
 .selected {
-  background: #cfdfed!important;
+  background: #cfdfed !important;
 }
 
 .upload-button {

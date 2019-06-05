@@ -1,5 +1,5 @@
 import React from 'react';
-import { oneOf, arrayOf, func, bool } from 'prop-types';
+import { oneOf, arrayOf, func, bool, string } from 'prop-types';
 import cx from 'classnames';
 import { get, isArray } from 'lodash';
 
@@ -30,6 +30,7 @@ const LoadingState = () => (
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
+    supportedFormats: arrayOf(string),
     viewType: oneOf(['list', 'grid']),
     items: arrayOf(itemShape),
     onSelectItem: func,
@@ -39,7 +40,6 @@ class FolderViewContainer extends React.Component {
     triggerPagination: func,
     onUpload: func,
     onCancel: func,
-    onSubmit: func,
     onError: func
   }
 
@@ -245,7 +245,6 @@ class FolderViewContainer extends React.Component {
       viewType,
       items,
       triggerPagination,
-      onSelectItem,
       onCancel,
       onUpload
     } = this.props;
