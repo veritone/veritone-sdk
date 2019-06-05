@@ -43,6 +43,7 @@ function logPickResult(result) {
 }
 
 const sharedProps = {
+  multiple: true,
   supportedFormats: ['audio/*', 'video/*']
 };
 
@@ -100,6 +101,56 @@ storiesOf('DataPicker', module)
     enableUploads: true
   };
   
+  return (
+    <BaseStory
+      widget={DataPickerWidget}
+      widgetProps={props}
+      widgetInstanceMethods={{
+        pick: instance => instance.pick(logPickResult)
+      }}
+      componentClass={DataPickerComponentStory}
+      componentProps={{
+        ...props,
+        renderButton: DataPickerButton,
+        onPickCancelled: (...args) => console.log('cancelled picking', args),
+        onPick: logPickResult
+      }}
+    />
+  );
+})
+.add('Single Selection Only', () => {
+  const props = {
+    ...sharedProps,
+    multiple: false,
+    enableFolders: true,
+    enableUploads: true
+  };
+
+  return (
+    <BaseStory
+      widget={DataPickerWidget}
+      widgetProps={props}
+      widgetInstanceMethods={{
+        pick: instance => instance.pick(logPickResult)
+      }}
+      componentClass={DataPickerComponentStory}
+      componentProps={{
+        ...props,
+        renderButton: DataPickerButton,
+        onPickCancelled: (...args) => console.log('cancelled picking', args),
+        onPick: logPickResult
+      }}
+    />
+  );
+})
+.add('2 Selection Only', () => {
+  const props = {
+    ...sharedProps,
+    maxItems: 2,
+    enableFolders: true,
+    enableUploads: true
+  };
+
   return (
     <BaseStory
       widget={DataPickerWidget}

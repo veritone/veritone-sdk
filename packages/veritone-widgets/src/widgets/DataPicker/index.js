@@ -8,12 +8,16 @@ import {
   number,
   func
 } from 'prop-types';
-import { noop, isArray, get } from 'lodash';
+import { noop, get } from 'lodash';
 
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 
 import Dialog from '@material-ui/core/Dialog';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { DataPicker as DataPickerComponent } from 'veritone-react-common';
 
@@ -158,7 +162,8 @@ class DataPicker extends React.Component {
   };
 
   state = {
-    uploadedFiles: []
+    showError: false,
+    errorMsg: ''
   };
 
   handlePick = () => {
@@ -240,55 +245,13 @@ class DataPicker extends React.Component {
     id && crumb && selectCrumb && selectCrumb(id, Number(crumb.index));
   };
 
-  handleFilesSelected = fileOrFiles => {
-    const {
-      multiple,
-      maxItems
-    } = this.props;
-    const {
-      uploadedFiles
-    } = this.state;
-
-    const selectedFiles = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
-    const totalFileCount = uploadedFiles.length + selectedFiles.length;
-    if (multiple) {
-      if (totalFileCount > maxItems) {
-        // TODO: Exceeded max selection/uploads
-      }
-    } else {
-      if (totalFileCount > 1) {
-        // TODO: Exceeded max selection/uploads
-      }
-    }
-    this.setState({
-      uploadedFiles: [...uploadedFiles, ...selectedFiles]
-    });
-  };
-
-  handleRemoveFile = index => {
-    const {
-      uploadedFiles
-    } = this.state;
-    if (uploadedFiles[index]) {
-      const clonedFiles = uploadedFiles.slice();
-      clonedFiles.splice(index, 1);
-      this.setState({
-        uploadedFiles: clonedFiles
-      });
-    }
-  }
-
-  handleUploadToTDO = () => {
+  handleUploadToTDO = (uploadedFiles = []) => {
     const {
       id,
       onPick,
       uploadToTDO
     } = this.props;
-    const {
-      uploadedFiles
-    } = this.state;
     uploadToTDO && uploadToTDO(id, uploadedFiles, onPick);
-    this.setState({ uploadedFiles: [] });
   };
 
   handleRetryDone = () => {
@@ -324,6 +287,20 @@ class DataPicker extends React.Component {
     clearSearch && clearSearch();
   }
 
+  handleShowErrorMsg = errorMsg => () => {
+    this.setState({
+      showError: true,
+      errorMsg
+    });
+  }
+
+  handleCloseErrorMsg = () => {
+    this.setState({
+      showError: false,
+      errorMsg: ''
+    });
+  }
+
   render() {
     const {
       currentDirectoryLoadingState,
@@ -331,7 +308,8 @@ class DataPicker extends React.Component {
       getItemByTypeAndId
     } = this.props;
     const {
-      uploadedFiles
+      showError,
+      errorMsg
     } = this.state;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
     return (
@@ -342,12 +320,10 @@ class DataPicker extends React.Component {
           <DataPickerComponent
             {...this.props}
             items={items}
+            onErrorMsg={this.handleShowErrorMsg}
             isError={currentDirectoryLoadingState.error}
             isLoading={currentDirectoryLoadingState.isLoading}
             isLoaded={currentDirectoryLoadingState.isLoaded}
-            uploadedFiles={uploadedFiles}
-            onFilesSelected={this.handleFilesSelected}
-            onRemoveFile={this.handleRemoveFile}
             onUpload={this.handleUploadToTDO}
             handleAbort={this.handleAbort}
             onRetryDone={this.handleRetryDone}
@@ -363,6 +339,25 @@ class DataPicker extends React.Component {
         { this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })
         }
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          open={showError}
+          autoHideDuration={5000}
+          onClose={this.handleCloseErrorMsg}
+        >
+          <SnackbarContent
+            className={styles['data-picker-error-snack']}
+            message={errorMsg}
+            action={[
+              <IconButton key='close-btn' onClick={this.handleCloseErrorMsg}>
+                <CloseIcon />
+              </IconButton>
+            ]}
+          />
+        </Snackbar>
       </Fragment>
     );
   }
@@ -381,14 +376,28 @@ class DataPickerWidgetComponent extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
     pick: func.isRequired,
-    endPick: func.isRequired
+    endPick: func.isRequired,
+    enableFolders: bool,
+    enableStreams: bool,
+    enableUploads: bool
   };
 
   pickCallback = noop;
 
   pick = (callback = noop) => {
+    const { 
+      _widgetId,
+      pick,
+      enableFolders,
+      enableStreams,
+      enableUploads
+    } = this.props;
     this.pickCallback = callback;
-    this.props.pick(this.props._widgetId);
+    pick && pick(_widgetId, {
+      enableFolders,
+      enableStreams,
+      enableUploads
+    });
   }
 
   cancel = () => {

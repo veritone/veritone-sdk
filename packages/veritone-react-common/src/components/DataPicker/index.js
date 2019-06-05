@@ -1,10 +1,7 @@
 import React from 'react';
 import { func, string, bool, arrayOf, shape, number, object, oneOfType } from 'prop-types';
+import { isArray } from 'lodash';
 import Paper from '@material-ui/core/Paper'
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import LeftNavigationPanel from './LeftNavigationPanel';
 import FolderViewContainer from './FolderViewContainer';
 import UploaderViewContainer from './UploaderViewContainer';
@@ -16,6 +13,9 @@ const StreamView = () => (
     <div style={{ width: '100%', height: 465 }}>Stream view</div>;
   </Paper>
 )
+const UNSUPPORTED_FORMAT_ERROR = 'Unsupported format detected';
+const MAX_ITEM_ERROR = 'Max selected items allowed has been exceeded: ';
+const MULTIPLE_ERROR = 'Only one file is allowed';
 
 class DataPicker extends React.Component {
   static propTypes = {
@@ -25,6 +25,8 @@ class DataPicker extends React.Component {
     triggerPagination: func.isRequired,
     items: arrayOf(object),
     onSelectItem: func,
+    multiple: bool,
+    maxItems: number,
     isLoaded: bool,
     isLoading: bool,
     onSort: func,
@@ -43,10 +45,8 @@ class DataPicker extends React.Component {
     uploadWarning: oneOfType([string, bool]),
     onCancel: func,
     supportedFormats: arrayOf(string),
-    onFilesSelected: func,
-    onRemoveFile: func,
     isError: bool,
-    uploadedFiles: arrayOf(object),
+    onErrorMsg: func,
     percentByFiles: arrayOf(shape({
       key: string,
       value: shape({
@@ -68,9 +68,8 @@ class DataPicker extends React.Component {
   }
 
   state = {
-    viewType: 'list',
-    showError: false,
-    errorMsg: ''
+    uploadedFiles: [],
+    viewType: 'list'
   }
 
   toggleContentView = (pickerType) => {
@@ -84,28 +83,86 @@ class DataPicker extends React.Component {
     })
   }
 
-  handleShowErrorMsg = errorMsg => () => {
+  handleFilesSelected = fileOrFiles => {
+    const {
+      multiple,
+      maxItems,
+      onErrorMsg
+    } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
+
+    const selectedFiles = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
+    const totalFileCount = uploadedFiles.length + selectedFiles.length;
+    if (multiple) {
+      if (maxItems && totalFileCount > maxItems) {
+        onErrorMsg && onErrorMsg(MAX_ITEM_ERROR + maxItems)();
+        return;
+      }
+    } else {
+      if (totalFileCount > 1) {
+        onErrorMsg && onErrorMsg(MULTIPLE_ERROR)();
+        return;
+      }
+    }
     this.setState({
-      showError: true,
-      errorMsg
+      uploadedFiles: [...uploadedFiles, ...selectedFiles]
     });
+  };
+
+  handleRemoveFile = index => {
+    const {
+      uploadedFiles
+    } = this.state;
+    if (uploadedFiles[index]) {
+      const clonedFiles = uploadedFiles.slice();
+      clonedFiles.splice(index, 1);
+      this.setState({
+        uploadedFiles: clonedFiles
+      });
+    }
   }
 
-  handleCloseErrorMsg = () => {
-    this.setState({
-      showError: false,
-      errorMsg: ''
-    });
+  handleOnUpload = () => {
+    const {
+      onUpload
+    } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
+    onUpload && onUpload(uploadedFiles);
+    this.setState({ uploadedFiles: [] });
+  }
+
+  handleOnSelectItem = selectedNodes => {
+    const {
+      multiple,
+      maxItems,
+      onSelectItem,
+      onErrorMsg
+    } = this.props;
+    if (multiple) {
+      if (maxItems && maxItems < selectedNodes.length) {
+        onErrorMsg(MAX_ITEM_ERROR + maxItems)();
+        return;
+      }
+    } else {
+      if (selectedNodes.length > 1) {
+        onErrorMsg(MULTIPLE_ERROR)();
+        return;
+      }
+    }
+    onSelectItem && onSelectItem(selectedNodes);
   }
 
   render() {
-    const { viewType, showError, errorMsg } = this.state;
+    const { viewType } = this.state;
     const {
       availablePickerTypes,
       currentPickerType,
       triggerPagination,
       items,
-      onSelectItem,
       onCancel,
       supportedFormats,
       isLoading,
@@ -114,22 +171,24 @@ class DataPicker extends React.Component {
       onSearch,
       onClear,
       onSort,
-      onFilesSelected,
-      onUpload,
+      multiple,
+      maxItems,
       handleAbort,
       onRetryDone,
       retryRequest,
-      onRemoveFile,
       uploadPickerState,
       uploadStatusMsg,
       uploadSuccess,
       uploadError,
       uploadWarning,
-      uploadedFiles,
       percentByFiles,
       isLoaded,
-      isError
+      isError,
+      onErrorMsg
     } = this.props;
+    const {
+      uploadedFiles
+    } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
 
     return (
@@ -161,7 +220,8 @@ class DataPicker extends React.Component {
                   return (
                     <Paper>
                       <UploaderViewContainer
-                        multiple
+                        multiple={multiple}
+                        maxItems={maxItems}
                         uploadPickerState={uploadPickerState}
                         uploadStatusMsg={uploadStatusMsg}
                         uploadSuccess={uploadSuccess}
@@ -169,14 +229,14 @@ class DataPicker extends React.Component {
                         uploadError={uploadError}
                         accept={supportedFormats}
                         onCancel={onCancel}
-                        onUpload={onUpload}
-                        onFilesSelected={onFilesSelected}
+                        onUpload={this.handleOnUpload}
+                        onFilesSelected={this.handleFilesSelected}
                         handleAbort={handleAbort}
                         onRetryDone={onRetryDone}
                         retryRequest={retryRequest}
-                        onReject={this.handleShowErrorMsg('Unsupported format detected')}
-                        onRemoveFile={onRemoveFile}
+                        onReject={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
                         uploadedFiles={uploadedFiles}
+                        onRemoveFile={this.handleRemoveFile}
                         percentByFiles={percentByFiles}
                         containerStyle={{ height: 475}}
                       />
@@ -185,18 +245,20 @@ class DataPicker extends React.Component {
                 case 'folder':
                   return (
                       <FolderViewContainer
+                        multiple={multiple}
+                        maxItems={maxItems}
                         availablePickerTypes={availablePickerTypes}
                         toggleContentView={this.toggleContentView}
                         supportedFormats={supportedFormats}
                         items={items}
                         viewType={viewType}
                         triggerPagination={triggerPagination}
-                        onSelectItem={onSelectItem}
+                        onSelectItem={this.handleOnSelectItem}
                         onCancel={onCancel}
                         isLoading={isLoading}
                         isLoaded={isLoaded}
                         isError={isError}
-                        onError={this.handleShowErrorMsg('Unsupported format detected')}
+                        onError={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
                       />
                   )
                 case 'stream':
@@ -207,25 +269,6 @@ class DataPicker extends React.Component {
             }})()
           }
         </div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center'
-          }}
-          open={showError}
-          autoHideDuration={5000}
-          onClose={this.handleCloseErrorMsg}
-        >
-          <SnackbarContent
-            className={styles['data-picker-error-snack']}
-            message={errorMsg}
-            action={[
-              <IconButton key='close-btn' onClick={this.handleCloseErrorMsg}>
-                <CloseIcon />
-              </IconButton>
-            ]}
-          />
-        </Snackbar>
       </div>
     )
   }
