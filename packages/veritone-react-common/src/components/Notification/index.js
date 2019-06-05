@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import Popover from '@material-ui/core/Popover';
-import { string, shape } from 'prop-types';
+import { string, shape, func } from 'prop-types';
 
 import classNames from 'classnames';
 import styles from './styles.scss';  
@@ -14,6 +14,8 @@ export const notificationPropTypes = shape({
   headerText: string,
   showMoreLabel: string,
   showLessLabel: string,
+  onOpen: func,
+  onClose: func,
   notifications: notificationListPropTypes
 });
 
@@ -26,6 +28,8 @@ export default class Notification extends React.Component {
     headerText: string,
     showMoreLabel: string,
     showLessLabel: string,
+    onOpen: func,
+    onClose: func,
     notifications: notificationListPropTypes
   };
 
@@ -45,10 +49,13 @@ export default class Notification extends React.Component {
       display: DISPLAY_SMALL,
       anchorEl: event.currentTarget
     });
+
+    this.props.onOpen && this.props.onOpen();
   };
 
   hideNotification = event => {
     this.setState({ anchorEl: null });
+    this.props.onClose && this.props.onClose();
   }
 
   toggleDisplaySize = (event) => {

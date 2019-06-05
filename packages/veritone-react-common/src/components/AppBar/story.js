@@ -139,6 +139,27 @@ storiesOf('AppBar', module)
         notification={mockNotifications}
       />
     );
+  })
+  .add('With Custom Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={mockCustomNotifications}
+      />
+    );
   });
 
 const sampleApps = [
@@ -185,6 +206,8 @@ const sampleApps = [
 ];
 
 const mockNotifications = {
+  onOpen: action('on open'),
+  onClose: action('on close'),
   notifications: [
     {
       id: '1234',
@@ -252,6 +275,11 @@ const mockNotifications = {
 };
 
 const mockCustomNotifications = {
+  headerText: 'Custom Header Text Goes Here',
+  showMoreLabel: 'Custom Show More Button',
+  showLessLabel: 'Custom Show Less Button',
+  onOpen: action('on open'),
+  onClose: action('on close'),
   notifications: [
     {
       id: '1234',
