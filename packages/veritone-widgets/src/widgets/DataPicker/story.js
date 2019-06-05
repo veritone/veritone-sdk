@@ -43,7 +43,7 @@ function logPickResult(result) {
 }
 
 const sharedProps = {
-  supportedFormats: ['video/*']
+  supportedFormats: ['audio/*', 'video/*']
 };
 
 storiesOf('DataPicker', module)

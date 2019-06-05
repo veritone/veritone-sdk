@@ -226,10 +226,40 @@ const percentByFiles = [{
 storiesOf('DataPicker', module)
   .add('Basic', () => (
     <DataPicker
-      showFolder
-      showStream
-      showUpload
+      availablePickerTypes={['folder', 'stream', 'upload']}
+      toggleContentView={action('toggleContentView')}
       items={items}
+      currentPickerType={select(
+        'currentPickerType', 
+        {
+          folder: 'folder',
+          upload: 'upload',
+          stream: 'stream'
+        },
+        'folder'
+      )}
+      setPickerType={action('setPickerType')}
+      triggerPagination={action('triggerPagination')}
+      onCancel={action('onCancel')}
+      isLoading={boolean('isLoading', false)}
+      isLoaded={boolean('isLoaded', false)}
+      pathList={pathList}
+      onCrumbClick={action('onCrumbClick')}
+      onSearch={action('onSearch')}
+      onClear={action('onClear')}
+      onSort={action('onSort')}
+      onSelect={action('onSelect')}
+      onRejectFile={action('onRejectFile')}
+      onUpload={action('onUpload')}
+      onDeleteFile={action('onDeleteFile')}
+      percentageUploadingFiles={percentByFiles}
+    />
+  ))
+  .add('Empty Current Directory', () => (
+    <DataPicker
+      availablePickerTypes={['folder', 'stream', 'upload']}
+      toggleContentView={action('toggleContentView')}
+      items={[]}
       currentPickerType={select(
         'currentPickerType', 
         {
@@ -258,12 +288,13 @@ storiesOf('DataPicker', module)
   ))
   .add('No file upload', () => (
     <DataPicker
+      availablePickerTypes={['folder', 'stream']}
+      toggleContentView={action('toggleContentView')}
       items={items}
       currentPickerType={select(
         'currentPickerType', 
         {
           folder: 'folder',
-          upload: 'upload',
           stream: 'stream'
         },
         'folder'
@@ -287,6 +318,8 @@ storiesOf('DataPicker', module)
   ))
   .add('Error / Initial loading', () => (
     <DataPicker
+      availablePickerTypes={['folder', 'stream', 'upload']}
+      toggleContentView={action('toggleContentView')}
       items={[]}
       currentPickerType={select(
         'currentPickerType', 

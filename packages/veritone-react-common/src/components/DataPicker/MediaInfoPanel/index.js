@@ -11,7 +11,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import MediaPlayerComponent from '../MediaPlayer';
+import MediaPlayerComponent from '../../MediaPlayer';
 
 import styles from './styles.scss';
 
@@ -43,10 +43,12 @@ const formatDateString = date => {
 };
 
 const getDuration = (startTime, stopTime) => {
-  const duration = (
-    (new Date(stopTime)).getTime() - (new Date(startTime)).getTime()
-  ) / 1000;
-  return Math.floor(duration);
+  if (startTime && stopTime) {
+    const duration = (
+      (new Date(stopTime)).getTime() - (new Date(startTime)).getTime()
+    ) / 1000;
+    return Math.floor(duration);
+  }
 };
 
 const displayNumber = (number, digits = 2) => {
@@ -76,6 +78,10 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
   const itemType = selectedItem.type === 'folder' ?
     'folder' :
     get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
+  const duration = getDuration(
+    selectedItem.startDateTime,
+    selectedItem.stopDateTime
+  );
   return (
     <div className={styles['media-info-container']} style={{ width }}>
       {
@@ -153,7 +159,7 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
               </TableCell>
             </TableRow>
             {
-              (selectedItem.startDateTime && selectedItem.stopDateTime) && (
+              !!duration && (
                 <TableRow className={styles['table-row']}>
                   <TableCell
                     className={cx(
@@ -165,10 +171,7 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
                   </TableCell>
                   <TableCell className={styles['table-cell']}>
                     {
-                      formatAsDuration(getDuration(
-                        selectedItem.startDateTime,
-                        selectedItem.stopDateTime
-                      ))
+                      formatAsDuration(duration)
                     }
                   </TableCell>
                 </TableRow>

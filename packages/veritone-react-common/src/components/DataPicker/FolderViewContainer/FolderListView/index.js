@@ -76,11 +76,14 @@ const FolderListView = ({
           const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
           const FileIcon = type === 'folder' ? Folder :
             (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
+          const isSupported = type !== 'folder'
+            && isAcceptedType
+            && isAcceptedType({ primaryAsset });
           return (
             <TableRow
               className={cx({
                 [styles.selected]: highlightedItems[id],
-                [styles.unsupported]: type !== 'folder' && !isAcceptedType({ primaryAsset })
+                [styles.unsupported]: !isSupported
               })}
               id={id}
               key={id}

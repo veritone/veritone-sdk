@@ -7,17 +7,16 @@ import Paper from '@material-ui/core/Paper';
 import Refresh from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 
+import FilePickerFooter from '../../FilePicker/FilePickerFooter';
 import InfiniteWrapper from '../InfiniteWrapper';
-import NullState from '../NullState';
+import NullState from '../../NullState';
 import MediaInfoPanel from '../MediaInfoPanel';
 import itemShape from './itemShape';
 
 import FolderListView from './FolderListView';
 import FolderLoading from './FolderLoading'
-import FolderViewFooter from './FolderViewFooter';
 import FolderGridView from './FolderGridView';
 import styles from './styles.scss';
-
 
 const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
@@ -30,6 +29,8 @@ const LoadingState = () => (
 
 class FolderViewContainer extends React.Component {
   static propTypes = {
+    availablePickerTypes: arrayOf(string),
+    toggleContentView: func,
     supportedFormats: arrayOf(string),
     viewType: oneOf(['list', 'grid']),
     items: arrayOf(itemShape),
@@ -38,14 +39,14 @@ class FolderViewContainer extends React.Component {
     isLoaded: bool,
     isError: bool,
     triggerPagination: func,
-    onUpload: func,
     onCancel: func,
     onError: func
   }
 
   static defaultProps = {
     items: [],
-    selectedItems: []
+    selectedItems: [],
+    availablePickerTypes: []
   }
 
   state = {
@@ -246,7 +247,8 @@ class FolderViewContainer extends React.Component {
       items,
       triggerPagination,
       onCancel,
-      onUpload
+      availablePickerTypes,
+      toggleContentView
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -265,6 +267,13 @@ class FolderViewContainer extends React.Component {
       );
     }
 
+    const hasUpload = availablePickerTypes.includes('upload');
+    const nullstateBtnProps = hasUpload && {
+      text: 'UPLOAD',
+      onClick: () => toggleContentView('upload')
+    };
+    const nullstateText = hasUpload
+      && 'Click upload button to add content';
     if (items.length === 0 && isLoaded) {
       return (
         <Paper>
@@ -275,13 +284,10 @@ class FolderViewContainer extends React.Component {
                 alt: 'No files'
               }}
               titleText='No files here'
-              btnProps={{
-                text: 'UPLOAD',
-                onClick: onUpload
-              }}
+              btnProps={nullstateBtnProps}
               inWidgets
             >
-              Click upload button to add content
+              { nullstateText }
             </NullState>
           </div>
         </Paper>
@@ -346,11 +352,11 @@ class FolderViewContainer extends React.Component {
             />
           )}
         </div>
-        <FolderViewFooter
+        <FilePickerFooter
           title='Open'
-          onSubmit={this.onSubmit}
           onCancel={onCancel}
           disabled={this.noneHighligthedItem(highlightedItems)}
+          onSubmit={this.onSubmit}
         />
       </Paper>
     )

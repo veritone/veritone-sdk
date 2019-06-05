@@ -9,7 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 // import ViewList from '@material-ui/icons/ViewList';
 // import ViewModule from '@material-ui/icons/ViewModule';
 // import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import cx from 'classnames';
+// import cx from 'classnames';
 
 import Breadcrumbs from '../Breadcrumbs';
 // import SearchInput from '../SearchInput';
@@ -69,40 +69,37 @@ class HeaderBar extends React.Component {
           className={styles['headerBar']}
         >
           <Toolbar className={styles.header}>
-            <div className={styles.spacer} />
             <Breadcrumbs
               pathList={pathList}
               onCrumbClick={onCrumbClick}
               isStream={currentPickerType==='stream'}
             />
-            <div style={{ flexGrow: 1 }} />
-            <div className={cx(
-              styles['button-group'],
-              styles.icon,
-              { [styles.disabled]: currentPickerType === 'upload' }
-              )}
-            >
-              {
-                // <SearchInput
-                //   onClear={onClear}
-                //   onSearch={onSearch}
-                // />
-              }
-              {
-                // <div className={styles.spacer} />
-                // <div className={cx(styles.divider, styles.icon)} />
-                // <div className={styles.spacer} />
-                // <Sort onClick={this.onOpenSort} />
-                // <ArrowDropDown onClick={this.onOpenSort} />
-              }
-              {
-                // viewType === 'list' ? (
-                //   <ViewList data-type="grid" onClick={onToggleView} />
-                // ) : (
-                //   <ViewModule data-type="list" onClick={onToggleView} />
-                // )
-              }
-            </div>
+            {
+              // <div style={{ flexGrow: 1 }} />
+              // <div className={cx(
+              //   styles['button-group'],
+              //   styles.icon,
+              //   { [styles.disabled]: currentPickerType === 'upload' }
+              //   )}
+              // >
+              //   <SearchInput
+              //     onClear={onClear}
+              //     onSearch={onSearch}
+              //   />
+              //   <div className={styles.spacer} />
+              //   <div className={cx(styles.divider, styles.icon)} />
+              //   <div className={styles.spacer} />
+              //   <Sort onClick={this.onOpenSort} />
+              //   <ArrowDropDown onClick={this.onOpenSort} />
+              //   {
+              //     viewType === 'list' ? (
+              //       <ViewList data-type="grid" onClick={onToggleView} />
+              //     ) : (
+              //       <ViewModule data-type="list" onClick={onToggleView} />
+              //     )
+              //   }
+              // </div>
+            }
           </Toolbar>
         </AppBar>
         <Popover

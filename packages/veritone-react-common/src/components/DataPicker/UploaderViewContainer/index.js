@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, func, shape, bool, number, object } from 'prop-types';
+import { arrayOf, string, func, shape, bool, number, object, oneOfType } from 'prop-types';
 
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircle';
@@ -7,12 +7,12 @@ import Info from '@material-ui/icons/Info';
 import Warning from '@material-ui/icons/Warning';
 import green from '@material-ui/core/colors/green';
 
-import FileUploader from '../FilePicker/FileUploader';
-import FileList from '../FilePicker/FileList';
-import FilePickerHeader from '../FilePicker/FilePickerHeader';
-import FileProgressList from '../FilePicker/FileProgressList';
-import FilePickerFooter from '../FilePicker/FilePickerFooter';
-import DragDropContext from '../FilePicker/DragDropContext';
+import FileUploader from '../../FilePicker/FileUploader';
+import FileList from '../../FilePicker/FileList';
+import FilePickerHeader from '../../FilePicker/FilePickerHeader';
+import FileProgressList from '../../FilePicker/FileProgressList';
+import FilePickerFooter from '../../FilePicker/FilePickerFooter';
+import DragDropContext from '../../FilePicker/DragDropContext';
 
 import styles from './styles.scss';
 
@@ -146,9 +146,9 @@ UploadViewContainer.propTypes = {
   })),
   uploadPickerState: string,
   uploadStatusMsg: string,
-  uploadSuccess: string,
-  uploadWarning: string,
-  uploadError: string,
+  uploadSuccess: oneOfType([string, bool]),
+  uploadError: oneOfType([string, bool]),
+  uploadWarning: oneOfType([string, bool]),
   uploadedFiles: arrayOf(object),
   handleAbort: func,
   onRetryDone: func,

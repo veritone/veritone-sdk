@@ -419,12 +419,13 @@ function createTDOsFromFiles(id, callback) {
   return function* (signedFiles, { warning, error, cancelled }) {
     // Create TDO w/ asset to set full primary asset for immediate reprocessing
     // then launch webstream adapter against it to enable playback
+    const currentNode = yield select(getCurrentNode, id);
     let createdTDOs = [], createdJobIds = [];
     if (!cancelled && signedFiles.length) {
       const tdoResponses = yield signedFiles.map(function* (signedFile) {
-        return yield createTDOWithAsset(signedFile);
+        return yield createTDOWithAsset(signedFile, currentNode, currentNode);
       });
-      createdTDOs = tdoResponses.map(res => get(res, 'data.createTDOWithAsset'));
+      createdTDOs = tdoResponses.map(res => get(res, 'data.createTDOWithAsset', currentNode));
       
       const jobResponses = yield createdTDOs.map(function* (tdo) {
         return yield createInitialJob(tdo);
@@ -444,7 +445,7 @@ function createTDOsFromFiles(id, callback) {
   }
 }
 
-function* createTDOWithAsset(signedFile) {
+function* createTDOWithAsset(signedFile, currentNode) {
   const {
     graphQLUrl,
     token
@@ -470,6 +471,10 @@ function* createTDOWithAsset(signedFile) {
       }
     }
   };
+  // Current node may not exist if only Upload is enabled
+  if (currentNode && currentNode.id) {
+    variables.input.parentFolderId = currentNode.id;
+  }
   return yield call(fetchGraphQLApi, {
     endpoint: graphQLUrl,
     query,

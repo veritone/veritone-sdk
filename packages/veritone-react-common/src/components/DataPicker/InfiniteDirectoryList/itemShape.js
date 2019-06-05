@@ -2,7 +2,7 @@ import { shape, string, oneOf } from 'prop-types';
 
 export default shape({
   id: string.isRequired,
-  type: oneOf('folder', 'tdo').isRequired,
+  type: oneOf(['folder', 'tdo']).isRequired,
   name: string,
   startDateTime: string,
   stopDateTime: string,

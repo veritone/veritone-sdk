@@ -113,7 +113,7 @@ class DataPicker extends React.Component {
     items: arrayOf(
       shape({
         id: string.isRequired,
-        type: oneOf('folder', 'source', 'program', 'tdo').isRequired,
+        type: oneOf(['folder', 'source', 'program', 'tdo']).isRequired,
         name: string,
         startDateTime: string, 
         stopDateTime: string,
@@ -344,6 +344,7 @@ class DataPicker extends React.Component {
             items={items}
             isError={currentDirectoryLoadingState.error}
             isLoading={currentDirectoryLoadingState.isLoading}
+            isLoaded={currentDirectoryLoadingState.isLoaded}
             uploadedFiles={uploadedFiles}
             onFilesSelected={this.handleFilesSelected}
             onRemoveFile={this.handleRemoveFile}

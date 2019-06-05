@@ -8,10 +8,10 @@ import Breadcrumbs from './';
 storiesOf('Breadcrumbs', module)
   .add('Full path list', () => {
     const pathList = [
-      { id: 'root' },
-      { id: 'first', label: 'Parent' },
-      { id: 'second', label: 'Child' },
-      { id: 'third', label: 'GrandChild' }
+      { id: 'first', name: 'Parent' },
+      { id: 'second', name: 'Child' },
+      { id: 'third', name: 'GrandChild' },
+      { id: 'fourth', name: 'Super GrandChild' },
     ]
     return (
       <Breadcrumbs
@@ -23,11 +23,11 @@ storiesOf('Breadcrumbs', module)
   })
   .add('Hidden path list', () => {
     const pathList = [
-      { id: 'root' },
-      { id: 'first', label: 'Parent' },
-      { id: 'second', label: 'Child' },
-      { id: 'third', label: 'GrandChild' },
-      { id: 'forth', label: 'GrandGrandChild' }
+      { id: 'first', name: 'Parent' },
+      { id: 'second', name: 'Child' },
+      { id: 'third', name: 'GrandChild' },
+      { id: 'fourth', name: 'Super GrandChild' },
+      { id: 'fifth', name: 'Ultra GrandChild' }
     ]
     return (
       <Breadcrumbs

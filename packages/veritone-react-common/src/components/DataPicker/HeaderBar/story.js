@@ -1,5 +1,4 @@
 import React from 'react';
-import Work from '@material-ui/icons/Work';
 import { storiesOf } from '@storybook/react';
 
 import { text } from '@storybook/addon-knobs';
@@ -12,11 +11,11 @@ storiesOf('HeaderBar', module)
     <HeaderBar
       pathList={[
         {
-          icon: <Work style={{ color: "blue" }} />,
+          name: 'Parent',
           id: '1'
         },
         {
-          label: 'Child',
+          name: 'Child',
           id: '2'
         }
       ]}

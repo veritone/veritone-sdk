@@ -255,7 +255,8 @@ export default createReducer(defaultState, {
       leafIds: { $push: leafIds },
       nodeOffset: { $set: nodeOffset },
       leafOffset: { $set: leafOffset },
-      isLoading: { $set: false }
+      isLoading: { $set: false },
+      isLoaded: { $set: true }
     };
     const newState = update(state, {
       itemData: itemDataSetter
@@ -367,7 +368,7 @@ const local = state => state[namespace];
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const orgEnableFolders = (state) => get(local(state), 'orgEnableFolders');
 export const orgEnableUploads = (state) => get(local(state), 'orgEnableUploads');
-export const availablePickerTypes = (state, id) => get(local(state), [id, 'availablePickerTypes']);
+export const availablePickerTypes = (state, id) => get(local(state), [id, 'availablePickerTypes'], []);
 export const currentPickerType = (state, id) => get(local(state), [id, 'currentPickerType']);
 export const searchValue = (state, id) => get(local(state), [id, 'searchValue'], '');
 
@@ -378,8 +379,15 @@ export const getItemByTypeAndId = state => (type, itemId) => {
 
 // Map the path array of ids with the container names
 export const currentPath = (state, id) => {
+  const availableTypes = availablePickerTypes(state, id);
   const itemData = get(local(state), 'itemData', {});
-  const pickerType = currentPickerType(state, id);
+  let pickerType = currentPickerType(state, id);
+
+  // Let users see what folder they're uploading to
+  if (pickerType === 'upload' && availableTypes.includes('folder')) {
+    pickerType = 'folder';
+  }
+
   const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
   // We have the array of ids and need to resolve the node names
   const nodePath = [];
@@ -393,8 +401,15 @@ export const currentPath = (state, id) => {
 };
 
 export const getCurrentNode = (state, id) => {
+  const availableTypes = availablePickerTypes(state, id);
   const itemData = get(local(state), 'itemData', {});
-  const pickerType = get(local(state), [id, 'currentPickerType']);
+  let pickerType = get(local(state), [id, 'currentPickerType']);
+  
+  // Retain current folder to upload to
+  if (pickerType === 'upload' && availableTypes.includes('folder')) {
+    pickerType = 'folder';
+  }
+
   const curPath = get(local(state), [id, `${pickerType}Data`, 'currentPath'], []);
   let currentNodeType = pickerType, currentNodeId = 'root';
   if (curPath.length) {
@@ -430,7 +445,13 @@ export const currentDirectoryItems = (state, id) => {
 
 export const currentDirectoryLoadingState = (state, id) => {
   const currentNode = getCurrentNode(state, id);
-  return loPick(currentNode, ['isLoading', 'nodeOffset', 'leafOffset', 'error']);
+  return loPick(currentNode, [
+    'isLoading',
+    'isLoaded',
+    'nodeOffset',
+    'leafOffset',
+    'error',
+  ]);
 };
 
 // ACTIONS

@@ -1,14 +1,14 @@
 import React from 'react';
-import { func, string, bool, arrayOf, shape, number, object } from 'prop-types';
+import { func, string, bool, arrayOf, shape, number, object, oneOfType } from 'prop-types';
 import Paper from '@material-ui/core/Paper'
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import LeftNavigationPanel from '../LeftNavigationPanel';
-import FolderViewContainer from '../FolderViewContainer';
-import UploaderViewContainer from '../UploaderViewContainer';
-import HeaderBar from '../HeaderBar';
+import LeftNavigationPanel from './LeftNavigationPanel';
+import FolderViewContainer from './FolderViewContainer';
+import UploaderViewContainer from './UploaderViewContainer';
+import HeaderBar from './HeaderBar';
 import styles from './styles.scss';
 
 const StreamView = () => (
@@ -38,11 +38,11 @@ class DataPicker extends React.Component {
     retryRequest: func,
     uploadPickerState: string,
     uploadStatusMsg: string,
-    uploadSuccess: string,
-    uploadError: string,
-    uploadWarning: string,
+    uploadSuccess: oneOfType([string, bool]),
+    uploadError: oneOfType([string, bool]),
+    uploadWarning: oneOfType([string, bool]),
     onCancel: func,
-    supportedFormats: arrayOf(object),
+    supportedFormats: arrayOf(string),
     onFilesSelected: func,
     onRemoveFile: func,
     isError: bool,
@@ -60,12 +60,11 @@ class DataPicker extends React.Component {
   static defaultProps = {
     items: [],
     pathList: [],
-    supportedFormats: [
-      'audio/mp4', 'audio/mpeg',
-      'video/api', 'video/mp4', 'video/ogg',
-      'text/css', 'text/txt', 'text/html',
-      'image/jpg', 'image/png', 'image/gif', 'image/webp'
-    ]
+    supportedFormats: [],
+    uploadStatusMsg: '',
+    uploadSuccess: '',
+    uploadError: '',
+    uploadWarning: ''
   }
 
   state = {
@@ -131,6 +130,7 @@ class DataPicker extends React.Component {
       isLoaded,
       isError
     } = this.props;
+    const showHeader = availablePickerTypes.includes('folder');
 
     return (
       <div className={styles['data-picker-container']}>
@@ -142,16 +142,18 @@ class DataPicker extends React.Component {
           />
         )}
         <div className={styles['data-picker-content-container']}>
-          <HeaderBar
-            viewType={viewType}
-            onToggleView={this.toggleViewType}
-            currentPickerType={currentPickerType}
-            pathList={pathList}
-            onCrumbClick={onCrumbClick}
-            onSearch={onSearch}
-            onClear={onClear}
-            onSort={onSort}
-          />
+          { showHeader && (
+            <HeaderBar
+              viewType={viewType}
+              onToggleView={this.toggleViewType}
+              currentPickerType={currentPickerType}
+              pathList={pathList}
+              onCrumbClick={onCrumbClick}
+              onSearch={onSearch}
+              onClear={onClear}
+              onSort={onSort}
+            />
+          )}
           {
             (() => {
               switch (currentPickerType) {
@@ -183,6 +185,8 @@ class DataPicker extends React.Component {
                 case 'folder':
                   return (
                       <FolderViewContainer
+                        availablePickerTypes={availablePickerTypes}
+                        toggleContentView={this.toggleContentView}
                         supportedFormats={supportedFormats}
                         items={items}
                         viewType={viewType}

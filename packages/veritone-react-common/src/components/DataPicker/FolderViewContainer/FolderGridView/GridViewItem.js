@@ -11,7 +11,7 @@ import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import KeyboardVoice from '@material-ui/icons/KeyboardVoice';
 import Videocam from '@material-ui/icons/Videocam';
 
-import MediaPlayerComponent from '../../MediaPlayer';
+import MediaPlayerComponent from '../../../MediaPlayer';
 import itemShape from '../itemShape';
 import styles from './styles.scss';
 

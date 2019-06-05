@@ -12,7 +12,8 @@ storiesOf('InfiniteWrapper', module)
   .add('Basic', () => (
     <InfiniteWrapper
       isLoading={boolean('isLoading', false)}
-      triggerPagination={action('triggerPagination')}
+      /* eslint-disable react/jsx-no-bind */
+      triggerPagination={() => action('triggerPagination')}
     >
       {
         itemsArray.map(item => <ItemComponent key={item} />)

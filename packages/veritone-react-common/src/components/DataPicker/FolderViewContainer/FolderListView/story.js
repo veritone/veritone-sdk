@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { constant } from 'lodash';
 import FolderListView from './';
 
 const items = [
@@ -85,6 +86,8 @@ const items = [
   },
 ];
 
+const isAcceptedType = constant(true);
+
 storiesOf('FolderListView', module)
   .add('Basic', () => (
     <div style={{ position: 'relative', paddingTop: 48, width: '100%'}}>
@@ -97,6 +100,7 @@ storiesOf('FolderListView', module)
             '1': true,
             '3': true
           }}
+          isAcceptedType={isAcceptedType}
         />
       </div>
     </div>
