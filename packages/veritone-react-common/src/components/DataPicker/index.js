@@ -190,10 +190,10 @@ class DataPicker extends React.Component {
       uploadedFiles
     } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
-
+    const showLeftNav = availablePickerTypes.length > 1 && uploadPickerState !== 'uploading';
     return (
       <div className={styles['data-picker-container']}>
-        { availablePickerTypes.length > 1 && (
+        { showLeftNav && (
           <LeftNavigationPanel
             availablePickerTypes={availablePickerTypes}
             currentPickerType={currentPickerType}
