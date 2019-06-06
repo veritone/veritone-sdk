@@ -348,6 +348,7 @@ export default createReducer(defaultState, {
   }
 });
 
+// Gets the variables used to map to itemData
 function getCurrentIdAndType(state, id) {
   const pickerType = get(state, [id, 'currentPickerType']);
   let currentNodeType = pickerType, currentNodeId = 'root';
@@ -400,6 +401,7 @@ export const currentPath = (state, id) => {
   return nodePath;
 };
 
+// Get the directory we're currently in (used to make API calls)
 export const getCurrentNode = (state, id) => {
   const availableTypes = availablePickerTypes(state, id);
   const itemData = get(local(state), 'itemData', {});

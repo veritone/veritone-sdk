@@ -1,7 +1,7 @@
 import React from 'react';
 import { oneOf, arrayOf, func, bool, string } from 'prop-types';
 import cx from 'classnames';
-import { get, isArray } from 'lodash';
+import { get } from 'lodash';
 
 import Paper from '@material-ui/core/Paper';
 import Refresh from '@material-ui/icons/Refresh';
@@ -221,9 +221,13 @@ class FolderViewContainer extends React.Component {
   isAcceptedType = item => {
     const { supportedFormats } = this.props;
     const itemType = get(item, 'primaryAsset.contentType');
-    if (isArray(supportedFormats) && itemType) {
-      const category = itemType.split('/')[0];
-      return supportedFormats.includes(itemType) || supportedFormats.includes(`${category}/*`);
+    if (supportedFormats.length) {
+      if (itemType) {
+        const category = itemType.split('/')[0];
+        return supportedFormats.includes(itemType) || supportedFormats.includes(`${category}/*`);
+      }
+    } else {
+      return true;
     }
     return false;
   }
