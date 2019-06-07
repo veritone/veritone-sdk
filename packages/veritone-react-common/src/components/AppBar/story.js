@@ -85,7 +85,7 @@ storiesOf('AppBar', module)
       />
     );
   })
-  .add('Profile menu extra items', function() {
+  .add('Profile menu statusDescription items', function() {
     return (
       <AppBar
         profileMenu
@@ -214,7 +214,8 @@ const mockNotifications = {
       type: 'preparing',
       description1: 'Top Description Goes Here',
       description2: 'Bottom Description Goes Here',
-      extra: 'testing testing'
+      statusDescription: 'testing testing',
+      onRemoveClick: action()
     },
     {
       id: '2234',
@@ -223,7 +224,8 @@ const mockNotifications = {
       description2: 'Failed Description 2 Goes Here',
       test: 'something esle',
       bla: 123,
-      callback: action()
+      onActionClick: action(),
+      onRemoveClick: action()
     },
     {
       id: '3234',
@@ -242,34 +244,36 @@ const mockNotifications = {
       type: 'completed',
       description1: 'Long Description Goes Here, Long Description Goes Here, Long Description Goes Here',
       description2: 'Long & Small Description Goes Here, Long & Small Description Goes Here, Long & Small Description Goes Here',
+      onRemoveClick: action()
     },
     {
       id: '6234',
       type: 'preparing',
       description1: 'Top Description Goes Here',
       description2: 'Bottom Description Goes Here',
-      extra: 'custom status'
+      statusDescription: 'custom status'
     },
     {
       id: '7234',
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
-      callback: action()
+      onActionClick: action(),
+      onRemoveClick: action()
     },
     {
       id: '8234',
       type: 'processing',
       description1: 'processing Description 1 Goes Here',
       description2: 'processing Description 2 Goes Here',
-      callback: action()
+      onActionClick: action()
     },
     {
       id: '9234',
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
-      callback: action()
+      onActionClick: action()
     }
   ]
 };

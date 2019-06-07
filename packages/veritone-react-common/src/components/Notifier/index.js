@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import styles from './styles.scss';  
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
-export const notificationPropTypes = shape({
+export const notifierPropTypes = shape({
   headerText: string,
   showMoreLabel: string,
   showLessLabel: string,
@@ -23,7 +23,7 @@ const SMALL_DISPLAY_SIZE = 3;
 const DISPLAY_SMALL = 'DISPLAY_SMALL';
 const DISPLAY_LARGE = 'DISPLAY_LARGE';
 
-export default class Notification extends React.Component {
+export default class Notifier extends React.Component {
   static propTypes = {
     headerText: string,
     showMoreLabel: string,
@@ -85,7 +85,7 @@ export default class Notification extends React.Component {
 
     const numNotifications = notifications.length || 0;
 
-    //TODO: remove "numNotifications > 0 ?" condition with when material-ui is updated to a later version
+    //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
         <IconButton onClick={this.showNotifications} disabled={numNotifications === 0}>

@@ -65,7 +65,7 @@
   overflow: auto;
   height: 100%;
 
-  .item {
+  .entry {
     height: 64px;
     padding: 16px;
 
@@ -113,9 +113,8 @@
     }
 
     .extra {
-      width: 100px;
+      width: 130px;
       font-size: 12px;
-      font-weight: 500;
       line-height: 32px;
       color: rgba(255,255,255,0.54);
       display: flex;
@@ -130,9 +129,14 @@
         text-overflow: ellipsis;
       }
 
-      .actionButton {
-        width: 32px;
-        height: 32px;
+      .actions {
+        .iconButton {
+          width: 32px;
+          height: 32px;
+          .icon {
+            color: rgba(255,255,255,0.54);
+          }
+        }
       }
     }
   }

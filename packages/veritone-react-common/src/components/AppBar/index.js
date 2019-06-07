@@ -19,7 +19,7 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
-import Notification, { notificationPropTypes } from 'components/Notification';
+import Notifier, { notifierPropTypes } from 'components/Notifier';
 
 import styles from './styles.scss';
 
@@ -59,7 +59,7 @@ export default class AppBar extends React.Component {
     onSwitchApp: func,
     additionMenuItems: arrayOf(element),
     onHelpClick: func,
-    notification: notificationPropTypes
+    notification: notifierPropTypes
   };
   static defaultProps = {
     logo: true,
@@ -110,7 +110,7 @@ export default class AppBar extends React.Component {
 
             {this.props.notification && (
               <div>
-                <Notification {...this.props.notification} />
+                <Notifier {...this.props.notification} />
               </div>
             )}
             
