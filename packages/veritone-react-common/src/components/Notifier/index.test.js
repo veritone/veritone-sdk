@@ -72,20 +72,52 @@ const mockNotifications = {
 };
 
 describe('Notifier Component', () => {
-  const notifier = mount(
-    <Notifier {...mockNotifications} />
-  );
+  it('Empty notifier should be disabled', () => {
+    const emptyNotifer = mount(<Notifier notifications = {[]} />)
+    expect(emptyNotifer.find('IconButton').props()["disabled"]).toBe(true)
+  });
 
   it('should display notification number', () => {
-    expect(notifier.text()).toEqual(mockNotifications.notifications.length.toString());
+    const closeNotifier = mount(<Notifier {...mockNotifications} />);
+    expect(closeNotifier.text()).toEqual(mockNotifications.notifications.length.toString());
+    expect(closeNotifier.find('.notificationWindow')).toHaveLength(0);
   });
-/*
-  const notifierButtons = notifier.find('IconButton');
-  it('shoudl have notifier icon button', () => {
+
+  const openNotifier = mount(<Notifier {...mockNotifications} />);
+  const notifierButtons = openNotifier.find('IconButton');
+  it('should have notifier icon button', () => {
     expect(notifierButtons).toHaveLength(1);
   });
 
   notifierButtons.first().simulate('click');
-  expect(handleOpen).toHaveBeenCalledWith();
-  */
+  it('handle open callback should be called', () => {
+    expect(handleOpen).toHaveBeenCalled();
+  });
+
+  const entryWindows = openNotifier.find('.notificationWindow');
+  it('should have notification list', () => {
+    expect(entryWindow).toHaveLength(1);
+  });
+
+  let entryWindow = entryWindows.first();
+  it('should have notification list header', () => {
+    const header = entryWindow.find('div.header');
+    expect(header).toHaveLength(1);
+    expect(header.first().text()).toContain(mockNotifications.notifications.length.toString());
+  });
+
+  it('should have notification small list body', () => {
+    const body = entryWindow.find('NotificationList');
+    expect(body).toHaveLength(1);
+    expect(body.first().find('div.entry')).toHaveLength(3)
+  });
+
+  it('should have notification list footer that can expand to full list', () => {
+    const footer = entryWindow.find('div.footer');
+    expect(footer).toHaveLength(1);
+
+    footer.find('Button').first().simulate('click');
+    const entries = openNotifier.find('div.entry');
+    expect(entries).toHaveLength(mockNotifications.notifications.length);
+  });
 });

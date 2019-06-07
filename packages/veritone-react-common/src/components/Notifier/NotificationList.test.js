@@ -2,8 +2,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import NotificationList from './NotificationList';
 
-const handleOpen = jest.fn();
-const handleClose = jest.fn();
 const handleEntryRemove = jest.fn();
 const handleEntryAction = jest.fn();
 
