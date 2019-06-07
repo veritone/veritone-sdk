@@ -9,6 +9,7 @@ import {
   func
 } from 'prop-types';
 import { noop, get } from 'lodash';
+import cx from 'classnames';
 
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -305,18 +306,28 @@ class DataPicker extends React.Component {
     const {
       currentDirectoryLoadingState,
       itemRefs,
-      getItemByTypeAndId
+      getItemByTypeAndId,
+      height,
+      width
     } = this.props;
     const {
       showError,
       errorMsg
     } = this.state;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
+    const isFullScreen = !height && !width;
+    const dimensionOverride = isFullScreen ? {} : {
+      height,
+      width
+    };
     return (
       <Fragment>
-        <Dialog open={this.props.open} classes={{
-           paper: styles.dataPickerPaper
-        }}>
+        <Dialog
+          open={this.props.open}
+          fullScreen={isFullScreen}
+          classes={{ paper: styles.dataPickerPaper }}
+          PaperProps={{ style: dimensionOverride }}
+        >
           <DataPickerComponent
             {...this.props}
             items={items}

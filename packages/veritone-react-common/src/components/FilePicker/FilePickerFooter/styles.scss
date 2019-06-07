@@ -10,3 +10,7 @@
     margin-left: calc(#{$file-picker-margin} / 2) !important;
   }
 }
+
+.hasIntercom > *:last-child {
+  margin-right: 80px;
+}

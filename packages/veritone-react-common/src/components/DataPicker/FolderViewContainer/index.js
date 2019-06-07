@@ -40,7 +40,8 @@ class FolderViewContainer extends React.Component {
     isError: bool,
     triggerPagination: func,
     onCancel: func,
-    onError: func
+    onError: func,
+    isFullScreen: bool
   }
 
   static defaultProps = {
@@ -262,7 +263,8 @@ class FolderViewContainer extends React.Component {
       triggerPagination,
       onCancel,
       availablePickerTypes,
-      toggleContentView
+      toggleContentView,
+      isFullScreen
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -290,38 +292,35 @@ class FolderViewContainer extends React.Component {
       && 'Click upload button to add content';
     if (items.length === 0 && isLoaded) {
       return (
-        <Paper>
-          <div className={styles['folder-null-state-container']}>
-            <NullState
-              imgProps={{
-                src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
-                alt: 'No files'
-              }}
-              titleText='No files here'
-              btnProps={nullstateBtnProps}
-              inWidgets
-            >
-              { nullstateText }
-            </NullState>
-          </div>
-        </Paper>
+        <div className={styles['folder-null-state-container']}>
+          <NullState
+            imgProps={{
+              src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
+              alt: 'No files'
+            }}
+            titleText='No files here'
+            btnProps={nullstateBtnProps}
+            inWidgets
+          >
+            { nullstateText }
+          </NullState>
+        </div>
       );
     }
 
     if (items.length === 0 && isLoading) {
       return (
-        <Paper>
-          <div className={styles['folder-null-state-container']}>
-            <LoadingState />
-          </div>
-        </Paper>
+        <div className={styles['folder-null-state-container']}>
+          <LoadingState />
+        </div>
       )
     }
 
     const selectedItems = items.filter(item => highlightedItems[item.id]);
+    const showMediaInfoPanel = !!selectedItems.length && viewType === 'list';
 
     return (
-      <Paper>
+      <Paper className={styles['folder-paper']}>
         <div className={styles['folder-view-container']}>
           <div className={cx(
             styles['folder-view-content'],
@@ -356,7 +355,7 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          { !!selectedItems.length && viewType === 'list' && (
+          { showMediaInfoPanel && (
             <MediaInfoPanel
               open
               playerRef={this.playerRef}
@@ -371,6 +370,7 @@ class FolderViewContainer extends React.Component {
           onCancel={onCancel}
           disabled={this.noneHighligthedItem(highlightedItems)}
           onSubmit={this.onSubmit}
+          hasIntercom={isFullScreen}
         />
       </Paper>
     )

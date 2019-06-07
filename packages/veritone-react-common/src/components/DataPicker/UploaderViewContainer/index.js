@@ -38,6 +38,7 @@ const UploadViewContainer = ({
   multiple,
   containerStyle,
   onRemoveFile,
+  isFullScreen
 }) => {
   const completeStatus = {
     [uploadSuccess]: 'success',
@@ -118,6 +119,7 @@ const UploadViewContainer = ({
         onCancel={onCancel}
         disabled={uploadDisabled}
         onSubmit={onUpload}
+        hasIntercom={isFullScreen}
       />
     </div>
   );
@@ -160,8 +162,7 @@ UploadViewContainer.defaultProps = {
   accept: [],
   multiple: true,
   containerStyle: {
-    width: '100%',
-    height: 475
+    width: '100%'
   }
 }
 

@@ -4,6 +4,9 @@
 .dataPickerPaper {
   max-height: none !important;
   max-width: none !important;
+  min-width: 1090px;
+  min-height: 520px;
+  margin: 0 !important;
 }
 .data-picker-error-snack {
   background-color: #d32f2f !important;

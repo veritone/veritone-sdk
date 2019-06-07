@@ -11,6 +11,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
+import Hidden from '@material-ui/core/Hidden';
 
 import cx from 'classnames';
 
@@ -27,6 +29,7 @@ const FILE_ICONS = {
 const formatDateString = date => {
   return format(date, 'MMM D, YYYY h:mm A');
 };
+const useHideWrap = children => (<Hidden initialWidth="md" smDown children={children} />);
 
 const FolderListView = ({
   items,
@@ -36,6 +39,7 @@ const FolderListView = ({
   isAcceptedType
 }) => {
   const headers = ['Name', 'Created Date Time', 'Modified Date Time', 'Type'];
+  const hiddenIndices = [1, 2];
   function handleDoubleClick(event) {
     const id = event.currentTarget.getAttribute('id');
     const type = event.currentTarget.getAttribute('type');
@@ -46,21 +50,26 @@ const FolderListView = ({
       <TableHead>
         <TableRow className={styles['table-row-head']}>
           {
-            headers.map((header) => (
-              <TableCell
-                key={header}
-                className={cx(
-                  styles['table-row-head--hidden'],
-                  styles['table-row']
-                )}
-                align="right"
-              >
-                {header}
-                <div className={styles['table-row-text']}>
+            headers.map((header, index) => {
+              const content = (
+                <TableCell
+                  key={header}
+                  className={cx(
+                    styles['table-row-head--hidden'],
+                    styles['table-row']
+                  )}
+                  align="right"
+                >
                   {header}
-                </div>
-              </TableCell>
-            ))
+                  <div className={styles['table-row-text']}>
+                    {header}
+                  </div>
+                </TableCell>
+              );
+              return hiddenIndices.includes(index)
+                ? useHideWrap(content)
+                : content;
+            })
           }
         </TableRow>
       </TableHead>
@@ -76,14 +85,12 @@ const FolderListView = ({
           const iconCategory = get(primaryAsset, 'contentType', 'doc').split('/')[0];
           const FileIcon = type === 'folder' ? Folder :
             (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
-          const isSupported = type !== 'folder'
-            && isAcceptedType
-            && isAcceptedType({ primaryAsset });
+          const isSupported = isAcceptedType && isAcceptedType({ primaryAsset });
           return (
             <TableRow
               className={cx({
                 [styles.selected]: highlightedItems[id],
-                [styles.unsupported]: !isSupported
+                [styles.unsupported]: !isSupported && type !== 'folder'
               })}
               id={id}
               key={id}
@@ -98,7 +105,7 @@ const FolderListView = ({
                 scope="row"
                 className={styles['table-row']}
               >
-              <div className={cx(styles['table-first-column'])}>
+                <div className={cx(styles['table-first-column'])}>
                 <FileIcon className={styles['table-icon']}/>
                   <span className={
                     cx(styles['table-first-column--text'],
@@ -111,12 +118,20 @@ const FolderListView = ({
                   </span>
                 </div>
               </TableCell>
-              <TableCell align="right" className={styles['table-row']}>
-                {formatDateString(createdDateTime)}
-              </TableCell>
-              <TableCell align="right" className={styles['table-row']}>
-                {formatDateString(modifiedDateTime)}
-              </TableCell>
+              {
+                useHideWrap(
+                  <TableCell align="right" className={styles['table-row']}>
+                    {formatDateString(createdDateTime)}
+                  </TableCell>
+                )
+              }
+              {
+                useHideWrap(
+                  <TableCell align="right" className={styles['table-row']}>
+                    {formatDateString(modifiedDateTime)}
+                  </TableCell>
+                )
+              }
               <TableCell align="right" className={styles['table-row']}>
                 {
                   type === 'folder' ?

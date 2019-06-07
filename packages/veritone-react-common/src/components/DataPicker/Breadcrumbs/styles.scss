@@ -1,3 +1,6 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
 .breadcrumb-container {
   display: flex;
   font-size: 1rem;
@@ -9,10 +12,32 @@
 }
 
 .icon-color {
-  color: rgba(0, 0, 0, 0.57);
+  color: $light-black;
+}
+
+.icon-spacer {
+  margin-left: 10px;
 }
 
 .root-icon {
-  color: #2196F3;
+  color: $blue-1;
   font-size: 24px !important;
+}
+
+.crumb-item {
+  padding: 0 8px !important;
+  min-width: 0px !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: $light-black;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  text-transform: none !important;
+}
+
+.font-icon {
+  font-size: 1.5rem;
+  padding: 0 0.5rem;
+  color: $light-black;
 }

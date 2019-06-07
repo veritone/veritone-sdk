@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { bool, func, string } from 'prop-types';
 import styles from './styles.scss';
+import cx from 'classnames';
 
 class FilePickerFooter extends Component {
   static propTypes = {
     disabled: bool,
     onCancel: func,
     onSubmit: func,
-    title: string
+    title: string,
+    hasIntercom: bool
   };
 
   static defaultProps = {
@@ -17,7 +19,9 @@ class FilePickerFooter extends Component {
 
   render() {
     return (
-      <div className={styles.filePickerFooter}>
+      <div className={cx(styles.filePickerFooter, {
+        [styles.hasIntercom]: this.props.hasIntercom
+      })}>
         <Button onClick={this.props.onCancel}>Cancel</Button>
         <Button
           variant="raised"

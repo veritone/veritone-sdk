@@ -10,7 +10,7 @@ import styles from './styles.scss';
 
 const StreamView = () => (
   <Paper>
-    <div style={{ width: '100%', height: 465 }}>Stream view</div>;
+    <div style={{ width: '100%', height: '100%' }}>Stream view</div>;
   </Paper>
 )
 const UNSUPPORTED_FORMAT_ERROR = 'Unsupported format detected';
@@ -54,7 +54,9 @@ class DataPicker extends React.Component {
         percent: number,
         size: number
       })
-    }))
+    })),
+    height: number,
+    width: number
   }
 
   static defaultProps = {
@@ -184,15 +186,19 @@ class DataPicker extends React.Component {
       percentByFiles,
       isLoaded,
       isError,
-      onErrorMsg
+      onErrorMsg,
+      height,
+      width
     } = this.props;
     const {
       uploadedFiles
     } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
     const showLeftNav = availablePickerTypes.length > 1 && uploadPickerState !== 'uploading';
+    const isFullScreen = !height && !width;
     return (
-      <div className={styles['data-picker-container']}>
+      <div 
+        className={styles['data-picker-container']}>
         { showLeftNav && (
           <LeftNavigationPanel
             availablePickerTypes={availablePickerTypes}
@@ -218,29 +224,27 @@ class DataPicker extends React.Component {
               switch (currentPickerType) {
                 case 'upload':
                   return (
-                    <Paper>
-                      <UploaderViewContainer
-                        multiple={multiple}
-                        maxItems={maxItems}
-                        uploadPickerState={uploadPickerState}
-                        uploadStatusMsg={uploadStatusMsg}
-                        uploadSuccess={uploadSuccess}
-                        uploadWarning={uploadWarning}
-                        uploadError={uploadError}
-                        accept={supportedFormats}
-                        onCancel={onCancel}
-                        onUpload={this.handleOnUpload}
-                        onFilesSelected={this.handleFilesSelected}
-                        handleAbort={handleAbort}
-                        onRetryDone={onRetryDone}
-                        retryRequest={retryRequest}
-                        onReject={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
-                        uploadedFiles={uploadedFiles}
-                        onRemoveFile={this.handleRemoveFile}
-                        percentByFiles={percentByFiles}
-                        containerStyle={{ height: 475}}
-                      />
-                    </Paper>
+                    <UploaderViewContainer
+                      multiple={multiple}
+                      maxItems={maxItems}
+                      uploadPickerState={uploadPickerState}
+                      uploadStatusMsg={uploadStatusMsg}
+                      uploadSuccess={uploadSuccess}
+                      uploadWarning={uploadWarning}
+                      uploadError={uploadError}
+                      accept={supportedFormats}
+                      onCancel={onCancel}
+                      onUpload={this.handleOnUpload}
+                      onFilesSelected={this.handleFilesSelected}
+                      handleAbort={handleAbort}
+                      onRetryDone={onRetryDone}
+                      retryRequest={retryRequest}
+                      onReject={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
+                      uploadedFiles={uploadedFiles}
+                      onRemoveFile={this.handleRemoveFile}
+                      percentByFiles={percentByFiles}
+                      isFullScreen={isFullScreen}
+                    />
                   )
                 case 'folder':
                   return (
@@ -259,6 +263,7 @@ class DataPicker extends React.Component {
                         isLoaded={isLoaded}
                         isError={isError}
                         onError={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
+                        isFullScreen={isFullScreen}
                       />
                   )
                 case 'stream':

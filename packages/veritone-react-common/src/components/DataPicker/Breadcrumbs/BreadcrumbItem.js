@@ -1,9 +1,10 @@
 import React from 'react';
 import { string, bool, func, node, number } from 'prop-types';
-import classNames from 'classnames';
+import cx from 'classnames';
+import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import styles from './BreadcrumbItem.scss';
+import styles from './styles.scss';
 
 const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) => (
   isHidden ? (
@@ -11,25 +12,23 @@ const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) =>
       onClick={onClick}
       data-id={id}
       data-index={index}
-      className={styles['crumb-item']}
     >
-      <span
-        className={classNames('icon-empty-folder', styles['font-icon'])}
-      />
       {name}
     </MenuItem>
   ) : (
-      <span
+      <Button
         onClick={onClick}
         data-id={id}
         data-index={index}
         className={styles['crumb-item']}
       >
         {icon}
-        <span>
+        <span className={cx({
+          [styles['icon-spacer']]: icon && name
+        })}>
           {name}
         </span>
-      </span>
+      </Button>
     )
 )
 

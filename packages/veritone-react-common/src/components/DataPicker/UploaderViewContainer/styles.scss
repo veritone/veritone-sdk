@@ -1,6 +1,7 @@
 .uploader-container {
   display: flex;
   flex-flow: column;
+  height: calc(100% - 64px);
 }
 
 .uploader-content {

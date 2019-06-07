@@ -3,6 +3,7 @@ import { shape, string, number, arrayOf, oneOfType, node, func, bool } from 'pro
 import cx from 'classnames';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
+import Button from '@material-ui/core/Button';
 import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
 
 import BreadcrumbItem from './BreadcrumbItem';
@@ -78,6 +79,7 @@ export default class Breadcrumbs extends React.Component {
             icon={icon}
             index={0}
             key={'root'}
+            name={pathList.length ? '' : 'My Files'}
             onClick={this.onCrumbClick}
           />
         </React.Fragment>
@@ -117,10 +119,12 @@ export default class Breadcrumbs extends React.Component {
                   onClick={this.onCrumbClick}
                 />
                 {seperator}
-                <MoreHoriz
+                <Button
+                  className={styles['crumb-item']}
                   onClick={this.onSpreadClick}
-                  className={styles['icon-color']}
-                />
+                >
+                  <MoreHoriz className={styles['icon-color']} />
+                </Button>
                 {seperator}
                 <BreadcrumbItem
                   {...lastCrumb}

@@ -36,7 +36,11 @@ const LeftNavigationPanel = ({
                 My Files
               </ListItemText>
             </ListItem>
-            <Divider className={styles.divider} />
+            {
+              availablePickerTypes.includes('stream') && (
+                <Divider className={styles.divider} />
+              )
+            }
           </div>
         )
       }

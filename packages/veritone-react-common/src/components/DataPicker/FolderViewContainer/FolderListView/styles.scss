@@ -3,6 +3,8 @@
 
 .table-first-column--text {
   padding-left: 12px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .table-first-column--folder {
@@ -47,6 +49,10 @@
   user-select: none;
   padding-right: 0 !important;
   padding-left: 8px !important;
+  max-width: 0px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .table-first-column {
@@ -55,7 +61,7 @@
 }
 
 .selected {
-  background: $min-black;
+  background: $faint-black;
 }
 .unsupported:not(.selected) {
   td {

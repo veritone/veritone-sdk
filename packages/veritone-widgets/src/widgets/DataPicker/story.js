@@ -168,3 +168,29 @@ storiesOf('DataPicker', module)
     />
   );
 })
+.add('Not Fullscreen', () => {
+  const props = {
+    ...sharedProps,
+    enableFolders: true,
+    enableUploads: true,
+    height: 1,
+    width: 1
+  };
+
+  return (
+    <BaseStory
+      widget={DataPickerWidget}
+      widgetProps={props}
+      widgetInstanceMethods={{
+        pick: instance => instance.pick(logPickResult)
+      }}
+      componentClass={DataPickerComponentStory}
+      componentProps={{
+        ...props,
+        renderButton: DataPickerButton,
+        onPickCancelled: (...args) => console.log('cancelled picking', args),
+        onPick: logPickResult
+      }}
+    />
+  );
+})
