@@ -45,7 +45,8 @@ class FolderViewContainer extends React.Component {
     triggerPagination: func,
     onCancel: func,
     onError: func,
-    isFullScreen: bool
+    isFullScreen: bool,
+    showMediaInfoPanel: bool
   }
 
   static defaultProps = {
@@ -274,7 +275,9 @@ class FolderViewContainer extends React.Component {
       onCancel,
       availablePickerTypes,
       toggleContentView,
-      isFullScreen
+      isFullScreen,
+      showMediaInfoPanel,
+      toggleMediaInfoPanel
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -327,7 +330,7 @@ class FolderViewContainer extends React.Component {
     }
 
     const selectedItems = items.filter(item => highlightedItems[item.id]);
-    const showMediaInfoPanel = !!selectedItems.length && viewType === 'list';
+    const mediaPanelEnabled = showMediaInfoPanel && !!selectedItems.length && viewType === 'list';
 
     return (
       <Paper className={styles['folder-paper']}>
@@ -335,7 +338,7 @@ class FolderViewContainer extends React.Component {
           <div className={cx(
             styles['folder-view-content'],
               {
-                [`${styles['panel-open']}`]: viewType === 'list' && selectedItems.length
+                [`${styles['panel-open']}`]: mediaPanelEnabled
               }
             )}>
             <InfiniteWrapper
@@ -365,12 +368,13 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          { showMediaInfoPanel && (
+          { mediaPanelEnabled && (
             <MediaInfoPanel
-              open
+              open={mediaPanelEnabled}
               playerRef={this.playerRef}
               onPlayerRefReady={this.onPlayerRefReady}
               selectedItems={selectedItems}
+              toggleMediaInfoPanel={toggleMediaInfoPanel}
               width={300}
             />
           )}

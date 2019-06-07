@@ -9,6 +9,9 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Close from '@material-ui/icons/Close';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import MediaPlayerComponent from '../../MediaPlayer';
@@ -74,7 +77,7 @@ const formatAsDuration = (seconds) => {
   );
 }
 
-const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
+const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMediaInfoPanel }) => {
   const itemType = selectedItem.type === 'folder' ?
     'folder' :
     get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
@@ -84,6 +87,13 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef }) => {
   );
   return (
     <div className={styles['media-info-container']} style={{ width }}>
+      <div className={styles['media-info-btn-container']}>
+        <Tooltip title="Hide Details" placement="left">
+          <IconButton onClick={() => toggleMediaInfoPanel(false)}>
+            <Close />
+          </IconButton>
+        </Tooltip>
+      </div>
       {
         (() => {
           switch (itemType) {

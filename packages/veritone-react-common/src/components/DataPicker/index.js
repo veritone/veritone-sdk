@@ -1,6 +1,6 @@
 import React from 'react';
 import { func, string, bool, arrayOf, shape, number, object, oneOfType } from 'prop-types';
-import { isArray } from 'lodash';
+import { isArray, isUndefined } from 'lodash';
 import Paper from '@material-ui/core/Paper'
 import LeftNavigationPanel from './LeftNavigationPanel';
 import FolderViewContainer from './FolderViewContainer';
@@ -66,7 +66,8 @@ class DataPicker extends React.Component {
     uploadStatusMsg: '',
     uploadSuccess: '',
     uploadError: '',
-    uploadWarning: ''
+    uploadWarning: '',
+    showMediaInfoPanel: false
   }
 
   state = {
@@ -158,6 +159,14 @@ class DataPicker extends React.Component {
     onSelectItem && onSelectItem(selectedNodes);
   }
 
+  toggleMediaInfoPanel = value => {
+    this.setState(prevState => ({
+      showMediaInfoPanel: isUndefined(value)
+        ? !prevState.showMediaInfoPanel
+        : value
+    }));
+  }
+
   render() {
     const { viewType } = this.state;
     const {
@@ -191,7 +200,8 @@ class DataPicker extends React.Component {
       width
     } = this.props;
     const {
-      uploadedFiles
+      uploadedFiles,
+      showMediaInfoPanel
     } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
     const showLeftNav = availablePickerTypes.length > 1 && uploadPickerState !== 'uploading';
@@ -217,6 +227,8 @@ class DataPicker extends React.Component {
               onSearch={onSearch}
               onClear={onClear}
               onSort={onSort}
+              showMediaInfoPanel={showMediaInfoPanel}
+              toggleMediaInfoPanel={this.toggleMediaInfoPanel}
             />
           )}
           {
@@ -264,6 +276,8 @@ class DataPicker extends React.Component {
                         isError={isError}
                         onError={onErrorMsg(UNSUPPORTED_FORMAT_ERROR)}
                         isFullScreen={isFullScreen}
+                        showMediaInfoPanel={showMediaInfoPanel}
+                        toggleMediaInfoPanel={this.toggleMediaInfoPanel}
                       />
                   )
                 case 'stream':
