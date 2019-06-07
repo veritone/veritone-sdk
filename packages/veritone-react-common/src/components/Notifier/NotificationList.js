@@ -1,10 +1,10 @@
 import React from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
-import ErrorIcon from '@material-ui/icons/Error';
+import ErrorIcon from '@material-ui/icons/PriorityHigh';
 import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import CheckIcon from '@material-ui/icons/CheckCircle';
+import CheckIcon from '@material-ui/icons/Check';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { string, arrayOf, oneOf, shape, func } from 'prop-types';
@@ -123,7 +123,7 @@ export default class NotificationList extends React.Component {
     return (
       <div key={entryData.id} className={classNames(styles.entry)}>
         <div className={classNames(styles.visualStatus)}>
-          <CircularProgress size={30} />
+          <CircularProgress size={24} />
         </div>
         <div className={classNames(styles.description)}>
           <div className={classNames(styles.title)}>{entryData.description1}</div>
@@ -154,7 +154,7 @@ export default class NotificationList extends React.Component {
     return (
       <div key={entryData.id} className={classNames(styles.entry)}>
         <div className={classNames(styles.visualStatus)}>
-          <CircularProgress size={30} />
+          <CircularProgress size={24} />
         </div>
         <div className={classNames(styles.description)}>
           <div className={classNames(styles.title)}>{entryData.description1}</div>

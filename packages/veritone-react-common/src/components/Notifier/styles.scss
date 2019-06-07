@@ -1,10 +1,10 @@
 .notification {
   display: "flex";
-  align-items: 'center';
+  align-items: "center";
 }
 
 .popover {
-  &.full>div:last-child {
+  &.full > div:last-child {
     height: 100%;
   }
 }
@@ -27,7 +27,7 @@
 
     .label {
       min-width: 0;
-      white-space: nowrap; 
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -40,7 +40,7 @@
       border-radius: 8px;
       margin-top: 16px;
       margin-left: 20px;
-      background-color: #00BCD4;
+      background-color: #00bcd4;
     }
   }
 
@@ -53,7 +53,7 @@
     display: flex;
     justify-items: center;
     justify-content: center;
-    border-top: 1px solid rgba(255,255,255,0.54);
+    border-top: 1px solid rgba(255, 255, 255, 0.54);
 
     &.hidden {
       display: none;
@@ -68,26 +68,34 @@
   .entry {
     height: 64px;
     padding: 16px;
-
     display: flex;
     flex-direction: row;
     justify-items: center;
 
-    &>div:not(:last-child) {
+    & > div:not(:last-child) {
       margin-right: 16px;
     }
 
+    .visualStatus {
+      margin-top: 4px;
+    }
+
     .statusIcon {
-      font-size: 30px;
-      border-radius: 15px;
-      background-color: white;
+      height: 24px;
+      width: 24px;
+      margin-top: 4px;
 
       &.green {
-        color: #66BB6A
+        border-radius: 50%;
+        padding: 3px 0;
+        background-color: #66bb6a;
+        color: white;
       }
 
       &.red {
-        color: #FF0C3E;
+        background-color: #ff0c3e;
+        border-radius: 50%;
+        padding: 3px 0;
       }
     }
 
@@ -96,11 +104,11 @@
       min-width: 0;
 
       div {
-        white-space: nowrap; 
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      
+
       .title {
         font-size: 14px;
         line-height: 20px;
@@ -108,7 +116,7 @@
 
       .subtitle {
         font-size: 12px;
-        color: rgba(255,255,255,0.54);
+        color: rgba(255, 255, 255, 0.54);
       }
     }
 
@@ -116,7 +124,7 @@
       width: 130px;
       font-size: 12px;
       line-height: 32px;
-      color: rgba(255,255,255,0.54);
+      color: rgba(255, 255, 255, 0.54);
       display: flex;
       flex-direction: row;
       justify-items: center;
@@ -124,9 +132,10 @@
       .description {
         flex: 1;
         min-width: 0;
-        white-space: nowrap; 
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 70%;
       }
 
       .actions {
@@ -134,7 +143,13 @@
           width: 32px;
           height: 32px;
           .icon {
-            color: rgba(255,255,255,0.54);
+            color: rgba(255, 255, 255, 0.54);
+          }
+        }
+
+        .iconButton:hover {
+          .icon {
+            color: white;
           }
         }
       }
