@@ -7,6 +7,10 @@ import Paper from '@material-ui/core/Paper';
 import Refresh from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 
+import {
+  hasCommandModifier
+} from 'helpers/dom';
+
 import FilePickerFooter from '../../FilePicker/FilePickerFooter';
 import InfiniteWrapper from '../InfiniteWrapper';
 import NullState from '../../NullState';
@@ -66,15 +70,15 @@ class FolderViewContainer extends React.Component {
   handleKeyPress = (event) => {
     const eventKeyCode = event.keyCode;
     const { lastIndex = 0, shiftIndex, highlightedItems } = this.state;
-    const { items } = this.props;
-    if (items.length && this.noneHighligthedItem(highlightedItems)) {
+    const { items, multiple } = this.props;
+    if (eventKeyCode === 38 && eventKeyCode === 40 && items.length && this.noneHighligthedItem(highlightedItems)) {
       this.onHighlight(0);
       return;
     }
     // Up
     if (eventKeyCode === 38 && lastIndex > 0) {
       event.preventDefault();
-      if (event.shiftKey) {
+      if (event.shiftKey && multiple) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
         const shiftHighlightIndex = Math.max(currentIndex - 1, 0);
         this.onShiftHighlight(shiftHighlightIndex);
@@ -90,7 +94,7 @@ class FolderViewContainer extends React.Component {
     // Down
     if (eventKeyCode === 40 && lastIndex < items.length - 1) {
       event.preventDefault();
-      if (event.shiftKey) {
+      if (event.shiftKey && multiple) {
         const currentIndex = isNaN(shiftIndex) ? lastIndex : shiftIndex;
         const shiftHighlightIndex = Math.min(
           currentIndex + 1,
@@ -168,13 +172,19 @@ class FolderViewContainer extends React.Component {
       .filter(key => highlightedItems[key]).length === 0;
 
   onHighlightItem = (event) => {
+    const { multiple } = this.props;
     const { index } = Object.assign({}, event.currentTarget.dataset);
     const holdingShift = event.shiftKey;
     const holdingCtrl = event.ctrlKey;
-    if (!holdingShift && !holdingCtrl) {
+    const holdingCmd = hasCommandModifier(event);
+    if (
+      !multiple || (
+        !holdingShift && !holdingCtrl && !holdingCmd
+       )
+    ) {
       this.onHighlight(parseInt(index, 10));
     }
-    if (holdingCtrl) {
+    if (holdingCtrl || holdingCmd) {
       const itemId = this.props.items[index].id
       this.setState(({ highlightedItems }) => ({
         highlightedItems: {

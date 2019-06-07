@@ -29,6 +29,21 @@ import widget from '../../shared/widget';
 
 import styles from './styles.scss';
 
+/*
+  Required parameters:
+    onPick: (items) => { ... Logic to handle what you picked ... }
+    enableFolders/enableUploads: bool (at least one of these are required)
+
+  Example usage:
+  widget = new veritoneWidgets.DataPickerWidget({
+    elId: YOUR_HTML_ELEMENT_ID,
+    onPick: items => {
+      console.log('Items picked: ');
+      console.log(items);
+    }
+  });
+  widget.pick();
+*/
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
