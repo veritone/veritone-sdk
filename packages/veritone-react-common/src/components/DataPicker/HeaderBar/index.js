@@ -106,6 +106,7 @@ class HeaderBar extends React.Component {
                 }
                 <IconButton
                   color={showMediaInfoPanel ? 'primary' : 'default'}
+                  /* eslint-disable react/jsx-no-bind */
                   onClick={() => toggleMediaInfoPanel()}>
                   <InfoOutline />
                 </IconButton>

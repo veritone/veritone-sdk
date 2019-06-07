@@ -89,7 +89,10 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
     <div className={styles['media-info-container']} style={{ width }}>
       <div className={styles['media-info-btn-container']}>
         <Tooltip title="Hide Details" placement="left">
-          <IconButton onClick={() => toggleMediaInfoPanel(false)}>
+          <IconButton
+            /* eslint-disable react/jsx-no-bind */
+            onClick={() => toggleMediaInfoPanel(false)}
+          >
             <Close />
           </IconButton>
         </Tooltip>
@@ -199,7 +202,8 @@ MediaInfo.propTypes = {
   onPlayerRefReady: func,
   playerRef: shape({
     current: object
-  })
+  }),
+  toggleMediaInfoPanel: func
 }
 
 const transitionStyle = (width) => ({

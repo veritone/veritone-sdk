@@ -46,7 +46,9 @@ class FolderViewContainer extends React.Component {
     onCancel: func,
     onError: func,
     isFullScreen: bool,
-    showMediaInfoPanel: bool
+    showMediaInfoPanel: bool,
+    toggleMediaInfoPanel: func,
+    multiple: bool
   }
 
   static defaultProps = {

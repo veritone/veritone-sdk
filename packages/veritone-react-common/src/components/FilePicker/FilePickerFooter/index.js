@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { bool, func, string } from 'prop-types';
-import styles from './styles.scss';
 import cx from 'classnames';
+import styles from './styles.scss';
 
 class FilePickerFooter extends Component {
   static propTypes = {

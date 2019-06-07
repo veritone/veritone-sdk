@@ -9,7 +9,6 @@ import {
   func
 } from 'prop-types';
 import { noop, get } from 'lodash';
-import cx from 'classnames';
 
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -162,7 +161,9 @@ class DataPicker extends React.Component {
     }),
     fetchPage: func.isRequired,
     selectNode: func.isRequired,
-    getItemByTypeAndId: func.isRequired
+    getItemByTypeAndId: func.isRequired,
+    height: number,
+    width: number
   };
 
   static defaultProps = {
