@@ -54,7 +54,8 @@ class FolderViewContainer extends React.Component {
   static defaultProps = {
     items: [],
     selectedItems: [],
-    availablePickerTypes: []
+    availablePickerTypes: [],
+    supportedFormats: []
   }
 
   state = {

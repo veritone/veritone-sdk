@@ -47,22 +47,22 @@ const imageItem = {
 }
 
 
-storiesOf('MediaInfoPanel', module)
-  .add('selected media item', () => (
+storiesOf('DataPicker', module)
+  .add('MediaInfoPanel: selected media item', () => (
     <MediaInfoPanel
       open={boolean('open', false)}
       selectedItems={[tdo]}
       width={number('width', 450)}
     />
   ))
-  .add('select folder item', () => (
+  .add('MediaInfoPanel: select folder item', () => (
     <MediaInfoPanel
       open={boolean('open', false)}
       selectedItems={[folderItem]}
       width={number('width', 450)}
     />
   ))
-  .add('select image item', () => (
+  .add('MediaInfoPanel: select image item', () => (
     <MediaInfoPanel
       open={boolean('open', false)}
       selectedItems={[imageItem]}

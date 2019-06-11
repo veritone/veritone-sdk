@@ -1,7 +1,6 @@
 import React from 'react';
 import { oneOf, func, string, arrayOf } from 'prop-types';
 import { CloudUploadOutlined, CardTravel } from '@material-ui/icons';
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';

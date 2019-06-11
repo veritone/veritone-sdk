@@ -67,7 +67,8 @@ class DataPicker extends React.Component {
     uploadSuccess: '',
     uploadError: '',
     uploadWarning: '',
-    showMediaInfoPanel: false
+    showMediaInfoPanel: false,
+    onErrorMsg: () => {}
   }
 
   state = {

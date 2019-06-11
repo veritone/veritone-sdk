@@ -191,8 +191,8 @@ const items = [
 ];
 const isAcceptedType = constant(true);
 
-storiesOf('FolderViewContainer', module)
-  .add('Loading', () => (
+storiesOf('DataPicker', module)
+  .add('FolderViewContainer: Loading', () => (
     <FolderViewContainer
       isAcceptedType={isAcceptedType}
       onSelectItem={action('onSelectItem')}
@@ -201,7 +201,7 @@ storiesOf('FolderViewContainer', module)
       isLoading
     />
   ))
-  .add('Null', () => (
+  .add('FolderViewContainer: Null', () => (
     <FolderViewContainer
       isAcceptedType={isAcceptedType}
       onSelectItem={action('onSelectItem')}
@@ -211,7 +211,7 @@ storiesOf('FolderViewContainer', module)
       isLoaded
     />
   ))
-  .add('Basic', () => (
+  .add('FolderViewContainer: Basic', () => (
     <FolderViewContainer
       isAcceptedType={isAcceptedType}
       items={items}

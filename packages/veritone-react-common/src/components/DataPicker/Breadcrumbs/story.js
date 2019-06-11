@@ -5,8 +5,8 @@ import { boolean } from '@storybook/addon-knobs';
 
 import Breadcrumbs from './';
 
-storiesOf('Breadcrumbs', module)
-  .add('Full path list', () => {
+storiesOf('DataPicker', module)
+  .add('Breadcrumbs: Full path list', () => {
     const pathList = [
       { id: 'first', name: 'Parent' },
       { id: 'second', name: 'Child' },
@@ -21,7 +21,7 @@ storiesOf('Breadcrumbs', module)
       />
     );
   })
-  .add('Hidden path list', () => {
+  .add('Breadcrumbs: Hidden path list', () => {
     const pathList = [
       { id: 'first', name: 'Parent' },
       { id: 'second', name: 'Child' },

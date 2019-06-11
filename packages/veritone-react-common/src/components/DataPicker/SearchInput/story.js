@@ -5,8 +5,8 @@ import { text } from '@storybook/addon-knobs';
 
 import SearchInput from './';
 
-storiesOf('SearchInput', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('SearchInput: Basic', () => (
     <SearchInput
       onSearch={action('onSearch')}
       value={text('value', 'search')}

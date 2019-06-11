@@ -224,7 +224,7 @@ const percentByFiles = [{
 }];
 
 storiesOf('DataPicker', module)
-  .add('Basic', () => (
+  .add('DataPicker: Basic', () => (
     <DataPicker
       availablePickerTypes={['folder', 'stream', 'upload']}
       toggleContentView={action('toggleContentView')}
@@ -255,7 +255,7 @@ storiesOf('DataPicker', module)
       percentageUploadingFiles={percentByFiles}
     />
   ))
-  .add('Empty Current Directory', () => (
+  .add('DataPicker: Empty Current Directory', () => (
     <DataPicker
       availablePickerTypes={['folder', 'stream', 'upload']}
       toggleContentView={action('toggleContentView')}
@@ -273,7 +273,7 @@ storiesOf('DataPicker', module)
       triggerPagination={action('triggerPagination')}
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
-      isLoaded={boolean('isLoaded', false)}
+      isLoaded={boolean('isLoaded', true)}
       pathList={pathList}
       onCrumbClick={action('onCrumbClick')}
       onSearch={action('onSearch')}
@@ -286,7 +286,7 @@ storiesOf('DataPicker', module)
       percentageUploadingFiles={percentByFiles}
     />
   ))
-  .add('No file upload', () => (
+  .add('DataPicker: No file upload', () => (
     <DataPicker
       availablePickerTypes={['folder', 'stream']}
       toggleContentView={action('toggleContentView')}
@@ -316,7 +316,7 @@ storiesOf('DataPicker', module)
       percentageUploadingFiles={[]}
     />
   ))
-  .add('Error / Initial loading', () => (
+  .add('DataPicker: Error / Initial loading', () => (
     <DataPicker
       availablePickerTypes={['folder', 'stream', 'upload']}
       toggleContentView={action('toggleContentView')}

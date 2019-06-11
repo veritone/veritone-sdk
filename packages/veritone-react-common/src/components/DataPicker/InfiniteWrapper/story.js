@@ -8,8 +8,8 @@ const itemsArray = new Array(10).fill(0).map((_, i) => i);
 
 const ItemComponent = () => <div style={{ height: 50, marginTop: 5, background: 'lightgrey'}} />;
 
-storiesOf('InfiniteWrapper', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('InfiniteWrapper: Basic', () => (
     <InfiniteWrapper
       isLoading={boolean('isLoading', false)}
       /* eslint-disable react/jsx-no-bind */

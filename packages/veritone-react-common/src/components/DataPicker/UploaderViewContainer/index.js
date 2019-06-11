@@ -161,10 +161,7 @@ UploadViewContainer.propTypes = {
 
 UploadViewContainer.defaultProps = {
   accept: [],
-  multiple: true,
-  containerStyle: {
-    width: '100%'
-  }
+  multiple: true
 }
 
 export default UploadViewContainer;

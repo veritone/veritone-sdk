@@ -189,8 +189,8 @@ const items = [
   },
 ];
 
-storiesOf('FolderGridView', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('FolderGridView: Basic', () => (
     <FolderGridView
       items={items}
       onSelectItem={action('onSelectItem')}

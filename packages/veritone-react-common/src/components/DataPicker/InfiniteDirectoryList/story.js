@@ -16,8 +16,8 @@ const items = [
   { id: '10', type: 'doc', date: 'Mar 29, 2019 3:34 PM', name: 'maps.xml' },
 ]
 
-storiesOf('InfiniteDirectoryList', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('InfiniteDirectoryList: Basic', () => (
     <InfiniteDirectoryList
       items={items}
       headers={['Name', 'Date', 'Type']}
@@ -27,7 +27,7 @@ storiesOf('InfiniteDirectoryList', module)
       finishedLoading={false}
     />
   ))
-  .add('Finish loading', () => (
+  .add('InfiniteDirectoryList: Finish loading', () => (
     <InfiniteDirectoryList
       items={items}
       headers={['Name', 'Date', 'Type']}

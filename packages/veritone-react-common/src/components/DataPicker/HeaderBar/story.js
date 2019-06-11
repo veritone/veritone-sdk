@@ -6,8 +6,8 @@ import { action } from '@storybook/addon-actions';
 
 import HeaderBar from './';
 
-storiesOf('HeaderBar', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('HeaderBar: Basic', () => (
     <HeaderBar
       pathList={[
         {

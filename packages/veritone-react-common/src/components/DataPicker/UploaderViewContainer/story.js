@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { select } from '@storybook/addon-knobs';
 import UploaderViewContainer from './';
 
 const allFormats = [
@@ -82,28 +83,38 @@ const percentByFiles = [{
 }];
 
 
-storiesOf('UploaderViewContainer', module)
-  .add('Base', () => (
+storiesOf('DataPicker', module)
+  .add('UploaderViewContainer: Base', () => (
     <UploaderViewContainer
       accept={allFormats}
-      onSelect={action('onSelect')}
+      uploadPickerState={select('uploadPickerState', {
+        selecting: 'selecting',
+        uploading: 'uploading'
+      })}
+      uploadSuccess
+      uploadWarning={false}
+      uploadError={false}
+      uploadedFiles={[]}
+      onFilesSelected={action('onFilesSelected')}
+      handleAbort={action('handleAbort')}
       onReject={action('onReject')}
       onCancel={action('onCancel')}
       onDeleteFile={action('onDelete')}
       onUpload={action('onUpload')}
       multiple
-      percentageUploadingFiles={percentByFiles}
+      percentByFiles={percentByFiles}
     />
   ))
-  .add('Original', () => (
+  .add('UploaderViewContainer: Original', () => (
     <UploaderViewContainer
       accept={allFormats}
-      onSelect={action('onSelect')}
+      onFilesSelected={action('onFilesSelected')}
+      handleAbort={action('handleAbort')}
       onReject={action('onReject')}
       onCancel={action('onCancel')}
       onDeleteFile={action('onDelete')}
       onUpload={action('onUpload')}
       multiple
-      percentageUploadingFiles={[]}
+      percentByFiles={[]}
     />
   ))

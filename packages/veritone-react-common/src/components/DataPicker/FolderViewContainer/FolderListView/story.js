@@ -88,8 +88,8 @@ const items = [
 
 const isAcceptedType = constant(true);
 
-storiesOf('FolderListView', module)
-  .add('Basic', () => (
+storiesOf('DataPicker', module)
+  .add('FolderListView: Basic', () => (
     <div style={{ position: 'relative', paddingTop: 48, width: '100%'}}>
       <div style={{ height: 300, overflowY: 'auto' }}>
         <FolderListView

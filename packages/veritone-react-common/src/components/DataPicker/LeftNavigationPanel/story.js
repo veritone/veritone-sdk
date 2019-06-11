@@ -5,8 +5,8 @@ import { action } from '@storybook/addon-actions';
 
 import LeftNavigationPanel from './';
 
-storiesOf('LeftNavigationPanel', module)
-  .add('Full path list', () => {
+storiesOf('DataPicker', module)
+  .add('LeftNavigationPanel: Full path list', () => {
     return (
       <LeftNavigationPanel
         availablePickerTypes={['folder', 'stream', 'upload']}
