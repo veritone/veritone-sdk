@@ -11,6 +11,7 @@
 
 .navigation-item {
   padding: 8px 10px !important;
+  border-radius: 0 20px 20px 0 !important;
   .icon, svg{
     color: #616e7b;
     margin-right: 0;
@@ -34,6 +35,9 @@
 
 .selected {
   background: #cfdfed !important;
+  *, span {
+    color: #1767D2;
+  }
 }
 
 .upload-button {

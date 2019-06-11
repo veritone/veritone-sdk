@@ -156,7 +156,7 @@ UploadViewContainer.propTypes = {
   onRetryDone: func,
   retryRequest: func,
   onRemoveFile: func,
-  isFullScreen: func
+  isFullScreen: bool
 };
 
 UploadViewContainer.defaultProps = {

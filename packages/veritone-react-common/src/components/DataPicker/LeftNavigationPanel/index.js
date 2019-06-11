@@ -1,6 +1,6 @@
 import React from 'react';
 import { oneOf, func, string, arrayOf } from 'prop-types';
-import { Work, AddBox } from '@material-ui/icons';
+import { CloudUploadOutlined, CardTravel } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,76 +15,75 @@ const LeftNavigationPanel = ({
   availablePickerTypes,
   currentPickerType,
   toggleContentView
- }) => (
-  <Paper>
-    <List component="nav" className={styles.aside}>
-      {
-        availablePickerTypes.includes('folder') && (
-          <div>
-            <ListItem
-              /* eslint-disable react/jsx-no-bind */
-              onClick={() => toggleContentView('folder')}
-              className={cx(
-                { [styles.selected]: currentPickerType === 'folder' },
-                styles['navigation-item'])}
-              button
-            >
-              <ListItemIcon>
-                <Work />
-              </ListItemIcon>
-              <ListItemText>
-                My Files
-              </ListItemText>
-            </ListItem>
-            {
-              availablePickerTypes.includes('stream') && (
-                <Divider className={styles.divider} />
-              )
-            }
-          </div>
-        )
-      }
-      {
-        availablePickerTypes.includes('stream') && (
-          <ListItem
-            /* eslint-disable react/jsx-no-bind */
-            onClick={() => toggleContentView('stream')}
-            className={cx(
-              {[styles.selected]: currentPickerType === 'stream' },
-              styles['navigation-item'])}
-            button
-          >
-            <ListItemIcon className={cx(styles['icon'])}>
-              <div className='icon-streams' />
-            </ListItemIcon>
-            <ListItemText>
-              Stream
-            </ListItemText>
-          </ListItem>
-        )
-      }
-      <div className={styles.spacer} />
-      {
-        currentPickerType !== 'upload'
-          && availablePickerTypes.includes('upload') && (
-          <ListItem
-            /* eslint-disable react/jsx-no-bind */
-            onClick={() => toggleContentView('upload')}
-            className={styles['upload-button']}
-            button
-          >
-            <ListItemIcon>
-              <AddBox />
-            </ListItemIcon>
-            <ListItemText>
-              UPLOAD
-            </ListItemText>
-          </ListItem>
-        )
-      }
-    </List>
-  </Paper>
-);
+ }) => {
+  const navMap = {
+    folder: (
+      <ListItem
+        /* eslint-disable react/jsx-no-bind */
+        onClick={() => toggleContentView('folder')}
+        className={cx(
+          { [styles.selected]: currentPickerType === 'folder' },
+          styles['navigation-item'])}
+        button
+      >
+        <ListItemIcon>
+          <CardTravel />
+        </ListItemIcon>
+        <ListItemText>
+          My Files
+        </ListItemText>
+      </ListItem>
+    ),
+    stream: (
+      <ListItem
+        /* eslint-disable react/jsx-no-bind */
+        onClick={() => toggleContentView('stream')}
+        className={cx(
+          {[styles.selected]: currentPickerType === 'stream' },
+          styles['navigation-item'])}
+        button
+      >
+        <ListItemIcon className={cx(styles['icon'])}>
+          <div className='icon-streams' />
+        </ListItemIcon>
+        <ListItemText>
+          Stream
+        </ListItemText>
+      </ListItem>
+    ),
+    upload: (
+      <ListItem
+        /* eslint-disable react/jsx-no-bind */
+        onClick={() => toggleContentView('upload')}
+        className={cx(
+          { [styles.selected]: currentPickerType === 'upload' },
+          styles['navigation-item'])}
+        button
+      >
+        <ListItemIcon>
+          <CloudUploadOutlined />
+        </ListItemIcon>
+        <ListItemText>
+          New Upload
+        </ListItemText>
+      </ListItem>
+    )
+  }
+
+  return (
+    <Paper>
+      <List component="nav" className={styles.aside}>
+        {
+          availablePickerTypes.map(pickerType => (
+            <div key={`navigation-btn-${pickerType}`}>
+              { navMap[pickerType] }
+            </div>
+          ))
+        }
+      </List>
+    </Paper>
+  );
+};
 
 
 LeftNavigationPanel.propTypes = {
