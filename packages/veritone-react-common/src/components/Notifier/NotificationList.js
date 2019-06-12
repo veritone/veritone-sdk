@@ -154,7 +154,7 @@ export default class NotificationList extends React.Component {
     return (
       <div key={entryData.id} className={classNames(styles.entry)}>
         <div className={classNames(styles.visualStatus)}>
-          <CircularProgress size={24} />
+          <CircularProgress size={24} variant="static" value={100}/>
         </div>
         <div className={classNames(styles.description)}>
           <div className={classNames(styles.title)}>{entryData.description1}</div>
