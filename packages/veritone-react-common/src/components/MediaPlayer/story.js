@@ -23,6 +23,76 @@ const demoMp3 = 'https://www.sample-videos.com/audio/mp3/wave.mp3';
 const demoPosterImage =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
+const disabledShortcuts = {
+  shortcuts: [
+    {
+      keyCode: 32, // spacebar
+      handle: () => {}
+    },
+    {
+      keyCode: 75, // k
+      handle: () => {}
+    },
+    {
+      keyCode: 70, // f
+      handle: () => {}
+    },
+    {
+      keyCode: 37, // Left arrow
+      handle: () => {}
+    },
+    {
+      keyCode: 74, // j
+      handle: () => {}
+    },
+    {
+      keyCode: 39, // Right arrow
+      handle: () => {}
+    },
+    {
+      keyCode: 76, // l
+      handle: () => {}
+    },
+    {
+      keyCode: 36, // Home
+      handle: () => {}
+    },
+    {
+      keyCode: 35, // End
+      handle: () => {}
+    },
+    {
+      keyCode: 38, // Up arrow
+      handle: () => {}
+    },
+    {
+      keyCode: 40, // Down arrow
+      handle: () => {}
+    },
+    {
+      keyCode: 190, // Shift + >
+      shift: true,
+      handle: () => {}
+    },
+    {
+      keyCode: 188, // Shift + <
+      shift: true,
+      handle: () => {}
+    }
+  ]
+};
+
+const customShortcuts = {
+  shortcuts: [
+    {
+      keyCode: 32, // spacebar
+      handle: (player, actions) => {
+        actions.toggleFullscreen(player);
+      }
+    }
+  ]
+};
+
 storiesOf('MediaPlayer', module)
   .add('MP4 (fluid width)', () => (
     <MediaPlayerComponent
@@ -80,6 +150,28 @@ storiesOf('MediaPlayer', module)
       width={500}
       readOnly
       useOverlayControlBar
+    />
+  ))
+  .add('Disable keyboard shortcuts', () => (
+    <MediaPlayerComponent
+      src={demoMp3}
+      muted
+      width={500}
+      readOnly
+      poster={demoPosterImage}
+      useOverlayControlBar
+      shortcutProps={disabledShortcuts}
+    />
+  ))
+  .add('Custom keyboard shortcuts', () => (
+    <MediaPlayerComponent
+      src={demoMp3}
+      muted
+      width={500}
+      readOnly
+      poster={demoPosterImage}
+      useOverlayControlBar
+      shortcutProps={customShortcuts}
     />
   ))
   .add('Audio Only', () => (

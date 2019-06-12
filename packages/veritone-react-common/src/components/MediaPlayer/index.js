@@ -24,7 +24,8 @@ import {
   TimeDivider,
   DurationDisplay,
   ProgressControl,
-  FullscreenToggle
+  FullscreenToggle,
+  Shortcut
 } from 'video-react';
 import cx from 'classnames';
 
@@ -102,7 +103,20 @@ export default class MediaPlayerComponent extends React.Component {
     ctrlProgress: bool,
     displayTime: bool,
     autoHide: bool,
-    autoHideTime: number
+    autoHideTime: number,
+    shortcutProps: shape({
+      shortcuts: arrayOf(
+        shape({
+          keyCode: number.isRequired,
+          handle: func.isRequired,
+          ctrl: bool,
+          alt: bool,
+          shift: bool
+        })
+      ),
+      clickable: bool,
+      dblclickable: bool
+    })
   };
 
   static contextTypes = {
@@ -160,6 +174,7 @@ export default class MediaPlayerComponent extends React.Component {
       displayTime,
       autoHide,
       autoHideTime,
+      shortcutProps,
       ...props
     } = this.props;
 
@@ -227,6 +242,7 @@ export default class MediaPlayerComponent extends React.Component {
             disablePreload={props.preload === 'none' ? true : false}
           />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
+          {shortcutProps && <Shortcut {...shortcutProps} />}
         </Player>
       </OverlayPositioningProvider>
     );
