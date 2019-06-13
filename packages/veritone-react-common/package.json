@@ -25,6 +25,7 @@
     "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
     "react-jss": "^8.6.1",
+    "react-range": "^1.0.5",
     "react-redux": "^5.0.6",
     "react-rnd": "^7.4.0",
     "react-transition-group": "^2.2.1",

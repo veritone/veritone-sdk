@@ -1,0 +1,28 @@
+.rectangle {
+    display: flex;
+    align-items: flex-end;
+    border: 1px solid #DADCDF;
+    border-radius: 2px;
+    width: 278px;
+    height: 38px;
+    button{
+        width: 38px;
+        height: 38px;
+    }
+  }
+.coordinate{
+    color: #757575;
+    font-family: Roboto;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+    line-height: 35px;
+    vertical-align: middle;
+}
+
+.editCoordinate{
+    margin-left: 30%;
+    button{
+        width: 38px;
+        height: 38px;
+    }
+}
