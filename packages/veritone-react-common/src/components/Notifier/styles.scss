@@ -27,11 +27,7 @@
 }
 
 .popover {
-  &.full>div {
-    &:last-child {
-      height: 100%;
-    }
-  }
+  margin-top: 20px;
 }
 
 .notificationWindow {
@@ -66,6 +62,10 @@
       margin-top: 16px;
       margin-left: 20px;
       background-color: #00BCD4;
+    }
+
+    .controls {
+      margin-left: auto;
     }
   }
 

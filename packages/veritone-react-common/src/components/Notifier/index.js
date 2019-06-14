@@ -2,6 +2,7 @@ import React from 'react';
 import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import NotificationIcon from '@material-ui/icons/Notifications';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import { string, shape, func } from 'prop-types';
 
@@ -97,6 +98,9 @@ export default class Notifier extends React.Component {
             <div className={classNames(styles.header)} style={{backgroundColor: headerBackgroundColor}}>
               <div className={classNames(styles.label)}>{headerText}</div>
               <div className={classNames(styles.chip)}>{numNotifications}</div>
+              <IconButton className={classNames(styles.controls)} onClick={this.hideNotification}>
+                <KeyboardArrowUpIcon nativeColor="white" />
+              </IconButton>
             </div>
             
             <div className={classNames(styles.body)} style={{backgroundColor: bodyBackgroundColor}}>
