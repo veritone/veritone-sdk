@@ -253,13 +253,13 @@ const mockNotifications = {
       id: '3234',
       type: 'complete',
       description1: 'Big Description Goes Here',
-      description2: 'Small Description Goes Here',
+      description2: 'Small Description Goes Here'
     },
     {
       id: '4234',
       type: 'processing',
       description1: 'Processing Description 1',
-      description2: 'Processing Description 2',
+      description2: 'Processing Description 2'
     },
     {
       id: '5234',
@@ -301,7 +301,7 @@ const mockNotifications = {
       id: '1334',
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
-      description2: 'Failed Description 2 Goes Here',
+      description2: 'Failed Description 2 Goes Here'
     }
   ]
 };
@@ -317,7 +317,7 @@ const mockCustomNotifications = {
       id: '1234',
       type: 'preparing',
       description1: 'Top Description Goes Here',
-      description2: 'Bottom Description Goes Here',
+      description2: 'Bottom Description Goes Here'
     },
     {
       id: '2234',
@@ -330,13 +330,13 @@ const mockCustomNotifications = {
       id: '3234',
       type: 'complete',
       description1: 'Big Description Goes Here',
-      description2: 'Small Description Goes Here',
+      description2: 'Small Description Goes Here'
     },
     {
       id: '4234',
       type: 'processing',
       description1: 'Processing Description 1',
-      description2: 'Processing Description 2',
+      description2: 'Processing Description 2'
     }
   ]
 };

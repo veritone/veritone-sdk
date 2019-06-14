@@ -19,6 +19,7 @@ const TYPE_PROCESSING = 'processing';
 const TYPE_FAILED = 'failed';
 const TYPE_COMPLETE = 'complete';
 
+const INTRO_NONE = 'none';
 const INTRO_FADE_IN = 'fade_in';
 
 const OUTRO_NONE = 'none';
@@ -41,7 +42,15 @@ export const notificationListPropTypes = arrayOf(
     statusDescription: string,
     onActionClick: func,
     onRemoveClick: func,
-    outroAnimation: string
+    introAnimation: oneOf([
+      INTRO_NONE,
+      INTRO_FADE_IN
+    ]),
+    outroAnimation: oneOf([
+      OUTRO_NONE,
+      OUTRO_FADE_OUT,
+      OUTRO_SLIDE_OUT
+    ])
   })
 );
 
