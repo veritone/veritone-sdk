@@ -35,17 +35,38 @@
 }
 .action {
   display: flex;
-  margin-top: 0px !important;
+  margin-top: 0 !important;
   justify-content: space-between;
   align-items: center;
 }
 .reset-all {
 	height: 16px;
 	width: 71px;
-	color: #000000;
+	color: #000;
 	font-family: Roboto;
 	font-size: 14px;
 	font-weight: 500;
 	letter-spacing: 0.1px;
-	line-height: 16px;
+  line-height: 16px;
+  cursor: pointer;
+}
+.title-text {
+  color: #5C636B;
+  font-family: Roboto;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 21px;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px;
+}
+
+.icon-button {
+  width: 24px !important;
+  height: 24px !important;
+  margin-left: 20px !important;
 }

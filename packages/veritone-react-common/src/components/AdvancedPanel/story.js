@@ -1,13 +1,37 @@
-import React from 'react';
+import React, { Component } from 'react'
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import Button from "@material-ui/core/Button";
+
 import AdvancedPanel from './';
+
+export default class Story extends Component {
+  state = {
+    open: false
+  }
+  handleClickOpen = () => {
+    this.setState({
+      open: true
+    })
+  }
+
+  handleClose = () => {
+    this.setState({
+      open: false
+    })
+  }
+  render() {
+    return (
+      <div>
+        <Button onClick={this.handleClickOpen}>Open responsive dialog</Button>
+        <AdvancedPanel open={this.state.open} handleClose={this.handleClose} />
+      </div>
+    )
+  }
+}
+
 
 
 storiesOf('AdvancedSearchPanel', module)
   .add('Base', () => (
-    <AdvancedPanel
-      onPickFiles={action('upload files')}
-      onRequestClose={action('close modal')}
-    />
+    <Story />
   ));

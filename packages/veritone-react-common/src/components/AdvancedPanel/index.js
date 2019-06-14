@@ -7,121 +7,133 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Info from '@material-ui/icons/Info';
 import Divider from '@material-ui/core/Divider';
-import { withStyles } from "@material-ui/core/styles";
+import { findIndex } from "lodash";
 
+import { guid } from 'helpers/guid';
 import LocationSelect from '../LocationSelect';
 import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
 
-const styles = theme => ({
-  dialog: {
-    maxWidth: 640,
-    paddingBottom: 24
-  },
-  title: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    margin: 20
-  },
-  titleText: {
-    color: "#5C636B",
-    fontFamily: "Roboto",
-    fontSize: "18px",
-    fontWeight: 500,
-    lineHeight: "21px"
-  },
-  selectDialog: {
-    width: 360,
-    height: 250,
-    border: "1px solid #ccc!important"
-  },
-  content: {
-    maxWidth: 670
-  },
-  contentText: {
-    marginBottom: 24,
-    color: "rgba(0,0,0,0.54)",
-    fontFamily: "Roboto",
-    fontSize: 15,
-    lineHeight: "23px"
-  },
-  contentBody: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  textField: {
-    width: 180,
-    margin: 0,
-    padding: 0
-  },
-  action: {
-    position: "absolute",
-    bottom: 27,
-    right: 25
-  },
-  iconButton: {
-    width: 24,
-    height: 24,
-    marginLeft: 20
-  },
-  areaText: {
-
-  }
-});
-
 class ResponsiveDialog extends React.Component {
   state = {
     open: false,
     boundingBoxes: [],
-    frame: 0,
+    step: 1,
     selectedConfidenceRange: [25, 100]
   };
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
+  handleAddBoundingBox = newBox => {
+    if (this.state.boundingBoxes.length) {
+      return;
+    }
+
+    this.setState(state => ({
+      boundingBoxes: [
+        ...state.boundingBoxes,
+        {
+          ...newBox,
+        }
+      ]
+    }));
   };
 
-  handleClose = () => {
-    this.setState({ open: false });
+  handleDeleteBoundingBox = deletedId => {
+    this.setState(state => ({
+      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
+    }));
   };
 
-  handleChange = (name) => (event) => {
-    this.setState({
-      [name]: event.target.value,
+  handleChangeBoundingBox = changedBox => {
+    this.setState(state => {
+      const affectedIndex = findIndex(state.boundingBoxes, {
+        id: changedBox.id
+      });
+
+      let newState = {
+        boundingBoxes: [...state.boundingBoxes]
+      };
+
+      newState.boundingBoxes[affectedIndex] = changedBox;
+
+      return {
+        boundingBoxes: newState.boundingBoxes
+      };
     });
+  };
+
+  onEditAoI = () => {
+    this.setState({
+      step: 2
+    })
   }
 
-  handleChangeFrame = (e, frame) => {
-    this.setState({ frame, boundingBoxes: frames[frame] });
-  };
+  onRemoveAoI = () => {
+    this.setState({
+      step: 1,
+      boundingBoxes: []
+    })
+  }
+
+  onUpdateStep = (step) => {
+    this.setState({
+      step: step,
+      readOnly: step !== 2
+    })
+    if (step === 2) {
+      const defaultBoundingBox = {
+        boundingPoly: [
+          { x: 0, y: 0 },
+          { x: 0, y: 1 },
+          { x: 1, y: 1 },
+          { x: 1, y: 0 }
+        ],
+        overlayObjectType: "c",
+        id: guid()
+      }
+      this.handleAddBoundingBox(defaultBoundingBox);
+    }
+  }
 
   onChangeConfidenceRange = (e) => {
     this.setState({
       selectedConfidenceRange: [...e]
     })
   }
+
+  handleResetAll = () => {
+    this.setState({
+      step: 1,
+      boundingBoxes: [],
+      selectedConfidenceRange: [25, 100]
+    })
+  }
+
+  handleApply = () => {
+    console.log("handleApply", this.state);
+  }
+
+  
+
   render() {
-    const { classes } = this.props;
-    const { editStatus = false, location = {}, onSubmitLocation } = this.props;
+    const { boundingBoxes, step } = this.state;
+    const { open, handleClose } = this.props;
     return (
       <div>
-        <Button onClick={this.handleClickOpen}>Open responsive dialog</Button>
         <Dialog
           maxWidth={false}
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="responsive-dialog-title"
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="advanced-search-panel"
         >
-          <div id="responsive-dialog-title">
-            <div className={classes.title}>
-              <div className={classes.titleText}>Add Custom Location</div>
+          <div id="advanced-search-panel">
+            <div className={cx(style["title"])}>
+              <div className={cx(style["title-text"])}>Add Custom Location</div>
               <div>
-                <IconButton className={classes.iconButton} onClick={this.handleClose}>
+                <IconButton className={cx(style["icon-button"])} onClick={handleClose}>
                   <Info />
                 </IconButton>
-                <IconButton className={classes.iconButton} onClick={this.handleClose}>
+                <IconButton className={cx(style["icon-button"])} onClick={handleClose}>
                   <CloseIcon />
                 </IconButton>
               </div>
@@ -132,7 +144,16 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style["area-text"])}>Area of Interest</div>
             <div className={cx(style["only-return-text"])}>Only return search results for this logo if they appear in a defined region.</div>
             <div className={cx(style["location-select-div"])}>
-              <LocationSelect />
+              <LocationSelect
+                onEditAoI={this.onEditAoI}
+                onRemoveAoI={this.onRemoveAoI}
+                onUpdateStep={this.onUpdateStep}
+                boundingBoxes={boundingBoxes}
+                handleAddBoundingBox={this.handleAddBoundingBox}
+                handleDeleteBoundingBox={this.handleDeleteBoundingBox}
+                handleChangeBoundingBox={this.handleChangeBoundingBox}
+                step={step}
+              />
             </div>
           </div>
           <Divider />
@@ -140,14 +161,14 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style["area-text"])}>Confidence</div>
             <div className={cx(style["only-return-text"])}>Search by the percentage of confidence of this logo.</div>
             <div className={cx(style["location-select-div"])}>
-              <RangeSelect selectedConfidenceRange={this.state.selectedConfidenceRange} onChangeConfidenceRange={this.onChangeConfidenceRange} />
+              <RangeSelect onChangeConfidenceRange={this.onChangeConfidenceRange} selectedConfidenceRange={this.state.selectedConfidenceRange} />
             </div>
           </div>
           <div className={cx(style["dialog-content"], style["action"])}>
-            <div className={cx(style["reset-all"])}>RESET ALL</div>
+            <div onClick={this.handleResetAll} className={cx(style["reset-all"])}>RESET ALL</div>
             <div>
-              <Button onClick={this.handleClose} className={classes.button}>CANCEL</Button>
-              <Button variant="raised" color="primary" className={classes.button}>
+              <Button onClick={handleClose}>CANCEL</Button>
+              <Button onClick={this.handleApply} variant="raised" color="primary">
                 APPLY
               </Button>
             </div>
@@ -159,19 +180,8 @@ class ResponsiveDialog extends React.Component {
 }
 
 ResponsiveDialog.propTypes = {
-  classes: PropTypes.shape(Object),
-  editStatus: PropTypes.bool,
-  location: PropTypes.shape({ //editing location
-    id: PropTypes.string,
-    name: PropTypes.string,
-    boundingPoly: PropTypes.arrayOf(
-      PropTypes.shape({
-        x: PropTypes.number,
-        y: PropTypes.number
-      })
-    )
-  }),
-  onSubmitLocation: PropTypes.func
+  open: PropTypes.bool,
+  handleClose: PropTypes.func
 };
 
-export default withStyles(styles)(ResponsiveDialog);
+export default ResponsiveDialog;

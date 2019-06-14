@@ -1,13 +1,7 @@
 import React, { Component } from 'react'
-import { arrayOf, func, string } from 'prop-types';
+import { func, arrayOf, number } from 'prop-types';
 import cx from 'classnames';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from "@material-ui/core/Button";
-import { findIndex } from 'lodash';
-import { guid } from 'helpers/guid';
 
 import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositioningProvider';
 import Overlay from '../BoundingPolyOverlay/Overlay';
@@ -18,9 +12,14 @@ import styles from './styles.scss';
 export default class LocationSelect extends Component {
 
   static propTypes = {
-    listLocation: arrayOf(Object),
-    onSelectLocation: func,
-    selectedLocationId: string
+    handleAddBoundingBox: func,
+    handleDeleteBoundingBox: func,
+    handleChangeBoundingBox: func,
+    onUpdateStep: func,
+    boundingBoxes: arrayOf(Object),
+    step: number,
+    onEditAoI: func,
+    onRemoveAoI: func
   }
 
   state = {
@@ -32,109 +31,12 @@ export default class LocationSelect extends Component {
     readOnly: true
   };
 
-  UNSAFE_componentWillMount() {
-    const { selectedLocationId } = this.props;
-    this.setState({
-      selected: selectedLocationId
-    });
-  }
-
-  handleChange = id => event => {
-    const { onSelectLocation } = this.props;
-    this.setState({ selected: id })
-    onSelectLocation(id);
-  };
-
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleChange = (name) => (event) => {
-    this.setState({
-      [name]: event.target.value,
-    });
-  }
-  actionMenuItems = [
-    {
-      label: 'Do action 1',
-      onClick: id => console.log('Action 1 performed on box', id)
-    },
-    {
-      label: 'Do action 2',
-      onClick: id => console.log('Action 2 performed on box', id)
-    }
-  ];
-
-  handleAddBoundingBox = newBox => {
-    if (this.state.boundingBoxes.length) {
-      return;
-    }
-    console.log('Added box', newBox);
-
-    this.setState(state => ({
-      boundingBoxes: [
-        ...state.boundingBoxes,
-        {
-          ...newBox,
-        }
-      ]
-    }));
-  };
-
-  handleDeleteBoundingBox = deletedId => {
-    console.log('Deleted box with ID', deletedId);
-
-    this.setState(state => ({
-      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
-    }));
-  };
-
-  handleChangeBoundingBox = changedBox => {
-    this.setState(state => {
-      const affectedIndex = findIndex(state.boundingBoxes, {
-        id: changedBox.id
-      });
-
-      let newState = {
-        boundingBoxes: [...state.boundingBoxes]
-      };
-
-      newState.boundingBoxes[affectedIndex] = changedBox;
-
-      return {
-        boundingBoxes: newState.boundingBoxes
-      };
-    });
-  };
-
-  onUpdateStep = (step) => (event) => {
-    this.setState({
-      step: step,
-      readOnly: step !== 2
-    })
-    if (step === 2) {
-      const defaultBoundingBox = {
-        boundingPoly: [
-          { x: 0, y: 0 },
-          { x: 0, y: 1 },
-          { x: 1, y: 1 },
-          { x: 1, y: 0 }
-        ],
-        overlayObjectType: "c",
-        id: guid()
-      }
-      this.setState(state => ({
-        boundingBoxes: [...state.boundingBoxes, defaultBoundingBox]
-      }))
-    }
+  onUpdateStep = (step) => () => {
+    this.props.onUpdateStep(step);
   }
 
   render() {
-    const { step } = this.state;
+    const { handleAddBoundingBox, handleDeleteBoundingBox, handleChangeBoundingBox, boundingBoxes, step = 1, onEditAoI, onRemoveAoI } = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.screenLocation}>
@@ -144,13 +46,13 @@ export default class LocationSelect extends Component {
             fixedWidth
           >
             <Overlay
-              onAddBoundingBox={this.handleAddBoundingBox}
-              onDeleteBoundingBox={this.handleDeleteBoundingBox}
-              onChangeBoundingBox={this.handleChangeBoundingBox}
-              initialBoundingBoxPolys={this.state.boundingBoxes}
+              onAddBoundingBox={handleAddBoundingBox}
+              onDeleteBoundingBox={handleDeleteBoundingBox}
+              onChangeBoundingBox={handleChangeBoundingBox}
+              initialBoundingBoxPolys={boundingBoxes}
               handleChangeFrame={this.handleChangeFrame}
               key={this.state.frame}
-              readOnly={!!this.state.readOnly}
+              readOnly={step !== 2}
             />
             <div
               style={{
@@ -184,7 +86,7 @@ export default class LocationSelect extends Component {
               <Button onClick={this.onUpdateStep(3)} color="primary">SAVE AREA OF INTEREST</Button>
             </div>}
           {step === 3 && <div className={cx(styles["aria-item"])}>
-            <AreaInterest />
+            <AreaInterest areaOfInterest={boundingBoxes[0]} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />
           </div>}
         </div>
       </div>

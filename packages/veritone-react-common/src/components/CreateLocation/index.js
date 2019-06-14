@@ -130,7 +130,7 @@ class ResponsiveDialog extends React.Component {
   };
   render() {
     const { classes } = this.props;
-    const { editStatus = false, location = {}, onSubmitLocation } = this.props;
+    // const { editStatus = false, location = {}, onSubmitLocation } = this.props;
     return (
       <div>
         <Button onClick={this.handleClickOpen}>Open responsive dialog</Button>
@@ -215,18 +215,18 @@ class ResponsiveDialog extends React.Component {
 
 ResponsiveDialog.propTypes = {
   classes: PropTypes.shape(Object),
-  editStatus: PropTypes.bool,
-  location: PropTypes.shape({ //editing location
-    id: PropTypes.string,
-    name: PropTypes.string,
-    boundingPoly: PropTypes.arrayOf(
-      PropTypes.shape({
-        x: PropTypes.number,
-        y: PropTypes.number
-      })
-    )
-  }),
-  onSubmitLocation: PropTypes.func
+  // editStatus: PropTypes.bool,
+  // location: PropTypes.shape({ //editing location
+  //   id: PropTypes.string,
+  //   name: PropTypes.string,
+  //   boundingPoly: PropTypes.arrayOf(
+  //     PropTypes.shape({
+  //       x: PropTypes.number,
+  //       y: PropTypes.number
+  //     })
+  //   )
+  // }),
+  // onSubmitLocation: PropTypes.func
 };
 
 export default withStyles(styles)(ResponsiveDialog);
