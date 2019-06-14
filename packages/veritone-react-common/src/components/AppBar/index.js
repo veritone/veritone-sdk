@@ -2,7 +2,6 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import HelpIcon from '@material-ui/icons/Help';
 
 import {
   objectOf,
@@ -58,7 +57,6 @@ export default class AppBar extends React.Component {
     user: objectOf(any),
     onSwitchApp: func,
     additionMenuItems: arrayOf(element),
-    onHelpClick: func,
     notification: notifierPropTypes
   };
   static defaultProps = {
@@ -96,6 +94,12 @@ export default class AppBar extends React.Component {
           <div className={styles['title']}>{this.props.title}</div>
 
           <div className={styles['iconGroup']}>
+            {this.props.notification && (
+              <div>
+                <Notifier {...this.props.notification} />
+              </div>
+            )}
+
             {this.props.rightActions.map(({ label, onClick }) => (
               <div className={styles['iconGroup__icon']} key={label}>
                 <a
@@ -107,22 +111,7 @@ export default class AppBar extends React.Component {
                 </a>
               </div>
             ))}
-
-            {this.props.notification && (
-              <div>
-                <Notifier {...this.props.notification} />
-              </div>
-            )}
             
-
-            {this.props.onHelpClick && (
-              <div>
-                <IconButton onClick={this.props.onHelpClick}>
-                  <HelpIcon nativeColor="white" />
-                </IconButton>
-              </div>
-            )}
-
             {this.props.appSwitcher && (
               <div>
                 <AppSwitcher
