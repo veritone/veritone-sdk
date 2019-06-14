@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { text } from '@storybook/addon-knobs/react';
 import { Build, Help } from '@material-ui/icons';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -160,6 +161,27 @@ storiesOf('AppBar', module)
         notification={mockCustomNotifications}
       />
     );
+  })
+  .add('With Dynamic Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={JSON.parse(text('notification', JSON.stringify(mockNotifications)))}
+      />
+    );
   });
 
 const sampleApps = [
@@ -274,6 +296,19 @@ const mockNotifications = {
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
       onActionClick: action()
+    },
+    {
+      id: '1334',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      onActionClick: action()
+    },
+    {
+      id: '2334',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here'
     }
   ]
 };

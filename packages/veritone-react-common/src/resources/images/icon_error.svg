@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="24px" viewBox="0 0 25 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 55.1 (78136) - https://sketchapp.com -->
+    <title>D5BA19E1-B078-428E-B890-F55BCA4C4509</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M12,0 C5.376,0 0,5.376 0,12 C0,18.624 5.376,24 12,24 C18.624,24 24,18.624 24,12 C24,5.376 18.624,0 12,0 Z" id="path-1"></path>
+    </defs>
+    <g id="Data-Refresh-Queue-Notification-v3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3.0-Data-Refresh-/-Expanded-/-Fixed-Height-v2" transform="translate(-720.000000, -148.000000)">
+            <g id="Data-Refresh-Queue" transform="translate(703.000000, 75.000000)">
+                <g id="Queue-Dataset-3-+-Queue-Dataset-3-Copy-+-Queue-Dataset-3-Copy-2-+-Queue-Dataset-3-Copy-3-+-Queue-Dataset-2-+-Queue-Dataset-1-Mask" transform="translate(0.000000, 16.000000)">
+                    <g id="Queue-Dataset-1" transform="translate(17.866667, 53.000000)">
+                        <g id="Queue-Dataset">
+                            <g id="Spinner/Small-Spinner" transform="translate(0.000000, 4.000000)">
+                                <g id="Checkmark-Icon">
+                                    <g id="material-icon/content/clear_24px">
+                                        <mask id="mask-2" fill="white">
+                                            <use xlink:href="#path-1"></use>
+                                        </mask>
+                                        <g id="icon/alert/error_24px" fill-rule="nonzero"></g>
+                                        <g id="↳-Color" mask="url(#mask-2)" fill="#FF0C3E">
+                                            <g transform="translate(-2.000000, -2.000000)" id="Rectangle">
+                                                <rect x="0" y="0" width="28" height="28"></rect>
+                                            </g>
+                                        </g>
+                                    </g>
+                                    <polygon id="Path" fill="#FFFFFF" fill-rule="nonzero" points="13 18 11 18 11 16 13 16"></polygon>
+                                    <polygon id="Path" fill="#FFFFFF" fill-rule="nonzero" points="13 13 11 13 11 6 13 6"></polygon>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

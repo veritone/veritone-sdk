@@ -105,19 +105,4 @@ describe('Notifier Component', () => {
     expect(header).toHaveLength(1);
     expect(header.first().text()).toContain(mockNotifications.notifications.length.toString());
   });
-
-  it('should have notification small list body', () => {
-    const body = entryWindow.find('NotificationList');
-    expect(body).toHaveLength(1);
-    expect(body.first().find('div.entry')).toHaveLength(3)
-  });
-
-  it('should have notification list footer that can expand to full list', () => {
-    const footer = entryWindow.find('div.footer');
-    expect(footer).toHaveLength(1);
-
-    footer.find('Button').first().simulate('click');
-    const entries = openNotifier.find('div.entry');
-    expect(entries).toHaveLength(mockNotifications.notifications.length);
-  });
 });

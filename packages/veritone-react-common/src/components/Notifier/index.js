@@ -1,6 +1,5 @@
 import React from 'react';
 import Badge from '@material-ui/core/Badge';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import Popover from '@material-ui/core/Popover';
@@ -19,34 +18,26 @@ export const notifierPropTypes = shape({
   notifications: notificationListPropTypes
 });
 
-const SMALL_DISPLAY_SIZE = 3;
-const DISPLAY_SMALL = 'DISPLAY_SMALL';
-const DISPLAY_LARGE = 'DISPLAY_LARGE';
-
 export default class Notifier extends React.Component {
   static propTypes = {
     headerText: string,
-    showMoreLabel: string,
-    showLessLabel: string,
+    headerBackgroundColor: string,
+    bodyBackgroundColor: string,
     onOpen: func,
     onClose: func,
     notifications: notificationListPropTypes
   };
 
   static defaultProps = {
-    headerText: 'Items in Queue',
-    showMoreLabel: 'View All',
-    showLessLabel: 'View Less'
+    headerText: 'Items in Queue'
   };
 
   state = {
-    anchorEl: null,
-    display: DISPLAY_SMALL
+    anchorEl: null
   };
 
   showNotifications = event => {
     this.setState({
-      display: DISPLAY_SMALL,
       anchorEl: event.currentTarget
     });
 
@@ -58,31 +49,20 @@ export default class Notifier extends React.Component {
     this.props.onClose && this.props.onClose();
   }
 
-  toggleDisplaySize = (event) => {
-    this.setState(state => {
-      return state.display === DISPLAY_SMALL ? { display: DISPLAY_LARGE } : { display: DISPLAY_SMALL }
-    });
-  }
-
   render() {
     const {
-      display,
       anchorEl
     } = this.state;
 
     const {
       headerText,
-      showMoreLabel,
-      showLessLabel,
+      headerBackgroundColor,
+      bodyBackgroundColor,
       notifications
     } = this.props;
 
 
-    const isSmallDisplay = display === DISPLAY_SMALL;
-    const hasMoreToShow = notifications && notifications.length > SMALL_DISPLAY_SIZE;
     const displayEntries = notifications.concat([]);
-    isSmallDisplay && displayEntries.splice(SMALL_DISPLAY_SIZE); 
-
     const numNotifications = notifications.length || 0;
 
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
@@ -111,29 +91,16 @@ export default class Notifier extends React.Component {
             horizontal: 'center',
           }}
           onClose={this.hideNotification}
-          className={
-            classNames(
-              styles.popover, 
-              {
-                [styles.full]: (hasMoreToShow && !isSmallDisplay)
-              }
-            )
-          }
+          className={ classNames(styles.popover) }
         >
           <div className={classNames(styles.notificationWindow)}>
-            <div className={classNames(styles.header)}>
+            <div className={classNames(styles.header)} style={{backgroundColor: headerBackgroundColor}}>
               <div className={classNames(styles.label)}>{headerText}</div>
               <div className={classNames(styles.chip)}>{numNotifications}</div>
             </div>
             
-            <div className={classNames(styles.body)}>
+            <div className={classNames(styles.body)} style={{backgroundColor: bodyBackgroundColor}}>
               <NotificationList notifications={displayEntries}/>
-            </div>
-
-            <div className={classNames(styles.footer, { [styles.hidden]: !hasMoreToShow })}>
-              <Button color="primary" onClick={this.toggleDisplaySize}>
-                { this.state.display === DISPLAY_LARGE ? showLessLabel : showMoreLabel }
-              </Button>
             </div>
           </div>
         </Popover>
