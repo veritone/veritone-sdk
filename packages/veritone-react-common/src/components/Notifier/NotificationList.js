@@ -17,7 +17,7 @@ const TYPE_CUSTOM = 'custom';
 const TYPE_PREPARING = 'preparing';
 const TYPE_PROCESSING = 'processing';
 const TYPE_FAILED = 'failed';
-const TYPE_COMPLETED = 'completed';
+const TYPE_COMPLETE = 'complete';
 
 const INTRO_FADE_IN = 'fade_in';
 
@@ -33,7 +33,7 @@ export const notificationListPropTypes = arrayOf(
       TYPE_PREPARING,
       TYPE_PROCESSING,
       TYPE_FAILED,
-      TYPE_COMPLETED
+      TYPE_COMPLETE
     ]).isRequired,
     customNode: node,
     description1: string,
@@ -211,8 +211,8 @@ export default class NotificationList extends React.Component {
     return this.drawGenericItem(entryData, failedEntryData);
   };
 
-  drawCompletedItem = (entryData) => {
-    const completedEntryData = {
+  drawCompleteItem = (entryData) => {
+    const completeEntryData = {
       statusIcon: <img src={CheckIconSvg} />,
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusDescription: 'complete',
@@ -221,7 +221,7 @@ export default class NotificationList extends React.Component {
       ...entryData
     };
 
-    return this.drawGenericItem(entryData, completedEntryData);
+    return this.drawGenericItem(entryData, completeEntryData);
   };
 
   drawPreparingItem = (entryData) => {
@@ -271,8 +271,8 @@ export default class NotificationList extends React.Component {
             case TYPE_FAILED:
               return this.drawFailedItem(entry);
 
-            case TYPE_COMPLETED:
-              return this.drawCompletedItem(entry);
+            case TYPE_COMPLETE:
+              return this.drawCompleteItem(entry);
             
             case TYPE_CUSTOM:
               return this.drawCustomItem(entry);

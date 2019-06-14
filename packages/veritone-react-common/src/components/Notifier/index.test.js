@@ -39,7 +39,7 @@ const mockNotifications = {
     },
     {
       id: '4234',
-      type: 'completed',
+      type: 'complete',
       description1: 'Big Description Goes Here',
       description2: 'Small Description Goes Here',
       onRemoveClick: handleEntryRemove
@@ -64,9 +64,9 @@ const mockNotifications = {
     },
     {
       id: '8234',
-      type: 'completed',
-      description1: 'completed Description 1',
-      description2: 'completed Description 2'
+      type: 'complete',
+      description1: 'complete Description 1',
+      description2: 'complete Description 2'
     }
   ]
 };

@@ -251,7 +251,7 @@ const mockNotifications = {
     },
     {
       id: '3234',
-      type: 'completed',
+      type: 'complete',
       description1: 'Big Description Goes Here',
       description2: 'Small Description Goes Here',
     },
@@ -263,7 +263,7 @@ const mockNotifications = {
     },
     {
       id: '5234',
-      type: 'completed',
+      type: 'complete',
       description1: 'Long Description Goes Here, Long Description Goes Here, Long Description Goes Here',
       description2: 'Long & Small Description Goes Here, Long & Small Description Goes Here, Long & Small Description Goes Here',
       onRemoveClick: action()
@@ -328,7 +328,7 @@ const mockCustomNotifications = {
     },
     {
       id: '3234',
-      type: 'completed',
+      type: 'complete',
       description1: 'Big Description Goes Here',
       description2: 'Small Description Goes Here',
     },

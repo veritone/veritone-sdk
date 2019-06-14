@@ -34,7 +34,7 @@ const mockNotifications = [
   },
   {
     id: '4234',
-    type: 'completed',
+    type: 'complete',
     description1: 'Big Description Goes Here',
     description2: 'Small Description Goes Here',
     onRemoveClick: handleEntryRemove
@@ -59,9 +59,9 @@ const mockNotifications = [
   },
   {
     id: '8234',
-    type: 'completed',
-    description1: 'completed Description 1',
-    description2: 'completed Description 2'
+    type: 'complete',
+    description1: 'complete Description 1',
+    description2: 'complete Description 2'
   }
 ];
 
@@ -150,7 +150,7 @@ describe('Notifications Component', () => {
     );
   });
 
-  it('Completed entry should trigger remove callback', () => {
+  it('complete entry should trigger remove callback', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '4234');
     expect(entry).toHaveLength(1);
     const actionButtons = entry.find('IconButton');
@@ -159,7 +159,7 @@ describe('Notifications Component', () => {
     expect(handleEntryRemove).toHaveBeenCalledWith(
       {
         id: '4234',
-        type: 'completed',
+        type: 'complete',
         description1: 'Big Description Goes Here',
         description2: 'Small Description Goes Here',
         onRemoveClick: handleEntryRemove
@@ -188,7 +188,7 @@ describe('Notifications Component', () => {
     expect(actionButtons).toHaveLength(0);
   });
 
-  it('Completed entry without callback shouldnt have any buttons', () => {
+  it('complete entry without callback shouldnt have any buttons', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '8234');
     expect(entry).toHaveLength(1);
     const actionButtons = entry.find('IconButton');
