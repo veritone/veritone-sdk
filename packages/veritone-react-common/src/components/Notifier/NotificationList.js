@@ -166,7 +166,7 @@ export default class NotificationList extends React.Component {
         </div>
         <div className={classNames(styles.extra)}>
           <div className={classNames(styles.description)}>
-            {formatedData.statusDescription || 'failed'}
+            {formatedData.statusDescription}
           </div>
           <div className={classNames(styles.actions)}>
           {
@@ -202,6 +202,7 @@ export default class NotificationList extends React.Component {
       statusIcon: <img src={ErrorIconSvg} />,
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       actionIcon: <RefreshIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
+      statusDescription: 'failed',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData
@@ -214,6 +215,7 @@ export default class NotificationList extends React.Component {
     const completedEntryData = {
       statusIcon: <img src={CheckIconSvg} />,
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
+      statusDescription: 'complete',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_SLIDE_OUT,
       ...entryData
@@ -226,6 +228,7 @@ export default class NotificationList extends React.Component {
     const preparingEntryData = {
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusIcon: this.drawSpinner(),
+      statusDescription: 'preparing',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData
@@ -238,6 +241,7 @@ export default class NotificationList extends React.Component {
     const processingEntryData = {
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusIcon: this.drawSpinner(),
+      statusDescription: 'processing',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData

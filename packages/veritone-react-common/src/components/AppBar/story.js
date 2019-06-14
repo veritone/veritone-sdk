@@ -272,8 +272,7 @@ const mockNotifications = {
       id: '6234',
       type: 'preparing',
       description1: 'Top Description Goes Here',
-      description2: 'Bottom Description Goes Here',
-      statusDescription: 'custom status'
+      description2: 'Bottom Description Goes Here'
     },
     {
       id: '7234',
@@ -288,6 +287,7 @@ const mockNotifications = {
       type: 'processing',
       description1: 'processing Description 1 Goes Here',
       description2: 'processing Description 2 Goes Here',
+      statusDescription: 'custom status',
       onActionClick: action()
     },
     {
@@ -302,13 +302,6 @@ const mockNotifications = {
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
-      onActionClick: action()
-    },
-    {
-      id: '2334',
-      type: 'failed',
-      description1: 'Failed Description 1 Goes Here',
-      description2: 'Failed Description 2 Goes Here'
     }
   ]
 };
