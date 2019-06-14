@@ -11,20 +11,20 @@ import styles from './styles.scss';
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notifierPropTypes = shape({
   headerText: string,
-  showMoreLabel: string,
-  showLessLabel: string,
   onOpen: func,
   onClose: func,
+  headerBackgroundColor: string,
+  bodyBackgroundColor: string,
   notifications: notificationListPropTypes
 });
 
 export default class Notifier extends React.Component {
   static propTypes = {
     headerText: string,
-    headerBackgroundColor: string,
-    bodyBackgroundColor: string,
     onOpen: func,
     onClose: func,
+    headerBackgroundColor: string,
+    bodyBackgroundColor: string,
     notifications: notificationListPropTypes
   };
 
