@@ -18,6 +18,7 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
+import Notifier, { notifierPropTypes } from 'components/Notifier';
 
 import styles from './styles.scss';
 
@@ -55,7 +56,8 @@ export default class AppBar extends React.Component {
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func,
-    additionMenuItems: arrayOf(element)
+    additionMenuItems: arrayOf(element),
+    notification: notifierPropTypes
   };
   static defaultProps = {
     logo: true,
@@ -92,6 +94,12 @@ export default class AppBar extends React.Component {
           <div className={styles['title']}>{this.props.title}</div>
 
           <div className={styles['iconGroup']}>
+            {this.props.notification && (
+              <div>
+                <Notifier {...this.props.notification} />
+              </div>
+            )}
+
             {this.props.rightActions.map(({ label, onClick }) => (
               <div className={styles['iconGroup__icon']} key={label}>
                 <a
@@ -103,9 +111,9 @@ export default class AppBar extends React.Component {
                 </a>
               </div>
             ))}
-
+            
             {this.props.appSwitcher && (
-              <div className={styles['iconGroup__icon']}>
+              <div>
                 <AppSwitcher
                   enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
                   enabledApps={this.props.enabledApps}
@@ -129,7 +137,7 @@ export default class AppBar extends React.Component {
             )}
 
             {this.props.closeButton && (
-              <div className={styles['iconGroup__icon']}>
+              <div>
                 <div style={{ marginLeft: 'auto' }}>
                   <IconButton onClick={this.props.onClose}>
                     <CloseIcon nativeColor="white" />

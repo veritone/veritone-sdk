@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { text } from '@storybook/addon-knobs/react';
 import { Build, Help } from '@material-ui/icons';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -85,7 +86,7 @@ storiesOf('AppBar', module)
       />
     );
   })
-  .add('Profile menu extra items', function() {
+  .add('Profile menu statusDescription items', function() {
     return (
       <AppBar
         profileMenu
@@ -116,6 +117,69 @@ storiesOf('AppBar', module)
             <ListItemText primary="App Configuration" />
           </MenuItem>
         ]}
+      />
+    );
+  })
+  .add('With Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={mockNotifications}
+      />
+    );
+  })
+  .add('With Custom Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={mockCustomNotifications}
+      />
+    );
+  })
+  .add('With Dynamic Notifications', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={JSON.parse(text('notification', JSON.stringify(mockNotifications)))}
       />
     );
   });
@@ -162,3 +226,117 @@ const sampleApps = [
       'https://static.veritone.com/veritone-ui/app-icons-svg/library-app.svg'
   }
 ];
+
+const mockNotifications = {
+  onOpen: action('on open'),
+  onClose: action('on close'),
+  notifications: [
+    {
+      id: '1234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here',
+      statusDescription: 'testing testing',
+      onRemoveClick: action()
+    },
+    {
+      id: '2234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      test: 'something esle',
+      bla: 123,
+      onActionClick: action(),
+      onRemoveClick: action()
+    },
+    {
+      id: '3234',
+      type: 'complete',
+      description1: 'Big Description Goes Here',
+      description2: 'Small Description Goes Here'
+    },
+    {
+      id: '4234',
+      type: 'processing',
+      description1: 'Processing Description 1',
+      description2: 'Processing Description 2'
+    },
+    {
+      id: '5234',
+      type: 'complete',
+      description1: 'Long Description Goes Here, Long Description Goes Here, Long Description Goes Here',
+      description2: 'Long & Small Description Goes Here, Long & Small Description Goes Here, Long & Small Description Goes Here',
+      onRemoveClick: action()
+    },
+    {
+      id: '6234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here'
+    },
+    {
+      id: '7234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      onActionClick: action(),
+      onRemoveClick: action()
+    },
+    {
+      id: '8234',
+      type: 'processing',
+      description1: 'processing Description 1 Goes Here',
+      description2: 'processing Description 2 Goes Here',
+      statusDescription: 'custom status',
+      onActionClick: action()
+    },
+    {
+      id: '9234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      onActionClick: action()
+    },
+    {
+      id: '1334',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here'
+    }
+  ]
+};
+
+const mockCustomNotifications = {
+  headerText: 'Custom Header Text Goes Here',
+  showMoreLabel: 'Custom Show More Button',
+  showLessLabel: 'Custom Show Less Button',
+  onOpen: action('on open'),
+  onClose: action('on close'),
+  notifications: [
+    {
+      id: '1234',
+      type: 'preparing',
+      description1: 'Top Description Goes Here',
+      description2: 'Bottom Description Goes Here'
+    },
+    {
+      id: '2234',
+      type: 'failed',
+      description1: 'Failed Description 1 Goes Here',
+      description2: 'Failed Description 2 Goes Here',
+      callback: action()
+    },
+    {
+      id: '3234',
+      type: 'complete',
+      description1: 'Big Description Goes Here',
+      description2: 'Small Description Goes Here'
+    },
+    {
+      id: '4234',
+      type: 'processing',
+      description1: 'Processing Description 1',
+      description2: 'Processing Description 2'
+    }
+  ]
+};
