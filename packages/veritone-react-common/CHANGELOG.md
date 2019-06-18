@@ -204,3 +204,7 @@
 ## 7.4.0
 * MediaPlayer: ability to customize control bar
 * MediaPlayer: fix behavior for preload: 'none'
+
+## 7.5.0
+* Add Notification component
+* AppBar: add an option to enable notifications

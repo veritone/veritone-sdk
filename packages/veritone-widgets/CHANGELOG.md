@@ -216,3 +216,6 @@ const MyPage = () => (
 
 ## 7.4.0
 * MediaPlayer: fix controlbar positioning when full screen
+
+## 7.5.0
+* AppBar: add an option to display notifications
