@@ -216,6 +216,9 @@ export const LogoSearchForm = ({
           label="Exclude"
         />
       </Grid>
+      <Button>
+        Advanced Search
+      </Button>
     </Grid>
   );
 };
