@@ -87,16 +87,20 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
   );
   return (
     <div className={styles['media-info-container']} style={{ width }}>
-      <div className={styles['media-info-btn-container']}>
-        <Tooltip title="Hide Details" placement="left">
-          <IconButton
-            /* eslint-disable react/jsx-no-bind */
-            onClick={() => toggleMediaInfoPanel(false)}
-          >
-            <Close />
-          </IconButton>
-        </Tooltip>
-      </div>
+      {
+        toggleMediaInfoPanel && (
+          <div data-veritone-element="close-button" className={styles['media-info-btn-container']}>
+            <Tooltip title="Hide Details" placement="left">
+              <IconButton
+                /* eslint-disable react/jsx-no-bind */
+                onClick={() => toggleMediaInfoPanel(false)}
+              >
+                <Close />
+              </IconButton>
+            </Tooltip>
+          </div>
+        )
+      }
       {
         (() => {
           switch (itemType) {

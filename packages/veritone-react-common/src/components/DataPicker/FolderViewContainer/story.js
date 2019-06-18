@@ -189,12 +189,10 @@ const items = [
     primaryAsset: { contentType: 'doc/xml' }
   },
 ];
-const isAcceptedType = constant(true);
 
 storiesOf('DataPicker', module)
   .add('FolderViewContainer: Loading', () => (
     <FolderViewContainer
-      isAcceptedType={isAcceptedType}
       onSelectItem={action('onSelectItem')}
       triggerPagination={action('triggerPagination')}
       viewType={text('viewType', 'list')}
@@ -203,7 +201,6 @@ storiesOf('DataPicker', module)
   ))
   .add('FolderViewContainer: Null', () => (
     <FolderViewContainer
-      isAcceptedType={isAcceptedType}
       onSelectItem={action('onSelectItem')}
       triggerPagination={action('triggerPagination')}
       viewType={text('viewType', 'list')}
@@ -213,7 +210,6 @@ storiesOf('DataPicker', module)
   ))
   .add('FolderViewContainer: Basic', () => (
     <FolderViewContainer
-      isAcceptedType={isAcceptedType}
       items={items}
       onSelectItem={action('onSelectItem')}
       triggerPagination={action('triggerPagination')}

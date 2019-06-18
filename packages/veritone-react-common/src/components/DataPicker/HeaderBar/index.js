@@ -80,11 +80,14 @@ class HeaderBar extends React.Component {
             />
             { currentPickerType !== 'upload' && (<div style={{ flexGrow: 1 }} />)}
             { currentPickerType !== 'upload' && (
-              <div className={cx(
-                styles['button-group'],
-                styles.icon,
-                { [styles.disabled]: currentPickerType === 'upload' }
-                )}
+              <div 
+                id="media-info-toggle"
+                className={cx(
+                  styles['button-group'],
+                  styles.icon,
+                  { [styles.disabled]: currentPickerType === 'upload' }
+                  )
+                }
               >
                 {
                   // <SearchInput

@@ -300,10 +300,9 @@ class FolderViewContainer extends React.Component {
     }
 
     const hasUpload = availablePickerTypes.includes('upload');
-    const nullstateBtnProps = hasUpload && {
-      text: 'UPLOAD',
-      onClick: () => toggleContentView('upload')
-    };
+    const nullstateBtnProps = hasUpload
+      ? { text: 'UPLOAD', onClick: () => toggleContentView('upload') }
+      : undefined;
     const nullstateText = hasUpload
       && 'Click upload button to add content';
     if (items.length === 0 && isLoaded) {
