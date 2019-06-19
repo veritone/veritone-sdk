@@ -2,7 +2,7 @@ import React from 'react';
 import Today from '@material-ui/icons/Today';
 import dateFns from 'date-fns';
 import TextField from '@material-ui/core/TextField';
-import { instanceOf, func, shape, string, bool } from 'prop-types';
+import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
 
 import styles from './styles/dateTimePicker.scss';
 
@@ -11,7 +11,7 @@ export default class DateTimePicker extends React.Component {
     min: instanceOf(Date),
     max: instanceOf(Date),
     showIcon: bool,
-    showTimezone: bool,
+    timeZone: oneOfType([string, bool]),
     input: shape({
       value: instanceOf(Date).isRequired,
       onChange: func
@@ -42,6 +42,14 @@ export default class DateTimePicker extends React.Component {
 
   render() {
     const { input, min, max, ...rest } = this.props;
+    let { timeZone } = this.props;
+
+    // some components are not passing timezone, so we need to find it out
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    if (typeof timeZone === 'boolean' && timeZone) {
+      timeZone = getTimeZone(input.value);
+    }
+
     return (
       <div className={styles.container}>
         {this.props.showIcon && <Today className={styles.todayIcon} />}
@@ -59,9 +67,7 @@ export default class DateTimePicker extends React.Component {
           onChange={this.handleTimeChange}
           {...rest}
         />
-        {this.props.showTimezone && (
-          <TimeZoneField value={getTimeZone(input.value)} {...rest} />
-        )}
+        {timeZone && <TimeZoneField value={timeZone} {...rest} />}
       </div>
     );
   }
