@@ -142,12 +142,12 @@ const TagConditionGenerator = modalState => {
   return {
     operator: 'query_object',
     field: 'tags',
+    not: modalState.exclude === true,
     query: {
       operator: 'term',
       field: 'tags.value',
       value: modalState.id,
-      dotNotation: true,
-      not: modalState.exclude === true
+      dotNotation: true
     }
   };
 };
