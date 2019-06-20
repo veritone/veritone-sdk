@@ -7,8 +7,6 @@ import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositionin
 import Overlay from '../BoundingPolyOverlay/Overlay';
 import AreaInterest from '../AreaInterest';
 import styles from './styles.scss';
-
-
 export default class LocationSelect extends Component {
 
   static propTypes = {
@@ -50,6 +48,12 @@ export default class LocationSelect extends Component {
               onDeleteBoundingBox={handleDeleteBoundingBox}
               onChangeBoundingBox={handleChangeBoundingBox}
               initialBoundingBoxPolys={boundingBoxes}
+              stylesByObjectType={{ backgroundColor: "rgba(72,147,226,0.7)", border: "1px solid #4893E2" }}
+              // stagedBoundingBoxStyles={{
+              //   a: { backgroundColor: "rgba(72,147,226,0.7)" },
+              //   b: { backgroundColor: "rgba(72,147,226,0.7)" },
+              //   c: { backgroundColor: "rgba(72,147,226,0.7)" }
+              // }}
               handleChangeFrame={this.handleChangeFrame}
               key={this.state.frame}
               readOnly={step !== 2}

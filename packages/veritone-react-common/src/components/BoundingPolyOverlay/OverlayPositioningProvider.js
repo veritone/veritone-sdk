@@ -84,7 +84,7 @@ export default class OverlayPositioningProvider extends React.Component {
     }
 
     // use ResizeObserver if available (Chrome only), to avoid polling
-    this.resizeObserver = new ResizeObserver(([entry]) => {
+    this.resizeObserver = new ResizeObserver(([entry]) => { // eslint-disable-line
       this.measureChild(entry.target);
     });
 

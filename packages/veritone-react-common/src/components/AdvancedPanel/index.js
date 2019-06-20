@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import { findIndex } from "lodash";
 
 import { guid } from '../../helpers/guid';
-// import LocationSelect from '../LocationSelect';
+import LocationSelect from '../LocationSelect';
 import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
@@ -20,7 +20,7 @@ class ResponsiveDialog extends React.Component {
     open: false,
     boundingBoxes: [],
     step: 1,
-    selectedConfidenceRange: [25, 100]
+    selectedConfidenceRange: [0, 100]
   };
 
   handleAddBoundingBox = newBox => {
@@ -110,10 +110,16 @@ class ResponsiveDialog extends React.Component {
   }
 
   handleApply = () => {
-    console.log("handleApply", this.state);
+    const { onAddAdvancedSearchParams } = this.props;
+    const { boundingBoxes, selectedConfidenceRange } = this.state;
+    const { boundingPoly } = boundingBoxes[0];
+    onAddAdvancedSearchParams({
+      boundingPoly: boundingPoly,
+      range: selectedConfidenceRange
+    })
   }
 
-  
+
 
   render() {
     const { boundingBoxes, step } = this.state;
@@ -128,7 +134,7 @@ class ResponsiveDialog extends React.Component {
         >
           <div id="advanced-search-panel">
             <div className={cx(style["title"])}>
-              <div className={cx(style["title-text"])}>Add Custom Location</div>
+              <div className={cx(style["title-text"])}>Advanced Options</div>
               <div>
                 <IconButton className={cx(style["icon-button"])} onClick={handleClose}>
                   <Info />
@@ -144,7 +150,7 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style["area-text"])}>Area of Interest</div>
             <div className={cx(style["only-return-text"])}>Only return search results for this logo if they appear in a defined region.</div>
             <div className={cx(style["location-select-div"])}>
-              {/* <LocationSelect
+              <LocationSelect
                 onEditAoI={this.onEditAoI}
                 onRemoveAoI={this.onRemoveAoI}
                 onUpdateStep={this.onUpdateStep}
@@ -153,7 +159,7 @@ class ResponsiveDialog extends React.Component {
                 handleDeleteBoundingBox={this.handleDeleteBoundingBox}
                 handleChangeBoundingBox={this.handleChangeBoundingBox}
                 step={step}
-              /> */}
+              />
             </div>
           </div>
           <Divider />
