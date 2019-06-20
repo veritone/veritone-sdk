@@ -54,6 +54,7 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
           Object.keys(typeMapper).filter(key => typeMapper[key].length).map(key => (
             <Grid
               key={`${key}-extension-list`}
+              data-veritone-element="extension-list-category"
               className={cx(styles.extensionTypeContainer, styles[key])}
               container
               spacing={8}>

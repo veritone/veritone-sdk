@@ -220,3 +220,7 @@ storiesOf('DataPicker', module)
       onCancel={action('onCancel')}
     />
   ))
+
+export {
+  items
+};

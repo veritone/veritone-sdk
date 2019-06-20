@@ -84,13 +84,25 @@ const percentByFiles = [{
 
 
 storiesOf('DataPicker', module)
-  .add('UploaderViewContainer: Base', () => (
+  .add('UploaderViewContainer: Selecting', () => (
     <UploaderViewContainer
       accept={allFormats}
-      uploadPickerState={select('uploadPickerState', {
-        selecting: 'selecting',
-        uploading: 'uploading'
-      })}
+      uploadPickerState={'selecting'}
+      uploadedFiles={[]}
+      onFilesSelected={action('onFilesSelected')}
+      handleAbort={action('handleAbort')}
+      onReject={action('onReject')}
+      onCancel={action('onCancel')}
+      onDeleteFile={action('onDelete')}
+      onUpload={action('onUpload')}
+      multiple
+      percentByFiles={percentByFiles}
+    />
+  ))
+  .add('UploaderViewContainer: Uploading', () => (
+    <UploaderViewContainer
+      accept={allFormats}
+      uploadPickerState={'uploading'}
       uploadSuccess
       uploadWarning={false}
       uploadError={false}
@@ -118,3 +130,8 @@ storiesOf('DataPicker', module)
       percentByFiles={[]}
     />
   ))
+
+  export {
+    allFormats,
+    percentByFiles
+  };

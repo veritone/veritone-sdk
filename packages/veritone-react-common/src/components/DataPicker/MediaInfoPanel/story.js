@@ -6,8 +6,9 @@ import { noop } from 'lodash';
 
 import MediaInfoPanel from './';
 
-const tdo = {
-  name: 'Fake TDO',
+const videoTdo = {
+  type: 'tdo',
+  name: 'Fake Video TDO',
   createdDateTime: "2019-05-10T06:43:39.430Z",
   modifiedDateTime: "2019-05-10T06:43:39.430Z",
   primaryAsset: {
@@ -30,6 +31,19 @@ const tdo = {
   ]
 };
 
+const audioTdo = {
+  type: 'tdo',
+  name: 'Fake Audio TDO',
+  createdDateTime: "2018-08-10T17:37:18.000Z",
+  modifiedDateTime: "2018-08-10T17:38:52.000Z",
+  startDateTime: "2018-08-10T17:37:19.000Z",
+  stopDateTime: "2018-08-10T17:37:31.000Z",
+  primaryAsset: {
+    contentType: "audio/mp3",
+    signedUri: "https://s3.amazonaws.com/static.veritone.com/e2e-resources/test_audio.mp3"
+  }
+}
+
 const folderItem = {
   createdDateTime: "2019-05-10T06:43:39.430Z",
   modifiedDateTime: "2019-05-10T06:43:39.430Z",
@@ -38,6 +52,7 @@ const folderItem = {
 }
 
 const imageItem = {
+  type: 'tdo',
   createdDateTime: "2019-05-10T06:43:39.430Z",
   modifiedDateTime: "2019-05-10T06:43:39.430Z",
   name: "Screen Shot 2018-08-02 at 3.42.02 PM.png",
@@ -51,12 +66,19 @@ const imageItem = {
 
 
 storiesOf('DataPicker', module)
-  .add('MediaInfoPanel: selected media item', () => (
+  .add('MediaInfoPanel: selected video media item', () => (
     <MediaInfoPanel
       open={boolean('open', false)}
-      selectedItems={[tdo]}
+      selectedItems={[videoTdo]}
       width={number('width', 450)}
       toggleMediaInfoPanel={action('toggleMediaInfoPanel')}
+    />
+  ))
+  .add('MediaInfoPanel: selected audio media item', () => (
+    <MediaInfoPanel
+      open={boolean('open', false)}
+      selectedItems={[audioTdo]}
+      width={number('width', 450)}
     />
   ))
   .add('MediaInfoPanel: select folder item', () => (
@@ -76,7 +98,7 @@ storiesOf('DataPicker', module)
 
 
 export {
-  tdo,
+  videoTdo,
   folderItem,
   imageItem
 }

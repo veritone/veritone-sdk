@@ -108,6 +108,7 @@ class HeaderBar extends React.Component {
                   // }
                 }
                 <IconButton
+                  data-veritone-element="media-panel-toggle"
                   color={showMediaInfoPanel ? 'primary' : 'default'}
                   /* eslint-disable react/jsx-no-bind */
                   onClick={() => toggleMediaInfoPanel()}>

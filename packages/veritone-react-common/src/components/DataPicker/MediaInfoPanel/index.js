@@ -157,7 +157,9 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
               <TableCell
                 className={styles['table-cell']}
               >
-                {formatDateString(selectedItem.createdDateTime)}
+                <span data-veritone-element="media-panel-created-date">
+                  {formatDateString(selectedItem.createdDateTime)}
+                </span>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -172,7 +174,9 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
               <TableCell
                 className={styles['table-cell']}
               >
-                {formatDateString(selectedItem.modifiedDateTime)}
+                <span data-veritone-element="media-panel-modified-date">
+                  {formatDateString(selectedItem.modifiedDateTime)}
+                </span>
               </TableCell>
             </TableRow>
             {
@@ -187,9 +191,9 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
                     Duration
                   </TableCell>
                   <TableCell className={styles['table-cell']}>
-                    {
-                      formatAsDuration(duration)
-                    }
+                    <span data-veritone-element="media-panel-duration">
+                      {formatAsDuration(duration)}
+                    </span>
                   </TableCell>
                 </TableRow>
             )}

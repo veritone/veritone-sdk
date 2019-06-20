@@ -28,8 +28,8 @@ const FILE_ICONS = {
 const formatDateString = date => {
   return format(date, 'MMM D, YYYY h:mm A');
 };
-const useHideWrap = children => (
-  <Hidden initialWidth="md" smDown>
+const useHideWrap = (children, key) => (
+  <Hidden key={key} initialWidth="md" smDown>
     {children}
   </Hidden>);
 
@@ -69,7 +69,7 @@ const FolderListView = ({
                 </TableCell>
               );
               return hiddenIndices.includes(index)
-                ? useHideWrap(content)
+                ? useHideWrap(content, header)
                 : content;
             })
           }
@@ -90,6 +90,7 @@ const FolderListView = ({
           const isSupported = isAcceptedType && isAcceptedType({ primaryAsset });
           return (
             <TableRow
+              data-veritone-element="folder-list-item"
               className={cx({
                 [styles.selected]: highlightedItems[id],
                 [styles.unsupported]: !isSupported && type !== 'folder'

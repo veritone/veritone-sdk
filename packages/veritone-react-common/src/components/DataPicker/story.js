@@ -242,7 +242,7 @@ storiesOf('DataPicker', module)
       triggerPagination={action('triggerPagination')}
       onCancel={action('onCancel')}
       isLoading={boolean('isLoading', false)}
-      isLoaded={boolean('isLoaded', false)}
+      isLoaded={boolean('isLoaded', true)}
       pathList={pathList}
       onCrumbClick={action('onCrumbClick')}
       onSearch={action('onSearch')}
@@ -252,7 +252,7 @@ storiesOf('DataPicker', module)
       onRejectFile={action('onRejectFile')}
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
-      percentageUploadingFiles={percentByFiles}
+      percentByFiles={percentByFiles}
     />
   ))
   .add('DataPicker: Empty Current Directory', () => (
@@ -283,7 +283,7 @@ storiesOf('DataPicker', module)
       onRejectFile={action('onRejectFile')}
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
-      percentageUploadingFiles={percentByFiles}
+      percentByFiles={percentByFiles}
     />
   ))
   .add('DataPicker: No file upload', () => (
@@ -313,7 +313,7 @@ storiesOf('DataPicker', module)
       onRejectFile={action('onRejectFile')}
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
-      percentageUploadingFiles={[]}
+      percentByFiles={[]}
     />
   ))
   .add('DataPicker: Error / Initial loading', () => (
@@ -345,6 +345,12 @@ storiesOf('DataPicker', module)
       onRejectFile={action('onRejectFile')}
       onUpload={action('onUpload')}
       onDeleteFile={action('onDeleteFile')}
-      percentageUploadingFiles={[]}
+      percentByFiles={[]}
     />
   ))
+
+export {
+  items,
+  pathList,
+  percentByFiles
+};

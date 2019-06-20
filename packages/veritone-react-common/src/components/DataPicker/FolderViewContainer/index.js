@@ -177,7 +177,7 @@ class FolderViewContainer extends React.Component {
 
   onHighlightItem = (event) => {
     const { multiple } = this.props;
-    const { index } = Object.assign({}, event.currentTarget.dataset);
+    const index = event.currentTarget.getAttribute('data-index');
     const holdingShift = event.shiftKey;
     const holdingCtrl = event.ctrlKey;
     const holdingCmd = hasCommandModifier(event);
