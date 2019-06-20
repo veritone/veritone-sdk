@@ -93,7 +93,7 @@ export default class Overlay extends React.Component {
     stylesByObjectType: {},
     defaultBoundingBoxStyles: {
       backgroundColor: 'rgba(72,147,226,0.7)',
-      border: '1px solid #4893E2'
+      border: '1px solid #fff'
     }
   };
 

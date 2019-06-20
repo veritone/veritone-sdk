@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Info from '@material-ui/icons/Info';
 import Divider from '@material-ui/core/Divider';
-import { findIndex } from "lodash";
+import { findIndex, get } from "lodash";
 
 import { guid } from '../../helpers/guid';
 import LocationSelect from '../LocationSelect';
@@ -22,6 +22,26 @@ class ResponsiveDialog extends React.Component {
     step: 1,
     selectedConfidenceRange: [0, 100]
   };
+
+  // UNSAFE_componentWillReceiveProps(nextProps) {
+  //   console.log("UNSAFE_componentWillReceiveProps", nextProps);
+  //   const { advancedOptions: nextAdvancedOptions } = nextProps;
+  //   const { advancedOptions: currentAdvancedOptions } = this.props;
+  //   const boundingPoly = get(nextAdvancedOptions, "boundingPoly")
+
+  //   if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
+  //     this.setState(state => ({
+  //       ...state,
+  //       boundingBoxes: boundingPoly ? [{
+  //         boundingPoly: nextAdvancedOptions.boundingPoly,
+  //         overlayObjectType: "c",
+  //         id: guid()
+  //       }] : undefined,
+  //       step: boundingPoly ? 3 : 1,
+  //       selectedConfidenceRange: nextAdvancedOptions.range
+  //     }))
+  //   }
+  // }
 
   handleAddBoundingBox = newBox => {
     if (this.state.boundingBoxes.length) {
@@ -106,15 +126,15 @@ class ResponsiveDialog extends React.Component {
       step: 1,
       boundingBoxes: [],
       selectedConfidenceRange: [25, 100]
-    })
+    });
+    this.props.handleReset();
   }
 
   handleApply = () => {
     const { onAddAdvancedSearchParams } = this.props;
     const { boundingBoxes, selectedConfidenceRange } = this.state;
-    const { boundingPoly } = boundingBoxes[0];
     onAddAdvancedSearchParams({
-      boundingPoly: boundingPoly,
+      boundingPoly: get(boundingBoxes, [0, "boundingPoly"], []),
       range: selectedConfidenceRange
     })
   }

@@ -208,3 +208,19 @@
 .removeUnderline {
   content: none;
 }
+
+.advancedButton {
+  display: flex;
+  align-items: center;
+}
+
+.customBadge {
+  width: 20px;
+  height: 20px;
+  background-color: #F44336;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}

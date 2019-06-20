@@ -1,33 +1,27 @@
 import React from 'react';
 import { arrayOf, func, object, string, oneOf } from 'prop-types';
-import { SearchBar } from '.';
+import cx from 'classnames';
+import { get, uniq } from 'lodash';
+import "rxjs/add/operator/take";
+import "rxjs/add/operator/takeWhile";
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import { withTheme } from '@material-ui/core/styles'
+
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Popover from '@material-ui/core/Popover';
-import Paper from '@material-ui/core/Paper';
+import { Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Badge from '@material-ui/core/Badge';
+
+import { SearchBar } from '.';
+import Icon from './Icon';
+import { guid } from './component';
+import AdvancedPanel from '../AdvancedPanel';
 import EngineCategoryButton from './EngineCategoryButton';
 
-import cx from 'classnames';
 import styles from './styles.scss';
-
-import { Observable } from "rxjs/Observable";
-import "rxjs/add/operator/take";
-import "rxjs/add/operator/takeWhile";
-import { last, map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
-
-import { withTheme } from '@material-ui/core/styles'
-import { guid } from './component';
-
-import { Card, CardHeader, CardMedia, CardContent, CardActions } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Icon from './Icon';
-import AdvancedPanel from '../AdvancedPanel';
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
@@ -51,7 +45,8 @@ class SearchBarContainer extends React.Component {
     menuAnchorEl: null,
     highlightedPills: [],
     openAdvancedPanel: false,
-    advancedOption: {}
+    advancedEnableIds: [],
+    advancedOptions: {}
   };
 
   _id = guid();
@@ -93,10 +88,48 @@ class SearchBarContainer extends React.Component {
   }
 
   handleApplyAdvancedOptions = (parameter) => {
-    this.setState({
-      advancedOption: parameter
-    });
+    const { modalId } = this.state.openModal;
+    this.setState(state => ({
+      ...state,
+      advancedEnableIds: uniq([...state.advancedEnableIds, modalId]),
+      advancedOptions: {
+        ...state.advancedOptions,
+        [modalId]: parameter
+      }
+    }));
     this.handleCloseAdvanced();
+  }
+
+  handleResetAdvanced = () => {
+    const { modalId } = this.state.openModal;
+    this.setState(state => ({
+      ...state,
+      advancedEnableIds: state.advancedEnableIds.filter(item => item !== modalId),
+      advancedOptions: {
+        ...state.advancedOptions,
+        [modalId]: undefined
+      }
+    }))
+  }
+
+  get getAdvancedOptions() {
+    const { modalId } = this.state.openModal;
+    const { advancedOptions } = this.state;
+    return get(advancedOptions, modalId, {});
+  }
+
+  get getBadgeLength() {
+    const { advancedOptions } = this.state;
+    const { modalId } = this.state.openModal;
+    const boundingPoly = get(advancedOptions, [modalId, 'boundingPoly']);
+    const range = get(advancedOptions, [modalId, 'range']);
+    if (boundingPoly && boundingPoly.length && range) {
+      return 2;
+    }
+    if (boundingPoly || range) {
+      return 1
+    }
+    return null;
   }
 
   handleGroupingKeyPress = (event) => {
@@ -311,7 +344,7 @@ class SearchBarContainer extends React.Component {
   };
 
   getRemovePill = searchParameters => {
-    console.log("getRemovePill");
+    console.log("getRemovePill", searchParameters);
     return searchParameterId => {
       this.removePill(searchParameterId, searchParameters);
     };
@@ -350,7 +383,7 @@ class SearchBarContainer extends React.Component {
   }
 
   replaceSearchParameter = (parameterValue, engineId, searchParameterId) => {
-    console.log("addNewSearchParameter", parameterValue, engineId, searchParameterId);
+    console.log("replaceSearchParameter", parameterValue, engineId, searchParameterId);
     this.props.addOrModifySearchParameter({
       value: parameterValue,
       conditionType: engineId,
@@ -369,7 +402,7 @@ class SearchBarContainer extends React.Component {
   };
 
   handleMenuOpen = (target, searchParameter) => {
-    console.log("addNewSearchParameter", target, searchParameter);
+    console.log("handleMenuOpen", target, searchParameter);
     let menuOptions;
     if (searchParameter.conditionType === 'join') {
       menuOptions = [
@@ -441,7 +474,7 @@ class SearchBarContainer extends React.Component {
   }
 
   openMenuExtraActions = (evt) => {
-    console.log("addNewSearchParameter", evt);
+    console.log("openMenuExtraActions", evt);
     let customMenuActions = this.props.menuActions && this.props.menuActions.map(x => ({
       label: x.label,
       onClick: () => {
@@ -577,12 +610,14 @@ class SearchBarContainer extends React.Component {
     this.setState({
       openModal: { modalId: null },
       selectedPill: null,
-      insertDirection: null
+      insertDirection: null,
+      advancedOptions: {}
     });
   };
 
   addOrEditModal = () => {
     console.log("addOrEditModal");
+    console.log(this.state.selectedPill);
     if (this.state.selectedPill) {
       //insert new pill next to selected pill
       if (this.state.insertDirection) {
@@ -671,6 +706,7 @@ class SearchBarContainer extends React.Component {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
+
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
@@ -779,7 +815,12 @@ class SearchBarContainer extends React.Component {
               </CardContent>
               <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
                 {(openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
-                  <Button onClick={this.handleOpenAdvanced}>ADVANCED</Button>
+                  <div className={cx(styles["advancedButton"])}>
+                    <Button onClick={this.handleOpenAdvanced}>ADVANCED</Button>
+                    {this.getBadgeLength ? <div className={cx(styles["customBadge"])}>
+                      {this.getBadgeLength}
+                    </div> : null}
+                  </div>
                 ) : ""}
                 <Button onClick={this.cancelModal} color="primary" className={cx(styles['cancelButton'])}>
                   Close
@@ -796,6 +837,8 @@ class SearchBarContainer extends React.Component {
             <AdvancedPanel
               open={this.state.openAdvancedPanel}
               handleClose={this.handleCloseAdvanced}
+              handleReset={this.handleResetAdvanced}
+              advancedOptions={this.getAdvancedOptions}
               onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
             />
           </Popover>
