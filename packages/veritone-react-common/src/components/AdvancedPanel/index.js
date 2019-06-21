@@ -25,20 +25,20 @@ class ResponsiveDialog extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { advancedOptions: nextAdvancedOptions } = nextProps;
-    const { advancedOptions: currentAdvancedOptions } = this.props;
+    // const { advancedOptions: currentAdvancedOptions } = this.props;
     const boundingPoly = get(nextAdvancedOptions, "boundingPoly")
-    if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
-      this.setState(state => ({
-        ...state,
-        boundingBoxes: boundingPoly ? [{
-          boundingPoly: nextAdvancedOptions.boundingPoly,
-          overlayObjectType: "c",
-          id: guid()
-        }] : [],
-        step: (boundingPoly && boundingPoly.length) ? 3 : 1,
-        selectedConfidenceRange: nextAdvancedOptions.range ? nextAdvancedOptions.range : [0, 100]
-      }))
-    }
+    // if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
+    this.setState(state => ({
+      ...state,
+      boundingBoxes: boundingPoly ? [{
+        boundingPoly: nextAdvancedOptions.boundingPoly,
+        overlayObjectType: "c",
+        id: guid()
+      }] : [],
+      step: (boundingPoly && boundingPoly.length) ? 3 : 1,
+      selectedConfidenceRange: nextAdvancedOptions.range ? nextAdvancedOptions.range : [0, 100]
+    }))
+    // }
   }
 
   handleAddBoundingBox = newBox => {
