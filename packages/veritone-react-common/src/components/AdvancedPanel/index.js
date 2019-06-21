@@ -23,25 +23,23 @@ class ResponsiveDialog extends React.Component {
     selectedConfidenceRange: [0, 100]
   };
 
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   console.log("UNSAFE_componentWillReceiveProps", nextProps);
-  //   const { advancedOptions: nextAdvancedOptions } = nextProps;
-  //   const { advancedOptions: currentAdvancedOptions } = this.props;
-  //   const boundingPoly = get(nextAdvancedOptions, "boundingPoly")
-
-  //   if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
-  //     this.setState(state => ({
-  //       ...state,
-  //       boundingBoxes: boundingPoly ? [{
-  //         boundingPoly: nextAdvancedOptions.boundingPoly,
-  //         overlayObjectType: "c",
-  //         id: guid()
-  //       }] : undefined,
-  //       step: boundingPoly ? 3 : 1,
-  //       selectedConfidenceRange: nextAdvancedOptions.range
-  //     }))
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    const { advancedOptions: nextAdvancedOptions } = nextProps;
+    const { advancedOptions: currentAdvancedOptions } = this.props;
+    const boundingPoly = get(nextAdvancedOptions, "boundingPoly")
+    if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
+      this.setState(state => ({
+        ...state,
+        boundingBoxes: boundingPoly ? [{
+          boundingPoly: nextAdvancedOptions.boundingPoly,
+          overlayObjectType: "c",
+          id: guid()
+        }] : [],
+        step: (boundingPoly && boundingPoly.length) ? 3 : 1,
+        selectedConfidenceRange: nextAdvancedOptions.range ? nextAdvancedOptions.range : [0, 100]
+      }))
+    }
+  }
 
   handleAddBoundingBox = newBox => {
     if (this.state.boundingBoxes.length) {
@@ -125,7 +123,7 @@ class ResponsiveDialog extends React.Component {
     this.setState({
       step: 1,
       boundingBoxes: [],
-      selectedConfidenceRange: [25, 100]
+      selectedConfidenceRange: [0, 100]
     });
     this.props.handleReset();
   }

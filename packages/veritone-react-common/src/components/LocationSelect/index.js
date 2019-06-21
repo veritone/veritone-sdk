@@ -30,7 +30,7 @@ export default class LocationSelect extends Component {
   };
 
   onUpdateStep = (step) => () => {
-    const { boundingBoxes } = this.state;
+    const { boundingBoxes } = this.props;
     if (step === 3 && !boundingBoxes.length) {
       return;
     }

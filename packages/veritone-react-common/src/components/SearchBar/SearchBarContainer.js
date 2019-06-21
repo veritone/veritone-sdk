@@ -109,7 +109,8 @@ class SearchBarContainer extends React.Component {
         ...state.advancedOptions,
         [modalId]: undefined
       }
-    }))
+    }));
+    this.handleCloseAdvanced();
   }
 
   get getAdvancedOptions() {
@@ -377,7 +378,10 @@ class SearchBarContainer extends React.Component {
     }
 
     this.props.addOrModifySearchParameter({
-      value: parameter,
+      value: {
+        ...parameter,
+        advancedOptions: this.getAdvancedOptions
+      },
       conditionType: engineId
     });
   }
@@ -591,6 +595,7 @@ class SearchBarContainer extends React.Component {
   }
 
   menuEditPill = () => {
+    console.log("menuEditPill", this.props.searchParameters);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
     this.openPill(selectedPill);
     this.setState({
@@ -618,6 +623,7 @@ class SearchBarContainer extends React.Component {
   addOrEditModal = () => {
     console.log("addOrEditModal");
     console.log(this.state.selectedPill);
+    console.log(this.props.searchParameters);
     if (this.state.selectedPill) {
       //insert new pill next to selected pill
       if (this.state.insertDirection) {
@@ -670,6 +676,7 @@ class SearchBarContainer extends React.Component {
       if (!newSearchParameterValue) {
         return;
       }
+
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
