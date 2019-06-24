@@ -13,7 +13,6 @@ import Popover from '@material-ui/core/Popover';
 import { Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import Badge from '@material-ui/core/Badge';
 
 import { SearchBar } from '.';
 import Icon from './Icon';
@@ -376,7 +375,10 @@ class SearchBarContainer extends React.Component {
 
   replaceSearchParameter = (parameterValue, engineId, searchParameterId) => {
     this.props.addOrModifySearchParameter({
-      value: parameterValue,
+      value: {
+        ...parameterValue,
+        advancedOptions: this.getAdvancedOptions
+      },
       conditionType: engineId,
       id: searchParameterId
     });

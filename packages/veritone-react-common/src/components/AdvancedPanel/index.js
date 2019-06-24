@@ -7,45 +7,50 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Info from '@material-ui/icons/Info';
 import Divider from '@material-ui/core/Divider';
-import { findIndex, get } from "lodash";
+import { findIndex, get, isEqual } from "lodash";
 
 import { guid } from '../../helpers/guid';
 import LocationSelect from '../LocationSelect';
 import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
+const id = guid();
 
 class ResponsiveDialog extends React.Component {
   state = {
     open: false,
     boundingBoxes: [],
     step: 1,
-    selectedConfidenceRange: [0, 100]
+    selectedConfidenceRange: [0, 100],
+    parentBoudingPoly: [],
+    parentRange: [0, 100]
   };
 
-  componentWillReceiveProps(nextProps) {
-    const { advancedOptions: nextAdvancedOptions } = nextProps;
-    // const { advancedOptions: currentAdvancedOptions } = this.props;
-    const boundingPoly = get(nextAdvancedOptions, "boundingPoly")
-    // if (JSON.stringify(nextAdvancedOptions) !== JSON.stringify(currentAdvancedOptions)) {
-    this.setState(state => ({
-      ...state,
-      boundingBoxes: boundingPoly ? [{
-        boundingPoly: nextAdvancedOptions.boundingPoly,
-        overlayObjectType: "c",
-        id: guid()
-      }] : [],
-      step: (boundingPoly && boundingPoly.length) ? 3 : 1,
-      selectedConfidenceRange: nextAdvancedOptions.range ? nextAdvancedOptions.range : [0, 100]
-    }))
-    // }
+  static getDerivedStateFromProps(nextProps, currentState) {
+    const currentParentBoudingPoly = get(currentState, "parentBoudingPoly", []);
+    const currentParentRange = get(currentState, "parentRange", [0, 100]);
+    const nextBoundingPoly = get(nextProps, "advancedOptions.boundingPoly", []);
+    const nextRange = get(nextProps, "advancedOptions.range", [0, 100]);
+    if (!isEqual(currentParentBoudingPoly, nextBoundingPoly) || !isEqual(currentParentRange, nextRange)) {
+      return {
+        boundingBoxes: nextBoundingPoly.length ? [{
+          boundingPoly: nextBoundingPoly,
+          overlayObjectType: "c",
+          id: id
+        }] : [],
+        step: (nextBoundingPoly && nextBoundingPoly.length) ? 3 : 1,
+        selectedConfidenceRange: nextRange,
+        parentBoudingPoly: nextBoundingPoly,
+        parentRange: nextRange
+      }
+    }
+    return null;
   }
 
   handleAddBoundingBox = newBox => {
     if (this.state.boundingBoxes.length) {
       return;
     }
-
     this.setState(state => ({
       boundingBoxes: [
         ...state.boundingBoxes,

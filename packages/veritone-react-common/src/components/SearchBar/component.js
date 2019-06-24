@@ -654,7 +654,6 @@ export class SampleSearchBar extends React.Component {
   }
 
   addOrModifySearchParameter = (parameter, index) => {
-    console.log("addOrModifySearchParameter 123456", parameter, index);
     const existing = this.state.searchParameters.findIndex(
       searchParameter => searchParameter.id === parameter.id
     );
