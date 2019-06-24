@@ -210,7 +210,11 @@ export default class NotificationList extends React.Component {
     const failedEntryData = {
       statusIcon: <img src={ErrorIconSvg} />,
       removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
-      actionIcon: <RefreshIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
+      actionIcon: <RefreshIcon 
+                    className={classNames(styles.icon)} 
+                    style={{ fontSize: "20px" }} 
+                    data-veritone-element="retry-failed-task"
+                  />,
       statusDescription: 'failed',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,

@@ -69,7 +69,7 @@ export default class Notifier extends React.Component {
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
-        <IconButton onClick={this.showNotifications} disabled={numNotifications === 0}>
+        <IconButton onClick={this.showNotifications} disabled={numNotifications === 0}  data-veritone-element="notification-system-view-task">
           {
             numNotifications > 0 && !anchorEl ?
               <Badge color="primary" badgeContent={numNotifications}>
