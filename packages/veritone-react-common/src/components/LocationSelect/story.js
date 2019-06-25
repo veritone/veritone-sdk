@@ -109,4 +109,3 @@ export default class Story extends Component {
 
 storiesOf('LocationSelect', module)
     .add('Simple test', () => <Story />);
-

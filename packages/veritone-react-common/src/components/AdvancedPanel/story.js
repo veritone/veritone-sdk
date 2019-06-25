@@ -6,24 +6,41 @@ import AdvancedPanel from './';
 
 export default class Story extends Component {
   state = {
-    open: false
+    openAdvancedPanel: false,
+    advancedEnableIds: [],
+    advancedOptions: {}
   }
   handleClickOpen = () => {
     this.setState({
-      open: true
+      openAdvancedPanel: true
     })
   }
 
-  handleClose = () => {
+  handleCloseAdvanced = () => {
     this.setState({
-      open: false
+      openAdvancedPanel: false
     })
+  }
+
+  handleResetAdvanced = () => {
+    console.log("reset");
+  }
+
+  handleApplyAdvancedOptions = () => {
+    console.log("apply");
+    this.handleCloseAdvanced();
   }
   render() {
     return (
       <div>
         <Button onClick={this.handleClickOpen}>Open responsive dialog</Button>
-        <AdvancedPanel open={this.state.open} handleClose={this.handleClose} />
+        <AdvancedPanel
+          open={this.state.openAdvancedPanel}
+          handleClose={this.handleCloseAdvanced}
+          handleReset={this.handleResetAdvanced}
+          advancedOptions={this.getAdvancedOptions}
+          onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
+        />
       </div>
     )
   }

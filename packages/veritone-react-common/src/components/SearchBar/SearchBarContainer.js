@@ -253,7 +253,7 @@ class SearchBarContainer extends React.Component {
       const clickTargetShouldNotClearHighlightedPills = e => {
         let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1) || false;
         let clickedOnDeleteFromMenu = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-preservehighlight') && y.attributes.getNamedItem('data-preservehighlight').value === 'true');
-        return ((e.shiftKey == true) || clickedOnHighlightedPill || clickedOnDeleteFromMenu);
+        return ((e.shiftKey === true) || clickedOnHighlightedPill || clickedOnDeleteFromMenu);
       }
       // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
       this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile(clickTargetShouldNotClearHighlightedPills).subscribe(null, null, x => {
@@ -469,13 +469,13 @@ class SearchBarContainer extends React.Component {
   }
 
   openMenuExtraActions = (evt) => {
-    let customMenuActions = this.props.menuActions && this.props.menuActions.map(x => ({
+    let customMenuActions = (this.props.menuActions && this.props.menuActions.map(x => ({
       label: x.label,
       onClick: () => {
         x.onClick(this.props.getCSP());
         this.handleMenuClose();
       }
-    })) || {};
+    }))) || {};
 
     // don't show custom menu actions if there are no search parameters
     if (!this.props.searchParameters || this.props.searchParameters.length === 0) {

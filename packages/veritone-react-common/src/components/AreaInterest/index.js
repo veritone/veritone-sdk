@@ -9,7 +9,7 @@ import Delete from "@material-ui/icons/Delete";
 
 import styles from './styles.scss';
 
-const formatNumber = (number) => Math.round(number * 100)/100
+const formatNumber = (number) => Math.round(number * 100) / 100
 export default class index extends Component {
 
   static propTypes = {
@@ -40,10 +40,16 @@ export default class index extends Component {
             <div className={cx(styles["coordinate"])}>{this.AreaOfInterest}</div>
           </div>
           <div className={cx(styles["edit-coordinate"])}>
-            <IconButton onClick={onEditAoI}>
+            <IconButton
+              className={cx(styles["aoi-icon-button"])}
+              onClick={onEditAoI}
+            >
               <Edit />
             </IconButton>
-            <IconButton onClick={onRemoveAoI}>
+            <IconButton
+              className={cx(styles["aoi-icon-button"])}
+              onClick={onRemoveAoI}
+            >
               <Delete />
             </IconButton>
           </div>

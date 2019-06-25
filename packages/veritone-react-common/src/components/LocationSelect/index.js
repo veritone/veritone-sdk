@@ -38,7 +38,15 @@ export default class LocationSelect extends Component {
   }
 
   render() {
-    const { handleAddBoundingBox, handleDeleteBoundingBox, handleChangeBoundingBox, boundingBoxes, step = 1, onEditAoI, onRemoveAoI } = this.props;
+    const {
+      handleAddBoundingBox,
+      handleDeleteBoundingBox,
+      handleChangeBoundingBox,
+      boundingBoxes,
+      step = 1,
+      onEditAoI,
+      onRemoveAoI
+    } = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.screenLocation}>
@@ -103,7 +111,11 @@ export default class LocationSelect extends Component {
               <Button onClick={this.onUpdateStep(3)} color="primary">SAVE AREA OF INTEREST</Button>
             </div>}
           {step === 3 && <div className={cx(styles["aria-item"])}>
-            <AreaInterest areaOfInterest={boundingBoxes[0]} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />
+            <AreaInterest
+              areaOfInterest={boundingBoxes[0]}
+              onEditAoI={onEditAoI}
+              onRemoveAoI={onRemoveAoI}
+            />
           </div>}
         </div>
       </div>

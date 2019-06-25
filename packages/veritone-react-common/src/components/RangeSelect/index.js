@@ -4,7 +4,6 @@ import { Range, getTrackBackground } from 'react-range';
 import cx from 'classnames';
 import styles from './styles.scss';
 
-
 const STEP = 1;
 const MIN = 0;
 const MAX = 100;
@@ -24,7 +23,6 @@ export default class RangeSelect extends Component {
     if (values[0] === 0 && values[1] === 0) {
       values[1] = 1;
     }
-    // this.setState({ values: values })
     onChangeConfidenceRange(values)
   }
 
@@ -64,7 +62,9 @@ export default class RangeSelect extends Component {
       <div
         className={styles.rangeInput}
       >
-        <div className={cx(styles["value-min"])}>{selectedConfidenceRange[0].toFixed(0)}</div>
+        <div className={cx(styles["value-min"])}>
+          {selectedConfidenceRange[0].toFixed(0)}
+        </div>
         <Range
           values={selectedConfidenceRange}
           step={STEP}
@@ -74,7 +74,9 @@ export default class RangeSelect extends Component {
           renderThumb={this.renderThumb}
           renderTrack={this.renderTrack}
         />
-        <div className={cx(styles["value-max"])}>{selectedConfidenceRange[1].toFixed(0)}</div>
+        <div className={cx(styles["value-max"])}>
+          {selectedConfidenceRange[1].toFixed(0)}
+        </div>
       </div>
     );
   }

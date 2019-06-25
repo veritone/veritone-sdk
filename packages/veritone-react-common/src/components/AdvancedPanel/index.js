@@ -159,10 +159,16 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style["title"])}>
               <div className={cx(style["title-text"])}>Advanced Options</div>
               <div>
-                <IconButton className={cx(style["icon-button"])} onClick={handleClose}>
+                <IconButton
+                  className={cx(style["advanced-icon-button"])}
+                  onClick={handleClose}
+                >
                   <Info />
                 </IconButton>
-                <IconButton className={cx(style["icon-button"])} onClick={handleClose}>
+                <IconButton
+                  className={cx(style["advanced-icon-button"])}
+                  onClick={handleClose}
+                >
                   <CloseIcon />
                 </IconButton>
               </div>
@@ -171,7 +177,9 @@ class ResponsiveDialog extends React.Component {
           <Divider />
           <div className={cx(style["dialog-content"])}>
             <div className={cx(style["area-text"])}>Area of Interest</div>
-            <div className={cx(style["only-return-text"])}>Only return search results for this logo if they appear in a defined region.</div>
+            <div className={cx(style["only-return-text"])}>
+              Only return search results for this logo if they appear in a defined region.
+            </div>
             <div className={cx(style["location-select-div"])}>
               <LocationSelect
                 onEditAoI={this.onEditAoI}
@@ -188,9 +196,14 @@ class ResponsiveDialog extends React.Component {
           <Divider />
           <div className={cx(style["dialog-content"])}>
             <div className={cx(style["area-text"])}>Confidence</div>
-            <div className={cx(style["only-return-text"])}>Search by the percentage of confidence of this logo.</div>
+            <div className={cx(style["only-return-text"])}>
+              Search by the percentage of confidence of this logo.
+            </div>
             <div className={cx(style["location-select-div"])}>
-              <RangeSelect onChangeConfidenceRange={this.onChangeConfidenceRange} selectedConfidenceRange={this.state.selectedConfidenceRange} />
+              <RangeSelect
+                onChangeConfidenceRange={this.onChangeConfidenceRange}
+                selectedConfidenceRange={this.state.selectedConfidenceRange}
+              />
             </div>
           </div>
           <div className={cx(style["dialog-content"], style["action"])}>
