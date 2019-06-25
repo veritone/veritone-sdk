@@ -1,6 +1,7 @@
 import includes from 'lodash/fp/includes';
 import isString from 'lodash/fp/isString';
 import isFunction from 'lodash/fp/isFunction';
+import _ from 'lodash';
 
 const FaceConditionGenerator = modalState => {
   return {
@@ -99,38 +100,122 @@ const StructuredDataGenerator = modalState => {
 };
 
 const LogoConditionGenerator = modalState => {
+  const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
+  const range = _.get(modalState, "advancedOptions.range", []);
+  const boundingPolyParams = !_.isEmpty(boundingPoly) ? [{
+    operator: "bounding_poly",
+    field: "logo-recognition.series.boundingPoly",
+    relation: "within", // within | intersects | disjoint
+    coordinates: getCoordinatesFromBounding(boundingPoly)
+  }] : [];
+  const rangeParams = !_.isEmpty(range) ? [{
+    operator: "range",
+    field: "logo-recognition.series.confidence",
+    gte: range[0],
+    lt: range[1]
+  }] : [];
   if (modalState.type === 'fullText') {
-    return {
+    const params = {
       operator: 'query_string',
       field: 'logo-recognition.series.found.fulltext',
       value: `*${modalState.id}*`,
       not: modalState.exclude === true
     };
+    if (_.isEmpty(modalState.advancedOptions)) {
+      return params;
+    }
+    else {
+      return {
+        operator: "and",
+        conditions: [
+          params,
+          ...boundingPolyParams,
+          ...rangeParams
+        ]
+      }
+    }
   } else {
-    return {
+    const params = {
       operator: 'term',
       field: 'logo-recognition.series.found',
       value: modalState.id,
       not: modalState.exclude === true
     };
+    if (_.isEmpty(modalState.advancedOptions)) {
+      return params
+    }
+    else {
+      return {
+        operator: "and",
+        conditions: [
+          params,
+          ...boundingPolyParams,
+          ...rangeParams
+        ],
+      }
+    }
   }
 };
 
+const getCoordinatesFromBounding = (boundingPoly) => {
+  return boundingPoly.map(item => [item.x, item.y]);
+}
+
 const ObjectConditionGenerator = modalState => {
+  const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
+  const range = _.get(modalState, "advancedOptions.range", []);
+  const boundingPolyParams = !_.isEmpty(boundingPoly) ? [{
+    operator: "bounding_poly",
+    field: "logo-recognition.series.boundingPoly",
+    relation: "within", // within | intersects | disjoint
+    coordinates: getCoordinatesFromBounding(boundingPoly)
+  }] : [];
+  const rangeParams = !_.isEmpty(range) ? [{
+    operator: "range",
+    field: "logo-recognition.series.confidence",
+    gte: range[0],
+    lt: range[1]
+  }] : [];
   if (modalState.type === 'fullText') {
-    return {
+    const params = {
       operator: 'query_string',
       field: 'object-recognition.series.found.fulltext',
       value: `*${modalState.id}*`,
       not: modalState.exclude === true
     };
+    if (_.isEmpty(modalState.advancedOptions)) {
+      return params;
+    }
+    else {
+      return {
+        operator: "and",
+        conditions: [
+          params,
+          ...boundingPolyParams,
+          ...rangeParams
+        ]
+      }
+    }
   } else {
-    return {
+    const params = {
       operator: 'term',
       field: 'object-recognition.series.found',
       value: modalState.id,
       not: modalState.exclude === true
     };
+    if (_.isEmpty(modalState.advancedOptions)) {
+      return params
+    }
+    else {
+      return {
+        operator: "and",
+        conditions: [
+          params,
+          ...boundingPolyParams,
+          ...rangeParams
+        ],
+      }
+    }
   }
 };
 
@@ -162,7 +247,7 @@ const TagConditionGenerator = modalState => {
 };
 
 const TimeConditionGenerator = modalState => {
-  const dayPartTimeToMinutes = function(hourMinuteTime) {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
       !isString(hourMinuteTime) ||
