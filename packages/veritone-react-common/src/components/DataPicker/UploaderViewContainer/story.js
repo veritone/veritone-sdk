@@ -78,7 +78,7 @@ const percentByFiles = [{
     type: 'application/json',
     percent: 69,
     size: 56283756,
-    error: true
+    error: 'failed'
   }
 }];
 
@@ -103,9 +103,6 @@ storiesOf('DataPicker', module)
     <UploaderViewContainer
       accept={allFormats}
       uploadPickerState={'uploading'}
-      uploadSuccess
-      uploadWarning={false}
-      uploadError={false}
       uploadedFiles={[]}
       onFilesSelected={action('onFilesSelected')}
       handleAbort={action('handleAbort')}
@@ -117,9 +114,12 @@ storiesOf('DataPicker', module)
       percentByFiles={percentByFiles}
     />
   ))
-  .add('UploaderViewContainer: Original', () => (
+  .add('UploaderViewContainer: Error State', () => (
     <UploaderViewContainer
       accept={allFormats}
+      uploadPickerState={'complete'}
+      uploadError
+      uploadStatusMsg={'Some fake files failed'}
       onFilesSelected={action('onFilesSelected')}
       handleAbort={action('handleAbort')}
       onReject={action('onReject')}
@@ -127,7 +127,7 @@ storiesOf('DataPicker', module)
       onDeleteFile={action('onDelete')}
       onUpload={action('onUpload')}
       multiple
-      percentByFiles={[]}
+      percentByFiles={percentByFiles}
     />
   ))
 

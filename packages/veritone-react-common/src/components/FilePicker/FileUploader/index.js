@@ -115,7 +115,12 @@ class FileUploader extends Component {
           ) : (
             <div className={styles.uploaderContainer}>
               { !!acceptedFileTypes.length && (
-                <span className={styles.extensionListOpenButton} onClick={this.openExtensionList}>Extension Types</span>
+                <span
+                  className={styles.extensionListOpenButton}
+                  data-veritone-element="uploader-extension-open-btn"
+                  onClick={this.openExtensionList}>
+                  Extension Types
+                </span>
               )}
               <span>
                 <i className={cx(styles.fileUploadIcon, 'icon-ingest')} />

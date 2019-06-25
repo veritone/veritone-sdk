@@ -32,7 +32,10 @@ class FilePickerHeader extends Component {
   render() {
     return (
       <div className={styles.filePickerHeader}>
-        <span className={styles.filePickerTitle}>
+        <span
+          className={styles.filePickerTitle}
+          data-veritone-element="picker-header-title"
+        >
           {
             this.props.titleIcon && (
               <div className={styles.titleIconContainer}>
@@ -51,6 +54,7 @@ class FilePickerHeader extends Component {
         </span>
         { this.props.onClose && (
           <IconButton
+            data-veritone-element="picker-header-close-btn"
             classes={{
               root: styles.filePickerCloseButton
             }}
@@ -61,7 +65,10 @@ class FilePickerHeader extends Component {
         )}
         {
             this.props.message && (
-              <div className={styles.filePickerMessage}>
+              <div
+                className={styles.filePickerMessage}
+                data-veritone-element="picker-header-msg"
+              >
                 {this.props.message}
               </div>
             )

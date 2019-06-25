@@ -96,7 +96,10 @@ const UploadViewContainer = ({
                 completeStatus && completeStatus !== 'success'
                   && percentByFiles && !!percentByFiles.length
                   && (
-                  <div className={styles['uploader-retry-button-container']}>
+                  <div
+                    className={styles['uploader-retry-button-container']}
+                    data-veritone-element="picker-retry-controls"
+                  >
                     <Button
                       onClick={onRetryDone}>
                       Done

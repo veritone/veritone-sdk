@@ -50,11 +50,34 @@ describe('DataPicker', () => {
     expect(wrapper.exists(MediaInfoPanel)).toBe(false);
     expect(wrapper.exists(UploaderViewContainer)).toBe(false);
 
+    // Open button should active until after a selection
+    expect(
+      wrapper
+        .find('[data-veritone-element="picker-footer-Open-button"]')
+        .hostNodes().prop('disabled')
+    ).toBe(true);
+
+    // Toggling media panel works
     const mediaPanelToggle = wrapper.find(IconButton);
     mediaPanelToggle.simulate('click');
-    const folderListItems = wrapper.find('[data-veritone-element="folder-list-item"]');
-    console.log(folderListItems.first());
-    folderListItems.first().simulate('click');
+    
+    wrapper.find('[data-veritone-element="folder-list-item"]').hostNodes().first().simulate('click');
+    expect(
+      wrapper
+        .find('[data-veritone-element="folder-list-item"]')
+        .hostNodes()
+        .at(0)
+        .render()
+        .hasClass('selected')
+    ).toBe(true);
     expect(wrapper.exists(MediaInfoPanel)).toBe(true);
+
+    // Open button should be active now
+    expect(
+      wrapper
+        .find('[data-veritone-element="picker-footer-Open-button"]')
+        .hostNodes()
+        .prop('disabled')
+    ).toBe(false);
   });
 });

@@ -18,18 +18,31 @@ class FilePickerFooter extends Component {
   };
 
   render() {
+    const {
+      hasIntercom,
+      onCancel,
+      disabled,
+      onSubmit,
+      title
+    } = this.props;
     return (
       <div className={cx(styles.filePickerFooter, {
-        [styles.hasIntercom]: this.props.hasIntercom
+        [styles.hasIntercom]: hasIntercom
       })}>
-        <Button onClick={this.props.onCancel}>Cancel</Button>
         <Button
-          variant="raised"
-          disabled={this.props.disabled}
-          color="primary"
-          onClick={this.props.onSubmit}
+          data-veritone-element={`picker-footer-cancel-button`}
+          onClick={onCancel}
         >
-          {this.props.title}
+          Cancel
+        </Button>
+        <Button
+          data-veritone-element={`picker-footer-${title}-button`}
+          variant="raised"
+          disabled={disabled}
+          color="primary"
+          onClick={onSubmit}
+        >
+          {title}
         </Button>
       </div>
     );
