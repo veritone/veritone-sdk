@@ -9,12 +9,12 @@ import FileProgressList from '../../FilePicker/FileProgressList';
 import FilePickerHeader from '../../FilePicker/FilePickerHeader';
 import FilePickerFooter from '../../FilePicker/FilePickerFooter';
 
-import UploaderViewContainer from './';
-
 import {
   allFormats,
   percentByFiles
 } from './story';
+
+import UploaderViewContainer from './';
 
 describe('UploaderViewContainer', () => {
   it('Initial/Selecting state renders properly', () => {

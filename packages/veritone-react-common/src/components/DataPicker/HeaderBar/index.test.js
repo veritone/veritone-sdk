@@ -2,8 +2,8 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { noop } from 'lodash';
 
-import HeaderBar from './';
 import Breadcrumbs from '../Breadcrumbs';
+import HeaderBar from './';
 
 describe('Header Bar', () => {
   it('Should have breadcrumbs and media info toggle', () => {

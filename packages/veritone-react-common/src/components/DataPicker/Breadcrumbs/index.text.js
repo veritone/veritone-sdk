@@ -2,8 +2,8 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { noop } from 'lodash';
 
-import Breadcrumbs from './';
 import BreadcrumbItem from './BreadcrumItem';
+import Breadcrumbs from './';
 
 describe('Breadcrumbs', () => {
   it('Should have Root Crumb Text when empty', () => {

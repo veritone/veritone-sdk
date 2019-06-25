@@ -3,11 +3,13 @@ import { mount } from 'enzyme';
 import { noop } from 'lodash';
 
 import NullState from '../../NullState';
-import FolderViewContainer from './';
 import FolderListView from './FolderListView';
-import FolderLoading from './';
+import FolderLoading from './FolderLoading';
 
 import { items } from './story';
+
+import FolderViewContainer from './';
+
 
 describe('FolderViewContainer', () => {
   it('Nullstate should show', () => {
@@ -29,7 +31,7 @@ describe('FolderViewContainer', () => {
         isLoading
       />
     );
-    expect(wrapper.contains(FolderLoading)).toBe(true);
+    expect(wrapper.exists(FolderLoading)).toBe(true);
   });
   it('Renders item list', () => {
     const wrapper = mount(

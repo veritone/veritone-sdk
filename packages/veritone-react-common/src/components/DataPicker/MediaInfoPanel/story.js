@@ -2,7 +2,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { boolean, number } from '@storybook/addon-knobs';
-import { noop } from 'lodash';
 
 import MediaInfoPanel from './';
 
@@ -98,6 +97,7 @@ storiesOf('DataPicker', module)
 
 
 export {
+  audioTdo,
   videoTdo,
   folderItem,
   imageItem

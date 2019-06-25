@@ -6,8 +6,15 @@ import Typography from '@material-ui/core/Typography';
 import Folder from '@material-ui/icons/Folder';
 
 import MediaPlayer from '../../MediaPlayer';
+
+import {
+  // audioTdo,
+  videoTdo,
+  folderItem,
+  imageItem
+} from './story';
+
 import MediaInfoPanel from './';
-import { audioTdo, videoTdo, folderItem, imageItem } from './story';
 
 describe('MediaInfoPanel', () => {
   it('Renders video TDO properly without close button', () => {
