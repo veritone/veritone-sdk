@@ -828,6 +828,7 @@ class SearchBarContainer extends React.Component {
               handleReset={this.handleResetAdvanced}
               advancedOptions={this.getAdvancedOptions}
               onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
+              searchByTag={openModal.dataTag}
             />
           </Popover>
         ) : null}

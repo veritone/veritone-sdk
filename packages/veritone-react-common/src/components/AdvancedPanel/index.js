@@ -4,8 +4,8 @@ import cx from 'classnames';
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import IconButton from "@material-ui/core/IconButton";
+import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
 import CloseIcon from "@material-ui/icons/Close";
-import Info from '@material-ui/icons/Info';
 import Divider from '@material-ui/core/Divider';
 import { findIndex, get, isEqual } from "lodash";
 
@@ -146,7 +146,7 @@ class ResponsiveDialog extends React.Component {
 
   render() {
     const { boundingBoxes, step } = this.state;
-    const { open, handleClose } = this.props;
+    const { open, handleClose, searchByTag } = this.props;
     return (
       <div>
         <Dialog
@@ -163,7 +163,7 @@ class ResponsiveDialog extends React.Component {
                   className={cx(style["advanced-icon-button"])}
                   onClick={handleClose}
                 >
-                  <Info />
+                  <InfoOutlineIcon />
                 </IconButton>
                 <IconButton
                   className={cx(style["advanced-icon-button"])}
@@ -178,7 +178,7 @@ class ResponsiveDialog extends React.Component {
           <div className={cx(style["dialog-content"])}>
             <div className={cx(style["area-text"])}>Area of Interest</div>
             <div className={cx(style["only-return-text"])}>
-              Only return search results for this logo if they appear in a defined region.
+              Only return search results for this {searchByTag} if they appear in a defined region.
             </div>
             <div className={cx(style["location-select-div"])}>
               <LocationSelect
@@ -197,7 +197,7 @@ class ResponsiveDialog extends React.Component {
           <div className={cx(style["dialog-content"])}>
             <div className={cx(style["area-text"])}>Confidence</div>
             <div className={cx(style["only-return-text"])}>
-              Search by the percentage of confidence of this logo.
+              Search by the percentage of confidence of this {searchByTag}.
             </div>
             <div className={cx(style["location-select-div"])}>
               <RangeSelect
@@ -209,8 +209,8 @@ class ResponsiveDialog extends React.Component {
           <div className={cx(style["dialog-content"], style["action"])}>
             <div onClick={this.handleResetAll} className={cx(style["reset-all"])}>RESET ALL</div>
             <div>
-              <Button onClick={handleClose}>CANCEL</Button>
-              <Button onClick={this.handleApply} variant="raised" color="primary">
+              <Button onClick={handleClose} className={cx(style["vbtn-black-color"], style["vbtn-cancel"])}>CANCEL</Button>
+              <Button onClick={this.handleApply} variant="raised" className={cx(style["vbtn-blue"])}>
                 APPLY
               </Button>
             </div>

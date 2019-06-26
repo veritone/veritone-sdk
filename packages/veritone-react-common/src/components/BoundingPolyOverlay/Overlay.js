@@ -17,8 +17,6 @@ import { guid } from '../../helpers/guid';
 import { getMousePosition } from '../../helpers/dom';
 import withContextProps from '../../helpers/withContextProps';
 import { OverlayPositioningContext } from './OverlayPositioningProvider';
-import OverlayConfirmMenu from './OverlayConfirmMenu';
-import OverlayActionsMenu from './OverlayActionsMenu';
 import RndBox from './RndBox';
 import {
   percentagePolyToPixelXYWidthHeight,
@@ -93,7 +91,7 @@ export default class Overlay extends React.Component {
     stylesByObjectType: {},
     defaultBoundingBoxStyles: {
       backgroundColor: 'rgba(72,147,226,0.7)',
-      border: '1px solid #fff'
+      border: '1px solid #4893E2'
     }
   };
 
@@ -393,24 +391,13 @@ export default class Overlay extends React.Component {
   render() {
     const { top, left, height, width } = this.props.overlayPositioningContext;
 
-    const showingConfirmMenu =
-      this.hasStagedBoundingBox() &&
-      !this.state.userActingOnBoundingBox &&
-      !this.state.userMinimizedConfirmMenu;
-
-    const showingActionsMenu =
-      isString(this.state.focusedBoundingBoxId) &&
-      !this.state.userActingOnBoundingBox &&
-      !this.state.userMinimizedConfirmMenu &&
-      this.state.boundingBoxPositions.some(
-        el => el.id === this.state.focusedBoundingBoxId
-      );
-
     const boundingBoxCommonStyles = {
       // this seems to fix some rendering jank
       // (half of overlay would not render sometimes)
       willChange: 'left, top, width, height'
     };
+
+    const backgoundReadOnlyRndBox  = "rgba(72,147,226,0.7)";
 
     return (
       <div
@@ -441,9 +428,9 @@ export default class Overlay extends React.Component {
                 style={{
                   ...boundingBoxCommonStyles,
                   ...this.props.defaultBoundingBoxStyles,
-                  ...this.props.stylesByObjectType[overlayObjectType],
                   // do not let this box interfere with mouse events as we draw out
                   // the initial bounding box
+                  backgroundColor: (readOnly || this.props.readOnly) ? backgoundReadOnlyRndBox : this.props.stylesByObjectType[overlayObjectType].backgroundColor,
                   pointerEvents:
                     readOnly ||
                       this.props.readOnly ||
@@ -501,32 +488,6 @@ export default class Overlay extends React.Component {
                 // don't show handles during initial drag placement
                 this.state.drawingInitialBoundingBox ? false : undefined
               }
-            />
-          )}
-
-        {showingConfirmMenu &&
-          !this.props.readOnly && (
-            <OverlayConfirmMenu
-              visible={showingConfirmMenu}
-              confirmLabel={this.props.confirmLabel}
-              onConfirm={this.confirmStagedBoundingBox}
-              onCancel={this.removeStagedBoundingBox}
-              onMinimize={this.minimizeConfirmMenu}
-              bottomOffset={this.props.toolBarOffset}
-            />
-          )}
-
-        {showingActionsMenu &&
-          !this.props.addOnly &&
-          !this.props.readOnly && (
-            <OverlayActionsMenu
-              visible={showingActionsMenu}
-              onMinimize={this.minimizeConfirmMenu}
-              menuItems={this.props.actionMenuItems}
-              onDelete={this.handleDelete}
-              // onConfirm={this.handleConfirmChange}
-              bottomOffset={this.props.toolBarOffset}
-              focusedBoundingBoxId={this.state.focusedBoundingBoxId}
             />
           )}
 

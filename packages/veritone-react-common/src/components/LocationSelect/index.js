@@ -62,18 +62,18 @@ export default class LocationSelect extends Component {
               initialBoundingBoxPolys={boundingBoxes}
               stylesByObjectType={{
                 a: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
+                  backgroundColor: 'rgba(72,147,226,0)'
                 },
                 b: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
+                  backgroundColor: 'rgba(72,147,226,0)'
                 },
                 c: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
+                  backgroundColor: 'rgba(72,147,226,0)'
                 }
               }}
               stagedBoundingBoxStyles={{
                 backgroundColor: 'rgba(72,147,226,0.7)',
-                border: '1px solid #fff'
+                border: '1px solid #4893E2'
               }}
               handleChangeFrame={this.handleChangeFrame}
               key={this.state.frame}
@@ -81,13 +81,10 @@ export default class LocationSelect extends Component {
             />
             <div
               style={{
-                backgroundImage: `url(https://picsum.photos/${
-                  340
-                  }/${200})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
                 backgroundSize: 'contain',
-                backgroundColor: 'lightBlue',
+                backgroundColor: '#D8D8D8',
                 height: 200,
                 width: 340
               }}
@@ -100,7 +97,7 @@ export default class LocationSelect extends Component {
               <div className={styles.introText}>
                 Use your mouse to draw a bounding box on the area on the image you would like to return search results.
               </div>
-              <Button onClick={this.onUpdateStep(2)} color="primary">ADD AREA OF INTEREST</Button>
+              <Button onClick={this.onUpdateStep(2)} className={cx(styles["btn-action-area"])}>ADD AREA OF INTEREST</Button>
             </div>
           }
           {step === 2 &&
@@ -108,7 +105,7 @@ export default class LocationSelect extends Component {
               <div className={styles.introText}>
                 Use your mouse to draw a bounding box on the area on the image you would like to return search results.
             </div>
-              <Button onClick={this.onUpdateStep(3)} color="primary">SAVE AREA OF INTEREST</Button>
+              <Button onClick={this.onUpdateStep(3)} className={cx(styles["btn-action-area"])}>SAVE AREA OF INTEREST</Button>
             </div>}
           {step === 3 && <div className={cx(styles["aria-item"])}>
             <AreaInterest

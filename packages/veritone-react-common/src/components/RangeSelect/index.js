@@ -45,7 +45,7 @@ export default class RangeSelect extends Component {
         style={{
           background: getTrackBackground({
             values: this.props.selectedConfidenceRange,
-            colors: ['#ccc', '#548BF4', '#ccc'],
+            colors: ['#ccc', '#4285F4', '#ccc'],
             min: MIN,
             max: MAX
           }),
