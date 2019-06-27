@@ -7,7 +7,6 @@ export const namespace = 'dataPicker';
 export const PICK_START = `${namespace}_PICK_START`;
 export const ON_PICK = `${namespace}_ON_PICK`;
 export const PICK_END = `${namespace}_PICK_END`;
-export const INIT_ORG_CONFIG = `${namespace}_INIT_ORG_CONFIG`;
 export const INIT_PICKER_TYPE = `${namespace}_INIT_PICKER_TYPE`;
 export const INIT_FOLDER = `${namespace}_INIT_FOLDER`;
 export const INIT_UPLOAD = `${namespace}_INIT_UPLOAD`;
@@ -80,21 +79,6 @@ export default createReducer(defaultState, {
         ...state[id],
         open: false
       }
-    }
-  },
-  [INIT_ORG_CONFIG](
-    state,
-    {
-      payload: {
-        orgEnableFolders,
-        orgDisableUploads
-      }
-    }
-  ) {
-    return {
-      ...state,
-      orgEnableFolders,
-      orgEnableUploads: !orgDisableUploads
     }
   },
   [INIT_PICKER_TYPE](
@@ -367,8 +351,6 @@ function getCurrentIdAndType(state, id) {
 const local = state => state[namespace];
 
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
-export const orgEnableFolders = (state) => get(local(state), 'orgEnableFolders');
-export const orgEnableUploads = (state) => get(local(state), 'orgEnableUploads');
 export const availablePickerTypes = (state, id) => get(local(state), [id, 'availablePickerTypes'], []);
 export const currentPickerType = (state, id) => get(local(state), [id, 'currentPickerType']);
 export const searchValue = (state, id) => get(local(state), [id, 'searchValue'], '');
