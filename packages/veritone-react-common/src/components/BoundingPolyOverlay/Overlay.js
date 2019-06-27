@@ -428,9 +428,10 @@ export default class Overlay extends React.Component {
                 style={{
                   ...boundingBoxCommonStyles,
                   ...this.props.defaultBoundingBoxStyles,
+                  ...this.props.stylesByObjectType[overlayObjectType],
                   // do not let this box interfere with mouse events as we draw out
                   // the initial bounding box
-                  backgroundColor: (readOnly || this.props.readOnly) ? backgoundReadOnlyRndBox : this.props.stylesByObjectType[overlayObjectType].backgroundColor,
+                  // backgroundColor: (readOnly || this.props.readOnly) ? backgoundReadOnlyRndBox : this.props.stylesByObjectType[overlayObjectType].backgroundColor,
                   pointerEvents:
                     readOnly ||
                       this.props.readOnly ||

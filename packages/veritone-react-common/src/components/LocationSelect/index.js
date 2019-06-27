@@ -62,13 +62,13 @@ export default class LocationSelect extends Component {
               initialBoundingBoxPolys={boundingBoxes}
               stylesByObjectType={{
                 a: {
-                  backgroundColor: 'rgba(72,147,226,0)'
+                  backgroundColor: 'rgba(72,147,226,0.7)'
                 },
                 b: {
-                  backgroundColor: 'rgba(72,147,226,0)'
+                  backgroundColor: 'rgba(72,147,226,0.7)'
                 },
                 c: {
-                  backgroundColor: 'rgba(72,147,226,0)'
+                  backgroundColor: 'rgba(72,147,226,0.7)'
                 }
               }}
               stagedBoundingBoxStyles={{
@@ -84,8 +84,8 @@ export default class LocationSelect extends Component {
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
                 backgroundSize: 'contain',
-                backgroundColor: '#D8D8D8',
-                height: 200,
+                backgroundImage: 'url(https://i.imgur.com/cgoE43m.png)',
+                height: 198,
                 width: 340
               }}
             />
