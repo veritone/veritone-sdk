@@ -99,21 +99,47 @@ const StructuredDataGenerator = modalState => {
   }
 };
 
-const LogoConditionGenerator = modalState => {
+const BoundingBoxGenerator = modalState => {
   const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
-  const range = _.get(modalState, "advancedOptions.range", []);
-  const boundingPolyParams = !_.isEmpty(boundingPoly) ? [{
+  if (_.isEmpty(boundingPoly)) {
+    return {};
+  }
+  return {
     operator: "bounding_poly",
     field: "logo-recognition.series.boundingPoly",
     relation: "within", // within | intersects | disjoint
     coordinates: getCoordinatesFromBounding(boundingPoly)
-  }] : [];
-  const rangeParams = !_.isEmpty(range) ? [{
+  }
+}
+
+const ConfidenceRangeGenerator = modalState => {
+  const range = _.get(modalState, "advancedOptions.range", []);
+  if (_.isEmpty(range)) {
+    return {};
+  }
+  return {
     operator: "range",
     field: "logo-recognition.series.confidence",
-    gte: range[0],
-    lt: range[1]
-  }] : [];
+    gte: range[0] / 100,
+    lt: range[1] / 100
+  }
+}
+
+const buildAndOperator = (conditions) => {
+  return {
+    operator: 'and',
+    conditions: conditions
+  };
+}
+
+const buildOrOperator = (conditions) => {
+  return {
+    operator: 'or',
+    conditions: conditions
+  };
+}
+
+const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
     const params = {
       operator: 'query_string',
@@ -125,14 +151,8 @@ const LogoConditionGenerator = modalState => {
       return params;
     }
     else {
-      return {
-        operator: "and",
-        conditions: [
-          params,
-          ...boundingPolyParams,
-          ...rangeParams
-        ]
-      }
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
     }
   } else {
     const params = {
@@ -145,14 +165,8 @@ const LogoConditionGenerator = modalState => {
       return params
     }
     else {
-      return {
-        operator: "and",
-        conditions: [
-          params,
-          ...boundingPolyParams,
-          ...rangeParams
-        ],
-      }
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
     }
   }
 };
@@ -162,20 +176,6 @@ const getCoordinatesFromBounding = (boundingPoly) => {
 }
 
 const ObjectConditionGenerator = modalState => {
-  const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
-  const range = _.get(modalState, "advancedOptions.range", []);
-  const boundingPolyParams = !_.isEmpty(boundingPoly) ? [{
-    operator: "bounding_poly",
-    field: "logo-recognition.series.boundingPoly",
-    relation: "within", // within | intersects | disjoint
-    coordinates: getCoordinatesFromBounding(boundingPoly)
-  }] : [];
-  const rangeParams = !_.isEmpty(range) ? [{
-    operator: "range",
-    field: "logo-recognition.series.confidence",
-    gte: range[0],
-    lt: range[1]
-  }] : [];
   if (modalState.type === 'fullText') {
     const params = {
       operator: 'query_string',
@@ -187,14 +187,8 @@ const ObjectConditionGenerator = modalState => {
       return params;
     }
     else {
-      return {
-        operator: "and",
-        conditions: [
-          params,
-          ...boundingPolyParams,
-          ...rangeParams
-        ]
-      }
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
     }
   } else {
     const params = {
@@ -207,14 +201,8 @@ const ObjectConditionGenerator = modalState => {
       return params
     }
     else {
-      return {
-        operator: "and",
-        conditions: [
-          params,
-          ...boundingPolyParams,
-          ...rangeParams
-        ],
-      }
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
     }
   }
 };
@@ -320,20 +308,7 @@ const TimeConditionGenerator = modalState => {
 
 // this parser converts the v2 text query languge into v3 search text operators
 const V2QueryStringParser = (field, queryString) => {
-  function buildOrOperator(conditions) {
-    return {
-      operator: 'or',
-      conditions: conditions
-    };
-  }
-
-  function buildAndOperator(conditions) {
-    return {
-      operator: 'and',
-      conditions: conditions
-    };
-  }
-
+  
   function buildQueryStringOperator(field, queryText, highlight, analyzer) {
     let op = {
       operator: 'query_string',
