@@ -27,9 +27,10 @@ export default class index extends Component {
     const { areaOfInterest = {} } = this.props;
     const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
     const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
-    return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
+    const centroidX = formatNumber((parseFloat(basePoint1.x) + parseFloat(basePoint2.x)) / 2);
+    const centroidY = formatNumber((parseFloat(basePoint1.y) + parseFloat(basePoint2.y)) / 2);
+    return `(X ${centroidX}, Y ${centroidY})`
   }
-
   render() {
     const { onEditAoI, onRemoveAoI } = this.props;
     return (

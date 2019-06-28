@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import { findIndex, get, isEqual } from "lodash";
 
 import { guid } from '../../helpers/guid';
-import LocationSelect from '../LocationSelect';
+import LocationSelect from '../AreaSelect';
 import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 

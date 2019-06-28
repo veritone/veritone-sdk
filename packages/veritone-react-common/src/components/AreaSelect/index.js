@@ -84,8 +84,8 @@ export default class LocationSelect extends Component {
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
                 backgroundSize: 'contain',
-                backgroundImage: 'url(https://i.imgur.com/cgoE43m.png)',
-                height: 198,
+                backgroundImage: 'url(https://i.imgur.com/cgoE43m.png)', //temp image
+                height: 200,
                 width: 340
               }}
             />

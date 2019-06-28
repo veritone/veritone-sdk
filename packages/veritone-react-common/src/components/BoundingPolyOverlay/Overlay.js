@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNumber, isEqual, isString, findIndex, get } from 'lodash';
+import { isNumber, isEqual, findIndex, get } from 'lodash';
 import memoize from 'memoize-one';
 import {
   arrayOf,
@@ -105,12 +105,14 @@ export default class Overlay extends React.Component {
   };
 
   static getDerivedStateFromProps(props) {
+    const { initialBoundingBoxPolys } = props;
     return {
       boundingBoxPositions: Overlay.mapPolysToInternalFormat(
         props.initialBoundingBoxPolys,
         props.overlayPositioningContext.width,
         props.overlayPositioningContext.height
-      )
+      ),
+      focusedBoundingBoxId: get(initialBoundingBoxPolys, [0, "id"], null)
     };
   }
 
@@ -131,7 +133,6 @@ export default class Overlay extends React.Component {
 
   handleResizeExistingBox = (e, direction, ref, delta, position) => {
     this.removeStagedBoundingBox();
-
     this.setState(state => {
       const focusedId = ref.getAttribute('data-boxid');
       const focusedIndex = findIndex(state.boundingBoxPositions, {
@@ -289,7 +290,6 @@ export default class Overlay extends React.Component {
   };
 
   removeStagedBoundingBox = () => {
-    // delete staged box
     this.setState({
       stagedBoundingBoxPosition: {}
     });
@@ -312,7 +312,6 @@ export default class Overlay extends React.Component {
       this.handleBackgroundMouseUp();
       return;
     }
-
     // deal with dragging out an initial box on a blank canvas
     const { x: mouseX, y: mouseY } = getMousePosition(e);
 
@@ -361,7 +360,6 @@ export default class Overlay extends React.Component {
       if (this.props.autoCommit) {
         this.confirmStagedBoundingBox();
       }
-
       this.setState({
         drawingInitialBoundingBox: false,
         userActingOnBoundingBox: false,
@@ -372,7 +370,6 @@ export default class Overlay extends React.Component {
 
   handleDelete = () => {
     this.props.onDeleteBoundingBox(this.state.focusedBoundingBoxId);
-
     this.setState({
       userActingOnBoundingBox: false,
       focusedBoundingBoxId: null
@@ -392,13 +389,8 @@ export default class Overlay extends React.Component {
     const { top, left, height, width } = this.props.overlayPositioningContext;
 
     const boundingBoxCommonStyles = {
-      // this seems to fix some rendering jank
-      // (half of overlay would not render sometimes)
       willChange: 'left, top, width, height'
     };
-
-    const backgoundReadOnlyRndBox  = "rgba(72,147,226,0.7)";
-
     return (
       <div
         style={{
@@ -429,9 +421,6 @@ export default class Overlay extends React.Component {
                   ...boundingBoxCommonStyles,
                   ...this.props.defaultBoundingBoxStyles,
                   ...this.props.stylesByObjectType[overlayObjectType],
-                  // do not let this box interfere with mouse events as we draw out
-                  // the initial bounding box
-                  // backgroundColor: (readOnly || this.props.readOnly) ? backgoundReadOnlyRndBox : this.props.stylesByObjectType[overlayObjectType].backgroundColor,
                   pointerEvents:
                     readOnly ||
                       this.props.readOnly ||
