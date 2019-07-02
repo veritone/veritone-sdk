@@ -99,14 +99,18 @@ const StructuredDataGenerator = modalState => {
   }
 };
 
+const getCoordinatesFromBounding = (boundingPoly) => {
+  return boundingPoly.map(item => [item.x, item.y]);
+}
+
 const BoundingBoxGenerator = modalState => {
   const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
   if (_.isEmpty(boundingPoly)) {
     return {};
   }
   return {
-    operator: "bounding_poly",
-    field: "logo-recognition.series.boundingPoly",
+    operator: "bounding_box",
+    field: "logo-recognition.series.boundingBox",
     relation: "within", // within | intersects | disjoint
     coordinates: getCoordinatesFromBounding(boundingPoly)
   }
@@ -170,10 +174,6 @@ const LogoConditionGenerator = modalState => {
     }
   }
 };
-
-const getCoordinatesFromBounding = (boundingPoly) => {
-  return boundingPoly.map(item => [item.x, item.y]);
-}
 
 const ObjectConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
@@ -308,7 +308,7 @@ const TimeConditionGenerator = modalState => {
 
 // this parser converts the v2 text query languge into v3 search text operators
 const V2QueryStringParser = (field, queryString) => {
-  
+
   function buildQueryStringOperator(field, queryText, highlight, analyzer) {
     let op = {
       operator: 'query_string',
