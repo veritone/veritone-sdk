@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="24px" viewBox="0 0 25 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 54.1 (76490) - https://sketchapp.com -->
+    <title>8F05D0D3-7527-4E09-B857-52076894F35A</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <polygon id="path-1" points="9.59999999 16.1376 18.0752 7.66239998 19.2 8.78719998 9.59999999 18.3872 5.13759997 13.9248 6.26239998 12.8"></polygon>
+    </defs>
+    <g id="Data-Refresh-Queue-Notification-v3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3.0-Data-Refresh-/-Expanded-/-Completed-Task" transform="translate(-721.000000, -271.000000)">
+            <g id="Data-Refresh-Queue" transform="translate(703.000000, 75.000000)">
+                <g id="Dataset-3" transform="translate(18.866667, 196.000000)">
+                    <g id="Checkmark-Icon">
+                        <circle id="Oval" fill="#66BB6A" cx="12" cy="12" r="12"></circle>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="check2" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
