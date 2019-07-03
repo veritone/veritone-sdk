@@ -17,7 +17,7 @@ import {
 import MediaInfoPanel from './';
 
 describe('MediaInfoPanel', () => {
-  it('Renders video TDO properly without close button', () => {
+  it('Renders video TDO properly without close button + childNode', () => {
     const wrapper = mount(
       <MediaInfoPanel
         open
@@ -40,6 +40,7 @@ describe('MediaInfoPanel', () => {
     const duration = wrapper.find('[data-veritone-element="media-panel-duration"]');
     expect(duration.length).toBe(1);
     expect(duration.text()).toBe('00:04:06');
+    expect(wrapper.exists('[data-veritone-element="childNode"]')).toBe(true);
   });
 
   // For some reason audio tests fail... not sure why, cuz it should all be there..

@@ -37,8 +37,6 @@ const ITEM_PICK_PROPS = [
 ];
 
 const defaultState = {
-  orgEnableFolders: false,
-  orgEnableUploads: false,
   itemData: {},
   searchData: {}
 };

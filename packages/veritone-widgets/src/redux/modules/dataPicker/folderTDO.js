@@ -49,7 +49,6 @@ function* initializeFolderData(id, refreshCache) {
   } = yield getGqlParams();
   const getItem = yield select(getItemByTypeAndId);
   const cachedFolderData = getItem(template.type, ROOT_ID);
-  console.log('ebaiuegba');
   let itemDataPayload = {};
   // Get root folders
   if (refreshCache || !cachedFolderData) {

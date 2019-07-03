@@ -27,7 +27,8 @@ const videoTdo = {
       protocol: "dash",
       uri: "http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd"
     }
-  ]
+  ],
+  childNode: (<div data-veritone-element="childNode">Whatever you want here!</div>)
 };
 
 const audioTdo = {
@@ -65,7 +66,7 @@ const imageItem = {
 
 
 storiesOf('DataPicker', module)
-  .add('MediaInfoPanel: selected video media item', () => (
+  .add('MediaInfoPanel: selected video media item w/ childNode', () => (
     <MediaInfoPanel
       open={boolean('open', false)}
       selectedItems={[videoTdo]}

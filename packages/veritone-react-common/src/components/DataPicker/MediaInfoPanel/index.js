@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, arrayOf, shape, bool, number, func, object } from 'prop-types';
+import { string, arrayOf, shape, bool, number, func, object, node } from 'prop-types';
 import { get } from 'lodash';
 import { format } from 'date-fns';
 import { Transition } from 'react-transition-group';
@@ -38,7 +38,8 @@ const tdoShape = shape({
     protocol: string
   })),
   createdDateTime: string.isRequired,
-  modifiedDateTime: string.isRequired
+  modifiedDateTime: string.isRequired,
+  childNode: node
 });
 
 const formatDateString = date => {
@@ -199,6 +200,9 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
             )}
           </TableBody>
         </Table>
+        {
+          !!selectedItem.childNode && selectedItem.childNode
+        }
       </div>
     </div>
   )
