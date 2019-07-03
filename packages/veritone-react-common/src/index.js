@@ -49,4 +49,5 @@ export SelectionButton from './components/SelectionButton';
 export MediaPlayer from './components/MediaPlayer';
 export RestartMediaButton from './components/MediaPlayer/RestartMediaButton';
 export Lightbox from './components/share-components/Lightbox';
+export VideoSource from './components/MediaPlayer/VideoSource';
 export Notifier from './components/Notifier';
