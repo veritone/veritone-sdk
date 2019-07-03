@@ -184,6 +184,7 @@ export default class NotificationList extends React.Component {
               color="default"
               className={classNames(styles.iconButton)}
               onClick={this.handleEntryActionClicked(originalData)}
+              data-veritone-element={formatedData.btnActionTrackName || 'notification-action-button'}
             >
               { formatedData.actionIcon }
             </IconButton>
@@ -194,6 +195,7 @@ export default class NotificationList extends React.Component {
               color="default"
               className={classNames(styles.iconButton)}
               onClick={this.handleEntryRemoveClick(originalData)}
+              data-veritone-element={formatedData.btnRemoveTrackName || 'notification-remove-button'}
             >
               {
                 formatedData.removeIcon || <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />
@@ -209,9 +211,10 @@ export default class NotificationList extends React.Component {
   drawFailedItem = (entryData) => {
     const failedEntryData = {
       statusIcon: <img src={ErrorIconSvg} />,
-      removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       actionIcon: <RefreshIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusDescription: 'failed',
+      btnActionTrackName: 'failed-notification-retry-botton',
+      btnRemoveTrackName: 'failed-notification-remove-button',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData
@@ -223,8 +226,9 @@ export default class NotificationList extends React.Component {
   drawCompleteItem = (entryData) => {
     const completeEntryData = {
       statusIcon: <img src={CheckIconSvg} />,
-      removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusDescription: 'complete',
+      btnActionTrackName: 'complete-notification-action-botton',
+      btnRemoveTrackName: 'complete-notification-remove-button',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_SLIDE_OUT,
       ...entryData
@@ -235,9 +239,10 @@ export default class NotificationList extends React.Component {
 
   drawPreparingItem = (entryData) => {
     const preparingEntryData = {
-      removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusIcon: this.drawSpinner(),
       statusDescription: 'preparing',
+      btnActionTrackName: 'preparing-notification-action-botton',
+      btnRemoveTrackName: 'preparing-notification-remove-button',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData
@@ -248,9 +253,10 @@ export default class NotificationList extends React.Component {
 
   drawProcessingItem = (entryData) => {
     const processingEntryData = {
-      removeIcon: <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
       statusIcon: this.drawSpinner(),
       statusDescription: 'processing',
+      btnActionTrackName: 'processing-notification-action-botton',
+      btnRemoveTrackName: 'processing-notification-remove-button',
       introAnimation: INTRO_FADE_IN,
       outroAnimation: OUTRO_FADE_OUT,
       ...entryData
