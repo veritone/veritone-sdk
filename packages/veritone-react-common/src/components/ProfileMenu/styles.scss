@@ -1,6 +1,10 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
+.popover {
+  margin-top: 18px;
+}
+
 .userNullState {
   @include mui-text('body1');
   padding: 20px 0 !important;
@@ -36,7 +40,7 @@
     }
 
     .editButton {
-      padding-top: 5px;
+      padding: 5px 0 10px;
 
       div {
         // fix shadow
