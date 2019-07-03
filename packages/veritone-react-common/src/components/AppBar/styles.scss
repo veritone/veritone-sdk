@@ -1,10 +1,70 @@
 @import 'src/styles/modules/muiTypography';
 
 .appBar {
-  position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  display: flex;
+  position: fixed;
+}
+
+.logo {
+  //height: 24px;
+  width: 60px;
+  height: 60px;
+  padding: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    user-select: none;
+  }
+}
+
+.content {
+  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 10px;
+
+  &>div {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
+
+  .left {
+    justify-content: flex-start;
+  }
+
+  .center {
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .right {
+    justify-content: flex-end;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.23px;
+    font-family: 'Dosis', 'secondaryLogo', 'tertiaryLogo', Helvetica, sans-serif;
+  }
+
+  .appLogo {
+    user-select: none;
+  }
+
+  .controllers {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .container {
@@ -15,15 +75,13 @@
   height: 100%;
 }
 
-.logo {
-  height: 24px;
-}
 
-.title {
-  @include mui-text('title');
-  color: white;
+
+//.title {
+//  @include mui-text('title');
+//  color: white;
   //margin-left: auto;
-}
+//}
 
 .iconGroup {
   //margin-left: auto;

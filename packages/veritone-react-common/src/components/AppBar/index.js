@@ -15,10 +15,12 @@ import {
   element
 } from 'prop-types';
 
-import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
 import Notifier, { notifierPropTypes } from 'components/Notifier';
+import Help, { helpPropTypes } from 'components/Help';
+
+import SmallVeritoneLogo from 'images/header-veritone-icon.svg';
 
 import styles from './styles.scss';
 
@@ -26,7 +28,9 @@ export const appBarHeight = 60;
 export default class AppBar extends React.Component {
   static propTypes = {
     title: string,
+    titleColor: string,
     backgroundColor: string,
+    logoBackgroundColor: string,
     enabledApps: arrayOf(
       shape({
         name: string,
@@ -48,6 +52,7 @@ export default class AppBar extends React.Component {
     closeButton: bool,
     logo: bool,
     logoSrc: string,
+    appLogoSrc: string,
     onClose: func,
     enabledAppsFailedLoading: bool,
     isFetchingApps: bool,
@@ -57,12 +62,15 @@ export default class AppBar extends React.Component {
     user: objectOf(any),
     onSwitchApp: func,
     additionMenuItems: arrayOf(element),
-    notification: notifierPropTypes
+    help: shape(helpPropTypes),
+    notification: shape(notifierPropTypes)
   };
   static defaultProps = {
     logo: true,
-    logoSrc: veritoneLogo,
-    backgroundColor: '#4caf50',
+    logoSrc: SmallVeritoneLogo,
+    titleColor: '#FFFFFF',
+    backgroundColor: '#325491',
+    logoBackgroundColor: 'rgba(0,0,0,0.2)',
     rightActions: [],
     elevation: 2,
     onLogout: () => {},
@@ -75,79 +83,138 @@ export default class AppBar extends React.Component {
     this.props.fetchEnabledApps();
   };
 
-  render() {
+  render () {
+    const {
+      elevation,
+
+      logo,
+      logoSrc,
+      appLogoSrc,
+      backgroundColor,
+      logoBackgroundColor,
+      title,
+      titleColor,
+
+      rightActions,
+
+      help,
+      notification,
+
+      appSwitcher,
+      onSwitchApp,
+      enabledApps,
+      isFetchingApps,
+      enabledAppsFailedLoading,
+
+      profileMenu,
+      user,
+      onLogout,
+      onEditProfile,
+      additionMenuItems
+    } = this.props;
+
     return (
       <Paper
         component="header"
         square
-        elevation={this.props.elevation}
+        elevation={elevation}
         className={styles.appBar}
-        style={{ height: appBarHeight, background: this.props.backgroundColor }}
+        style={{ height: appBarHeight, background: backgroundColor }}
       >
-        <div className={styles.container}>
-          {this.props.logo && (
-            <div>
-              <img src={this.props.logoSrc} className={styles['logo']} />
-            </div>
-          )}
+        <div 
+          className={styles.logo}
+          style={{ backgroundColor: logoBackgroundColor }}
+        >
+          { logo && <img src={logoSrc} draggable="false"/> }
+        </div>
+        <div className={styles.content} style={{color: titleColor}}>
+          <div className={styles.left}>
+            {
+              appLogoSrc ?
+                <img className={styles.appLogo} src={appLogoSrc} draggable="false" /> :
+                <div className={styles.title}>{title}</div>
+            }
+          </div>
+          <div className={styles.center} />
+          <div className={styles.right}>
+            <div className={styles.controllers}>
+              {
+                //Custom Controllers (Copy over from the previous app bar version)
+                rightActions && rightActions.length > 0 && (
+                  <div className={styles['iconGroup']}> 
+                  {
+                    rightActions.map(({ label, onClick }) => (
+                      <div className={styles['iconGroup__icon']} key={label}>
+                        <a
+                          href="#"
+                          onClick={onClick}
+                          className={styles['rightAction-label']}
+                        >
+                          {label}
+                        </a>
+                      </div>
+                    ))
+                  }
+                  </div>
+                )
+              }
 
-          <div className={styles['title']}>{this.props.title}</div>
+              {
+                //Notifications
+                notification && <Notifier {...notification} />
+              }
 
-          <div className={styles['iconGroup']}>
-            {this.props.notification && (
-              <div>
-                <Notifier {...this.props.notification} />
-              </div>
-            )}
+              {
+                //Help
+                help && <Help {...help} />
+              }
 
-            {this.props.rightActions.map(({ label, onClick }) => (
-              <div className={styles['iconGroup__icon']} key={label}>
-                <a
-                  href="#"
-                  onClick={onClick}
-                  className={styles['rightAction-label']}
-                >
-                  {label}
-                </a>
-              </div>
-            ))}
-            
-            {this.props.appSwitcher && (
-              <div>
-                <AppSwitcher
-                  enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
-                  enabledApps={this.props.enabledApps}
-                  isFetchingApps={this.props.isFetchingApps}
-                  handleRefresh={this.handleRefresh}
-                  currentAppName={this.props.currentAppName}
-                  onSwitchApp={this.props.onSwitchApp}
-                />
-              </div>
-            )}
+              {
+                //App Switcher
+                appSwitcher && (
+                  <div>
+                    <AppSwitcher
+                      enabledApps={enabledApps}
+                      isFetchingApps={isFetchingApps}
+                      onSwitchApp={onSwitchApp}
+                      handleRefresh={this.handleRefresh}
+                      enabledAppsFailedLoading={enabledAppsFailedLoading}
+                    />
+                  </div>
+                )
+              }
 
-            {this.props.profileMenu && (
-              <div className={styles['iconGroup__icon']}>
-                <ProfileMenu
-                  onLogout={this.props.onLogout}
-                  onEditProfile={this.props.onEditProfile}
-                  user={this.props.user}
-                  additionMenuItems={this.props.additionMenuItems}
-                />
-              </div>
-            )}
+              {
+                //User Profile
+                profileMenu && (
+                  <div>
+                    <ProfileMenu
+                      onLogout={onLogout}
+                      onEditProfile={onEditProfile}
+                      user={user}
+                      additionMenuItems={additionMenuItems}
+                    />
+                  </div>
+                )
+              }
 
-            {this.props.closeButton && (
-              <div>
-                <div style={{ marginLeft: 'auto' }}>
-                  <IconButton onClick={this.props.onClose}>
-                    <CloseIcon nativeColor="white" />
-                  </IconButton>
+              {
+                //Close Button
+                this.props.closeButton && this.props.onClose && 
+                (
+                <div>
+                  <div style={{ marginLeft: 'auto' }}>
+                    <IconButton onClick={this.props.onClose}>
+                      <CloseIcon nativeColor="white" />
+                    </IconButton>
+                  </div>
                 </div>
-              </div>
-            )}
+                )
+              }
+            </div>
           </div>
         </div>
       </Paper>
-    );
+    )
   }
 }
