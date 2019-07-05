@@ -95,6 +95,8 @@ export default class LogoSearchModal extends React.Component {
   }
 
   onChange = debouncedQueryString => {
+    const {onChangeSearchInput} = this.props;
+    onChangeSearchInput(debouncedQueryString);
     if (debouncedQueryString) {
       this.setState({
         queryResults: [],

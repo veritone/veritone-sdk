@@ -45,7 +45,8 @@ class SearchBarContainer extends React.Component {
     highlightedPills: [],
     openAdvancedPanel: false,
     advancedEnableIds: [],
-    advancedOptions: {}
+    advancedOptions: {},
+    disableAdvancedSearch: true
   };
 
   _id = guid();
@@ -602,7 +603,8 @@ class SearchBarContainer extends React.Component {
       openModal: { modalId: null },
       selectedPill: null,
       insertDirection: null,
-      advancedOptions: {}
+      advancedOptions: {},
+      disableAdvancedSearch: true
     });
   };
 
@@ -632,7 +634,8 @@ class SearchBarContainer extends React.Component {
         this.setState({
           openModal: { modalId: null, key: guid() },
           selectedPill: null,
-          insertDirection: null
+          insertDirection: null,
+          disableAdvancedSearch: true
         }, () => {
           if (this.props.onSearch) {
             this.props.onSearch();
@@ -647,7 +650,8 @@ class SearchBarContainer extends React.Component {
         this.setState({
           openModal: { modalId: null, key: guid() },
           selectedPill: null,
-          insertDirection: null
+          insertDirection: null,
+          disableAdvancedSearch: true
         }, () => {
           if (this.props.onSearch) {
             this.props.onSearch();
@@ -663,7 +667,8 @@ class SearchBarContainer extends React.Component {
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
-        openModal: { modalId: '' + lastModal, key: guid() }
+        openModal: { modalId: '' + lastModal, key: guid() },
+        disableAdvancedSearch: true
       }, () => {
         if (this.props.onSearch) {
           this.props.onSearch();
@@ -677,7 +682,8 @@ class SearchBarContainer extends React.Component {
       openModal: { modalId: null },
       selectedPill: null,
       menuAnchorEl: null,
-      highlightedPills: []
+      highlightedPills: [],
+      disableAdvancedSearch: true
     });
     this.props.resetSearchParameters();
     if (this.props.onSearch) {
@@ -689,6 +695,23 @@ class SearchBarContainer extends React.Component {
     if (event.key === 'Enter' && event.repeat === false) {
       this.addOrEditModal();
     }
+  }
+
+  onChangeSearchInput = (result) => {
+    this.setState({disableAdvancedSearch: !(result)});
+  }
+
+  addPillEngineButton = engineCategory => () => {
+    const {modalId} = this.state.openModal;
+    if(modalId) {
+      this.setState({ 
+        openModal: { modalId: engineCategory.id },
+        key: guid(),
+        disableAdvancedSearch: true 
+      })
+    } else {
+      this.props.addPill()
+    } 
   }
 
   render() {
@@ -718,7 +741,6 @@ class SearchBarContainer extends React.Component {
           openMenu={this.handleMenuOpen}
           openMenuExtraActions={this.openMenuExtraActions}
           resetSearchParameters={this.resetSearchParameters}
-          disabledSavedSearch={this.props.disabledSavedSearch}
         />
         <Menu
           open={Boolean(this.state.menuAnchorEl)}
@@ -750,7 +772,10 @@ class SearchBarContainer extends React.Component {
             onClose={this.cancelModal}
             onKeyPress={this.onEnter}
           >
-            <Card className={cx(styles['engineCategoryModal'])} style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }} elevation={0}>
+            <Card
+              className={cx(styles['engineCategoryModal'])}
+              style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }} 
+              elevation={0}>
               <CardHeader
                 avatar={
                   <Icon iconClass={openModal.iconClass} color={'grey '} size={'2em'} />
@@ -765,7 +790,7 @@ class SearchBarContainer extends React.Component {
                           engineCategory={engineCategory}
                           backgroundColor={engineCategory.id === this.state.openModal.modalId ? this.props.color : undefined}
                           color={engineCategory.id === this.state.openModal.modalId ? '#ffffff' : undefined}
-                          addPill={this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }, key: guid() }) : this.props.addPill}
+                          addPill={this.addPillEngineButton(engineCategory)}
                         />
                       ))}
                   </div>
@@ -798,13 +823,14 @@ class SearchBarContainer extends React.Component {
                     presetSDOSchema={this.state.openModal.modalId === 'sdo-search-id' ? this.props.presetSDOSchema : undefined}
                     presetSDOAttribute={this.state.openModal.modalId === 'sdo-search-id' ? this.props.presetSDOAttribute : undefined}
                     sourceFilters={this.state.openModal.modalId === 'sdo-search-id' ? this.props.sourceFilters : undefined}
+                    onChangeSearchInput={this.onChangeSearchInput}
                   />
                 ) : null}
               </CardContent>
               <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
                 {(openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
                   <div className={cx(styles["advancedButton"])}>
-                    <Button onClick={this.handleOpenAdvanced}>ADVANCED</Button>
+                    <Button disabled={this.state.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
                     {this.getBadgeLength ? <div className={cx(styles["customBadge"])}>
                       {this.getBadgeLength}
                     </div> : null}
@@ -818,7 +844,11 @@ class SearchBarContainer extends React.Component {
                   color="primary"
                   className="transcriptSubmit"
                 >
-                  {this.state.selectedPill && !this.state.insertDirection ? ((selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') : 'Add'}
+                  {this.state.selectedPill && !this.state.insertDirection ? 
+                    ((selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') 
+                    :
+                    'Add'
+                  }
                 </Button>
               </CardActions>
             </Card>

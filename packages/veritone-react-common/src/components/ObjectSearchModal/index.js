@@ -86,6 +86,8 @@ export default class ObjectSearchModal extends React.Component {
   }
 
   onChange = debouncedQueryString => {
+    const {onChangeSearchInput} = this.props;
+    onChangeSearchInput(debouncedQueryString);
     if (debouncedQueryString) {
       this.setState({
         queryResults: [],
