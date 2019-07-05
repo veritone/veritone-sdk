@@ -5,31 +5,35 @@
   width: 100%;
 }
 
-.sectionTreeTab {
+.expandedStyle {
+  margin: 3px 0 !important;
+}
+
+.noShadow {
+  box-shadow: none !important;
+}
+
+.sectionTab {
   width: 100%;
   height: 50px;
-  border-bottom: 1px solid $grey-4 !important;
-  background-color: $grey-1 !important;
+  text-transform: uppercase;
+  color: $light-black;
+  background-color: $grey-2 !important;
+  font-weight: 500;
+  font-size: 12px;
+  border: none;
 
   &.dark {
     background-color: $grey-2 !important;
   }
 
-  .muiButtonLabelOverride {
-    display: inline-flex;
-    justify-content: flex-start;
+  .label {
+    line-height: 26px;
+    margin-left: 14px;
+    text-align: left;
+  }
 
-    .label {
-      flex-grow: 1;
-      text-align: left;
-    }
-
-    .leftIcon {
-      margin-right: 15px;
-    }
-
-    .rightIcon {
-      justify-self: flex-end;
-    }
+  .count {
+    line-height: 26px;
   }
 }

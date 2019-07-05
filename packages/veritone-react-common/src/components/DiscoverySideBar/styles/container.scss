@@ -4,8 +4,20 @@
 .container {
   display: flex;
   flex-direction: column;
+  position: relative;
   align-items: center;
   height: 100%;
-  color: $dark-black;
+  width: 359px;
+  color: $light-black;
   background-color: $grey-1;
+}
+
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  bottom: 15px;
+  border-top: 1px solid #DCDCDC;
+  padding-top: 16px
 }

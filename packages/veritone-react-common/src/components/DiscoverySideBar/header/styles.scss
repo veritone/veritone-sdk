@@ -20,26 +20,28 @@
   flex-grow: 1;
 
   .muiTabsFlexContainerOverride {
-    height: 46px;
+    height: 48px;
   }
 
-  .muiTabButtonRootOverride {
-    min-width: initial; // hack: get rid of material-ui's responsive scaling of tabs
-    color: $dark-black;
-  }
+  // .muiTabButtonRootOverride {
+  //   min-width: initial; // hack: get rid of material-ui's responsive scaling of tabs
+  //   color: $dark-black;
+  // }
 
-  .muiTabButtonLabelOverride {
-    font-size: 14px; // hack: get rid of material-ui's responsive scaling of tabs
-  }
+  // .muiTabButtonLabelOverride {
+  //   font-size: 14px; // hack: get rid of material-ui's responsive scaling of tabs
+  // }
 }
 
 .singleTabContainer {
   flex-grow: 1;
   padding-left: 25px;
 
-  .singleTabLabel {
-    @include mui-text('body1');
+  .tabLabel {
+    font-size: 12px !important;
+    font-weight: 500;
+    line-height: 24px;
     text-transform: uppercase;
-    color: $dark-black;
+    color: $min-black;
   }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import LooksOne from '@material-ui/icons/LooksOne';
 
 import Sidebar from './';
 
@@ -19,52 +20,55 @@ const exampleSectionTree = {
   children: [
     {
       label: 'Section 1',
+      icon: <LooksOne />,
+      type: 'checkbox',
       children: [
-        {
-          label: 'SubSection 1',
-          children: [
-            {
-              label: 'Sub-SubSection 1',
-              children: [{ formComponentId: 'select-station-form' }]
-            }
-          ]
-        }
+        { formComponentId: 'select-station-form' }
       ]
     },
     {
       label: 'Section 2',
-      children: []
+      children: [
+        { formComponentId: 'something-else' }
+      ]
     },
     {
       label: 'Section 3',
       children: [
-        {
-          label: 'SubSection 1',
-          children: [{ formComponentId: 'select-station-form' }]
-        },
-        {
-          label: 'SubSection 2',
-          children: [{ formComponentId: 'select-station-form' }]
-        }
+        { formComponentId: 'flying-car' }
       ]
-    }
+    },
+    {
+      label: 'Section 4',
+      type: 'checkbox',
+      children: [
+        { formComponentId: 'smiling-elephant' }
+      ]
+    },
+    {
+      label: 'Section 5',
+      children: [
+        { formComponentId: 'waving-good-bye' }
+      ]
+    },
   ]
-};
+}
 
 const exampleSelectedFilters = [
   {
-    label: 'filter category one',
+    label: '2019-7-2',
     number: 5,
     id: '1'
   },
   {
-    label: 'filter category 2',
+    label: '2019-6-15',
     number: 10,
     id: '2'
   }
 ];
 
 storiesOf('DiscoverySideBar', module)
+// no longer have two tabs
   .add('Two tabs', () => {
     const clearAllFilters = boolean('clearAllFilters button', false);
 
@@ -85,20 +89,25 @@ storiesOf('DiscoverySideBar', module)
     );
   })
   .add('One tab', () => {
-    const clearAllFilters = boolean('clearAllFilters button', false);
-
     return (
       <Container>
         <Sidebar
           tabs={['Filters']}
-          clearAllFilters={clearAllFilters}
-          onClearFilter={action('clear filter')}
-          onClearAllFilters={action('clear all filters')}
+          closeFilter={action('close filter dialog')}
           filtersSections={exampleSectionTree}
           formComponents={{
-            'select-station-form': <div>select a station</div>
+            'select-station-form': <div>select a station</div>,
+            'something-else': <div>A different world</div>,
+            'flying-car': <div>Fly so high</div>,
+            'smiling-elephant': <div>Beautiful circuit</div>,
+            'waving-good-bye': <div>See you again!</div>
           }}
           selectedFilters={exampleSelectedFilters}
+          onClick={action('click apply filter')}
+          checkboxCount={{
+            'select-station-form': 3,
+            'smiling-elephant': 7
+          }}
         />
       </Container>
     );

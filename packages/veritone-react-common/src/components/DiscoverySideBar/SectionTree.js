@@ -1,20 +1,19 @@
 import React from 'react';
 import cx from 'classnames';
-import { noop, initial, get } from 'lodash';
+import { get } from 'lodash';
 import {
   string,
   arrayOf,
   shape,
-  func,
   number,
   objectOf,
   element,
   bool
 } from 'prop-types';
-import Button from '@material-ui/core/Button';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { intersperse } from 'helpers/fp';
 import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
@@ -32,16 +31,8 @@ class SectionTree extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,
     formComponents: objectOf(element).isRequired,
-    activePath: arrayOf(number).isRequired,
-    onNavigate: func.isRequired
-  };
-
-  handleNavigateForward = index => {
-    this.props.onNavigate([...this.props.activePath, index]);
-  };
-
-  handleNavigateBack = () => {
-    this.props.onNavigate(initial(this.props.activePath));
+    activePath: arrayOf(number),
+    checkboxCount: number,
   };
 
   render() {
@@ -53,37 +44,24 @@ class SectionTree extends React.Component {
       this.props.sections // root visible by default
     );
 
-    const visibleFormComponentIdAtLeaf =
-      currentVisibleSection.children.length === 1 &&
-      currentVisibleSection.children[0].formComponentId;
-
     return (
       <div className={styles.tabsContainer}>
-        {currentPath.length > 0 && (
-          <SectionTreeTab
-            dark
-            label={currentVisibleSection.label}
-            leftIcon={<ArrowBackIcon />}
-            id={-1}
-            onClick={this.handleNavigateBack}
-            data-testtarget="back-button"
-          />
+        {currentVisibleSection.children.map(
+          ({ visible, label, formComponentId, children, icon, type }, i) =>
+            (
+              <SectionTreeTab
+                label={label}
+                icon={icon}
+                key={label}
+                checkboxCount={this.props.checkboxCount}
+                type={type}
+                formComponentIdAtLeaf={currentVisibleSection.children[i].children[0].formComponentId}
+                formComponents={this.props.formComponents}
+                id={i}
+                onChange={this.handleChangeExpand}
+              />
+            )
         )}
-
-        {visibleFormComponentIdAtLeaf
-          ? this.props.formComponents[visibleFormComponentIdAtLeaf]
-          : currentVisibleSection.children.map(
-              ({ visible, label, formComponentId, children }, i) =>
-                visible !== false && (
-                  <SectionTreeTab
-                    label={label}
-                    rightIcon={<ChevronRightIcon />}
-                    key={label}
-                    id={i}
-                    onClick={this.handleNavigateForward}
-                  />
-                )
-            )}
       </div>
     );
   }
@@ -93,44 +71,60 @@ export default SectionTree;
 
 export const SectionTreeTab = ({
   label,
-  id,
-  leftIcon,
-  rightIcon,
+  icon,
   filterCount,
   dark,
-  onClick = noop
-}) => (
+  type,
+  checkboxCount,
+  formComponentIdAtLeaf,
+  formComponents
+}) => {
   /* eslint-disable react/jsx-no-bind */
-  <Button
-    classes={{
-      root: cx(styles.sectionTreeTab, { [styles.dark]: dark }),
-      label: styles.muiButtonLabelOverride
-    }}
-    onClick={() => onClick(id)}
-  >
-    <span className={styles.leftIcon}>{leftIcon}</span>
-    <span className={styles.label}>{label}</span>
+  return (
+    <ExpansionPanel
+      classes={{
+        root: styles.noShadow,
+        expanded: styles.expandedStyle,
+      }}
+    >
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}
+        classes={{
+          root: cx(styles.sectionTab, { [styles.dark]: dark }, styles.noShadow),
+          expanded: styles.expandedStyle,
+        }}
+      >
+        <span className={styles.icon}>{icon}</span>
+        <span className={styles.label}>{label}</span>
 
-    {filterCount > 0 && (
-      <div onMouseOver={() => console.log('hover')}>
-        <Chip
-          label={filterCount}
-          hoveredLabel={'clear'}
-          style={{ height: 18 }}
-          onClick={e => e.stopPropagation()}
-        />
-      </div>
-    )}
-    <span className={styles.rightIcon}>{rightIcon}</span>
-  </Button>
-);
+        {type === 'checkbox' && checkboxCount[formComponentIdAtLeaf] !== 0 ? (
+          <span className={styles.count}> &nbsp; ({checkboxCount[formComponentIdAtLeaf]})</span>
+        ) : ''}
+
+        {filterCount > 0 && (
+          <div onMouseOver={() => console.log('hover')}>
+            <Chip
+              label={filterCount}
+              hoveredLabel={'clear'}
+              style={{ height: 18 }}
+              onClick={e => e.stopPropagation()}
+            />
+          </div>
+        )}
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails style={{color: 'black'}}>
+        {formComponents[formComponentIdAtLeaf]}
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+  )
+};
 
 SectionTreeTab.propTypes = {
   label: string,
-  id: number,
-  leftIcon: element,
-  rightIcon: element,
+  icon: element,
   filterCount: number,
   dark: bool,
-  onClick: func
+  formComponentIdAtLeaf: string,
+  formComponents: objectOf(element),
+  checkboxCount: number,
+  type: string
 };

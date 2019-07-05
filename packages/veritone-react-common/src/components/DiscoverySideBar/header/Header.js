@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, element, func, bool } from 'prop-types';
+import { arrayOf, string, element, func } from 'prop-types';
 import MultipleTabHeader from './MuitipleTabHeader';
 import SingleTabHeader from './SingleTabHeader';
 import styles from './styles.scss';
@@ -8,7 +8,6 @@ export default class DiscoverySidebarHeader extends React.Component {
   static propTypes = {
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
-    rightIconButton: bool,
     rightIconButtonElement: element,
     onSelectTab: func.isRequired
   };
@@ -25,15 +24,13 @@ export default class DiscoverySidebarHeader extends React.Component {
             />
           </div>
         ) : (
-          <div className={styles.singleTabContainer}>
-            <SingleTabHeader tab={this.props.tabs[0]} />
-          </div>
-        )}
-        {this.props.rightIconButton && (
-          <div className={styles.rightIconButtonContainer}>
-            {this.props.rightIconButtonElement}
-          </div>
-        )}
+            <div className={styles.singleTabContainer}>
+              <SingleTabHeader tab={this.props.tabs[0]} />
+            </div>
+          )}
+        <div className={styles.rightIconButtonContainer}>
+          {this.props.rightIconButtonElement}
+        </div>
       </div>
     );
   }
