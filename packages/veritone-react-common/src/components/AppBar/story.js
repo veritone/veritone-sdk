@@ -9,6 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 
 import AppBar from './';
 
+window.config = {appVersion: 'Attribute App 2019.24.0'};
 storiesOf('AppBar', module)
   .add('Base', () => (
     <AppBar
@@ -129,6 +130,7 @@ storiesOf('AppBar', module)
         enabledAppsFailedLoading
         fetchEnabledApps={action('Fetch apps')}
         enabledApps={[]}
+        help={mockHelpProps}
         user={{
           userName: 'mrobb@veritone.com',
           kvp: {
@@ -144,12 +146,14 @@ storiesOf('AppBar', module)
   .add('With Custom Notifications', function() {
     return (
       <AppBar
+        title="ATTRIBUTE"
         profileMenu
         appSwitcher
         currentAppName="Storybook"
         enabledAppsFailedLoading
         fetchEnabledApps={action('Fetch apps')}
-        enabledApps={[]}
+        enabledApps={sampleApps}
+        help={mockHelpPropsFull}
         user={{
           userName: 'mrobb@veritone.com',
           kvp: {
@@ -165,12 +169,14 @@ storiesOf('AppBar', module)
   .add('With Dynamic Notifications', function() {
     return (
       <AppBar
+        appLogoSrc={attributeLogo}
         profileMenu
         appSwitcher
         currentAppName="Storybook"
         enabledAppsFailedLoading
         fetchEnabledApps={action('Fetch apps')}
         enabledApps={[]}
+        help={mockHelpPropsFull}
         user={{
           userName: 'mrobb@veritone.com',
           kvp: {
@@ -180,6 +186,29 @@ storiesOf('AppBar', module)
           }
         }}
         notification={JSON.parse(text('notification', JSON.stringify(mockNotifications)))}
+      />
+    );
+  })
+  .add('Disabled Dynamic Notifications', function() {
+    return (
+      <AppBar
+        appLogoSrc={attributeLogo}
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+        help={mockHelpPropsFull}
+        user={{
+          userName: 'mrobb@veritone.com',
+          kvp: {
+            firstName: 'Mitch',
+            lastName: 'Robb',
+            image: 'http://placekitten.com/g/400/300'
+          }
+        }}
+        notification={{notifications:[]}}
       />
     );
   });
@@ -226,6 +255,23 @@ const sampleApps = [
       'https://static.veritone.com/veritone-ui/app-icons-svg/library-app.svg'
   }
 ];
+
+
+const mockHelpProps = {
+  helpDocLink: 'https://help.veritone.com/collections/1732407-veritone-attribute',
+  onOpen: action('open help'),
+  onClose: action('close help')
+}
+
+const mockHelpPropsFull = {
+  helpDocLabel: 'Custom - View Help Docs',
+  helpDocLink: 'https://help.veritone.com/collections/1732407-veritone-attribute',
+  helpDocCallback: action('open Help Doc'),
+  supportLabel: 'Custom - Chat With Support',
+  supportCallback: action('open support'),
+  onOpen: action('open help'),
+  onClose: action('close help')
+}
 
 const mockNotifications = {
   onOpen: action('on open'),
@@ -340,3 +386,5 @@ const mockCustomNotifications = {
     }
   ]
 };
+
+const attributeLogo = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNzVweCIgaGVpZ2h0PSIxM3B4IiB2aWV3Qm94PSIwIDAgNzUgMTMiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT5BVFRSSUJVVEU8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0iU3ltYm9scyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZm9udC1mYW1pbHk9IkRvc2lzLVNlbWlCb2xkLCBEb3NpcyIgZm9udC1zaXplPSIxNi4yIiBmb250LXdlaWdodD0iNTAwIiBsZXR0ZXItc3BhY2luZz0iMC4yMjUiPgogICAgICAgIDxnIGlkPSJ2ZXJpdG9uZS1sb2dvLXdoaXRlIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNzMuMDAwMDAwLCAtMjQuMDAwMDAwKSIgZmlsbD0iI0ZGRkZGRiI+CiAgICAgICAgICAgIDx0ZXh0IGlkPSJBVFRSSUJVVEUiPgogICAgICAgICAgICAgICAgPHRzcGFuIHg9IjczIiB5PSIzNiI+QVRUUklCVVRFPC90c3Bhbj4KICAgICAgICAgICAgPC90ZXh0PgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+";
