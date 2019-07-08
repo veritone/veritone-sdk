@@ -1,4 +1,4 @@
-import { clamp, mean, isNaN, get } from 'lodash';
+import { clamp, mean, isNaN, get, isArray } from 'lodash';
 import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -11,6 +11,7 @@ export const ABORT_REQUEST = 'ABORT_REQUEST';
 export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
 export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
+export const CLEAR_FILEPICKER_DATA = 'CLEAR_FILEPICKER_DATA';
 
 export const namespace = 'filePicker';
 
@@ -58,6 +59,16 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [CLEAR_FILEPICKER_DATA](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
+    return update(state, {
+      $unset: [id]
+    });
+  },
   [ABORT_REQUEST](
     state,
     {
@@ -68,14 +79,14 @@ export default createReducer(defaultState, {
     if (fileKey) {
       newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
         [fileKey]: {
-          aborted: { $set: true }
+          aborted: { $set: 'aborted' }
         }
       });
     } else {
       Object.keys(get(state, [id, 'progressPercentByFileKey'], {})).forEach(fileKey => {
         newProgressPercentByFileKey = update(newProgressPercentByFileKey, {
           [fileKey]: {
-            aborted: { $set: true }
+            aborted: { $set: 'aborted' }
           }
         });
       });
@@ -171,9 +182,11 @@ export default createReducer(defaultState, {
   ) {
     const errorMessage = get(error, 'message', error); // Error or string
     // Extract failed files to be reuploaded
-    const failedFiles = payload
-      .filter(result => result.error)
-      .map(result => result.file);
+    const failedFiles = isArray(payload)
+      ? payload
+        .filter(result => result.error)
+        .map(result => result.file)
+      : [];
     // Combine existing uploadResult if any
     const prevUploadResult = (get(state, [id, 'uploadResult']) || [])
       .filter(result => !result.error);

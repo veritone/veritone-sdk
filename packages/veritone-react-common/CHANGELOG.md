@@ -208,3 +208,8 @@
 ## 7.5.0
 * Add Notification component
 * AppBar: add an option to enable notifications
+
+## 7.6.0
+* Update @material-ui/icons to ^2.0.0
+* Update enzyme to ^3.5.0 and fix test incompatability errors
+* Add DataPicker components

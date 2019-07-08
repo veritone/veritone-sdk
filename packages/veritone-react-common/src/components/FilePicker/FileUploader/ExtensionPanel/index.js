@@ -44,6 +44,7 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
           classes={{
             root: styles.extensionListCloseButton
           }}
+          data-veritone-element="uploader-extension-close-btn"
           onClick={closeExtensionList}
           disableRipple>
           <Close />
@@ -54,6 +55,7 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
           Object.keys(typeMapper).filter(key => typeMapper[key].length).map(key => (
             <Grid
               key={`${key}-extension-list`}
+              data-veritone-element="extension-list-category"
               className={cx(styles.extensionTypeContainer, styles[key])}
               container
               spacing={8}>
@@ -63,7 +65,12 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
               {
                 uniq(typeMapper[key]).map(ext => (
                   <Grid key={`${key}-extension-${ext}`} item xs={8} sm={6} md={4}>
-                    <span className={styles.mediaExtension}>{ext}</span>
+                    <span
+                      className={styles.mediaExtension}
+                      data-veritone-element="extension-list-item"
+                    >
+                      {ext}
+                    </span>
                   </Grid>
                 ))
               }

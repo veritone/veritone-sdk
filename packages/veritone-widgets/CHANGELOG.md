@@ -219,3 +219,7 @@ const MyPage = () => (
 
 ## 7.5.0
 * AppBar: add an option to display notifications
+
+## 7.6.0
+* Update enzyme to ^3.5.0 and fix test incompatability errors
+* Add DataPicker widgets, reducer, and saga

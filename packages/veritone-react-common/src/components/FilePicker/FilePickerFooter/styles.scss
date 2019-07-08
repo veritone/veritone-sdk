@@ -4,7 +4,13 @@
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  height: 60px;
-  padding: 4px $file-picker-margin $file-picker-margin $file-picker-margin;
+  padding: $file-picker-margin;
   background-color: $grey-1;
+  & > * {
+    margin-left: calc(#{$file-picker-margin} / 2) !important;
+  }
+}
+
+.hasIntercom > *:last-child {
+  margin-right: 80px;
 }
