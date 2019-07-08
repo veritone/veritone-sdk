@@ -4852,19 +4852,6 @@ envinfo@^5.7.0:
   version "5.10.0"
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.10.0.tgz#503a9774ae15b93ea68bdfae2ccd6306624ea6df"
 
-enzyme-adapter-react-16.3@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/enzyme-adapter-react-16.3/-/enzyme-adapter-react-16.3-1.0.0.tgz#d3992301aba46c8cceab21c1d201e85f01c93bfc"
-  dependencies:
-    enzyme-adapter-utils "^1.5.0"
-    function.prototype.name "^1.1.0"
-    object.assign "^4.1.0"
-    object.values "^1.0.4"
-    prop-types "^15.6.2"
-    react-is "^16.4.1"
-    react-reconciler "^0.7.0"
-    react-test-renderer "~16.3.0-0"
-
 enzyme-adapter-react-16@^1.0.0:
   version "1.14.0"
   resolved "https://registry.yarnpkg.com/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.14.0.tgz#204722b769172bcf096cb250d33e6795c1f1858f"
@@ -4888,14 +4875,6 @@ enzyme-adapter-utils@^1.12.0:
     object.fromentries "^2.0.0"
     prop-types "^15.7.2"
     semver "^5.6.0"
-
-enzyme-adapter-utils@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/enzyme-adapter-utils/-/enzyme-adapter-utils-1.5.0.tgz#a020ab3ae79bb1c85e1d51f48f35e995e0eed810"
-  dependencies:
-    function.prototype.name "^1.1.0"
-    object.assign "^4.1.0"
-    prop-types "^15.6.2"
 
 enzyme@^3.5.0:
   version "3.10.0"
@@ -12187,10 +12166,6 @@ react-inspector@^2.2.2:
     babel-runtime "^6.26.0"
     is-dom "^1.0.9"
 
-react-is@^16.3.2, react-is@^16.4.1:
-  version "16.4.2"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.2.tgz#84891b56c2b6d9efdee577cc83501dfc5ecead88"
-
 react-is@^16.4.0:
   version "16.4.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.0.tgz#cc9fdc855ac34d2e7d9d2eb7059bbc240d35ffcf"
@@ -12242,15 +12217,6 @@ react-popper@^0.10.0:
   dependencies:
     popper.js "^1.14.1"
     prop-types "^15.6.1"
-
-react-reconciler@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.7.0.tgz#9614894103e5f138deeeb5eabaf3ee80eb1d026d"
-  dependencies:
-    fbjs "^0.8.16"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.0"
 
 react-redux-saga@^1.0.2:
   version "1.0.2"
@@ -12305,15 +12271,6 @@ react-test-renderer@^16.0.0-0:
     prop-types "^15.6.2"
     react-is "^16.8.6"
     scheduler "^0.13.6"
-
-react-test-renderer@~16.3.0-0:
-  version "16.3.2"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.3.2.tgz#3d1ed74fda8db42521fdf03328e933312214749a"
-  dependencies:
-    fbjs "^0.8.16"
-    object-assign "^4.1.1"
-    prop-types "^15.6.0"
-    react-is "^16.3.2"
 
 react-textarea-autosize@^5.2.1:
   version "5.2.1"
