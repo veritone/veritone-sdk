@@ -36,6 +36,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
     closeFilter: func,
     checkboxCount: shape({object
     }),
+    onCheckBoxChange: func,
 
     // provided by wrapper:
     tabs: arrayOf(string).isRequired,
@@ -44,16 +45,19 @@ export class DiscoverySideBarContainerPure extends React.Component {
     filtersActivePath: arrayOf(number),
   };
   static defaultProps = {
-    selectedFilters: []
+    selectedFilters: [],
   };
 
-  handleApplyFilter = e => {
-    const selectedItems = e.target.getAttribute('data-filters');
+  handleApplyFilter = event => {
+    const selectedItems = event.target.getAttribute('data-filters');
     this.props.onClick(JSON.parse(selectedItems))
   }
 
+  handleCheckBoxChange = (event, checked) => {
+    console.log(event.target.id, checked);
+  }
+  
   render() {
-    console.log(this.props)
     return (
       <div className={styles.container}>
         <Header
@@ -73,6 +77,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
             activePath={this.props.filtersActivePath}
             formComponents={this.props.formComponents}
             checkboxCount={this.props.checkboxCount}
+            onCheckboxChange={this.props.onCheckboxChange}
             />
           <div className={styles.buttonContainer}>
             <Button
@@ -83,7 +88,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
               onClick={this.handleApplyFilter}
             >
               Apply Filter
-          </Button>
+            </Button>
           </div>
         </Fragment>}
       </div>

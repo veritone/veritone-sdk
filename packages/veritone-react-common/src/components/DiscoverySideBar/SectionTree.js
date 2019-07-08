@@ -8,7 +8,8 @@ import {
   number,
   objectOf,
   element,
-  bool
+  bool,
+  oneOfType
 } from 'prop-types';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -17,6 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { intersperse } from 'helpers/fp';
 import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
+import DefaultCheckboxes from './DefaultCheckboxes';
 
 const nodeShape = {
   // formComponentId for a leaf, or label/children for a node
@@ -47,20 +49,26 @@ class SectionTree extends React.Component {
     return (
       <div className={styles.tabsContainer}>
         {currentVisibleSection.children.map(
-          ({ visible, label, formComponentId, children, icon, type }, i) =>
-            (
-              <SectionTreeTab
-                label={label}
-                icon={icon}
-                key={label}
-                checkboxCount={this.props.checkboxCount}
-                type={type}
-                formComponentIdAtLeaf={currentVisibleSection.children[i].children[0].formComponentId}
-                formComponents={this.props.formComponents}
-                id={i}
-                onChange={this.handleChangeExpand}
-              />
-            )
+          ({ label, icon, type }, i) => {
+            const sectionChildren = currentVisibleSection.children[i];
+            // const formComponentIdAtLeaf = .children[0].formComponentId;
+            return <SectionTreeTab
+              label={label}
+              icon={icon}
+              key={label}
+              checkboxCount={this.props.checkboxCount}
+              type={type}
+              formComponentIdAtLeaf={
+                sectionChildren.children[0] ?
+                sectionChildren.children[0].formComponentId :
+                'default-checkboxes'
+              }
+              checkboxValues={sectionChildren.valueArray}
+              formComponents={this.props.formComponents}
+              id={i}
+              onCheckboxChange={this.props.onCheckboxChange}
+            />
+          }
         )}
       </div>
     );
@@ -76,8 +84,10 @@ export const SectionTreeTab = ({
   dark,
   type,
   checkboxCount,
+  checkboxValues,
   formComponentIdAtLeaf,
-  formComponents
+  formComponents,
+  onCheckboxChange
 }) => {
   /* eslint-disable react/jsx-no-bind */
   return (
@@ -96,8 +106,11 @@ export const SectionTreeTab = ({
         <span className={styles.icon}>{icon}</span>
         <span className={styles.label}>{label}</span>
 
-        {type === 'checkbox' && checkboxCount[formComponentIdAtLeaf] !== 0 ? (
-          <span className={styles.count}> &nbsp; ({checkboxCount[formComponentIdAtLeaf]})</span>
+        {type === 'checkbox' &&
+        ![0, undefined].includes(checkboxCount[formComponentIdAtLeaf]) ? (
+          <span className={styles.count}>
+            &nbsp; ({checkboxCount[formComponentIdAtLeaf]})
+          </span>
         ) : ''}
 
         {filterCount > 0 && (
@@ -111,8 +124,15 @@ export const SectionTreeTab = ({
           </div>
         )}
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{color: 'black'}}>
-        {formComponents[formComponentIdAtLeaf]}
+      <ExpansionPanelDetails style={{ color: 'black' }}>
+        {formComponentIdAtLeaf.includes('default-checkboxes') ?
+          <DefaultCheckboxes
+            checkboxValues={checkboxValues}
+            onCheckboxChange={onCheckboxChange}
+            formComponentIdAtLeaf={formComponentIdAtLeaf}
+          /> :
+          formComponents[formComponentIdAtLeaf]
+        }
       </ExpansionPanelDetails>
     </ExpansionPanel>
   )
@@ -126,5 +146,6 @@ SectionTreeTab.propTypes = {
   formComponentIdAtLeaf: string,
   formComponents: objectOf(element),
   checkboxCount: number,
-  type: string
-};
+  type: string,
+  checkboxValues: arrayOf(oneOfType([string, number]))
+}

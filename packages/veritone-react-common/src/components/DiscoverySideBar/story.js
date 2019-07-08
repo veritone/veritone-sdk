@@ -28,14 +28,18 @@ const exampleSectionTree = {
     },
     {
       label: 'Section 2',
+      type: 'checkbox',
+      valueArray: [ 'haha', 'hihi', 'hehe'],
       children: [
-        { formComponentId: 'something-else' }
+        { formComponentId: 'default-checkboxes-1' }
       ]
     },
     {
       label: 'Section 3',
+      type: 'checkbox',
+      valueArray: [1, 2, 3],
       children: [
-        { formComponentId: 'flying-car' }
+        { formComponentId: 'default-checkboxes-2' }
       ]
     },
     {
@@ -45,10 +49,15 @@ const exampleSectionTree = {
         { formComponentId: 'smiling-elephant' }
       ]
     },
+
+    // when use default checkbox, in order to enable checkboxCount,
+    // it is neccessary to specify with this format for formComponentId: 'default-checkboxes-<number>'
     {
       label: 'Section 5',
+      type: 'checkbox',
+      valueArray: ['a', 'b', 'c'],
       children: [
-        { formComponentId: 'waving-good-bye' }
+        { formComponentId: 'default-checkboxes-3' }
       ]
     },
   ]
@@ -81,7 +90,7 @@ storiesOf('DiscoverySideBar', module)
           onClearAllFilters={action('clear all filters')}
           filtersSections={exampleSectionTree}
           formComponents={{
-            'select-station-form': <div>select a station</div>
+            'select-station-form': <div>select a station</div>,
           }}
           selectedFilters={exampleSelectedFilters}
         />
@@ -97,16 +106,14 @@ storiesOf('DiscoverySideBar', module)
           filtersSections={exampleSectionTree}
           formComponents={{
             'select-station-form': <div>select a station</div>,
-            'something-else': <div>A different world</div>,
-            'flying-car': <div>Fly so high</div>,
             'smiling-elephant': <div>Beautiful circuit</div>,
-            'waving-good-bye': <div>See you again!</div>
           }}
           selectedFilters={exampleSelectedFilters}
           onClick={action('click apply filter')}
           checkboxCount={{
             'select-station-form': 3,
-            'smiling-elephant': 7
+            'smiling-elephant': 7,
+            'default-checkboxes-3': 9
           }}
         />
       </Container>
