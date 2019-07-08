@@ -1,0 +1,36 @@
+.colorContainer {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  align-items: flex-start;
+}
+
+.searchBarContainer {
+  padding: 0 8px;
+  height: 48px;
+  width: 512px;
+  display: grid;
+  grid-column-gap: 8px;
+  grid-template-columns: repeat(9, 48px);
+  align-items: center;
+}
+
+.iconColor {
+  color: #5f6368;
+}
+
+.input {
+  width: 100%;
+  grid-column-start: 2;
+  grid-column-end: 8;
+  color: red;
+}
+
+.clearButton {
+  grid-column: 9;
+}
+
+.loadingIcon {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
