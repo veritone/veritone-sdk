@@ -223,3 +223,8 @@ const MyPage = () => (
 ## 7.6.0
 * Update enzyme to ^3.5.0 and fix test incompatability errors
 * Add DataPicker widgets, reducer, and saga
+
+## 7.7.0
+* AppBar:
+  * Add Help Menu
+  * Standardize AppBar Layout
