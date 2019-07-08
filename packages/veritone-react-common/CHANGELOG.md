@@ -213,3 +213,8 @@
 * Update @material-ui/icons to ^2.0.0
 * Update enzyme to ^3.5.0 and fix test incompatability errors
 * Add DataPicker components
+
+## 7.7.0
+* AppBar:
+  * Add Help Menu
+  * Standardize AppBar Layout
