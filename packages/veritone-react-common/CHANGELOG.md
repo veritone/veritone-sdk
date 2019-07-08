@@ -218,3 +218,6 @@
 * AppBar:
   * Add Help Menu
   * Standardize AppBar Layout
+
+## 8.0.0
+* (breaking) DateTimePicker & TimeRangePicker: Pass `timezone` instead of `showTimezone`.
