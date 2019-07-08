@@ -221,3 +221,6 @@
 
 ## 8.0.0
 * (breaking) DateTimePicker & TimeRangePicker: Pass `timezone` instead of `showTimezone`.
+
+## 8.0.1
+* Fixed missing icons from updates
