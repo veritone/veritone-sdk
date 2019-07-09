@@ -1,24 +1,23 @@
 import React from 'react';
 import cx from 'classnames';
-import { get } from 'lodash';
+import { noop, initial, get } from 'lodash';
 import {
   string,
   arrayOf,
   shape,
+  func,
   number,
   objectOf,
   element,
-  bool,
-  func,
-  oneOfType
+  bool
 } from 'prop-types';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+
 import { intersperse } from 'helpers/fp';
+import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
-import DefaultCheckboxes from './DefaultCheckboxes';
 
 const nodeShape = {
   // formComponentId for a leaf, or label/children for a node
@@ -33,9 +32,16 @@ class SectionTree extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,
     formComponents: objectOf(element).isRequired,
-    activePath: arrayOf(number),
-    checkboxCount: number,
-    onCheckboxChange: func
+    activePath: arrayOf(number).isRequired,
+    onNavigate: func.isRequired
+  };
+
+  handleNavigateForward = index => {
+    this.props.onNavigate([...this.props.activePath, index]);
+  };
+
+  handleNavigateBack = () => {
+    this.props.onNavigate(initial(this.props.activePath));
   };
 
   render() {
@@ -47,30 +53,37 @@ class SectionTree extends React.Component {
       this.props.sections // root visible by default
     );
 
+    const visibleFormComponentIdAtLeaf =
+      currentVisibleSection.children.length === 1 &&
+      currentVisibleSection.children[0].formComponentId;
+
     return (
       <div className={styles.tabsContainer}>
-        {currentVisibleSection.children.map(
-          ({ label, icon, type }, i) => {
-            const sectionChildren = currentVisibleSection.children[i];
-            // const formComponentIdAtLeaf = .children[0].formComponentId;
-            return <SectionTreeTab
-              label={label}
-              icon={icon}
-              key={label}
-              checkboxCount={this.props.checkboxCount}
-              type={type}
-              formComponentIdAtLeaf={
-                sectionChildren.children[0] ?
-                sectionChildren.children[0].formComponentId :
-                'default-checkboxes'
-              }
-              checkboxValues={sectionChildren.valueArray}
-              formComponents={this.props.formComponents}
-              id={i}
-              onCheckboxChange={this.props.onCheckboxChange}
-            />
-          }
+        {currentPath.length > 0 && (
+          <SectionTreeTab
+            dark
+            label={currentVisibleSection.label}
+            leftIcon={<ArrowBackIcon />}
+            id={-1}
+            onClick={this.handleNavigateBack}
+            data-testtarget="back-button"
+          />
         )}
+
+        {visibleFormComponentIdAtLeaf
+          ? this.props.formComponents[visibleFormComponentIdAtLeaf]
+          : currentVisibleSection.children.map(
+              ({ visible, label, formComponentId, children }, i) =>
+                visible !== false && (
+                  <SectionTreeTab
+                    label={label}
+                    rightIcon={<ChevronRightIcon />}
+                    key={label}
+                    id={i}
+                    onClick={this.handleNavigateForward}
+                  />
+                )
+            )}
       </div>
     );
   }
@@ -80,62 +93,44 @@ export default SectionTree;
 
 export const SectionTreeTab = ({
   label,
-  icon,
+  id,
+  leftIcon,
+  rightIcon,
+  filterCount,
   dark,
-  type,
-  checkboxCount,
-  checkboxValues,
-  formComponentIdAtLeaf,
-  formComponents,
-  onCheckboxChange
-}) => {
+  onClick = noop
+}) => (
   /* eslint-disable react/jsx-no-bind */
-  return (
-    <ExpansionPanel
-      classes={{
-        root: styles.noShadow,
-        expanded: styles.expandedStyle,
-      }}
-    >
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}
-        classes={{
-          root: cx(styles.sectionTab, { [styles.dark]: dark }, styles.noShadow),
-          expanded: styles.expandedStyle,
-        }}
-      >
-        <span className={styles.icon}>{icon}</span>
-        <span className={styles.label}>{label}</span>
+  <Button
+    classes={{
+      root: cx(styles.sectionTreeTab, { [styles.dark]: dark }),
+      label: styles.muiButtonLabelOverride
+    }}
+    onClick={() => onClick(id)}
+  >
+    <span className={styles.leftIcon}>{leftIcon}</span>
+    <span className={styles.label}>{label}</span>
 
-        {type === 'checkbox' &&
-        ![0, undefined].includes(checkboxCount[formComponentIdAtLeaf]) ? (
-          <span className={styles.count}>
-            &nbsp; ({checkboxCount[formComponentIdAtLeaf]})
-          </span>
-        ) : ''}
-
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ color: 'black' }}>
-        {formComponentIdAtLeaf.includes('default-checkboxes') ?
-          <DefaultCheckboxes
-            checkboxValues={checkboxValues}
-            onCheckboxChange={onCheckboxChange}
-            formComponentIdAtLeaf={formComponentIdAtLeaf}
-          /> :
-          formComponents[formComponentIdAtLeaf]
-        }
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  )
-};
+    {filterCount > 0 && (
+      <div onMouseOver={() => console.log('hover')}>
+        <Chip
+          label={filterCount}
+          hoveredLabel={'clear'}
+          style={{ height: 18 }}
+          onClick={e => e.stopPropagation()}
+        />
+      </div>
+    )}
+    <span className={styles.rightIcon}>{rightIcon}</span>
+  </Button>
+);
 
 SectionTreeTab.propTypes = {
   label: string,
-  icon: element,
+  id: number,
+  leftIcon: element,
+  rightIcon: element,
+  filterCount: number,
   dark: bool,
-  formComponentIdAtLeaf: string,
-  formComponents: objectOf(element),
-  checkboxCount: number,
-  type: string,
-  onCheckboxChange: func,
-  checkboxValues: arrayOf(oneOfType([string, number]))
-}
+  onClick: func
+};

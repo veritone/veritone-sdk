@@ -1,20 +1,21 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
   string,
   func,
   arrayOf,
-  shape,
+  bool,
   number,
   objectOf,
   element,
   object
 } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
-import Button from '@material-ui/core/Button';
+import ClearFiltersIconFixme from '@material-ui/icons/FormatClear';
+
 import styles from './styles/container.scss';
 import Header from './header/Header';
 import SectionTree, { sectionsShape } from './SectionTree';
+import AllFiltersList from './AllFiltersList';
 
 // todo:
 // figure out how state will come from redux-form and how to transform that
@@ -32,61 +33,60 @@ export class DiscoverySideBarContainerPure extends React.Component {
     formComponents: objectOf(element).isRequired,
     filtersSections: sectionsShape.isRequired,
     selectedFilters: arrayOf(object), // see AllFiltersList.filters
-    onClick: func,
-    closeFilter: func,
-    checkboxCount: shape({object
-    }),
-    onCheckboxChange: func,
+    onClearAllFilters: func,
+    onClearFilter: func,
+    clearAllFilters: bool,
 
     // provided by wrapper:
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
     onSelectTab: func.isRequired,
-    filtersActivePath: arrayOf(number),
+    filtersActivePath: arrayOf(number).isRequired,
+    onFiltersNavigate: func.isRequired
   };
   static defaultProps = {
-    selectedFilters: [],
+    selectedFilters: []
   };
 
-  handleApplyFilter = event => {
-    const selectedItems = event.target.getAttribute('data-filters');
-    this.props.onClick(JSON.parse(selectedItems))
-  }
-  
   render() {
     return (
       <div className={styles.container}>
         <Header
           tabs={this.props.tabs}
           selectedTab={this.props.selectedTab}
+          rightIconButton={this.props.clearAllFilters}
           rightIconButtonElement={
-            <IconButton onClick={this.props.closeFilter}>
-              <Close />
+            <IconButton onClick={this.props.onClearAllFilters}>
+              <ClearFiltersIconFixme />
             </IconButton>
           }
           onSelectTab={this.props.onSelectTab}
         />
-        {<Fragment>
-          <SectionTree
-            // todo: add filters
-            sections={this.props.filtersSections}
-            activePath={this.props.filtersActivePath}
-            formComponents={this.props.formComponents}
-            checkboxCount={this.props.checkboxCount}
-            onCheckboxChange={this.props.onCheckboxChange}
+        {this.props.selectedTab === 'Filters' && (
+          <div style={{ width: '100%' }}>
+            {this.props.filtersActivePath.length === 0 &&
+              this.props.selectedFilters.length > 0 && (
+                <AllFiltersList
+                  filters={this.props.selectedFilters} // fixme
+                  onClearAllFilters={this.props.onClearAllFilters}
+                  onClearFilter={this.props.onClearFilter}
+                />
+              )}
+
+            <SectionTree
+              // todo: add filters
+              sections={this.props.filtersSections}
+              activePath={this.props.filtersActivePath}
+              onNavigate={this.props.onFiltersNavigate}
+              formComponents={this.props.formComponents}
             />
-          <div className={styles.buttonContainer}>
-            <Button
-              variant="contained"
-              color="primary"
-              style={{fontWeight: 500, width: '300px', backgroundColor: '#2196F3'}}
-              data-filters={JSON.stringify(this.props.selectedFilters)}
-              onClick={this.handleApplyFilter}
-            >
-              Apply Filter
-            </Button>
           </div>
-        </Fragment>}
+        )}
+        {this.props.selectedTab === 'Browse' && (
+          <div data-testtarget="browse" style={{ width: '100%' }}>
+            this is browse content
+          </div>
+        )}
       </div>
     );
   }
@@ -99,15 +99,20 @@ export default class DiscoverySideBarContainer extends React.Component {
   };
 
   static defaultProps = {
-    tabs: ['Filters']
+    tabs: ['Browse', 'Filters']
   };
 
   state = {
     selectedTab: this.props.tabs[0],
+    filtersActivePath: []
   };
 
   handleSelectTab = (_, tab) => {
     this.setState({ selectedTab: tab });
+  };
+
+  handleFiltersNavigate = newPath => {
+    this.setState({ filtersActivePath: newPath });
   };
 
   render() {
@@ -116,6 +121,8 @@ export default class DiscoverySideBarContainer extends React.Component {
         {...this.props}
         selectedTab={this.state.selectedTab}
         onSelectTab={this.handleSelectTab}
+        filtersActivePath={this.state.filtersActivePath}
+        onFiltersNavigate={this.handleFiltersNavigate}
       />
     );
   }
