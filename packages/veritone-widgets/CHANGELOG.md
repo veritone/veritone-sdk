@@ -235,3 +235,6 @@ const MyPage = () => (
 
 ## 8.0.1
 * Fixed missing icons from updates
+
+## 8.0.2
+* Update `veritone-react-common` version
