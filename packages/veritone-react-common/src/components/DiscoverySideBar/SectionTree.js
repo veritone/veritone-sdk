@@ -9,6 +9,7 @@ import {
   objectOf,
   element,
   bool,
+  func,
   oneOfType
 } from 'prop-types';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -35,6 +36,7 @@ class SectionTree extends React.Component {
     formComponents: objectOf(element).isRequired,
     activePath: arrayOf(number),
     checkboxCount: number,
+    onCheckboxChange: func
   };
 
   render() {
@@ -147,5 +149,6 @@ SectionTreeTab.propTypes = {
   formComponents: objectOf(element),
   checkboxCount: number,
   type: string,
+  onCheckboxChange: func,
   checkboxValues: arrayOf(oneOfType([string, number]))
 }
