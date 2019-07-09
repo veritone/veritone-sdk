@@ -29,7 +29,7 @@ const DefaultCheckboxes = ({ checkboxValues, onCheckboxChange, formComponentIdAt
                                     id={formComponentIdAtLeaf}
                                     color="primary"
                                     value={checkboxValue}
-                                    onChange={onCheckBoxChange}
+                                    onChange={onCheckboxChange}
                                 />
                             }
                             label={value}

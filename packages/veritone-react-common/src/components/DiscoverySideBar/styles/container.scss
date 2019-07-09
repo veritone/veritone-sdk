@@ -13,12 +13,15 @@
 }
 
 .buttonContainer {
-  min-height:66px;
+  height:36px;
   justify-content: flex-end;
   width: 100%;
   display: flex;
   border-top: 1px solid #DCDCDC;
   padding-top: 16px;
+  flex-shrink: 0;
+  align-items: center;
+  margin-bottom: 17px;
 
   > button {
     margin: 0 auto;

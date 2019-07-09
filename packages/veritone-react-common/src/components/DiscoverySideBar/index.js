@@ -36,7 +36,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
     closeFilter: func,
     checkboxCount: shape({object
     }),
-    onCheckBoxChange: func,
+    onCheckboxChange: func,
 
     // provided by wrapper:
     tabs: arrayOf(string).isRequired,
@@ -51,10 +51,6 @@ export class DiscoverySideBarContainerPure extends React.Component {
   handleApplyFilter = event => {
     const selectedItems = event.target.getAttribute('data-filters');
     this.props.onClick(JSON.parse(selectedItems))
-  }
-
-  handleCheckBoxChange = (event, checked) => {
-    console.log(event.target.id, checked);
   }
   
   render() {

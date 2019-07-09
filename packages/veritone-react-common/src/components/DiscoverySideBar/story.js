@@ -55,7 +55,7 @@ const exampleSectionTree = {
     {
       label: 'Section 5',
       type: 'checkbox',
-      valueArray: ['a', 'b', 'c'],
+      valueArray: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
       children: [
         { formComponentId: 'default-checkboxes-3' }
       ]
