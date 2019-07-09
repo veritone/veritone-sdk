@@ -17,7 +17,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { intersperse } from 'helpers/fp';
-import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
 import DefaultCheckboxes from './DefaultCheckboxes';
 
@@ -82,7 +81,6 @@ export default SectionTree;
 export const SectionTreeTab = ({
   label,
   icon,
-  filterCount,
   dark,
   type,
   checkboxCount,
@@ -115,16 +113,6 @@ export const SectionTreeTab = ({
           </span>
         ) : ''}
 
-        {filterCount > 0 && (
-          <div onMouseOver={() => console.log('hover')}>
-            <Chip
-              label={filterCount}
-              hoveredLabel={'clear'}
-              style={{ height: 18 }}
-              onClick={e => e.stopPropagation()}
-            />
-          </div>
-        )}
       </ExpansionPanelSummary>
       <ExpansionPanelDetails style={{ color: 'black' }}>
         {formComponentIdAtLeaf.includes('default-checkboxes') ?
@@ -143,7 +131,6 @@ export const SectionTreeTab = ({
 SectionTreeTab.propTypes = {
   label: string,
   icon: element,
-  filterCount: number,
   dark: bool,
   formComponentIdAtLeaf: string,
   formComponents: objectOf(element),
