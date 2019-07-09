@@ -11,7 +11,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
 import ShareIcon from '@material-ui/icons/Share';
-import FileDownloadIcon from '@material-ui/icons/FileDownload';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import BuildIcon from '@material-ui/icons/Build';
 import Button from '@material-ui/core/Button';
@@ -40,7 +40,7 @@ storiesOf('TopBar', module)
           <ShareIcon />
         </IconButton>,
         <IconButton key="3">
-          <FileDownloadIcon />
+          <CloudDownloadIcon />
         </IconButton>
       ]}
     />
@@ -99,7 +99,7 @@ storiesOf('TopBar', module)
           <ShareIcon />
         </IconButton>,
         <IconButton key="3">
-          <FileDownloadIcon />
+          <CloudDownloadIcon />
         </IconButton>
       ]}
       rightMenu

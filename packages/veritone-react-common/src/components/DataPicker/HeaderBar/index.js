@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Popover from '@material-ui/core/Popover';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import InfoOutline from '@material-ui/icons/InfoOutline';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import IconButton from '@material-ui/core/IconButton';
 // import Sort from '@material-ui/icons/Sort';
 // import ViewList from '@material-ui/icons/ViewList';
@@ -112,7 +112,7 @@ class HeaderBar extends React.Component {
                   color={showMediaInfoPanel ? 'primary' : 'default'}
                   /* eslint-disable react/jsx-no-bind */
                   onClick={() => toggleMediaInfoPanel()}>
-                  <InfoOutline />
+                  <InfoOutlined />
                 </IconButton>
               </div>
             )}

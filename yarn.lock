@@ -709,12 +709,6 @@
     scroll "^2.0.3"
     warning "^4.0.1"
 
-"@material-ui/icons@^1.0.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-1.1.0.tgz#4d025df7b0ba6ace8d6710079ed76013a4d26595"
-  dependencies:
-    recompose "^0.26.0 || ^0.27.0"
-
 "@material-ui/icons@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-2.0.3.tgz#d3da9d6e31b1adfbc48efe33c7cb75b32b784096"
@@ -14959,7 +14953,6 @@ vendors@^1.0.0:
 veritone-react-common@^7.4.0:
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/veritone-react-common/-/veritone-react-common-7.6.0.tgz#96513b938c72fae11108123509029fcebe3d9788"
-  integrity sha512-1zAb6wKTM05P4oaXgwZBWHtL9TKKhlLvpjgoPn7mQ9jhU1m7yp1n6yoB+bQH/SeZXQ4L3LiPRb6kNrH561FhHw==
   dependencies:
     "@material-ui/core" "^1.0.0"
     "@material-ui/icons" "^2.0.0"

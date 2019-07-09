@@ -228,3 +228,10 @@ const MyPage = () => (
 * AppBar:
   * Add Help Menu
   * Standardize AppBar Layout
+
+## 8.0.0
+* (not published to npm - skipped to 8.0.1)
+* (breaking) DateTimePicker & TimeRangePicker: Pass `timezone` instead of `showTimezone`.
+
+## 8.0.1
+* Fixed missing icons from updates
