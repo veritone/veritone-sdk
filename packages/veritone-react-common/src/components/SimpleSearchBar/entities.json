@@ -1,62 +1,51 @@
 [
   {
+    "id": 1,
     "name": "Auston Trusty",
     "description": "Athlete",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/Athlete/Auston-Trusty.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=979501e88c82bdfa89180837f00273af336972a981579340bccd947128669ec6&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Athlete/Auston-Trusty.jpg"
   },
   {
+    "id": 12,
     "name": "Barron Trump",
     "description": "US-Politician",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Barron-Trump.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=283aaac746407f0836a3adf5e308f59fbfeae1a0c516dc48958b8b704915f9d6&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Barron-Trump.jpg"
   },
   {
-    "name": "D trump",
-    "description": "Microsoft-Classification",
-    "image":
-      "https://prod-veritone-library.s3.amazonaws.com/c8a952ec-2408-429c-af66-6606892c5b0e/73b7d0f1-b56c-4fde-bfb4-f64fd9fcaf67/profile-1560738801973.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=496427547ca3dcea84fefd36ea27c71a0a34ade2b7b35512cc5c60af9bc740a7&X-Amz-SignedHeaders=host"
-  },
-  {
-    "name": "D. Trump",
-    "description": "Nam-Aureus-Trump",
-    "image":
-      "https://prod-veritone-library.s3.amazonaws.com/44ed1659-e2c4-42c2-8775-c0e6f8ffd20f/cb9acc9c-053e-4e8a-9125-bc024e974514/profile-1554172443550.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=2fc59fcf2b18047dde971cc81a6a30f52137cd215e250fc66f8fe1fe35ddc231&X-Amz-SignedHeaders=host"
-  },
-  {
+    "id": 13,
     "name": "Donald Trump",
     "description": "US-Politician",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=6f9dea3cbb05959c25ea105e45e5dee2ce9ab0ffdb514ea829bf4a8b8c5aed43&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump.jpg"
   },
   {
+    "id": 14,
     "name": "Donald Trump Jr",
     "description": "US-Politician",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump-Jr.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=561cf9e218756e734c3be8dd152d73edef3a1542330f3cd1923367b710e92533&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump-Jr.jpg"
   },
   {
-    "name": "Eric Trump",
-    "description": "CNBC Library",
-    "image":
-      "https://prod-veritone-library.s3.amazonaws.com/ea6af450-059a-4579-ab2f-0cd902c65626/cb707639-91f9-46f9-9052-7fb5c0464cdd/profile-1518462186031.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=99edf67175e8ddf870cde018b1cd59e8e43f99eb3318efa059828e88b8b0d053&X-Amz-SignedHeaders=host"
-  },
-  {
+    "id": 15,
     "name": "Garry Trudeau",
     "description": "Other",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/Other/Garry-Trudeau.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=3109bce2b8a3834836b4b69e973eadd439187a15b4f43e0aa8130d2444dc6b5e&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Other/Garry-Trudeau.jpg"
   },
   {
+    "id": 16,
     "name": "Ivana Trump",
     "description": "Business-Executive",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/Business-Executive/Ivana-Trump.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=71fa06c601eca5540c3bde0ec9a52ef3c6f5e9fa43bc31c6a954c999cbe72727&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Business-Executive/Ivana-Trump.jpg"
   },
   {
+    "id": 17,
     "name": "Ivanka Trump",
     "description": "US-Politician",
     "image":
-      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Ivanka-Trump.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQMR5VATUL3NXIR6Z%2F20190701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20190701T233712Z&X-Amz-Expires=604800&X-Amz-Security-Token=FQoGZXIvYXdzEHYaDGA%2BV4U%2BlGeGmMWwDiKnBIgUBNo1qYvMBJQ%2F8BZSU27%2BlBHtUVVMhOz4zaGOxhpCqMqjJQeLWXSfzBGtjpKHG0XUB8rBxmqptklybc8KXusluQ0%2FW3bcohs0I%2FTwgJ%2FNq4wNiMvcqk0KlkwWisPCmWZnbIJoBzsppVzV6leYbaty%2FR3BFEn15rl5oqXLviDuRXp6Xja61rtbx1uE6uKpulsfc3jByxcOcu7b2H4w25BRhLnEivBbkFIXvaYUVjlK%2BQ0cm4ECqGFNT2ozHpu4QCN2u8ph5Bb3BPLyqsaG3ecVJGxHl%2BY6fjXfKpr1l%2BrUXlrs7hsPVIC6manscZQ5SxBfyjEI9AKvLZTKYTbP%2BzPmwksUVsDTOlZ1YI30P0GV3nqwSS4vy%2BVqwzL65v%2BcrfIhPlnMZSQoK%2BCkMt0feVkBrCKllQhFnJEzK%2FvEUw0mBnSbU3PlDi9CF38%2BA1PYHrns0XwObrp6nA68%2FsIwp17skliHi7xkaa86F2wkZEZSgu3o3JNQKuJjFRmUe0E6WmCLv3ycruj%2BQS8q5zQB5fh2q4rDkoziKmojBJJGOnw%2B820HR%2BU9PhDOjaAhhHRSRSKnnzyyDD34szcGZNfrtcJ6KOZoMDobcK3pkH%2F75YgB1cupi2sPxJJm47kiloSL7SxVTy5llh4yqzZPHbCKFXh679LVD5uORCn%2BQv6eiayrKusJVmcAq4va0IP4X4%2FCrRZwfHhV%2Ft4%2FRR6JN3YxCKhgQXkM9p57KMnh6egF&X-Amz-Signature=48052f8f7570c9f762505c4b6f3045e45caf83a3e2bfa60a47935c4464b3fe5f&X-Amz-SignedHeaders=host"
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Ivanka-Trump.jpg"
   }
 ]
