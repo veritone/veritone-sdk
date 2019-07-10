@@ -698,26 +698,34 @@ class SearchBarContainer extends React.Component {
   }
 
   onChangeSearchInput = (result) => {
-    this.setState({disableAdvancedSearch: !(result)});
+    this.setState({ disableAdvancedSearch: !(result) });
   }
 
   addPillEngineButton = engineCategory => () => {
-    const {modalId} = this.state.openModal;
-    if(modalId) {
-      this.setState({ 
+    const { modalId } = this.state.openModal;
+    if (modalId) {
+      this.setState({
         openModal: { modalId: engineCategory.id },
         key: guid(),
-        disableAdvancedSearch: true 
+        disableAdvancedSearch: true
       })
     } else {
       this.props.addPill()
-    } 
+    }
+  }
+
+  get disableAdvancedSearch() {
+    if (this.state.selectedPill) {
+      return false;
+    }
+    return this.state.disableAdvancedSearch;
   }
 
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
+    console.log(this.state);
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
@@ -774,7 +782,7 @@ class SearchBarContainer extends React.Component {
           >
             <Card
               className={cx(styles['engineCategoryModal'])}
-              style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }} 
+              style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }}
               elevation={0}>
               <CardHeader
                 avatar={
@@ -830,7 +838,7 @@ class SearchBarContainer extends React.Component {
               <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
                 {(openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
                   <div className={cx(styles["advancedButton"])}>
-                    <Button disabled={this.state.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
+                    <Button disabled={this.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
                     {this.getBadgeLength ? <div className={cx(styles["customBadge"])}>
                       {this.getBadgeLength}
                     </div> : null}
@@ -844,8 +852,8 @@ class SearchBarContainer extends React.Component {
                   color="primary"
                   className="transcriptSubmit"
                 >
-                  {this.state.selectedPill && !this.state.insertDirection ? 
-                    ((selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') 
+                  {this.state.selectedPill && !this.state.insertDirection ?
+                    ((selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace')
                     :
                     'Add'
                   }

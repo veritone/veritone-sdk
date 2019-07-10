@@ -7,6 +7,32 @@ import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositionin
 import Overlay from '../BoundingPolyOverlay/Overlay';
 import AreaInterest from '../AreaInterest';
 import styles from './styles.scss';
+
+const stylesByObjectType = {
+  a: {
+    backgroundColor: 'rgba(72,147,226,0.7)'
+  },
+  b: {
+    backgroundColor: 'rgba(72,147,226,0.7)'
+  },
+  c: {
+    backgroundColor: 'rgba(72,147,226,0.7)'
+  }
+};
+
+const stagedBoundingBoxStyles = {
+  backgroundColor: 'rgba(72,147,226,0.7)',
+  border: '1px solid #4893E2'
+};
+
+const stepIntro = {
+  1: 'Use your mouse to draw a bounding box on the area on the image you would like to return search results.',
+  2: 'Use your mouse to draw a bounding box on the area on the image you would like to return search results.'
+}
+const buttonTextStep = {
+  1: 'ADD AREA OF INTEREST',
+  2: 'SAVE AREA OF INTEREST'
+}
 export default class LocationSelect extends Component {
 
   static propTypes = {
@@ -60,60 +86,37 @@ export default class LocationSelect extends Component {
               onDeleteBoundingBox={handleDeleteBoundingBox}
               onChangeBoundingBox={handleChangeBoundingBox}
               initialBoundingBoxPolys={boundingBoxes}
-              stylesByObjectType={{
-                a: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
-                },
-                b: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
-                },
-                c: {
-                  backgroundColor: 'rgba(72,147,226,0.7)'
-                }
-              }}
-              stagedBoundingBoxStyles={{
-                backgroundColor: 'rgba(72,147,226,0.7)',
-                border: '1px solid #4893E2'
-              }}
+              stylesByObjectType={stylesByObjectType}
+              stagedBoundingBoxStyles={stagedBoundingBoxStyles}
               handleChangeFrame={this.handleChangeFrame}
               key={this.state.frame}
               readOnly={step !== 2}
             />
-            <div
-              style={{
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: 'contain',
-                backgroundImage: 'url(https://i.imgur.com/cgoE43m.png)', //temp image
-                height: 200,
-                width: 340
-              }}
-            />
+            <div className={cx(styles["image-default"])} />
           </OverlayPositioningProvider>
         </div>
         <div className={styles.locationalCheckbox}>
-          {step === 1 &&
+          {step !== 3 ?
             <div className={cx(styles["step-item"])}>
               <div className={styles.introText}>
-                Use your mouse to draw a bounding box on the area on the image you would like to return search results.
+                {stepIntro[step]}
               </div>
-              <Button onClick={this.onUpdateStep(2)} className={cx(styles["btn-action-area"])}>ADD AREA OF INTEREST</Button>
+              <Button
+                onClick={this.onUpdateStep(step + 1)}
+                className={cx(styles["btn-action-area"])}
+              >
+                {buttonTextStep[step]}
+              </Button>
+            </div>
+            :
+            <div className={cx(styles["aria-item"])}>
+              <AreaInterest
+                areaOfInterest={boundingBoxes[0]}
+                onEditAoI={onEditAoI}
+                onRemoveAoI={onRemoveAoI}
+              />
             </div>
           }
-          {step === 2 &&
-            <div className={cx(styles["step-item"])}>
-              <div className={styles.introText}>
-                Use your mouse to draw a bounding box on the area on the image you would like to return search results.
-            </div>
-              <Button onClick={this.onUpdateStep(3)} className={cx(styles["btn-action-area"])}>SAVE AREA OF INTEREST</Button>
-            </div>}
-          {step === 3 && <div className={cx(styles["aria-item"])}>
-            <AreaInterest
-              areaOfInterest={boundingBoxes[0]}
-              onEditAoI={onEditAoI}
-              onRemoveAoI={onRemoveAoI}
-            />
-          </div>}
         </div>
       </div>
     );

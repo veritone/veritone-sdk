@@ -4,7 +4,7 @@
 
 .locationalCheckbox{
     box-sizing: border-box;
-    height: 200px;
+    height: 202px;
     width: 320px;
     background-color: #FFF;
     display: inline-block;
@@ -47,7 +47,7 @@
     text-align: center;
 }
 .screenLocation{
-    height: 200px;	
+    height: 202px;	
     width: 340px;
     border: 1px solid #DADCDF;
     display: inline-block;
@@ -61,4 +61,12 @@
 }
 .step-item .btn-action-area:hover{
     background-color: rgba(0, 0, 0, 0);
+}
+.image-default{
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url(https://s3.amazonaws.com/static.veritone.com/veritone-ui/nullstate.png);
+    height: 200px;
+    width: 340px;
 }

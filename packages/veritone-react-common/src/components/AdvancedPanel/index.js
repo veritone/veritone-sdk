@@ -17,6 +17,11 @@ import style from './styles.scss';
 const id = guid();
 
 class ResponsiveDialog extends React.Component {
+  static propTypes = {
+    open: PropTypes.bool,
+    handleClose: PropTypes.func
+  };
+
   state = {
     open: false,
     boundingBoxes: [],
@@ -142,8 +147,6 @@ class ResponsiveDialog extends React.Component {
     })
   }
 
-
-
   render() {
     const { boundingBoxes, step } = this.state;
     const { open, handleClose, searchByTag } = this.props;
@@ -207,10 +210,24 @@ class ResponsiveDialog extends React.Component {
             </div>
           </div>
           <div className={cx(style["dialog-content"], style["action"])}>
-            <div onClick={this.handleResetAll} className={cx(style["reset-all"])}>RESET ALL</div>
+            <div
+              onClick={this.handleResetAll}
+              className={cx(style["reset-all"])}
+            >
+              RESET ALL
+            </div>
             <div>
-              <Button onClick={handleClose} className={cx(style["vbtn-black-color"], style["vbtn-cancel"])}>CANCEL</Button>
-              <Button onClick={this.handleApply} variant="raised" className={cx(style["vbtn-blue"])}>
+              <Button
+                onClick={handleClose}
+                className={cx(style["vbtn-black-color"], style["vbtn-cancel"])}
+              >
+                CANCEL
+                </Button>
+              <Button
+                onClick={this.handleApply}
+                variant="raised"
+                className={cx(style["vbtn-blue"])}
+              >
                 APPLY
               </Button>
             </div>
@@ -220,10 +237,5 @@ class ResponsiveDialog extends React.Component {
     );
   }
 }
-
-ResponsiveDialog.propTypes = {
-  open: PropTypes.bool,
-  handleClose: PropTypes.func
-};
 
 export default ResponsiveDialog;

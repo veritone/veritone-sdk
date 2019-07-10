@@ -27,9 +27,7 @@ export default class index extends Component {
     const { areaOfInterest = {} } = this.props;
     const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
     const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
-    const centroidX = formatNumber((parseFloat(basePoint1.x) + parseFloat(basePoint2.x)) / 2);
-    const centroidY = formatNumber((parseFloat(basePoint1.y) + parseFloat(basePoint2.y)) / 2);
-    return `(X ${centroidX}, Y ${centroidY})`
+    return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
   }
   render() {
     const { onEditAoI, onRemoveAoI } = this.props;
@@ -38,7 +36,9 @@ export default class index extends Component {
         <div className={cx(styles["rectangle"])}>
           <div className={cx(styles["flex-center"])}>
             <FilterCenterFocus />
-            <div className={cx(styles["coordinate"])}>{this.AreaOfInterest}</div>
+            <div className={cx(styles["coordinate"])}>
+              {this.AreaOfInterest}
+            </div>
           </div>
           <div className={cx(styles["edit-coordinate"])}>
             <IconButton
