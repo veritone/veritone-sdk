@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import Divider from '@material-ui/core/Divider';
 import { string, func, shape, arrayOf, element } from 'prop-types';
 import styles from './styles.scss';
 
@@ -64,7 +65,8 @@ export default class InnerProfileMenu extends React.Component {
         </ListSubheader>
 
         {this.props.additionMenuItems}
-
+        
+        <Divider />
         <MenuItem
           onClick={this.props.onLogout}
           key="logout"

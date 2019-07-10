@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, func, shape, bool } from 'prop-types';
+import { string, func, shape, bool, oneOfType } from 'prop-types';
 import dateFns from 'date-fns';
 import TextField from '@material-ui/core/TextField';
 
@@ -15,7 +15,8 @@ export default class TimeRangePicker extends React.Component {
       }).isRequired,
       onChange: func.isRequired
     }).isRequired,
-    readOnly: bool
+    readOnly: bool,
+    timeZone: oneOfType([string, bool])
   };
 
   handleChangeStart = ({ target: { value } }) => {
@@ -50,6 +51,14 @@ export default class TimeRangePicker extends React.Component {
   }
 
   render() {
+    let { timeZone } = this.props;
+
+    // some components are not passing timezone, so we need to find it out
+    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+    if (typeof timeZone === 'boolean' && timeZone) {
+      timeZone = this.props.input.value.timeZone || this.getTimeZone();
+    }
+
     return (
       <div className={styles.container}>
         <TimeSelector
@@ -57,29 +66,33 @@ export default class TimeRangePicker extends React.Component {
           onChange={this.handleChangeStart}
           readOnly={this.props.readOnly}
         />
-        <TextField
-          className={styles.dateTimeTZ}
-          value={this.props.input.value.timeZone || this.getTimeZone()}
-          InputProps={{
-            disableUnderline: true
-          }}
-          disabled
-        />
+        {timeZone && (
+          <TextField
+            className={styles.dateTimeTZ}
+            value={timeZone}
+            InputProps={{
+              disableUnderline: true
+            }}
+            disabled
+          />
+        )}
         <span className={styles.separator}>to</span>
         <TimeSelector
           value={this.props.input.value.end}
           onChange={this.handleChangeEnd}
           readOnly={this.props.readOnly}
         />
-        <TextField
-          className={styles.dateTimeTZ}
-          value={this.props.input.value.timeZone || this.getTimeZone()}
-          InputProps={{
-            disableUnderline: true,
-            readOnly: this.props.readOnly
-          }}
-          disabled
-        />
+        {timeZone && (
+          <TextField
+            className={styles.dateTimeTZ}
+            value={timeZone}
+            InputProps={{
+              disableUnderline: true,
+              readOnly: this.props.readOnly
+            }}
+            disabled
+          />
+        )}
       </div>
     );
   }

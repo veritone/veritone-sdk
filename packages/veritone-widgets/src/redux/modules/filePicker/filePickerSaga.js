@@ -201,6 +201,9 @@ function* watchRetryDone() {
 
 function* watchAbortions() {
   yield takeEvery(ABORT_REQUEST, function*(action) {
+    if (!requestMap) {
+      return;
+    }
     const { fileKey } = action.meta;
     // Abort requests somehow
     if (fileKey && requestMap[fileKey]) {

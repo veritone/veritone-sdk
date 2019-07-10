@@ -1,9 +1,9 @@
 {
   "name": "veritone-widgets",
-  "version": "7.4.0",
+  "version": "8.0.2",
   "dependencies": {
     "@material-ui/core": "^1.0.0",
-    "@material-ui/icons": "^1.0.0",
+    "@material-ui/icons": "^2.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "immutability-helper": "^3.0.0",
@@ -19,7 +19,7 @@
     "redux-thunk": "^2.2.0",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "veritone-react-common": "^7.4.0",
+    "veritone-react-common": "^8.0.1",
     "veritone-redux-common": "^3.7.0",
     "video-react": "~0.13.3"
   },
@@ -61,8 +61,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "cross-env": "^5.1.1",
-    "enzyme": "^3.4.4",
-    "enzyme-adapter-react-16.3": "1.0.0",
+    "enzyme": "^3.5.0",
+    "enzyme-adapter-react-16": "^1.0.0",
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.10.0",

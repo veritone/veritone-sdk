@@ -91,3 +91,6 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.11.1
 * revert "Calls made with callGraphQLApi now fail on bad responses as well as graphql errors"
+
+## 3.11.2
+** Update enzyme to ^3.5.0 and fix test incompatability errors

@@ -216,3 +216,25 @@ const MyPage = () => (
 
 ## 7.4.0
 * MediaPlayer: fix controlbar positioning when full screen
+
+## 7.5.0
+* AppBar: add an option to display notifications
+
+## 7.6.0
+* Update enzyme to ^3.5.0 and fix test incompatability errors
+* Add DataPicker widgets, reducer, and saga
+
+## 7.7.0
+* AppBar:
+  * Add Help Menu
+  * Standardize AppBar Layout
+
+## 8.0.0
+* (not published to npm - skipped to 8.0.1)
+* (breaking) DateTimePicker & TimeRangePicker: Pass `timezone` instead of `showTimezone`.
+
+## 8.0.1
+* Fixed missing icons from updates
+
+## 8.0.2
+* Update `veritone-react-common` version

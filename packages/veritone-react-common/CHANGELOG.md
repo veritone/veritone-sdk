@@ -204,3 +204,23 @@
 ## 7.4.0
 * MediaPlayer: ability to customize control bar
 * MediaPlayer: fix behavior for preload: 'none'
+
+## 7.5.0
+* Add Notification component
+* AppBar: add an option to enable notifications
+
+## 7.6.0
+* Update @material-ui/icons to ^2.0.0
+* Update enzyme to ^3.5.0 and fix test incompatability errors
+* Add DataPicker components
+
+## 7.7.0
+* AppBar:
+  * Add Help Menu
+  * Standardize AppBar Layout
+
+## 8.0.0
+* (breaking) DateTimePicker & TimeRangePicker: Pass `timezone` instead of `showTimezone`.
+
+## 8.0.1
+* Fixed missing icons from updates
