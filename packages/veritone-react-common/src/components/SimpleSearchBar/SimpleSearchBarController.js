@@ -1,11 +1,12 @@
 import React from 'react';
-import { any, arrayOf, func } from 'prop-types';
+import { any, arrayOf, func, string } from 'prop-types';
 import { SimpleSearchBarBase } from './index';
 
 export class SimpleSearchBarController extends React.Component {
   static propTypes = {
     onSubmit: func,
-    autocompleteResults: arrayOf(any)
+    autocompleteResults: arrayOf(any),
+    marginTop: string
   };
   state = {
     value: ''
@@ -22,7 +23,7 @@ export class SimpleSearchBarController extends React.Component {
   render() {
     let {
       state: { value },
-      props: { autocompleteResults },
+      props: { autocompleteResults, marginTop },
       onChange,
       onSubmit
     } = this;
@@ -36,6 +37,7 @@ export class SimpleSearchBarController extends React.Component {
         value={value}
         autocompleteResults={autocompleteResults || []}
         placeholder={'Search'}
+        marginTop={marginTop}
       />
     );
   }

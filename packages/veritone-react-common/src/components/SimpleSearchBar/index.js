@@ -50,7 +50,7 @@ export class SimpleSearchBarBase extends React.Component {
   };
 
   onChange = event => {
-    this.props.onChange(event.target.value);
+    this.props.onChange && this.props.onChange(event.target.value);
   };
 
   clear = () => {
@@ -85,7 +85,8 @@ export class SimpleSearchBarBase extends React.Component {
         autocompleteResults,
         placeholder,
         autocomplete,
-        isLoading
+        isLoading,
+        marginTop
       }
     } = this;
 
@@ -102,108 +103,112 @@ export class SimpleSearchBarBase extends React.Component {
     return (
       // render key added to force render during cleanup
       <ClickAwayListener onClickAway={clickAway} key={renderKey}>
-        <PaperOrDiv
-          style={{
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
-            borderBottomLeftRadius: 8,
-            borderBottomRightRadius: 8
-          }}
-          className={cx(styles.colorContainer)}
-        >
-          <div className={styles.searchBarContainer}>
-            <IconButton disabled={!focused} onClick={onSubmit}>
-              <Search className={styles.iconColor} />
-            </IconButton>
-            <Input
-              // handle esc and enter
-              onKeyDown={onKeyDown}
-              // disable browser auto complete
-              autoComplete="false"
-              // remove material's underline
-              disableUnderline
-              placeholder={placeholder || 'Search'}
-              autoFocus={focused}
-              value={value}
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              className={cx(styles.input)}
-            />
-            <Zoom in={!!(focused && showClear && isLoading)}>
-              <div className={cx(styles.loadingIcon)}>
-                <CircularProgress size={20} />
-              </div>
-            </Zoom>
-            <Zoom in={showClear} className={cx(styles.clearButton)}>
-              <IconButton onClick={this.clear}>
-                <Clear />
+        {/*this div here to prevent click away firing immediately, probably bug of material-ui*/}
+        <div style={{ marginTop }} className={styles.wrapper}>
+          <PaperOrDiv
+            style={{
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8
+            }}
+            className={cx(styles.colorContainer)}
+          >
+            <div className={styles.searchBarContainer}>
+              <IconButton disabled={!focused} onClick={onSubmit}>
+                <Search className={styles.iconColor} />
               </IconButton>
-            </Zoom>
-          </div>
-          {showExtension && (
-            <Fragment>
-              <Divider />
-              <div style={{ overflow: 'scroll' }}>
-                {autocompleteResults.map(result => {
-                  // if we have plain string array
-                  // eslint-disable-next-line lodash/prefer-lodash-typecheck
-                  if (typeof result === 'string') {
-                    return (
-                      <MenuItem
-                        key={result}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        onClick={() => clear() || result.onClick(result)}
-                      >
-                        {result}
-                      </MenuItem>
-                    );
-                  }
-                  // if we have data groups
-                  else {
-                    if (result.data && result.data.length) {
-                      // get the template
-                      let TemplateComponent = result.template;
+              <Input
+                // handle esc and enter
+                onKeyDown={onKeyDown}
+                // disable browser auto complete
+                autoComplete="false"
+                // remove material's underline
+                disableUnderline
+                placeholder={placeholder || 'Search'}
+                autoFocus={focused}
+                value={value}
+                onChange={this.onChange}
+                onFocus={this.onFocus}
+                className={cx(styles.input)}
+                key={renderKey + 1}
+              />
+              <Zoom in={!!(focused && showClear && isLoading)}>
+                <div className={cx(styles.loadingIcon)}>
+                  <CircularProgress size={20} />
+                </div>
+              </Zoom>
+              <Zoom in={showClear} className={cx(styles.clearButton)}>
+                <IconButton onClick={this.clear}>
+                  <Clear />
+                </IconButton>
+              </Zoom>
+            </div>
+            {showExtension && (
+              <Fragment>
+                <Divider />
+                <div style={{ overflow: 'scroll' }}>
+                  {autocompleteResults.map(result => {
+                    // if we have plain string array
+                    // eslint-disable-next-line lodash/prefer-lodash-typecheck
+                    if (typeof result === 'string') {
                       return (
-                        <Fragment key={Math.random()}>
-                          {// map data to template
-                          result.data.map(data => {
-                            // eslint-disable-next-line lodash/prefer-lodash-typecheck
-                            if (typeof data === 'string') {
-                              return (
-                                <MenuItem
-                                  key={data}
-                                  // eslint-disable-next-line react/jsx-no-bind
-                                  onClick={() =>
-                                    clear() || result.onClick(data)
-                                  }
-                                >
-                                  {TemplateComponent(data)}
-                                </MenuItem>
-                              );
-                            } else {
-                              return (
-                                <MenuItem
-                                  key={data.id}
-                                  // eslint-disable-next-line react/jsx-no-bind
-                                  onClick={() =>
-                                    clear() || result.onClick(data)
-                                  }
-                                >
-                                  <TemplateComponent {...data} />
-                                </MenuItem>
-                              );
-                            }
-                          })}
-                          <Divider />
-                        </Fragment>
+                        <MenuItem
+                          key={result}
+                          // eslint-disable-next-line react/jsx-no-bind
+                          onClick={() => clear() || result.onClick(result)}
+                        >
+                          {result}
+                        </MenuItem>
                       );
                     }
-                  }
-                })}
-              </div>
-            </Fragment>
-          )}
-        </PaperOrDiv>
+                    // if we have data groups
+                    else {
+                      if (result.data && result.data.length) {
+                        // get the template
+                        let TemplateComponent = result.template;
+                        return (
+                          <Fragment key={Math.random()}>
+                            {// map data to template
+                            result.data.map(data => {
+                              // eslint-disable-next-line lodash/prefer-lodash-typecheck
+                              if (typeof data === 'string') {
+                                return (
+                                  <MenuItem
+                                    key={data}
+                                    // eslint-disable-next-line react/jsx-no-bind
+                                    onClick={() =>
+                                      clear() || result.onClick(data)
+                                    }
+                                  >
+                                    {TemplateComponent(data)}
+                                  </MenuItem>
+                                );
+                              } else {
+                                return (
+                                  <MenuItem
+                                    key={data.id}
+                                    // eslint-disable-next-line react/jsx-no-bind
+                                    onClick={() =>
+                                      clear() || result.onClick(data)
+                                    }
+                                  >
+                                    <TemplateComponent {...data} />
+                                  </MenuItem>
+                                );
+                              }
+                            })}
+                            <Divider />
+                          </Fragment>
+                        );
+                      }
+                    }
+                  })}
+                </div>
+              </Fragment>
+            )}
+          </PaperOrDiv>
+        </div>
       </ClickAwayListener>
     );
   }
@@ -217,5 +222,6 @@ SimpleSearchBarBase.propTypes = {
   isLoading: bool,
   placeholder: string,
   autocompleteResults: arrayOf(any),
-  resetOnClickAway: bool
+  resetOnClickAway: bool,
+  marginTop: string
 };
