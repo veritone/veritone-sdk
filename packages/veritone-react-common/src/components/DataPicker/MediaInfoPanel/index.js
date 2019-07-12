@@ -18,6 +18,7 @@ import MediaPlayerComponent from '../../MediaPlayer';
 
 import styles from './styles.scss';
 
+// eslint-disable-next-line react/display-name
 const MediaPlayer = React.forwardRef((props, ref) => (
   <MediaPlayerComponent {...props} forwardedRef={ref} />
 ));

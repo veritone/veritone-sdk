@@ -97,15 +97,6 @@ export default class Overlay extends React.Component {
     }
   };
 
-  state = {
-    boundingBoxPositions: [], // set in getDerivedStateFromProps
-    focusedBoundingBoxId: null,
-    stagedBoundingBoxPosition: {},
-    userMinimizedConfirmMenu: false,
-    userActingOnBoundingBox: false,
-    drawingInitialBoundingBox: false
-  };
-
   static getDerivedStateFromProps(props) {
     return {
       boundingBoxPositions: Overlay.mapPolysToInternalFormat(
@@ -130,6 +121,15 @@ export default class Overlay extends React.Component {
       })),
     isEqual
   );
+
+  state = {
+    boundingBoxPositions: [], // set in getDerivedStateFromProps
+    focusedBoundingBoxId: null,
+    stagedBoundingBoxPosition: {},
+    userMinimizedConfirmMenu: false,
+    userActingOnBoundingBox: false,
+    drawingInitialBoundingBox: false
+  };
 
   handleResizeExistingBox = (e, direction, ref, delta, position) => {
     this.removeStagedBoundingBox();

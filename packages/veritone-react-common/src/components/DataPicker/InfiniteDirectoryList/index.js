@@ -85,6 +85,7 @@ class FilesTable extends React.Component {
     ),
     onSelectItem: func,
     items: arrayOf(itemShape),
+    // eslint-disable-next-line react/no-unused-prop-types
     highlightedItems: arrayOf(itemShape),
     loadingComponent: node,
     triggerPagination: func.isRequired,
