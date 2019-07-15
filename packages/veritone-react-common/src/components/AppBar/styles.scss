@@ -31,7 +31,7 @@
   align-items: center;
   padding: 0 10px;
 
-  &>div {
+  & > div {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -41,9 +41,8 @@
     justify-content: flex-start;
   }
 
-  .center {
+  .searchBarHolder {
     flex-grow: 1;
-    justify-content: center;
   }
 
   .right {
