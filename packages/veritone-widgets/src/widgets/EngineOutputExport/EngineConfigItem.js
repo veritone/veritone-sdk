@@ -15,6 +15,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Icon from '@material-ui/core/Icon';
 import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 import styles from './styles.scss';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
@@ -87,83 +89,93 @@ export default class EngineConfigItem extends Component {
         {engine && engine.signedIconPath ? (
           <img className={styles.engineLogo} src={engine.signedIconPath} />
         ) : (
-          <Icon className={cx(styles['default-engine-icon'], 'icon-engines')} />
-        )}
+            <Icon className={cx(styles['default-engine-icon'], 'icon-engines')} />
+          )}
         <ListItemText
           classes={{ primary: styles.engineNameText }}
           primary={
             engine ? (
               engine.name
             ) : (
-              <span className={styles.allEnginesText}>
-                <span>All Engines</span>
-                <Tooltip
-                  title="Export will include formats selected for all available engines in this category"
-                  placement="bottom-start"
-                >
-                  <InfoIcon className={styles.allEnginesInfoIcon} />
-                </Tooltip>
-              </span>
-            )
+                <span className={styles.allEnginesText}>
+                  <span>All Engines</span>
+                  <Tooltip
+                    title="Export will include formats selected for all available engines in this category"
+                    placement="bottom-start"
+                  >
+                    <InfoIcon className={styles.allEnginesInfoIcon} />
+                  </Tooltip>
+                </span>
+              )
           }
           inset={!engine}
         />
-        <Select
-          multiple
-          value={selectedFileExtensions}
-          // eslint-disable-next-line
-          onChange={evt =>
-            selectFileType(
-              evt.target.value,
-              categoryId || get(engine, 'category.id'),
-              engineId
-            )
-          }
-          // eslint-disable-next-line
-          renderValue={value => `.${value.join(', .')}`}
-          input={
-            <Input
-              classes={{
-                root: styles.engineConfigInput
-              }}
-            />
-          }
-          MenuProps={{
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'left'
-            },
-            getContentAnchorEl: null,
-            'data-veritone-element': 'export-format-select-menu'
-          }}
-          data-veritone-element="export-format-select"
-        >
-          {category.exportFormats.map(format => {
-            if (
-              includes(format.types, 'subtitle') &&
-              !exportClosedCaptionsEnabled
-            ) {
-              return null;
+        <FormControl className={styles.formControl}>
+          <InputLabel htmlFor="engine-export">
+            {selectedFileExtensions.length ? "" : "Select export format"}
+          </InputLabel>
+          <Select
+            multiple
+            className={styles.selectStyles}
+            value={selectedFileExtensions}
+            // eslint-disable-next-line
+            onChange={evt =>
+              selectFileType(
+                evt.target.value,
+                categoryId || get(engine, 'category.id'),
+                engineId
+              )
             }
-
-            return (
-              <MenuItem
-                key={`format-${engineId}-${format.format}`}
-                value={format.format}
+            // eslint-disable-next-line
+            renderValue={value => `.${value.join(', .')}`}
+            input={
+              <Input
                 classes={{
-                  selected: styles.exportFormatSelected
+                  root: styles.engineConfigInput
                 }}
-                data-veritone-element={`${format.format}-export-format`}
-              >
-                <Checkbox
-                  color="primary"
-                  checked={includes(selectedFileExtensions, format.format)}
-                />
-                <ListItemText primary={`.${format.format} (${format.label})`} />
-              </MenuItem>
-            );
-          })}
-        </Select>
+              />
+            }
+            inputProps={{
+              name: 'engine-export',
+              id: 'engine-export',
+            }}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left'
+              },
+              getContentAnchorEl: null,
+              'data-veritone-element': 'export-format-select-menu'
+            }}
+            data-veritone-element="export-format-select"
+          >
+            {category.exportFormats.map(format => {
+              if (
+                includes(format.types, 'subtitle') &&
+                !exportClosedCaptionsEnabled
+              ) {
+                return null;
+              }
+
+              return (
+                <MenuItem
+                  key={`format-${engineId}-${format.format}`}
+                  value={format.format}
+                  classes={{
+                    selected: styles.exportFormatSelected
+                  }}
+                  data-veritone-element={`${format.format}-export-format`}
+                >
+                  <Checkbox
+                    color="primary"
+                    checked={includes(selectedFileExtensions, format.format)}
+                  />
+                  <ListItemText primary={`.${format.format} (${format.label})`} />
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
       </ListItem>
     );
   }
