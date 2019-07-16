@@ -1,12 +1,12 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
-import { Bar } from 'veritone-searchbar-react-export';
+import Bar from 'veritone-searchbar-react-export';
 import { string, any } from 'prop-types';
 
 // todo VTN-26856 Move Advanced Search Bar into veritone-sdk
-export const SearchBarAdvanced = ({ width, color = 'blue', ...props }) => (
+export const SearchBarAdvanced = ({ width, color = 'indigo', ...props }) => (
   <div style={{ width }}>
-    <Bar {...{ ...props, color }} />
+    <Bar.SampleSearchBar {...{ ...props, color }} />
   </div>
 );
 
@@ -33,3 +33,5 @@ SearchBarAdvanced.propTypes = {
   sourceFilters: any,
   defaultJoinOperator: any
 };
+
+export default SearchBarAdvanced;

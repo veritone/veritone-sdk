@@ -106,7 +106,7 @@
     "stylelint-config-standard": "^17.0.0",
     "url-loader": "^0.6.2",
     "veritone-dev-env": "^3.0.0",
-    "veritone-searchbar-react-export": "^19.0.0",
+    "veritone-searchbar-react-export": "^20.0.0",
     "veritone-csp-generator": "^3.5.1"
   },
   "license": "Apache-2.0",
