@@ -25,7 +25,7 @@ export default class Notifier extends React.Component {
   static propTypes = notifierPropTypes;
 
   static defaultProps = {
-    tooltipTitle: 'Processing',
+    tooltipTitle: 'Notifications',
     headerText: 'Items in Queue'
   };
 
