@@ -8,6 +8,10 @@ import filePickerReducer, {
   namespace as filePickerNamespace
 } from './modules/filePicker';
 
+import folderSelectionDialogReducer, {
+  namespace as folderSelectionDialogNamespace
+} from './modules/folderSelectionDialog';
+
 import engineSelectionReducer, {
   namespace as engineSelectionNamespace
 } from './modules/engineSelection';
@@ -36,6 +40,7 @@ import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
 export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
+    [folderSelectionDialogNamespace]: folderSelectionDialogReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
     [notificationsNamespace]: notificationsReducer,
     [engineOutputExportNamespace]: engineOutputExportReducer,

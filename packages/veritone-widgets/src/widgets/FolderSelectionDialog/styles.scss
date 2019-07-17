@@ -1,4 +1,10 @@
 
 .selected {
-    background-color: rgba(33, 150, 243, 0.6) !important;
+    background-color: rgba(212, 213, 214, 0.6) !important;
 }
+
+.rootfolder {
+    &:hover {
+      background-color: rgba(212, 213, 214, 0.6) !important;
+    }
+  }

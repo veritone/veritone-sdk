@@ -155,6 +155,7 @@ const reducer = createReducer(defaultState, {
 export default reducer;
 
 function local(state) {
+  console.log("state from local", state[namespace])
   return state[namespace];
 }
 

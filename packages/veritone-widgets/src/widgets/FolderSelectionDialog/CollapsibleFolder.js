@@ -1,9 +1,9 @@
 import React from 'react';
-// import { noop, get } from 'lodash';
-import { objectOf, arrayOf, object, any } from 'prop-types';
-// import { connect } from 'react-redux';
-// import { withPropsOnChange } from 'recompose';
+import { objectOf, func, arrayOf, object, any, string } from 'prop-types';
+import { connect } from 'react-redux';
 
+import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
+import cx from 'classnames';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
@@ -14,38 +14,70 @@ import ListItemText from '@material-ui/core/ListItemText';
 import FolderList from './FolderList';
 import Collapse from '@material-ui/core/Collapse';
 
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-// import styles from './styles.scss';
+import ExpandLess from '@material-ui/icons/ExpandMore';
+import ExpandMore from '@material-ui/icons/ChevronRight';
+import styles from './styles.scss';
 
 
-//import * as filePickerModule from '../../redux/modules/filePicker';
-// import { guid } from '../../shared/util';
+@connect(
+  (state) => ({
+    selectedFolder: folderSelectionModule.selectedFolder(state),
+    subFolderList: folderSelectionModule.subFolderList(state)
+  }),
+  {
+    selectFolder: folderSelectionModule.selectFolder,
+    getAllSubFolders: folderSelectionModule.getAllSubFolders
+  },
+  null,
+  { withRef: true }
 
-// import { yellow } from '@material-ui/core/colors';
-
+)
 
 export default class CollapsibleFolder extends React.Component {
   static propTypes = {
-    records: arrayOf(object),
-    folder: objectOf(any)
+    folder: objectOf(any),
+    selectFolder: func,
+    getAllSubFolders: func,
+    subFolderList: arrayOf(object),
+    selectedFolder: string
   };
 
-  state = { open: false }
- 
+  state = { 
+    open: false,
+  }
+  
+  
   handleClick = () => {
-    this.setState((prevState) => ({open : !prevState.open}))
-    const { folder } = this.props;
-    console.log(folder)
+    
+    const { folder, selectFolder, getAllSubFolders } = this.props;
+    getAllSubFolders(folder);
+    this.setState((prevState) => ({
+      open : !prevState.open,
+      folderId: folder.treeObjectId
+    }))
+    selectFolder(folder.treeObjectId);
+  }
+
+  renderSubFolders(){
+    let {subFolderList, folder} = this.props;
+    if (this.props.subFolderList){
+      let records  = subFolderList.filter((subfolder) => { 
+        if (subfolder){
+          if (subfolder.parent.treeObjectId === folder.treeObjectId){
+            return subfolder
+          }
+        }
+      });
+      return <FolderList  list={records}/>;
+    }
   }
 
   render() {
-   
-    const { folder, records } = this.props;
- 
+    
+    const { folder, selectedFolder } = this.props;
     return (
       <List disablePadding>
-        <ListItem button onClick={this.handleClick}>
+        <ListItem className={cx(folder.treeObjectId === selectedFolder && styles.selected)} button onClick={this.handleClick}>
           {this.state.open ? <ExpandLess /> : <ExpandMore />}
           <ListItemIcon>
             <FolderIcon style ={{color: "#F0C56A"}}/>
@@ -55,7 +87,7 @@ export default class CollapsibleFolder extends React.Component {
         </ListItem>
         <Collapse in={this.state.open} timeout="auto" unmountOnExit>
           <div style={{paddingLeft: "25px"}}>
-            <FolderList  list={records}/>
+            {this.renderSubFolders()}
           </div>
         </Collapse>
       </List>

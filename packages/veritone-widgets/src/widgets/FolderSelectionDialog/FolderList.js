@@ -36,7 +36,9 @@ export default class FolderList extends React.Component {
    
     render() {
       let { list } = this.props
-   
+      if(!list){
+        return <div/>;
+      }
       return this.sortList(list).map((folder) => {
         let key  = (folder.id) ? folder.id : folder.treeObjectId;
 
