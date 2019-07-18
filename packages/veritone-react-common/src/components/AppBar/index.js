@@ -68,7 +68,7 @@ export default class AppBar extends React.Component {
     notification: shape(notifierPropTypes),
     searchBar: oneOfType([bool, element]),
     searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
-    searchBarLeftMargin: number
+    searchBarLeftMargin: oneOfType([string, number])
   };
   static defaultProps = {
     logo: true,
