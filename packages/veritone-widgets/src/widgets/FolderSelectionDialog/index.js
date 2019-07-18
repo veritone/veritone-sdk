@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
-import PublishIcon from '@material-ui/icons/Publish';
 import FolderList from './FolderList';
 import styles from './styles.scss';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
@@ -75,30 +74,40 @@ class FolderSelectionDialog extends React.Component {
      
           <Dialog  fullWidth="md" maxWidth="md" open={this.props.open}>
             <Grid container justify="space-between" alignItems="center">
-              <DialogTitle >Select Folder</DialogTitle>
-              <CloseIcon onClick = {this.handleCancel} style={{marginRight: "20px"}}/>
+              <DialogTitle className={styles.dialogTitle}>Select Folder</DialogTitle>
+              <CloseIcon className={styles.closeIcon} onClick = {this.handleCancel} />
             </Grid>
-            <DialogContent  style = {{ border: "2px solid #eee", marginRight: "20px", marginLeft: "20px", padding: "0 0 0 0"}} >
-              <Grid className ={cx(styles.rootfolder, rootFolder.treeObjectId === selectedFolder && styles.selected)} onClick={this.handleClick} container spacing={0}>
+            <Typography className={styles.dialogSubTitle} variant="body">Choose a folder below to organize this data.</Typography>
+            <DialogContent  className={styles.dialogContent} >
+              <Grid className ={cx(styles.rootfolder, rootFolder.treeObjectId === selectedFolder && styles.selected)} onClick={this.handleClick} container >
                 <Grid item container alignContent = "center" alignItems = "center">
-                  <WorkIcon   style ={{color: "#2195F3", margin: "10px"}} />
+                  <WorkIcon  className={styles.workIcon} />
                   <Typography variant="title" >My Organization</Typography>
                 </Grid>
-                <Grid  style ={{ marginLeft: "13px"}} item container alignContent="center" alignItems="center">
-                  <PublishIcon   style ={{ margin: "10px"}}/>
-                  <Typography variant="body2" >Save to Root Level</Typography>
+                <Grid   item container alignContent="center" alignItems="center">
+                  <Typography className ={styles.saveText} variant="title" >Save to Root Level</Typography>
                 </Grid>
               </Grid> 
-              
-              <FolderList list={folderList}/>
+              <ul>
+                <FolderList list={folderList}/>
+              </ul>
             </DialogContent> 
-            <DialogActions>
-              <Button onClick = {this.handleCancel} size="large" color="primary">
-                CANCEL
-              </Button>
-              <Button  size="large" color="primary">
-                SELECT
-              </Button>
+            <DialogActions  style = {{minHeight: "80px", marginRight: "16px", marginLeft: "16px"}}>
+              <Grid container direction = "row" justify="space-between" xs={12}>
+                <Grid item container justify="flex-start" alignContent = "center"  xs={3}>
+                  <Button className = {cx(styles.button, styles.buttonNewFolder)} variant="outlined" color="primary"  onClick = {this.handleCancel} size="large">
+                    <Typography className = {styles.newFolderButton}>New Folder</Typography>
+                  </Button>
+                </Grid>  
+                <Grid item container justify="flex-end" alignContent = "center"  xs={9}>
+                  <Button  className = {styles.button} onClick = {this.handleCancel} size="large">
+                    <Typography className = {styles.cancelButton} >Cancel</Typography>
+                  </Button>
+                  <Button className = {cx(styles.button, styles.buttonSelect)} variant="contained" size="large" color="primary">
+                    <Typography className={styles.selectButton} >Select</Typography>
+                  </Button>
+                </Grid>
+              </Grid>
             </DialogActions>
           </Dialog>
 

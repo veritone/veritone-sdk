@@ -1,22 +1,14 @@
 import React from 'react';
 import { objectOf, func, arrayOf, object, any, string } from 'prop-types';
 import { connect } from 'react-redux';
-
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import cx from 'classnames';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
 import FolderIcon from '@material-ui/icons/Folder';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-
-import ListItemText from '@material-ui/core/ListItemText';
 import FolderList from './FolderList';
-import Collapse from '@material-ui/core/Collapse';
-
 import ExpandLess from '@material-ui/icons/ExpandMore';
 import ExpandMore from '@material-ui/icons/ChevronRight';
 import styles from './styles.scss';
+
 
 
 @connect(
@@ -76,21 +68,16 @@ export default class CollapsibleFolder extends React.Component {
     
     const { folder, selectedFolder } = this.props;
     return (
-      <List disablePadding>
-        <ListItem className={cx(folder.treeObjectId === selectedFolder && styles.selected)} button onClick={this.handleClick}>
-          {this.state.open ? <ExpandLess /> : <ExpandMore />}
-          <ListItemIcon>
-            <FolderIcon style ={{color: "#F0C56A"}}/>
-          </ListItemIcon>
-        <ListItemText primary={folder.name} />
-        
-        </ListItem>
-        <Collapse in={this.state.open} timeout="auto" unmountOnExit>
-          <div style={{paddingLeft: "25px"}}>
-            {this.renderSubFolders()}
+        <li>
+          <div className={cx(styles.folder, folder.treeObjectId === selectedFolder && styles.selected)} onClick={this.handleClick}>
+            {this.state.open ? <ExpandLess /> : <ExpandMore />}
+       
+            <FolderIcon className={styles.collapsibleFolderIcon}/>
+         
+            <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder && styles.folderNameSelected)}>{folder.name}</div>
           </div>
-        </Collapse>
-      </List>
+          {(this.state.open)?  this.renderSubFolders() : <div/>}
+        </li>
     );
   }
 }

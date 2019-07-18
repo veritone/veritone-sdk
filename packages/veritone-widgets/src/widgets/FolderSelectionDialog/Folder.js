@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 import cx from 'classnames';
 import {  objectOf, any, func, string } from 'prop-types';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
-import ListItem from '@material-ui/core/ListItem';
 import FolderIcon from '@material-ui/icons/Folder';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import styles from './styles.scss';
 
 @connect(
@@ -40,14 +37,12 @@ export default class Folder extends React.Component {
     const { folder, selectedFolder } = this.props;
   
     return (
-      <ListItem className={cx(folder.treeObjectId === selectedFolder && styles.selected)} button onClick={this.handleClick} >
-        <ListItemIcon >
-        <FolderIcon style ={{color: "#F0C56A", marginLeft: "24px"}}/>
-        </ListItemIcon>
-        <ListItemText 
-        primary={folder.name}
-        />
-      </ListItem>
+      <li>
+        <div className={cx(styles.folder, folder.treeObjectId === selectedFolder && styles.selected)} onClick={this.handleClick}>
+          <FolderIcon className={styles.folderIcon}/>
+          <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder && styles.folderNameSelected)}>{folder.name}</div>
+        </div>
+      </li>
     );
   }
 }

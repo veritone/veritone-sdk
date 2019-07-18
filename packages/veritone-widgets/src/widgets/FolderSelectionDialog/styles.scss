@@ -1,10 +1,153 @@
 
 .selected {
-    background-color: rgba(212, 213, 214, 0.6) !important;
+    background-color: #E8F0FE;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
 }
 
 .rootfolder {
-    &:hover {
-      background-color: rgba(212, 213, 214, 0.6) !important;
-    }
+  &:hover {
+    background-color: #EEE;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
   }
+}
+
+.dialogTitle {
+  padding: 24px 24px 5px !important;
+}
+
+.dialogSubTitle {
+  padding: 0 24px 20px !important;
+}
+
+.dialogContent {
+  border: 2px solid #eee;
+  margin-right: 20px;
+  margin-left: 20px; 
+  padding: 0 !important;
+}
+
+.closeIcon {
+  font-size: 35px !important;
+  margin-right: 20px;
+  margin-top: 24px;
+  color: #515154;
+}
+
+.workIcon {
+  font-size: 35px !important;
+  margin: 10px;
+  color: #515154;
+}
+
+.saveText {
+  color: #1873E8 !important; 
+  padding-left: 30px !important;
+  padding-top: 5px !important; 
+  padding-bottom: 5px !important;
+}
+
+.button {
+  min-height: 50px;
+}
+
+.buttonNewFolder {
+  border: 1px solid #1873E8 !important;
+}
+
+.buttonSelect {
+  background-color: #1873E8 !important;
+}
+
+.newFolderButton {
+  color: #1873E8 !important;
+  font-size: 18px !important;
+  font-weight: bold !important; 
+  text-transform: none !important;
+}
+
+.cancelButton {
+  font-size: 18px !important;
+  font-weight: bold !important; 
+  text-transform: none !important;
+  color: #515154 !important;
+}
+
+.selectButton {
+  font-size: 18px !important;
+  font-weight: bold !important; 
+  text-transform: none !important;
+  color: #fff !important;
+}
+
+.folder {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  color: #515154;
+}  
+
+.collapsibleFolderIcon {
+  font-size: 35px !important;
+  color: #515154;
+}
+
+.folderIcon {
+  font-size: 35px !important;
+  color: #515154 !important;
+  margin-left: 24px;
+}
+
+.folderName {
+  font-weight: 600;
+  color: #515154;
+  padding-left: 10px;
+}
+
+.folderNameSelected {
+  color: #1873E8;
+}
+
+ul { 
+  list-style: none; 
+  padding: 0; 
+  margin:0;
+  overflow: hidden;
+}
+
+li { 
+  margin:0; 
+  padding: 0;
+  overflow: hidden;
+}
+
+li > div:hover { 
+  background-color: #EEE;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+
+li div {
+  padding-left:24px
+}
+
+li li div {
+  padding-left:48px
+}
+
+li li li div {
+  padding-left:72px
+}
+
+li li li li div {
+  padding-left:96px
+}
+
+li li li li li div {
+  padding-left:120px
+}
+
+li li li li li li div {
+  padding-left:144px
+}
