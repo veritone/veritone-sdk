@@ -4,32 +4,28 @@ import IconButton from '@material-ui/core/IconButton';
 import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
-import { string, shape, func } from 'prop-types';
+import Tooltip from '@material-ui/core/Tooltip';
+import { string, func } from 'prop-types';
 
 import classNames from 'classnames';
 import styles from './styles.scss';  
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
-export const notifierPropTypes = shape({
+export const notifierPropTypes = {
+  tooltipTitle: string,
   headerText: string,
   onOpen: func,
   onClose: func,
   headerBackgroundColor: string,
   bodyBackgroundColor: string,
   notifications: notificationListPropTypes
-});
+};
 
 export default class Notifier extends React.Component {
-  static propTypes = {
-    headerText: string,
-    onOpen: func,
-    onClose: func,
-    headerBackgroundColor: string,
-    bodyBackgroundColor: string,
-    notifications: notificationListPropTypes
-  };
+  static propTypes = notifierPropTypes;
 
   static defaultProps = {
+    tooltipTitle: 'Notifications',
     headerText: 'Items in Queue'
   };
 
@@ -56,6 +52,7 @@ export default class Notifier extends React.Component {
     } = this.state;
 
     const {
+      tooltipTitle,
       headerText,
       headerBackgroundColor,
       bodyBackgroundColor,
@@ -69,18 +66,31 @@ export default class Notifier extends React.Component {
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
-        <IconButton onClick={this.showNotifications} disabled={numNotifications === 0}>
-          {
-            numNotifications > 0 && !anchorEl ?
-              <Badge color="primary" badgeContent={numNotifications}>
-                <NotificationIcon nativeColor="white" />
-              </Badge>
-            :
-              <NotificationIcon nativeColor="white" />
-          }
-        </IconButton>
+        <Tooltip title={tooltipTitle || ''}>
+          <span className={styles.toolTipWrapper}>
+            <IconButton 
+              onClick={this.showNotifications}
+              disabled={numNotifications === 0}
+              data-veritone-element="notification-button"
+            >
+              {
+                numNotifications > 0 && !anchorEl ?
+                  <Badge 
+                    color="primary" 
+                    badgeContent={numNotifications}
+                    classes={{ badge: styles.badge }}
+                  >
+                    <NotificationIcon nativeColor="white" />
+                  </Badge>
+                :
+                  <NotificationIcon nativeColor="white" />
+              }
+            </IconButton>
+          </span>
+        </Tooltip>
 
         <Popover
+          disableRestoreFocus
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           anchorOrigin={{

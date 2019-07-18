@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import EditIcon from '@material-ui/icons/ModeEdit';
+import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { func, string, objectOf, any, bool, node } from 'prop-types';

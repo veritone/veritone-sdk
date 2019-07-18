@@ -2,6 +2,7 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
 import AppSwitcherList from './AppSwitcherList';
@@ -11,6 +12,7 @@ import styles from './styles.scss';
 
 export default class AppSwitcher extends React.Component {
   static propTypes = {
+    tooltipTitle: string,
     currentAppName: string,
     enabledApps: arrayOf(
       shape({
@@ -25,7 +27,9 @@ export default class AppSwitcher extends React.Component {
     handleRefresh: func,
     onSwitchApp: func
   };
-  static defaultProps = {};
+  static defaultProps = {
+    tooltipTitle: 'Switch Apps'
+  };
 
   state = {
     open: false,
@@ -50,18 +54,21 @@ export default class AppSwitcher extends React.Component {
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton
-          onClick={this.openMenu}
-          data-veritone-element="app-switcher-button"
-        >
-          <AppsIcon nativeColor="white" />
-        </IconButton>
+        <Tooltip title={this.props.tooltipTitle || ''} disableFocusListener>
+          <IconButton
+            onClick={this.openMenu}
+            data-veritone-element="app-switcher-button"
+          >
+            <AppsIcon nativeColor="white" />
+          </IconButton>
+        </Tooltip>
         <Menu
           open={this.state.open}
           onClose={this.closeMenu}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           anchorEl={this.state.anchorEl}
           getContentAnchorEl={null}
+          className={styles.popover}
         >
           {this.props.enabledAppsFailedLoading ? (
             <AppSwitcherErrorState onRefresh={this.props.handleRefresh} />

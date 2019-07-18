@@ -24,10 +24,23 @@
 .notification {
   display: "flex";
   align-items: 'center';
+
+  .toolTipWrapper{
+    display: inline-block;
+  }
+
+  .badge {
+    top: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    background-color: #00BCD4;
+  }
 }
 
 .popover {
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .notificationWindow {
@@ -98,7 +111,7 @@
       padding: 0;
       margin-top: 0;
       margin-bottom: 0;
-      margin-left: -1000px;
+      margin-left: -600px;
       @include outroTransition;
     }
 

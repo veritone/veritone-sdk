@@ -44,7 +44,7 @@ describe('RaisedTextField', function() {
     expect(wrapper.find('KeyboardArrowRight')).toHaveLength(1);
 
     wrapper = mount(<RaisedTextField action="edit" />);
-    expect(wrapper.find('ModeEdit')).toHaveLength(1);
+    expect(wrapper.find('Edit')).toHaveLength(1);
 
     wrapper = mount(<RaisedTextField />);
     expect(wrapper.find('IconButton').find('svg')).toHaveLength(0);

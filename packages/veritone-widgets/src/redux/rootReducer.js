@@ -12,6 +12,10 @@ import folderSelectionDialogReducer, {
   namespace as folderSelectionDialogNamespace
 } from './modules/folderSelectionDialog';
 
+import dataPickerReducer, {
+  namespace as dataPickerNamespace
+} from './modules/dataPicker';
+
 import engineSelectionReducer, {
   namespace as engineSelectionNamespace
 } from './modules/engineSelection';
@@ -41,6 +45,7 @@ export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
     [folderSelectionDialogNamespace]: folderSelectionDialogReducer,
+    [dataPickerNamespace]: dataPickerReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
     [notificationsNamespace]: notificationsReducer,
     [engineOutputExportNamespace]: engineOutputExportReducer,

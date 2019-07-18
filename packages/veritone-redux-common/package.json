@@ -1,6 +1,6 @@
 {
   "name": "veritone-redux-common",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
@@ -43,8 +43,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "cross-env": "^5.1.4",
-    "enzyme": "^3.4.4",
-    "enzyme-adapter-react-16.3": "1.0.0",
+    "enzyme": "^3.5.0",
+    "enzyme-adapter-react-16": "^1.0.0",
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.10.0",

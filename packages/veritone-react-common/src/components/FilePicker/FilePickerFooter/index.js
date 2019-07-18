@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { bool, func, string } from 'prop-types';
+import cx from 'classnames';
 import styles from './styles.scss';
 
 class FilePickerFooter extends Component {
@@ -8,7 +9,8 @@ class FilePickerFooter extends Component {
     disabled: bool,
     onCancel: func,
     onSubmit: func,
-    title: string
+    title: string,
+    hasIntercom: bool
   };
 
   static defaultProps = {
@@ -16,16 +18,31 @@ class FilePickerFooter extends Component {
   };
 
   render() {
+    const {
+      hasIntercom,
+      onCancel,
+      disabled,
+      onSubmit,
+      title
+    } = this.props;
     return (
-      <div className={styles.filePickerFooter}>
-        <Button onClick={this.props.onCancel}>Cancel</Button>
+      <div className={cx(styles.filePickerFooter, {
+        [styles.hasIntercom]: hasIntercom
+      })}>
         <Button
-          variant="raised"
-          disabled={this.props.disabled}
-          color="primary"
-          onClick={this.props.onSubmit}
+          data-veritone-element={`picker-footer-cancel-button`}
+          onClick={onCancel}
         >
-          {this.props.title}
+          Cancel
+        </Button>
+        <Button
+          data-veritone-element={`picker-footer-${title}-button`}
+          variant="raised"
+          disabled={disabled}
+          color="primary"
+          onClick={onSubmit}
+        >
+          {title}
         </Button>
       </div>
     );
