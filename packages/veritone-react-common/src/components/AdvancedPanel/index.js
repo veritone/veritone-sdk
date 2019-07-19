@@ -7,149 +7,34 @@ import IconButton from "@material-ui/core/IconButton";
 import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
 import CloseIcon from "@material-ui/icons/Close";
 import Divider from '@material-ui/core/Divider';
-import { findIndex, get, isEqual } from "lodash";
 
-import { guid } from '../../helpers/guid';
 import LocationSelect from '../AreaSelect';
 import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
-const id = guid();
 
 class ResponsiveDialog extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
-    handleClose: PropTypes.func
-  };
-
-  state = {
-    open: false,
-    boundingBoxes: [],
-    step: 1,
-    selectedConfidenceRange: [0, 100],
-    parentBoudingPoly: [],
-    parentRange: [0, 100]
-  };
-
-  static getDerivedStateFromProps(nextProps, currentState) {
-    const currentParentBoudingPoly = get(currentState, "parentBoudingPoly", []);
-    const currentParentRange = get(currentState, "parentRange", [0, 100]);
-    const nextBoundingPoly = get(nextProps, "advancedOptions.boundingPoly", []);
-    const nextRange = get(nextProps, "advancedOptions.range", [0, 100]);
-    if (!isEqual(currentParentBoudingPoly, nextBoundingPoly) || !isEqual(currentParentRange, nextRange)) {
-      return {
-        boundingBoxes: nextBoundingPoly.length ? [{
-          boundingPoly: nextBoundingPoly,
-          overlayObjectType: "c",
-          id: id
-        }] : [],
-        step: (nextBoundingPoly && nextBoundingPoly.length) ? 3 : 1,
-        selectedConfidenceRange: nextRange,
-        parentBoudingPoly: nextBoundingPoly,
-        parentRange: nextRange
-      }
-    }
-    return null;
-  }
-
-  handleAddBoundingBox = newBox => {
-    if (this.state.boundingBoxes.length) {
-      return;
-    }
-    this.setState(state => ({
-      boundingBoxes: [
-        ...state.boundingBoxes,
-        {
-          ...newBox,
-        }
-      ]
-    }));
-  };
-
-  handleDeleteBoundingBox = deletedId => {
-    this.setState(state => ({
-      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
-    }));
-  };
-
-  handleChangeBoundingBox = changedBox => {
-    this.setState(state => {
-      const affectedIndex = findIndex(state.boundingBoxes, {
-        id: changedBox.id
-      });
-
-      let newState = {
-        boundingBoxes: [...state.boundingBoxes]
-      };
-
-      newState.boundingBoxes[affectedIndex] = changedBox;
-
-      return {
-        boundingBoxes: newState.boundingBoxes
-      };
-    });
+    handleClose: PropTypes.func,
+    onAddAdvancedSearchParams: PropTypes.func,
+    handleReset: PropTypes.func,
+    searchByTag: PropTypes.string
   };
 
   onEditAoI = () => {
-    this.setState({
-      step: 2
-    })
+    const { onChangeStep } = this.props;
+    onChangeStep(2);
   }
 
   onRemoveAoI = () => {
-    this.setState({
-      step: 1,
-      boundingBoxes: []
-    })
-  }
-
-  onUpdateStep = (step) => {
-    this.setState({
-      step: step,
-      readOnly: step !== 2
-    })
-    if (step === 2) {
-      const defaultBoundingBox = {
-        boundingPoly: [
-          { x: 0, y: 0 },
-          { x: 0, y: 1 },
-          { x: 1, y: 1 },
-          { x: 1, y: 0 }
-        ],
-        overlayObjectType: "c",
-        id: guid()
-      }
-      this.handleAddBoundingBox(defaultBoundingBox);
-    }
-  }
-
-  onChangeConfidenceRange = (e) => {
-    this.setState({
-      selectedConfidenceRange: [...e]
-    })
-  }
-
-  handleResetAll = () => {
-    this.setState({
-      step: 1,
-      boundingBoxes: [],
-      selectedConfidenceRange: [0, 100]
-    });
-    this.props.handleReset();
-  }
-
-  handleApply = () => {
-    const { onAddAdvancedSearchParams } = this.props;
-    const { boundingBoxes, selectedConfidenceRange } = this.state;
-    onAddAdvancedSearchParams({
-      boundingPoly: get(boundingBoxes, [0, "boundingPoly"], []),
-      range: selectedConfidenceRange
-    })
+    const { onChangeStep, handleDeleteBoundingBox } = this.props;
+    onChangeStep(1);
+    handleDeleteBoundingBox();
   }
 
   render() {
-    const { boundingBoxes, step } = this.state;
-    const { open, handleClose, searchByTag } = this.props;
+    const { open, handleClose, searchByTag, boundingBoxes, selectedConfidenceRange } = this.props;
     return (
       <div>
         <Dialog
@@ -160,7 +45,9 @@ class ResponsiveDialog extends React.Component {
         >
           <div id="advanced-search-panel">
             <div className={cx(style["title"])}>
-              <div className={cx(style["title-text"])}>Advanced Options</div>
+              <div className={cx(style["title-text"])}>
+                Advanced Options
+              </div>
               <div>
                 <IconButton
                   className={cx(style["advanced-icon-button"])}
@@ -187,12 +74,12 @@ class ResponsiveDialog extends React.Component {
               <LocationSelect
                 onEditAoI={this.onEditAoI}
                 onRemoveAoI={this.onRemoveAoI}
-                onUpdateStep={this.onUpdateStep}
+                onUpdateStep={this.props.onChangeStep}
                 boundingBoxes={boundingBoxes}
-                handleAddBoundingBox={this.handleAddBoundingBox}
-                handleDeleteBoundingBox={this.handleDeleteBoundingBox}
-                handleChangeBoundingBox={this.handleChangeBoundingBox}
-                step={step}
+                handleAddBoundingBox={this.props.handleAddBoundingBox}
+                handleDeleteBoundingBox={this.props.handleDeleteBoundingBox}
+                handleChangeBoundingBox={this.props.handleChangeBoundingBox}
+                step={this.props.step}
               />
             </div>
           </div>
@@ -204,14 +91,14 @@ class ResponsiveDialog extends React.Component {
             </div>
             <div className={cx(style["location-select-div"])}>
               <RangeSelect
-                onChangeConfidenceRange={this.onChangeConfidenceRange}
-                selectedConfidenceRange={this.state.selectedConfidenceRange}
+                onChangeConfidenceRange={this.props.onChangeConfidenceRange}
+                selectedConfidenceRange={selectedConfidenceRange}
               />
             </div>
           </div>
           <div className={cx(style["dialog-content"], style["action"])}>
             <div
-              onClick={this.handleResetAll}
+              onClick={this.props.handleReset}
               className={cx(style["reset-all"])}
             >
               RESET ALL
@@ -224,7 +111,7 @@ class ResponsiveDialog extends React.Component {
                 CANCEL
                 </Button>
               <Button
-                onClick={this.handleApply}
+                onClick={this.props.onAddAdvancedSearchParams}
                 variant="raised"
                 className={cx(style["vbtn-blue"])}
               >

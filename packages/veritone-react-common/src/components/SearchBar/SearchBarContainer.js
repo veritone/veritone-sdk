@@ -1,7 +1,7 @@
 import React from 'react';
 import { arrayOf, func, object, string, oneOf } from 'prop-types';
 import cx from 'classnames';
-import { get, uniq } from 'lodash';
+import { get, uniq, findIndex } from 'lodash';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeWhile";
 import { fromEvent } from 'rxjs/observable/fromEvent';
@@ -44,6 +44,9 @@ class SearchBarContainer extends React.Component {
     menuAnchorEl: null,
     highlightedPills: [],
     openAdvancedPanel: false,
+    boundingBoxes: [],
+    step: 1,
+    selectedConfidenceRange: [0, 100],
     advancedEnableIds: [],
     advancedOptions: {},
     disableAdvancedSearch: true
@@ -104,6 +107,9 @@ class SearchBarContainer extends React.Component {
     const { modalId } = this.state.openModal;
     this.setState(state => ({
       ...state,
+      step: 1,
+      boundingBoxes: [],
+      selectedConfidenceRange: [0, 100],
       advancedEnableIds: state.advancedEnableIds.filter(item => item !== modalId),
       advancedOptions: {
         ...state.advancedOptions,
@@ -490,13 +496,31 @@ class SearchBarContainer extends React.Component {
     } else {
       if (this.props.searchParameters && this.props.searchParameters.length > 0) {
         customMenuActions = [
-          { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
-          { label: 'Save Search Profile', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } },
+          {
+            label: 'Load Search Profile',
+            onClick: (e) => {
+              this.props.showLoadSavedSearch(e);
+              this.handleMenuClose();
+            }
+          },
+          {
+            label: 'Save Search Profile',
+            onClick: (e) => {
+              this.props.showSavedSearch(e);
+              this.handleMenuClose();
+            }
+          },
           ...customMenuActions,
         ]
       } else {
         customMenuActions = [
-          { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
+          {
+            label: 'Load Search Profile',
+            onClick: (e) => {
+              this.props.showLoadSavedSearch(e);
+              this.handleMenuClose()
+            }
+          },
           ...customMenuActions,
         ]
       }
@@ -721,15 +745,127 @@ class SearchBarContainer extends React.Component {
     return this.state.disableAdvancedSearch;
   }
 
+  //Feature advanced search:
+  handleAddBoundingBox = newBox => {
+    console.log("handleAddBoundingBox", newBox);
+    if (this.state.boundingBoxes.length) {
+      return;
+    }
+    this.setState(state => ({
+      boundingBoxes: [
+        ...state.boundingBoxes,
+        {
+          ...newBox,
+        }
+      ]
+    }));
+  };
+
+  handleDeleteBoundingBox = () => {
+    this.setState(state => ({
+      boundingBoxes: []
+    }));
+  };
+
+  handleChangeBoundingBox = changedBox => {
+    this.setState(state => {
+      const affectedIndex = findIndex(state.boundingBoxes, {
+        id: changedBox.id
+      });
+
+      let newState = {
+        boundingBoxes: [...state.boundingBoxes]
+      };
+
+      newState.boundingBoxes[affectedIndex] = changedBox;
+
+      return {
+        boundingBoxes: newState.boundingBoxes
+      };
+    });
+  };
+
+  onEditAoI = () => {
+    this.setState({
+      step: 2
+    })
+  }
+
+  onRemoveAoI = () => {
+    this.setState({
+      step: 1,
+      boundingBoxes: []
+    })
+  }
+
+  onUpdateStep = (step) => {
+    this.setState({
+      step: step,
+    })
+    if (step === 2) {
+      const defaultBoundingBox = {
+        boundingPoly: [
+          { x: 0, y: 0 },
+          { x: 0, y: 1 },
+          { x: 1, y: 1 },
+          { x: 1, y: 0 }
+        ],
+        overlayObjectType: "c",
+        id: guid()
+      }
+      this.handleAddBoundingBox(defaultBoundingBox);
+    }
+  }
+
+  onChangeConfidenceRange = (e) => {
+    this.setState({
+      selectedConfidenceRange: [...e]
+    })
+  }
+
+  handleResetAll = () => {
+    this.setState({
+      step: 1,
+      boundingBoxes: [],
+      selectedConfidenceRange: [0, 100]
+    });
+    this.handleReset();
+  }
+
+  handleApply = () => {
+    const { boundingBoxes, selectedConfidenceRange } = this.state;
+    this.handleApplyAdvancedOptions({
+      boundingPoly: get(boundingBoxes, [0, "boundingPoly"], []),
+      range: selectedConfidenceRange
+    })
+  }
+
+  onChangeStep = (step) => {
+    this.setState({ step: step });
+    this.onUpdateStep(step);
+  }
+
+  get dataAdvanced() {
+    const { boundingPoly = [], range = [0, 100] } = this.state.advancedOptions;
+    return {
+      boundingBoxes: boundingPoly.length ? [{
+        boundingPoly: boundingPoly,
+        overlayObjectType: "c",
+        id: guid()
+      }] : [],
+      selectedConfidenceRange: range,
+    }
+  }
+
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
-    console.log(this.state);
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
+    const { boundingBoxes: saveBoundingBox, selectedConfidenceRange: saveSelectedConfidenceRange } = this.dataAdvanced;
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }} data-veritone-component={`search_bar_${this._id}`}>
         <SearchBar
@@ -864,9 +1000,17 @@ class SearchBarContainer extends React.Component {
               open={this.state.openAdvancedPanel}
               handleClose={this.handleCloseAdvanced}
               handleReset={this.handleResetAdvanced}
-              advancedOptions={this.getAdvancedOptions}
               onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
               searchByTag={openModal.dataTag}
+              handleAddBoundingBox={this.handleAddBoundingBox}
+              handleDeleteBoundingBox={this.handleDeleteBoundingBox}
+              handleChangeBoundingBox={this.handleChangeBoundingBox}
+              onChangeConfidenceRange={this.onChangeConfidenceRange}
+              handleApply={this.handleApply}
+              step={this.state.step}
+              onChangeStep={this.onChangeStep}
+              selectedConfidenceRange={saveSelectedConfidenceRange.length ? saveSelectedConfidenceRange : this.state.selectedConfidenceRange}
+              boundingBoxes={saveBoundingBox.length ? saveBoundingBox : this.state.boundingBoxes}
             />
           </Popover>
         ) : null}
