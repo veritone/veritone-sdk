@@ -664,6 +664,10 @@ class SearchBarContainer extends React.Component {
         return;
       }
 
+      if(newSearchParameterValue && this.state.disableAdvancedSearch){
+        return;
+      }
+
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
@@ -725,7 +729,6 @@ class SearchBarContainer extends React.Component {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
-    console.log(this.state);
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);

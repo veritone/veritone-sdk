@@ -86,6 +86,9 @@ export default class ObjectSearchModal extends React.Component {
   }
 
   onChange = debouncedQueryString => {
+
+    const { onChangeSearchInput } = this.props;
+
     if (debouncedQueryString) {
       this.setState({
         queryResults: [],
@@ -107,6 +110,7 @@ export default class ObjectSearchModal extends React.Component {
         return debouncedQueryString;
       });
     } else {
+      onChangeSearchInput(false);
       this.setState({
         loading: false,
         queryResults: [],
