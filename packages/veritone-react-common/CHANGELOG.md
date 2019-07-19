@@ -224,3 +224,6 @@
 
 ## 8.0.1
 * Fixed missing icons from updates
+
+## 8.0.2
+* Fixed AppBar css overridden issue
