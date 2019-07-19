@@ -5,6 +5,8 @@ import { noop } from 'lodash';
 import Typography from '@material-ui/core/Typography';
 import Folder from '@material-ui/icons/Folder';
 
+import { format } from 'date-fns';
+
 import MediaPlayer from '../../MediaPlayer';
 
 import {
@@ -15,6 +17,11 @@ import {
 } from './story';
 
 import MediaInfoPanel from './';
+
+const getLocalTimeString = (date) => format(
+  date,
+  'dddd, MMMM D, YYYY [at] h:mm A'
+);
 
 describe('MediaInfoPanel', () => {
   it('Renders video TDO properly without close button + childNode', () => {
@@ -33,10 +40,10 @@ describe('MediaInfoPanel', () => {
     expect(tdoElem.text()).toBe(videoTdo.name);
     const createdDate = wrapper.find('[data-veritone-element="media-panel-created-date"]');
     expect(createdDate.length).toBe(1);
-    expect(createdDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(createdDate.text()).toBe(getLocalTimeString(videoTdo.createdDateTime));
     const modifiedDate = wrapper.find('[data-veritone-element="media-panel-modified-date"]');
     expect(modifiedDate.length).toBe(1);
-    expect(modifiedDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(modifiedDate.text()).toBe(getLocalTimeString(videoTdo.modifiedDateTime));
     const duration = wrapper.find('[data-veritone-element="media-panel-duration"]');
     expect(duration.length).toBe(1);
     expect(duration.text()).toBe('00:04:06');
@@ -83,10 +90,10 @@ describe('MediaInfoPanel', () => {
     expect(tdoElem.text()).toBe(folderItem.name);
     const createdDate = wrapper.find('[data-veritone-element="media-panel-created-date"]');
     expect(createdDate.length).toBe(1);
-    expect(createdDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(createdDate.text()).toBe(getLocalTimeString(folderItem.createdDateTime));
     const modifiedDate = wrapper.find('[data-veritone-element="media-panel-modified-date"]');
     expect(modifiedDate.length).toBe(1);
-    expect(modifiedDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(modifiedDate.text()).toBe(getLocalTimeString(videoTdo.modifiedDateTime));
   });
 
   it('Renders image properly', () => {
@@ -105,9 +112,9 @@ describe('MediaInfoPanel', () => {
     expect(tdoElem.text()).toBe(imageItem.name);
     const createdDate = wrapper.find('[data-veritone-element="media-panel-created-date"]');
     expect(createdDate.length).toBe(1);
-    expect(createdDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(createdDate.text()).toBe(getLocalTimeString(imageItem.createdDateTime));
     const modifiedDate = wrapper.find('[data-veritone-element="media-panel-modified-date"]');
     expect(modifiedDate.length).toBe(1);
-    expect(modifiedDate.text()).toBe('Thursday, May 9, 2019 at 11:43 PM');
+    expect(modifiedDate.text()).toBe(getLocalTimeString(imageItem.modifiedDateTime));
   });
 });
