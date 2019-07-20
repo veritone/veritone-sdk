@@ -24,12 +24,12 @@ export default class Folder extends React.Component {
   static propTypes = {
     folder: objectOf(any),
     selectFolder: func,
-    selectedFolder: string
+    selectedFolder: objectOf(any)
   };
 
   handleClick = () => {
     const { folder, selectFolder } = this.props;
-    selectFolder(folder.treeObjectId);
+    selectFolder(folder);
    
   }
 
@@ -38,7 +38,7 @@ export default class Folder extends React.Component {
   
     return (
       <li>
-        <div className={cx(styles.folder, folder.treeObjectId === selectedFolder && styles.selected)} onClick={this.handleClick}>
+        <div className={cx(styles.folder, folder.treeObjectId === selectedFolder.treeObjectId && styles.selected)} onClick={this.handleClick}>
           <FolderIcon className={styles.folderIcon}/>
           <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder && styles.folderNameSelected)}>{folder.name}</div>
         </div>
