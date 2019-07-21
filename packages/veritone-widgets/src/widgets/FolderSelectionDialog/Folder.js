@@ -9,7 +9,6 @@ import styles from './styles.scss';
 @connect(
   (state) => ({
     selectedFolder: folderSelectionModule.selectedFolder(state),
-   
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
@@ -35,12 +34,13 @@ export default class Folder extends React.Component {
 
   render(){
     const { folder, selectedFolder } = this.props;
+    console.log("foldername", folder)
   
     return (
       <li>
         <div className={cx(styles.folder, folder.treeObjectId === selectedFolder.treeObjectId && styles.selected)} onClick={this.handleClick}>
           <FolderIcon className={styles.folderIcon}/>
-          <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder && styles.folderNameSelected)}>{folder.name}</div>
+          <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder.treeObjectId && styles.folderNameSelected)}>{folder.name}</div>
         </div>
       </li>
     );

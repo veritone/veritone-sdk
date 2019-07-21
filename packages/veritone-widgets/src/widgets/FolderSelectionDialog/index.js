@@ -1,8 +1,8 @@
 import React from 'react';
-import { bool, func, object, objectOf, any, arrayOf, string} from 'prop-types';
+import { bool, func, objectOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, TextField } from '@material-ui/core';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
@@ -16,8 +16,7 @@ import widget from '../../shared/widget';
   (state) => ({
     rootFolder: folderSelectionModule.rootFolder(state),
     selectedFolder: folderSelectionModule.selectedFolder(state),
-    folderList: folderSelectionModule.folderList(state),
-
+    subFolderList: folderSelectionModule.subFolderList(state)
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
@@ -33,13 +32,13 @@ class FolderSelectionDialog extends React.Component {
   static propTypes = {
     open: bool,
     selectFolder: func,
+    subFolderList: objectOf(any),
     createFolder: func,
     selectedFolder: objectOf(any),
     getFolders: func,
     rootFolder: objectOf(any),
     getAllSubFolders: func,
     onCancel: func,
-    folderList: arrayOf(object)
   };
 
   static defaultProps = {
@@ -84,22 +83,35 @@ class FolderSelectionDialog extends React.Component {
       newFolderName: event.target.value
     });
   }
-
+;
   createNewFolder = () => {
-    const {createFolder, selectedFolder, getAllSubFolders} = this.props;
+    const {createFolder, selectedFolder } = this.props;
     if (this.state.newFolderName){
-      createFolder(this.state.newFolderName, "", selectedFolder.treeObjectId, 0, "cms" )
+      createFolder(this.state.newFolderName, "", selectedFolder.treeObjectId, 0, "cms", selectedFolder )
     } else {
       alert("Please enter a folder name");
     }
+
     this.handleClickNewFolder();
 
 
   }
 
+  renderSubFolders() {
+    let {subFolderList, rootFolder} = this.props;
+
+    let property  = rootFolder.treeObjectId;
+
+    let records = subFolderList[property]
+
+    if (records){
+      return <FolderList list={records}/>;
+    }
+  }
+
+
   render() {
-    console.log(this.props)
-    const { rootFolder, selectedFolder, folderList } = this.props;
+    const { rootFolder, selectedFolder} = this.props;
 
 
     if(!rootFolder) {
@@ -125,7 +137,7 @@ class FolderSelectionDialog extends React.Component {
               </Grid>
             </Grid>
             <ul>
-              <FolderList list={folderList}/>
+              {this.renderSubFolders()}
             </ul>
           </DialogContent>
           <DialogActions  style = {{minHeight: "80px", marginRight: "16px", marginLeft: "16px"}}>
