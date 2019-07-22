@@ -731,7 +731,10 @@ class SearchBarContainer extends React.Component {
       this.setState({
         openModal: { modalId: engineCategory.id },
         key: guid(),
-        disableAdvancedSearch: true
+        disableAdvancedSearch: true,
+        boundingBoxes: [],
+        selectedConfidenceRange: [0, 100],
+        step: 1
       })
     } else {
       this.props.addPill()
@@ -846,7 +849,9 @@ class SearchBarContainer extends React.Component {
   }
 
   get dataAdvanced() {
-    const { boundingPoly = [], range = [0, 100] } = this.state.advancedOptions;
+    const { advancedOptions } = this.state;
+    const { modalId } = this.state.openModal;
+    const { boundingPoly = [], range = [] } = get(advancedOptions, [modalId], []);
     return {
       boundingBoxes: boundingPoly.length ? [{
         boundingPoly: boundingPoly,
@@ -854,6 +859,7 @@ class SearchBarContainer extends React.Component {
         id: guid()
       }] : [],
       selectedConfidenceRange: range,
+      step: boundingPoly.length ? 3 : 1
     }
   }
 
@@ -1000,16 +1006,19 @@ class SearchBarContainer extends React.Component {
               open={this.state.openAdvancedPanel}
               handleClose={this.handleCloseAdvanced}
               handleReset={this.handleResetAdvanced}
-              onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
+              onAddAdvancedSearchParams={this.handleApply}
               searchByTag={openModal.dataTag}
               handleAddBoundingBox={this.handleAddBoundingBox}
               handleDeleteBoundingBox={this.handleDeleteBoundingBox}
               handleChangeBoundingBox={this.handleChangeBoundingBox}
               onChangeConfidenceRange={this.onChangeConfidenceRange}
-              handleApply={this.handleApply}
               step={this.state.step}
               onChangeStep={this.onChangeStep}
-              selectedConfidenceRange={saveSelectedConfidenceRange.length ? saveSelectedConfidenceRange : this.state.selectedConfidenceRange}
+              selectedConfidenceRange={
+                saveSelectedConfidenceRange.length ?
+                  saveSelectedConfidenceRange :
+                  this.state.selectedConfidenceRange
+              }
               boundingBoxes={saveBoundingBox.length ? saveBoundingBox : this.state.boundingBoxes}
             />
           </Popover>
