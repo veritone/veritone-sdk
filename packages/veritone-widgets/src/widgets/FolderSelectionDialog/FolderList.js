@@ -1,45 +1,41 @@
 import React from 'react';
-import {  object, arrayOf, objectOf, any } from 'prop-types';
+import {  string, objectOf, any } from 'prop-types';
 import Folder from './Folder';
 import CollapsibleFolder from './CollapsibleFolder';
+import { connect } from 'react-redux';
+import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 
-
+@connect(
+  (state) => ({
+    subFolderList: folderSelectionModule.subFolderList(state)
+  }),
+)
 
 
 export default class FolderList extends React.Component {
   static propTypes = {
-    list: arrayOf(object),
+    listId: string,
+    subFolderList: objectOf(any)
   };
 
   static defaultProps = {
 
   };
 
-  sortList = (list) => {
-   return list.sort((a, b) => {
-    let nameA = a.name.toUpperCase();
-    let nameB = b.name.toUpperCase();
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
 
-    })
-
-  }
 
 
 
   render() {
-    let { list } = this.props
+    const {subFolderList, listId} = this.props;
+    let list  = subFolderList[listId];
 
     if(!list){
       return <div/>;
     }
-    return this.sortList(list).map((folder) => {
+
+
+    return (list).map((folder) => {
       let key  =  folder.treeObjectId;
 
       if (folder.childFolders && folder.childFolders.count > 0){

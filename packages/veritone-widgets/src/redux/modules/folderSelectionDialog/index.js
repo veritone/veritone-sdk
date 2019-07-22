@@ -1,7 +1,5 @@
 import {
   get,
-  uniqWith,
-  isEqual,
   isEmpty
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
@@ -14,13 +12,16 @@ export const namespace  = 'folderSelectionDialog';
 export const FETCH_ROOT_FOLDER  = `vtn/${namespace}/FETCH_ROOT_FOLDER`;
 export const SELECTED_FOLDER  = `vtn/${namespace}/SELECTED_FOLDER`;
 export const FETCH_SUB_FOLDERS  = `vtn/${namespace}/FETCH_SUB_FOLDERS`;
+export const ROOT_FOLDERS_LOADING = `vtn/${namespace}/ROOT_FOLDERS_LOADING`;
+export const SUB_FOLDERS_LOADING = `vtn/${namespace}/SUB_FOLDERS_LOADING`;
 
 
 const defaultState = {
   selectedFolder: {},
-  folderList: [],
   subFolderList: {},
-  rootFolder: {}
+  rootFolder: {},
+  loaderRoot: false,
+  loaderSubFolder: false
 };
 
 export const rootFolder = (state) => {
@@ -35,6 +36,13 @@ export const subFolderList = (state) => {
   return get(local(state), 'subFolderList')
 };
 
+export const loaderRoot = (state) => {
+  return get(local(state), 'loaderRoot')
+};
+
+export const loaderSubFolder = (state) => {
+  return get(local(state), 'loaderSubFolder')
+};
 
 const reducer  = createReducer(defaultState, {
   [FETCH_ROOT_FOLDER](state, action){
@@ -61,7 +69,23 @@ const reducer  = createReducer(defaultState, {
       ...state,
       subFolderList: newSubfolderList
     }
-  }
+  },
+
+  [ROOT_FOLDERS_LOADING](state, action){
+    let loading = get(action, 'payload')
+    return {
+      ...state,
+      loaderRoot: loading
+    }
+  },
+
+  [SUB_FOLDERS_LOADING](state, action){
+    let loading = get(action, 'payload')
+    return {
+      ...state,
+      loaderSubFolder: loading
+    }
+  },
 
 });
 
@@ -83,7 +107,11 @@ export const selectFolder = (folder) => {
 
 export function getFolders() {
   return async function action(dispatch, getState) {
-   
+    dispatch({
+      type: ROOT_FOLDERS_LOADING,
+      payload: true
+    });
+
     let rootFolderType = "cms";
 
     const query = `
@@ -134,14 +162,18 @@ export function getFolders() {
         payload: folder
       });
 
+      dispatch({
+        type: ROOT_FOLDERS_LOADING,
+        payload: false
+      });
+
       dispatch(getAllSubFolders(folder));
 
     } catch (err) {
-      // dispatch({
-      //   type: FETCH_ENGINES_FAILURE,
-      //   payload: err,
-      //   meta: { filters }
-      // });
+        dispatch({
+          type: ROOT_FOLDERS_LOADING,
+          payload: false
+        });
       console.log(err)
     }
   };
@@ -175,6 +207,10 @@ export function getAllSubFolders(folder) {
 export function getMoreSubFolders( variables, accumulator = []) {
 
   return async function action(dispatch, getState) {
+    dispatch({
+      type: SUB_FOLDERS_LOADING,
+      payload: true
+    });
 
     const query = `
       query getChildFolders($folderId: ID!, $limit: Int, $offset: Int) {
@@ -221,7 +257,18 @@ export function getMoreSubFolders( variables, accumulator = []) {
 
       if (get(res, 'data.folder.childFolders.count') < variables.limit) {
         folderList = accumulator.concat(newChildFolders)
+        folderList.sort((a, b) => {
+          let nameA = a.name.toUpperCase();
+          let nameB = b.name.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
 
+        })
         let key = variables.folderId;
 
         const subfolders = {
@@ -231,6 +278,11 @@ export function getMoreSubFolders( variables, accumulator = []) {
         dispatch({
           type: FETCH_SUB_FOLDERS,
           payload: subfolders,
+        });
+
+        dispatch({
+          type: SUB_FOLDERS_LOADING,
+          payload: false
         });
       } else {
 
@@ -243,11 +295,10 @@ export function getMoreSubFolders( variables, accumulator = []) {
         ));
       }
     } catch (err) {
-      // dispatch({
-      //   type: FETCH_ENGINES_FAILURE,
-      //   payload: err,
-      //   meta: { filters }
-      // });
+        dispatch({
+          type: SUB_FOLDERS_LOADING,
+          payload: false
+        });
       console.log(err)
     }
   };
@@ -295,12 +346,21 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
     try {
-      const response = await fetchGraphQLApi({
+      await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
         variables,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
+
+      if (folder.parent) {
+        let parentFolder = {
+          treeObjectId: folder.parent.treeObjectId,
+          childFolders: {}
+        }
+        dispatch(getAllSubFolders(parentFolder))
+      }
+
       dispatch(getAllSubFolders(folder))
 
     } catch (err) {

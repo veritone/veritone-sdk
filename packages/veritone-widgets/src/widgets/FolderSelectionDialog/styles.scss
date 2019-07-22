@@ -1,4 +1,13 @@
 
+.loadingContainer {
+  margin:auto;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  position:fixed;
+  z-index: 9999;
+  min-height: 80px;
+}
 
 .selected {
   background-color: #E8F0FE;
@@ -50,7 +59,7 @@
 }
 
 .workIcon {
-  font-size: 35px !important;
+  font-size: 30px !important;
   margin: 10px;
   color: #515154;
 }
@@ -104,12 +113,12 @@
 }
 
 .collapsibleFolderIcon {
-  font-size: 35px !important;
+  font-size: 30px !important;
   color: #515154;
 }
 
 .folderIcon {
-  font-size: 35px !important;
+  font-size: 30px !important;
   color: #515154 !important;
   margin-left: 30px;
 }

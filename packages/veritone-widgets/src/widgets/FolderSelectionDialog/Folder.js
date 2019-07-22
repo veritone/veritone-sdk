@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import {  objectOf, any, func, string } from 'prop-types';
+import {  objectOf, any, func } from 'prop-types';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import FolderIcon from '@material-ui/icons/Folder';
 import styles from './styles.scss';
+
 
 @connect(
   (state) => ({
@@ -12,10 +13,7 @@ import styles from './styles.scss';
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
-  },
-  null,
-  { withRef: true }
-
+  }
 )
 
 
@@ -34,13 +32,14 @@ export default class Folder extends React.Component {
 
   render(){
     const { folder, selectedFolder } = this.props;
-    console.log("foldername", folder)
-  
+    let listId  = folder.treeObjectId;
+    let selectedId = selectedFolder.treeObjectId
+
     return (
       <li>
-        <div className={cx(styles.folder, folder.treeObjectId === selectedFolder.treeObjectId && styles.selected)} onClick={this.handleClick}>
+        <div className={cx(styles.folder, listId === selectedId  && styles.selected)} onClick={this.handleClick}>
           <FolderIcon className={styles.folderIcon}/>
-          <div className={cx(styles.folderName, folder.treeObjectId === selectedFolder.treeObjectId && styles.folderNameSelected)}>{folder.name}</div>
+          <div className={cx(styles.folderName, listId === selectedId  && styles.folderNameSelected)}>{folder.name}</div>
         </div>
       </li>
     );

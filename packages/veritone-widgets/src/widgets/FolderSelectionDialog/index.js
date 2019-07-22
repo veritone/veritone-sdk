@@ -2,7 +2,7 @@ import React from 'react';
 import { bool, func, objectOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@material-ui/core';
+import {CircularProgress, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
@@ -12,32 +12,31 @@ import * as folderSelectionModule from '../../redux/modules/folderSelectionDialo
 import widget from '../../shared/widget';
 
 
+
 @connect(
   (state) => ({
     rootFolder: folderSelectionModule.rootFolder(state),
     selectedFolder: folderSelectionModule.selectedFolder(state),
-    subFolderList: folderSelectionModule.subFolderList(state)
+    loaderRoot: folderSelectionModule.loaderRoot(state),
+    loaderSubFolder: folderSelectionModule.loaderSubFolder(state)
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
     getFolders: folderSelectionModule.getFolders,
     createFolder: folderSelectionModule.createFolder,
-    getAllSubFolders: folderSelectionModule.getAllSubFolders
-  },
-  null,
-  { withRef: true }
+  }
 )
 
 class FolderSelectionDialog extends React.Component {
   static propTypes = {
     open: bool,
+    loaderSubFolder: bool,
+    loaderRoot: bool,
     selectFolder: func,
-    subFolderList: objectOf(any),
     createFolder: func,
     selectedFolder: objectOf(any),
     getFolders: func,
     rootFolder: objectOf(any),
-    getAllSubFolders: func,
     onCancel: func,
   };
 
@@ -97,37 +96,37 @@ class FolderSelectionDialog extends React.Component {
 
   }
 
-  renderSubFolders() {
-    let {subFolderList, rootFolder} = this.props;
-
-    let property  = rootFolder.treeObjectId;
-
-    let records = subFolderList[property]
-
-    if (records){
-      return <FolderList list={records}/>;
+  renderLoader(){
+    const { loaderRoot, loaderSubFolder} = this.props;
+    if (loaderSubFolder || loaderRoot) {
+      return (
+        <div className={styles.loadingContainer}>
+          <CircularProgress size={50}/>
+        </div>
+      );
     }
   }
 
 
+
   render() {
     const { rootFolder, selectedFolder} = this.props;
-
-
-    if(!rootFolder) {
-      return <div/>;
-    }
+    const rootId  = rootFolder.treeObjectId;
+    let selectedId = selectedFolder.treeObjectId
 
     return (
       <React.Fragment >
         <Dialog className={styles.folderPicker} fullWidth maxWidth="md" open={this.props.open}>
+          {this.renderLoader()}
           <Grid container justify="space-between" alignItems="center">
             <DialogTitle className={styles.dialogTitle}>Select Folder</DialogTitle>
             <CloseIcon className={styles.closeIcon} onClick = {this.handleCancel} />
           </Grid>
           <Typography className={styles.dialogSubTitle} variant="subheading">Choose a folder below to organize this data.</Typography>
+
+
           <DialogContent  className={styles.dialogContent} >
-            <Grid className ={cx(styles.rootfolder, rootFolder.treeObjectId === selectedFolder.treeObjectId && styles.selected)} onClick={this.handleClick} container >
+            <Grid className ={cx(styles.rootfolder, rootId === selectedId && styles.selected)} onClick={this.handleClick} container >
               <Grid item container alignContent = "center" alignItems = "center">
                 <WorkIcon  className={styles.workIcon} />
                 <Typography variant="title" >My Organization</Typography>
@@ -137,11 +136,11 @@ class FolderSelectionDialog extends React.Component {
               </Grid>
             </Grid>
             <ul>
-              {this.renderSubFolders()}
+              <FolderList listId={rootId}/>
             </ul>
           </DialogContent>
           <DialogActions  style = {{minHeight: "80px", marginRight: "16px", marginLeft: "16px"}}>
-            <Grid container direction = "row" justify="space-between" xs={12}>
+            <Grid container direction = "row" justify="space-between">
               <Grid item container justify="flex-start" alignContent = "center"  xs={3}>
                 <Button className = {cx(styles.button, styles.buttonNewFolder)} variant="outlined" color="primary"  onClick = {this.handleClickNewFolder} size="large">
                   <Typography className = {styles.newFolderButton}>New Folder</Typography>
