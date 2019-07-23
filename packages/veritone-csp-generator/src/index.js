@@ -165,7 +165,7 @@ const TimeConditionGenerator = modalState => {
   const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
-      typeof hourMinuteTime !== 'string' ||
+      !isString(hourMinuteTime) ||
       hourMinuteTime.length != 5
     ) {
       return 0;
