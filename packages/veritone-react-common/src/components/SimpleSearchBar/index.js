@@ -1,16 +1,14 @@
 import React, { Fragment } from 'react';
 import cx from 'classnames';
 import { bool, func, arrayOf, any, string } from 'prop-types';
-import {
-  IconButton,
-  Paper,
-  Divider,
-  CircularProgress,
-  Zoom,
-  ClickAwayListener,
-  Input,
-  MenuItem
-} from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Zoom from '@material-ui/core/Zoom';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Search, Clear } from '@material-ui/icons';
 
 import styles from './styles.scss';

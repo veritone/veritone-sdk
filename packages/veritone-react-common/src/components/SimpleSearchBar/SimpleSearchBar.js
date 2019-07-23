@@ -1,9 +1,11 @@
 import React from 'react';
 import { func } from 'prop-types';
 import { SimpleSearchBarController } from './SimpleSearchBarController';
+import { SimpleText } from './SimpleText.template';
+import { EntitySearchTemplate } from './EntitySearch.template';
 import { SimpleSearchBarBase } from './index';
 
-export class SimpleSearchBar extends SimpleSearchBarController {
+class SimpleSearchBar extends SimpleSearchBarController {
   static propTypes = {
     onSubmit: func
   };
@@ -18,3 +20,11 @@ export class SimpleSearchBar extends SimpleSearchBarController {
     );
   }
 }
+
+export {
+  SimpleSearchBar,
+  SimpleSearchBarController,
+  SimpleSearchBarBase,
+  SimpleText,
+  EntitySearchTemplate
+};

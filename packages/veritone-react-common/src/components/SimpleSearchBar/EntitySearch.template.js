@@ -1,6 +1,7 @@
-import { Avatar, Typography } from '@material-ui/core';
-import { string } from 'prop-types';
 import React from 'react';
+import { string } from 'prop-types';
+import Typography  from '@material-ui/core/Typography';
+import Avatar  from '@material-ui/core/Avatar';
 
 /**
  * Sample entity template

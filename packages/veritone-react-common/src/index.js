@@ -53,3 +53,10 @@ export VideoSource from './components/MediaPlayer/VideoSource';
 export Notifier from './components/Notifier';
 export DataPicker from './components/DataPicker';
 export SearchBarAdvanced from './components/SearchBarAdvanced';
+export {
+  SimpleSearchBarBase,
+  SimpleSearchBarController,
+  SimpleText,
+  SimpleSearchBar,
+  EntitySearchTemplate
+} from './components/SimpleSearchBar/SimpleSearchBar';
