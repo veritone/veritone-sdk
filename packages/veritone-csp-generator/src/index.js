@@ -162,10 +162,10 @@ const TagConditionGenerator = modalState => {
 };
 
 const TimeConditionGenerator = modalState => {
-  const dayPartTimeToMinutes = function(hourMinuteTime) {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
-      !isString(hourMinuteTime) ||
+      typeof hourMinuteTime !== 'string' ||
       hourMinuteTime.length != 5
     ) {
       return 0;
@@ -175,13 +175,13 @@ const TimeConditionGenerator = modalState => {
   };
 
   const daysOfTheWeek = [
-    { isoWeekday: 1, name: 'Mon' },
-    { isoWeekday: 2, name: 'Tue' },
-    { isoWeekday: 3, name: 'Wed' },
-    { isoWeekday: 4, name: 'Thu' },
-    { isoWeekday: 5, name: 'Fri' },
-    { isoWeekday: 6, name: 'Sat' },
-    { isoWeekday: 7, name: 'Sun' }
+    { isoWeekday: 1, name: 'Mon', value: 1 },
+    { isoWeekday: 2, name: 'Tue', value: 2 },
+    { isoWeekday: 3, name: 'Wed', value: 3 },
+    { isoWeekday: 4, name: 'Thu', value: 4 },
+    { isoWeekday: 5, name: 'Fri', value: 5 },
+    { isoWeekday: 6, name: 'Sat', value: 6 },
+    { isoWeekday: 7, name: 'Sun', value: 0 }
   ];
   const startMinutes = dayPartTimeToMinutes(modalState.search.dayPartStartTime);
   const endMinutes = dayPartTimeToMinutes(modalState.search.dayPartEndTime);
@@ -217,7 +217,7 @@ const TimeConditionGenerator = modalState => {
     const selectedIsoWeekdays = [];
     daysOfTheWeek.forEach(weekday => {
       if (modalState.search.selectedDays[weekday.isoWeekday - 1]) {
-        selectedIsoWeekdays.push(String(weekday.isoWeekday));
+        selectedIsoWeekdays.push(String(weekday.value));
       }
     });
     conditions.push({
