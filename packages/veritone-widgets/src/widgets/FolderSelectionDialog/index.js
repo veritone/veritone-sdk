@@ -1,9 +1,9 @@
 import React from 'react';
+import { isEmpty } from 'lodash';
 import { bool, func, objectOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import {CircularProgress, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button } from '@material-ui/core';
-
+import {CircularProgress, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, FormHelperText, FormControl, InputLabel, Input } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
 import FolderList from './FolderList';
@@ -17,27 +17,29 @@ import widget from '../../shared/widget';
   (state) => ({
     rootFolder: folderSelectionModule.rootFolder(state),
     selectedFolder: folderSelectionModule.selectedFolder(state),
-    loaderRoot: folderSelectionModule.loaderRoot(state),
-    loaderSubFolder: folderSelectionModule.loaderSubFolder(state)
+    loading: folderSelectionModule.loading(state),
+    newFolder: folderSelectionModule.newFolder(state)
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
     getFolders: folderSelectionModule.getFolders,
     createFolder: folderSelectionModule.createFolder,
+    resetNewFolder: folderSelectionModule.resetNewFolder,
   }
 )
 
 class FolderSelectionDialog extends React.Component {
   static propTypes = {
     open: bool,
-    loaderSubFolder: bool,
-    loaderRoot: bool,
+    loading: bool,
     selectFolder: func,
     createFolder: func,
     selectedFolder: objectOf(any),
     getFolders: func,
     rootFolder: objectOf(any),
+    newFolder: objectOf(any),
     onCancel: func,
+    resetNewFolder: func,
   };
 
   static defaultProps = {
@@ -47,18 +49,32 @@ class FolderSelectionDialog extends React.Component {
   state = {
     openNewFolder: false,
     newFolderName: "",
+    error: true,
+    errorMessage: "you can't create this many nested folders"
   }
 
   componentDidMount(){
-    this.props.getFolders();
+    const { getFolders, resetNewFolder } = this.props
+    getFolders();
+    resetNewFolder();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (isEmpty(prevProps.newFolder.folder) && !isEmpty(this.props.newFolder.folder)){
+      this.handleClickNewFolder()
+    }
+  }
+
+
   handleClickNewFolder = () => {
-    const { selectFolder, selectedFolder, rootFolder } = this.props;
+    const { selectFolder, selectedFolder, rootFolder, resetNewFolder } = this.props;
     if(!selectedFolder.treeObjectId) {
       selectFolder(rootFolder);
     }
-
+    if (this.state.openNewFolder){
+      resetNewFolder()
+      this.setState({newFolderName: ""})
+    }
     this.setState((prevState) => ({
       openNewFolder : !prevState.openNewFolder,
     }))
@@ -78,27 +94,24 @@ class FolderSelectionDialog extends React.Component {
   };
 
   onChange = (event) => {
+    let name  = event.target.value.replace(/^\s+/g, '')
     this.setState({
-      newFolderName: event.target.value
+      newFolderName: name
     });
   }
 ;
   createNewFolder = () => {
-    const {createFolder, selectedFolder } = this.props;
+    const {createFolder, selectedFolder, resetNewFolder, newFolder } = this.props;
     if (this.state.newFolderName){
       createFolder(this.state.newFolderName, "", selectedFolder.treeObjectId, 0, "cms", selectedFolder )
     } else {
-      alert("Please enter a folder name");
+      resetNewFolder(null, true, "Please enter a folder Name");
     }
-
-    this.handleClickNewFolder();
-
-
   }
 
   renderLoader(){
-    const { loaderRoot, loaderSubFolder} = this.props;
-    if (loaderSubFolder || loaderRoot) {
+    const { loading, newFolder} = this.props;
+    if (loading || newFolder.loading) {
       return (
         <div className={styles.loadingContainer}>
           <CircularProgress size={50}/>
@@ -110,9 +123,12 @@ class FolderSelectionDialog extends React.Component {
 
 
   render() {
-    const { rootFolder, selectedFolder} = this.props;
+    const { rootFolder, selectedFolder, newFolder} = this.props;
+    const errorMessage = newFolder.errorMessage;
+    const error = newFolder.error;
+    const loadingNewFolder = newFolder.loading
     const rootId  = rootFolder.treeObjectId;
-    let selectedId = selectedFolder.treeObjectId
+    const selectedId = selectedFolder.treeObjectId
 
     return (
       <React.Fragment >
@@ -165,34 +181,18 @@ class FolderSelectionDialog extends React.Component {
           </Grid>
           <Typography className={styles.dialogSubTitle} variant="body2">Create folder within <span className={styles.folderNameSelected}>{selectedFolder.name}</span>. If you want to select a different folder click "Cancel" below and select a different folder.</Typography>
           <DialogContent>
-            <div style={{paddingTop: "10px", paddingBottom: "20px"}}>
-              <div style={{
-                transform: 'translate(10px, -10px) scale(0.75)',
-                fontSize: '17px',
-                color: 'rgba(0, 0, 0, 0.54)',
-                position: 'absolute',
-                paddingRight:'5px',
-                paddingLeft: '2px',
-                backgroundColor:'#fff'
-              }}
-              >
-                Folder Name
-              </div>
-              <div
-                style={{
-                  border: '1px solid #515154',
-                  padding: '18.5px 14px',
-                  borderRadius: '7px',
-                }}
-              >
-                <input value={this.state.newFolderName} onChange = {this.onChange}/>
-              </div>
-            </div>
+            <FormControl
+              error = {error}
+              aria-describedby="name-error-text" fullWidth>
+              <InputLabel>Folder Name</InputLabel>
+              <Input  value={this.state.newFolderName} onChange={this.onChange} />
+              <FormHelperText>{errorMessage}</FormHelperText>
+            </FormControl>
             <Grid container justify="flex-end" alignContent = "center">
               <Button  className = {styles.button} onClick = {this.handleClickNewFolder} size="large">
                 <Typography className = {styles.cancelButton} >Cancel</Typography>
               </Button>
-              <Button className = {cx(styles.button, styles.buttonSelect)} onClick = {this.createNewFolder}variant="contained" size="large" color="primary">
+              <Button disabled = {loadingNewFolder} className = {cx(styles.button, styles.buttonSelect)} onClick = {this.createNewFolder}variant="contained" size="large" color="primary">
                 <Typography className={styles.selectButton} >Create</Typography>
               </Button>
             </Grid>

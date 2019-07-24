@@ -23,17 +23,8 @@
   }
 }
 
-.folderPicker input {
-  background-color: transparent;
-  border: 0px solid;
-  height: 20px;
-  width: 100%;
-  color: #515154;
-  font-size: 18px;
-}
-
-.folderPicker input:focus {
-  outline: none;
+.error {
+  color: #F44236;
 }
 
 .dialogTitle {

@@ -1,6 +1,8 @@
 import {
   get,
-  isEmpty
+  isEmpty,
+  uniqWith,
+  isEqual
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer, fetchGraphQLApi } = helpers;
@@ -12,16 +14,22 @@ export const namespace  = 'folderSelectionDialog';
 export const FETCH_ROOT_FOLDER  = `vtn/${namespace}/FETCH_ROOT_FOLDER`;
 export const SELECTED_FOLDER  = `vtn/${namespace}/SELECTED_FOLDER`;
 export const FETCH_SUB_FOLDERS  = `vtn/${namespace}/FETCH_SUB_FOLDERS`;
-export const ROOT_FOLDERS_LOADING = `vtn/${namespace}/ROOT_FOLDERS_LOADING`;
-export const SUB_FOLDERS_LOADING = `vtn/${namespace}/SUB_FOLDERS_LOADING`;
+export const LOADING = `vtn/${namespace}/LOADING`;
+export const NEW_FOLDER = `vtn/${namespace}/NEW_FOLDER`;
+
 
 
 const defaultState = {
   selectedFolder: {},
   subFolderList: {},
   rootFolder: {},
-  loaderRoot: false,
-  loaderSubFolder: false
+  loading: false,
+  newFolder: {
+    loading: false,
+    error: false,
+    errorMessage: "",
+    folder: null
+  }
 };
 
 export const rootFolder = (state) => {
@@ -36,13 +44,15 @@ export const subFolderList = (state) => {
   return get(local(state), 'subFolderList')
 };
 
-export const loaderRoot = (state) => {
-  return get(local(state), 'loaderRoot')
+export const loading = (state) => {
+  return get(local(state), 'loading')
 };
 
-export const loaderSubFolder = (state) => {
-  return get(local(state), 'loaderSubFolder')
+export const newFolder = (state) => {
+  return get(local(state), 'newFolder')
 };
+
+
 
 const reducer  = createReducer(defaultState, {
   [FETCH_ROOT_FOLDER](state, action){
@@ -71,19 +81,21 @@ const reducer  = createReducer(defaultState, {
     }
   },
 
-  [ROOT_FOLDERS_LOADING](state, action){
+  [LOADING](state, action){
     let loading = get(action, 'payload')
     return {
       ...state,
-      loaderRoot: loading
+      loading: loading
     }
   },
 
-  [SUB_FOLDERS_LOADING](state, action){
-    let loading = get(action, 'payload')
+  [NEW_FOLDER](state, action){
+    let updatedInfo = get(action, 'payload')
+    let previous = get(state, 'newFolder');
+    let folderInfo = {...previous, ...updatedInfo};
     return {
       ...state,
-      loaderSubFolder: loading
+      newFolder: folderInfo
     }
   },
 
@@ -108,7 +120,7 @@ export const selectFolder = (folder) => {
 export function getFolders() {
   return async function action(dispatch, getState) {
     dispatch({
-      type: ROOT_FOLDERS_LOADING,
+      type: LOADING,
       payload: true
     });
 
@@ -163,7 +175,7 @@ export function getFolders() {
       });
 
       dispatch({
-        type: ROOT_FOLDERS_LOADING,
+        type: LOADING,
         payload: false
       });
 
@@ -171,7 +183,7 @@ export function getFolders() {
 
     } catch (err) {
         dispatch({
-          type: ROOT_FOLDERS_LOADING,
+          type: LOADING,
           payload: false
         });
       console.log(err)
@@ -208,7 +220,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
 
   return async function action(dispatch, getState) {
     dispatch({
-      type: SUB_FOLDERS_LOADING,
+      type: LOADING,
       payload: true
     });
 
@@ -272,7 +284,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
         let key = variables.folderId;
 
         const subfolders = {
-          [key] : folderList
+          [key] : uniqWith(folderList, isEqual)
         };
 
         dispatch({
@@ -281,7 +293,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
         });
 
         dispatch({
-          type: SUB_FOLDERS_LOADING,
+          type: LOADING,
           payload: false
         });
       } else {
@@ -296,7 +308,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
       }
     } catch (err) {
         dispatch({
-          type: SUB_FOLDERS_LOADING,
+          type: LOADING,
           payload: false
         });
       console.log(err)
@@ -306,7 +318,10 @@ export function getMoreSubFolders( variables, accumulator = []) {
 
 export function createFolder(name, description, parentId, orderIndex, appType, folder) {
   return async function action(dispatch, getState) {
-
+    dispatch({
+      type: NEW_FOLDER,
+      payload: {loading: true}
+    });
     let variables  = {
       name: name,
       description: description,
@@ -346,31 +361,63 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
     try {
-      await fetchGraphQLApi({
+      let response = await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
         variables,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 
-      if (folder.parent) {
+
+      if (!isEmpty(response.errors)) {
+        throw response.errors;
+      }
+
+      let newFolder  = response.data.createFolder;
+
+      if (folder.parent && folder.childFolders.count === 0) {
         let parentFolder = {
           treeObjectId: folder.parent.treeObjectId,
           childFolders: {}
         }
         dispatch(getAllSubFolders(parentFolder))
       }
-
+      dispatch({
+        type: NEW_FOLDER,
+        payload: {
+          loading: false,
+          folder: newFolder
+        }
+      });
       dispatch(getAllSubFolders(folder))
 
     } catch (err) {
-      // dispatch({
-      //   type: FETCH_ENGINES_FAILURE,
-      //   payload: err,
-      //   meta: { filters }
-      // });
-      console.log(err)
+      dispatch({
+        type: NEW_FOLDER,
+        payload: {
+          loading: false,
+          error: true,
+          errorMessage: (err[0].message)? err[0].message : "Something went wrong. Could not new folder"
+        }
+      });
+      return err;
     }
   };
 }
+
+// reset to default state
+export function resetNewFolder(loading, error, errorMessage, folder){
+  return function action(dispatch, getState){
+    dispatch({
+      type: NEW_FOLDER,
+      payload: {
+        loading: false || loading,
+        error: false || error,
+        errorMessage: "" || errorMessage,
+        folder: null || folder
+      }
+    });
+  }
+}
+
 
