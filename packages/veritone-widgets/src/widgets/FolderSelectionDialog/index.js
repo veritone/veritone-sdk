@@ -40,6 +40,7 @@ class FolderSelectionDialog extends React.Component {
     newFolder: objectOf(any),
     onCancel: func,
     resetNewFolder: func,
+    onSelect: func,
   };
 
   static defaultProps = {
@@ -65,7 +66,6 @@ class FolderSelectionDialog extends React.Component {
     }
   }
 
-
   handleClickNewFolder = () => {
     const { selectFolder, selectedFolder, rootFolder, resetNewFolder } = this.props;
     if(!selectedFolder.treeObjectId) {
@@ -78,20 +78,24 @@ class FolderSelectionDialog extends React.Component {
     this.setState((prevState) => ({
       openNewFolder : !prevState.openNewFolder,
     }))
-
-
   }
 
   handleClick = () => {
     const { selectFolder, rootFolder } = this.props;
-    selectFolder(rootFolder);
-
+    return selectFolder(rootFolder);
   }
 
   handleCancel = () => {
     this.props.onCancel();
-
   };
+
+  onSelect = () => {
+    const { rootFolder, selectedFolder, onSelect } = this.props
+    let folderSelected = (!isEmpty(selectedFolder)) ? selectedFolder : rootFolder;
+    onSelect(folderSelected);
+    this.handleCancel();
+
+  }
 
   onChange = (event) => {
     let name  = event.target.value.replace(/^\s+/g, '')
@@ -101,7 +105,7 @@ class FolderSelectionDialog extends React.Component {
   }
 ;
   createNewFolder = () => {
-    const {createFolder, selectedFolder, resetNewFolder, newFolder } = this.props;
+    const {createFolder, selectedFolder, resetNewFolder } = this.props;
     if (this.state.newFolderName){
       createFolder(this.state.newFolderName, "", selectedFolder.treeObjectId, 0, "cms", selectedFolder )
     } else {
@@ -120,8 +124,6 @@ class FolderSelectionDialog extends React.Component {
     }
   }
 
-
-
   render() {
     const { rootFolder, selectedFolder, newFolder} = this.props;
     const errorMessage = newFolder.errorMessage;
@@ -139,8 +141,6 @@ class FolderSelectionDialog extends React.Component {
             <CloseIcon className={styles.closeIcon} onClick = {this.handleCancel} />
           </Grid>
           <Typography className={styles.dialogSubTitle} variant="subheading">Choose a folder below to organize this data.</Typography>
-
-
           <DialogContent  className={styles.dialogContent} >
             <Grid className ={cx(styles.rootfolder, rootId === selectedId && styles.selected)} onClick={this.handleClick} container >
               <Grid item container alignContent = "center" alignItems = "center">
@@ -166,7 +166,7 @@ class FolderSelectionDialog extends React.Component {
                 <Button  className = {styles.button} onClick = {this.handleCancel} size="large">
                   <Typography className = {styles.cancelButton} >Cancel</Typography>
                 </Button>
-                <Button className = {cx(styles.button, styles.buttonSelect)} variant="contained" size="large" color="primary">
+                <Button className = {cx(styles.button, styles.buttonSelect)} onClick={this.onSelect} variant="contained" size="large" color="primary">
                   <Typography className={styles.selectButton} >Select</Typography>
                 </Button>
               </Grid>
@@ -179,7 +179,7 @@ class FolderSelectionDialog extends React.Component {
             <DialogTitle className={styles.dialogTitle}>New Folder</DialogTitle>
             <CloseIcon className={styles.closeIcon} onClick={this.handleClickNewFolder}/>
           </Grid>
-          <Typography className={styles.dialogSubTitle} variant="body2">Create folder within <span className={styles.folderNameSelected}>{selectedFolder.name}</span>. If you want to select a different folder click "Cancel" below and select a different folder.</Typography>
+          <Typography className={styles.dialogSubTitle} variant="body2">Create folder within <span className={styles.folderNameSelected}>{selectedFolder.name}</span>. If you want to select a different folder click &quot;Cancel&quot; below and select a different folder.</Typography>
           <DialogContent>
             <FormControl
               error = {error}
@@ -198,7 +198,6 @@ class FolderSelectionDialog extends React.Component {
             </Grid>
           </DialogContent>
         </Dialog>
-
       </React.Fragment>
     );
   }

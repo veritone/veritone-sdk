@@ -1,5 +1,5 @@
 import React  from 'react';
-//import { func } from 'prop-types';
+import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import Button from '@material-ui/core/Button';
@@ -16,8 +16,13 @@ const DialogButton = (
 );
 
 class Story extends React.Component {
+  static propTypes = {
+    onSelect: func.isRequired
+  };
+
   state = {
     isOpen: false,
+    selectedFolder: null
   };
 
   handleOpen = () => {
@@ -34,21 +39,29 @@ class Story extends React.Component {
     });
   };
 
+  onSelect = (selectedFolder) => {
+    this.props.onSelect(selectedFolder);
+    this.setState({ selectedFolder: selectedFolder });
+  }
   
 
 
   render() {
     return (
-      <div>
-      
+      <React.Fragment>
         <DialogButton handleOpen={this.handleOpen} />
         <FolderSelectionDialog
           open={this.state.isOpen}
           onCancel={this.handleClose}
+          onSelect = {this.onSelect}
         />
-      </div>
+      </React.Fragment>
     );
   }
+}
+
+function logSelectedFolder(folder){
+  console.log('selected Folder: ', folder);
 }
 
 storiesOf('FolderSelectionDialog', module).add('Base', () => {
@@ -57,12 +70,16 @@ storiesOf('FolderSelectionDialog', module).add('Base', () => {
     <BaseStory
         widget={FolderSelectionDialogWidget} 
         widgetProps={{
-          onCancel: action('onCancel')
+          onCancel: action('onCancel'),
+          onSelect: action('onSelect')
         }}
         widgetInstanceMethods={{
-          open: instance => instance.open()
+          open: instance => instance.open(),
         }}
         componentClass={Story}
+        componentProps={{
+          onSelect: logSelectedFolder,
+        }}
         
     />
   );

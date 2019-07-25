@@ -18,14 +18,6 @@ export default class FolderList extends React.Component {
     subFolderList: objectOf(any)
   };
 
-  static defaultProps = {
-
-  };
-
-
-
-
-
   render() {
     const {subFolderList, listId} = this.props;
     let list  = subFolderList[listId];
@@ -33,7 +25,6 @@ export default class FolderList extends React.Component {
     if(!list){
       return <div/>;
     }
-
 
     return (list).map((folder) => {
       let key  =  folder.treeObjectId;

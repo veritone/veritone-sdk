@@ -35,27 +35,21 @@ export default class CollapsibleFolder extends React.Component {
 
 
   handleClick = () => {
-    
     const { folder, selectFolder, getAllSubFolders } = this.props;
     if(!this.state.open){
       getAllSubFolders(folder);
     }
-
     this.setState((prevState) => ({
       open : !prevState.open,
     }));
     selectFolder(folder);
-
   }
 
 
   render() {
-    
     const { folder, selectedFolder } = this.props;
     let listId  = folder.treeObjectId;
     let selectedId = selectedFolder.treeObjectId;
-
-
 
     return (
         <li>

@@ -16,7 +16,6 @@ import styles from './styles.scss';
   }
 )
 
-
 export default class Folder extends React.Component {
   static propTypes = {
     folder: objectOf(any),
@@ -27,7 +26,6 @@ export default class Folder extends React.Component {
   handleClick = () => {
     const { folder, selectFolder } = this.props;
     selectFolder(folder);
-   
   }
 
   render(){

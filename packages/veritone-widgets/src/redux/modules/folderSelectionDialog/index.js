@@ -9,15 +9,12 @@ const { createReducer, fetchGraphQLApi } = helpers;
 const { selectSessionToken, selectOAuthToken } = modules.auth;
 const { getConfig } = modules.config;
 
-
 export const namespace  = 'folderSelectionDialog';
 export const FETCH_ROOT_FOLDER  = `vtn/${namespace}/FETCH_ROOT_FOLDER`;
 export const SELECTED_FOLDER  = `vtn/${namespace}/SELECTED_FOLDER`;
 export const FETCH_SUB_FOLDERS  = `vtn/${namespace}/FETCH_SUB_FOLDERS`;
 export const LOADING = `vtn/${namespace}/LOADING`;
 export const NEW_FOLDER = `vtn/${namespace}/NEW_FOLDER`;
-
-
 
 const defaultState = {
   selectedFolder: {},
@@ -51,8 +48,6 @@ export const loading = (state) => {
 export const newFolder = (state) => {
   return get(local(state), 'newFolder')
 };
-
-
 
 const reducer  = createReducer(defaultState, {
   [FETCH_ROOT_FOLDER](state, action){
@@ -98,7 +93,6 @@ const reducer  = createReducer(defaultState, {
       newFolder: folderInfo
     }
   },
-
 });
 
 export default reducer;
@@ -107,15 +101,12 @@ function local(state) {
   return state[namespace];
 }
 
-
-
 export const selectFolder = (folder) => {
   return {
     type: SELECTED_FOLDER,
     selected: folder
   };
 };
-
 
 export function getFolders() {
   return async function action(dispatch, getState) {
@@ -191,8 +182,6 @@ export function getFolders() {
   };
 }
 
-
-
 // A function that accepts a folder object and fetches all childFolders until the records returned is
   // less than the CHILD_FOLDER_LIMIT
 
@@ -210,11 +199,6 @@ export function getAllSubFolders(folder) {
     childFolders
   );
 }
-
-
-
-
-
 
 export function getMoreSubFolders( variables, accumulator = []) {
 
@@ -367,7 +351,6 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
         variables,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
-
 
       if (!isEmpty(response.errors)) {
         throw response.errors;
