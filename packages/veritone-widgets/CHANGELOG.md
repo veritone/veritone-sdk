@@ -238,3 +238,9 @@ const MyPage = () => (
 
 ## 8.0.2
 * Update `veritone-react-common` version
+
+## 8.0.3
+* Fixed AppBar css overridden issue
+
+## 8.0.4
+* Fixed AppBar not importing the correct font for the title
