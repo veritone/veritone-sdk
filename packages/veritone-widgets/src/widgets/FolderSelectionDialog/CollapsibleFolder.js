@@ -35,6 +35,7 @@ export default class CollapsibleFolder extends React.Component {
 
 
   handleClick = () => {
+    // open or close collapsible folder - refetch subfolders whenever opening but not closing and select the folder the clicked on
     const { folder, selectFolder, getAllSubFolders } = this.props;
     if(!this.state.open){
       getAllSubFolders(folder);
@@ -47,6 +48,7 @@ export default class CollapsibleFolder extends React.Component {
 
 
   render() {
+    // the collapsible folder has subfolders which are rendered when open by passing a listId into FolderList component
     const { folder, selectedFolder } = this.props;
     let listId  = folder.treeObjectId;
     let selectedId = selectedFolder.treeObjectId;

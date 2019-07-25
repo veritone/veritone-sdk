@@ -26,11 +26,9 @@ class Story extends React.Component {
   };
 
   handleOpen = () => {
-
     this.setState(prevState => ({
       isOpen: true,
     }));
-
   };
 
   handleClose = () => {
@@ -43,8 +41,6 @@ class Story extends React.Component {
     this.props.onSelect(selectedFolder);
     this.setState({ selectedFolder: selectedFolder });
   }
-  
-
 
   render() {
     return (

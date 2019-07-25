@@ -73,7 +73,12 @@
 .buttonSelect {
   background-color: #1873E8 !important;
   margin-left: 5px !important;
+  &:hover {
+    background-color: #2195F3 !important;
+  }
 }
+
+
 
 .newFolderButton {
   color: #1873E8 !important;

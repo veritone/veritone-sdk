@@ -56,41 +56,52 @@ class FolderSelectionDialog extends React.Component {
 
   componentDidMount(){
     const { getFolders, resetNewFolder } = this.props
+    // get root folder and subfolders of root if they exist
     getFolders();
+    // clear the new folder just as safety check
     resetNewFolder();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    // we don't want to close the new folder dialog if there is an error creating the new folder
     if (isEmpty(prevProps.newFolder.folder) && !isEmpty(this.props.newFolder.folder)){
       this.handleClickNewFolder()
     }
   }
 
   handleClickNewFolder = () => {
+    // this opens and closes the new folder dialog
     const { selectFolder, selectedFolder, rootFolder, resetNewFolder } = this.props;
+    // when opening newfolder dialog - default the folder selected to the root folder if they did not select one
     if(!selectedFolder.treeObjectId) {
       selectFolder(rootFolder);
     }
+    // when closing new folder dialog - meaning previous state was open - reset everything to default state
     if (this.state.openNewFolder){
       resetNewFolder()
       this.setState({newFolderName: ""})
     }
+
     this.setState((prevState) => ({
       openNewFolder : !prevState.openNewFolder,
     }))
   }
 
   handleClick = () => {
+    // set folder when they click on root folder
     const { selectFolder, rootFolder } = this.props;
     return selectFolder(rootFolder);
   }
 
   handleCancel = () => {
+    // close the dialog
     this.props.onCancel();
   };
 
   onSelect = () => {
+    // folder they have selected to add add data to will return the folder using onSelect and close the dialog
     const { rootFolder, selectedFolder, onSelect } = this.props
+    // if they didn't choose a subfolder - the root folder will be selected
     let folderSelected = (!isEmpty(selectedFolder)) ? selectedFolder : rootFolder;
     onSelect(folderSelected);
     this.handleCancel();
@@ -98,6 +109,7 @@ class FolderSelectionDialog extends React.Component {
   }
 
   onChange = (event) => {
+    // set state for name of new folder -  prevents typing an empty space to begin
     let name  = event.target.value.replace(/^\s+/g, '')
     this.setState({
       newFolderName: name
@@ -105,6 +117,10 @@ class FolderSelectionDialog extends React.Component {
   }
 ;
   createNewFolder = () => {
+    // creates new folder  - checks for empty name - if no folder name - we resetNewFolder with error to alert them
+    // otherwise we create new folder
+    // from redux createFolder(name, description, parentId, orderIndex, appType, folder) the other fields like description
+    // and order index are here if we ever want to expand this
     const {createFolder, selectedFolder, resetNewFolder } = this.props;
     if (this.state.newFolderName){
       createFolder(this.state.newFolderName, "", selectedFolder.treeObjectId, 0, "cms", selectedFolder )
@@ -173,13 +189,13 @@ class FolderSelectionDialog extends React.Component {
             </Grid>
           </DialogActions>
         </Dialog>
-
+        {/*new folder dialog*/}
         <Dialog className={styles.folderPicker} fullWidth maxWidth="md" open={this.state.openNewFolder}>
           <Grid container justify="space-between" alignItems="center">
             <DialogTitle className={styles.dialogTitle}>New Folder</DialogTitle>
             <CloseIcon className={styles.closeIcon} onClick={this.handleClickNewFolder}/>
           </Grid>
-          <Typography className={styles.dialogSubTitle} variant="body2">Create folder within <span className={styles.folderNameSelected}>{selectedFolder.name}</span>. If you want to select a different folder click &quot;Cancel&quot; below and select a different folder.</Typography>
+          <Typography className={styles.dialogSubTitle} variant="body2">Create folder within <span className={styles.folderNameSelected}>{(selectedFolder.parent) ? selectedFolder.name : "My Organization"}</span>. If you want to select a different folder click &quot;Cancel&quot; below and select a different folder.</Typography>
           <DialogContent>
             <FormControl
               error = {error}

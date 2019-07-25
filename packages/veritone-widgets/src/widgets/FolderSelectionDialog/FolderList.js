@@ -11,7 +11,6 @@ import * as folderSelectionModule from '../../redux/modules/folderSelectionDialo
   }),
 )
 
-
 export default class FolderList extends React.Component {
   static propTypes = {
     listId: string,
@@ -19,7 +18,10 @@ export default class FolderList extends React.Component {
   };
 
   render() {
+    // FolderList receives a listId - so it can grab correct list from redux store
+    // returns a folder or collapsible folder - a collapsible folder will return another FolderList when open - see Collapsible Folder
     const {subFolderList, listId} = this.props;
+
     let list  = subFolderList[listId];
 
     if(!list){

@@ -108,6 +108,7 @@ export const selectFolder = (folder) => {
   };
 };
 
+// fetch the root folder and childfolder count - if there is a count - it will be a number that is > 0 up to the limits set in graphql - not the total count
 export function getFolders() {
   return async function action(dispatch, getState) {
     dispatch({
@@ -154,12 +155,14 @@ export function getFolders() {
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 
+      //throw err
       if (!isEmpty(response.errors)){
         throw response.errors;
       }
 
       const folder = get(response, 'data.createRootFolders[0]');
-      
+
+      // set the value for the root folder
       dispatch({
         type: FETCH_ROOT_FOLDER,
         payload: folder
@@ -170,6 +173,7 @@ export function getFolders() {
         payload: false
       });
 
+      //get the subfolders for the root folder
       dispatch(getAllSubFolders(folder));
 
     } catch (err) {
@@ -250,9 +254,12 @@ export function getMoreSubFolders( variables, accumulator = []) {
       })
 
       const newChildFolders = get(res, 'data.folder.childFolders.records', []);
-
+      // check if data returned is complete set for this folder - if not bump the offset up
+      // if data is complete - sort the list by name and dedupe the list
+      // we are sorting alphabetically
       if (get(res, 'data.folder.childFolders.count') < variables.limit) {
         folderList = accumulator.concat(newChildFolders)
+        //sort the list
         folderList.sort((a, b) => {
           let nameA = a.name.toUpperCase();
           let nameB = b.name.toUpperCase();
@@ -265,8 +272,10 @@ export function getMoreSubFolders( variables, accumulator = []) {
           return 0;
 
         })
-        let key = variables.folderId;
 
+        // set id for folder list
+        let key = variables.folderId;
+        //dedupe the subfolders
         const subfolders = {
           [key] : uniqWith(folderList, isEqual)
         };
@@ -281,7 +290,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
           payload: false
         });
       } else {
-
+        // get additional subfolders to complete set
         dispatch(getMoreSubFolders(
           {
             ...variables,
@@ -300,6 +309,7 @@ export function getMoreSubFolders( variables, accumulator = []) {
   };
 }
 
+//create a new folder in the folder tree
 export function createFolder(name, description, parentId, orderIndex, appType, folder) {
   return async function action(dispatch, getState) {
     dispatch({
@@ -357,7 +367,9 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
       }
 
       let newFolder  = response.data.createFolder;
-
+      // if the folder where this new folder is being created within  has a parent folder
+      // and it originally did not have any child folders -
+      // we also need to refetch the parent folders subfolders or the DOM won't update correctly
       if (folder.parent && folder.childFolders.count === 0) {
         let parentFolder = {
           treeObjectId: folder.parent.treeObjectId,
@@ -372,6 +384,7 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
           folder: newFolder
         }
       });
+      // also get the folders children which will reflect the new folder added
       dispatch(getAllSubFolders(folder))
 
     } catch (err) {
@@ -388,7 +401,7 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
   };
 }
 
-// reset to default state
+// function to reset NewFolder to default state reset to default state or whatever you need
 export function resetNewFolder(loading, error, errorMessage, folder){
   return function action(dispatch, getState){
     dispatch({
