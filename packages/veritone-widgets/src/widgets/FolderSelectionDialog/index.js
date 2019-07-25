@@ -141,12 +141,24 @@ class FolderSelectionDialog extends React.Component {
   }
 
   render() {
-    const { rootFolder, selectedFolder, newFolder} = this.props;
+    const { rootFolder, selectedFolder, newFolder, loading} = this.props;
     const errorMessage = newFolder.errorMessage;
     const error = newFolder.error;
     const loadingNewFolder = newFolder.loading
     const rootId  = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId
+
+    if (!loading && !isEmpty(rootFolder)) {
+      return (
+        <Dialog className={styles.folderPicker} fullWidth maxWidth="md" open={this.props.open}>
+          <Grid container justify="space-between" alignItems="center">
+            <DialogTitle className={styles.dialogTitle}>Select Folder</DialogTitle>
+            <CloseIcon className={styles.closeIcon} onClick = {this.handleCancel} />
+          </Grid>
+          <Typography className={styles.dialogSubTitle} variant="subheading">Oops - Something went Wrong! Your folders could not be loaded.</Typography>
+        </Dialog>
+      );
+    }
 
     return (
       <React.Fragment >
