@@ -148,7 +148,7 @@ class FolderSelectionDialog extends React.Component {
     const rootId  = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId
 
-    if (!loading && !isEmpty(rootFolder)) {
+    if (!loading && isEmpty(rootFolder)) {
       return (
         <Dialog className={styles.folderPicker} fullWidth maxWidth="md" open={this.props.open}>
           <Grid container justify="space-between" alignItems="center">
