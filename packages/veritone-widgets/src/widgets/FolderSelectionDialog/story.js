@@ -1,11 +1,10 @@
-import React  from 'react';
+import React from 'react';
 import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import Button from '@material-ui/core/Button';
 import BaseStory from '../../shared/BaseStory';
-import FolderSelectionDialog, {FolderSelectionDialogWidget} from './';
-
+import FolderSelectionDialog, { FolderSelectionDialogWidget } from './';
 
 const DialogButton = (
   { handleOpen } // eslint-disable-line
@@ -27,20 +26,20 @@ class Story extends React.Component {
 
   handleOpen = () => {
     this.setState(prevState => ({
-      isOpen: true,
+      isOpen: true
     }));
   };
 
   handleClose = () => {
     this.setState({
-      isOpen: false,
+      isOpen: false
     });
   };
 
-  onSelect = (selectedFolder) => {
+  onSelect = selectedFolder => {
     this.props.onSelect(selectedFolder);
     this.setState({ selectedFolder: selectedFolder });
-  }
+  };
 
   render() {
     return (
@@ -49,36 +48,32 @@ class Story extends React.Component {
         <FolderSelectionDialog
           open={this.state.isOpen}
           onCancel={this.handleClose}
-          onSelect = {this.onSelect}
+          onSelect={this.onSelect}
         />
       </React.Fragment>
     );
   }
 }
 
-function logSelectedFolder(folder){
+function logSelectedFolder(folder) {
   console.log('selected Folder: ', folder);
 }
 
 storiesOf('FolderSelectionDialog', module).add('Base', () => {
-
   return (
     <BaseStory
-        widget={FolderSelectionDialogWidget} 
-        widgetProps={{
-          onCancel: action('onCancel'),
-          onSelect: action('onSelect')
-        }}
-        widgetInstanceMethods={{
-          open: instance => instance.open(),
-        }}
-        componentClass={Story}
-        componentProps={{
-          onSelect: logSelectedFolder,
-        }}
-        
+      widget={FolderSelectionDialogWidget}
+      widgetProps={{
+        onCancel: action('onCancel'),
+        onSelect: action('onSelect')
+      }}
+      widgetInstanceMethods={{
+        open: instance => instance.open()
+      }}
+      componentClass={Story}
+      componentProps={{
+        onSelect: logSelectedFolder
+      }}
     />
   );
 });
-
-

@@ -1,30 +1,31 @@
+@import 'src/styles/modules/_variables';
 
 .loadingContainer {
-  margin:auto;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  position:fixed;
+  margin: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
   z-index: 9999;
   min-height: 80px;
 }
 
 .selected {
-  background-color: #E8F0FE;
+  background-color: $light-blue;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
 }
 
 .rootfolder {
   &:hover {
-    background-color: #EEE;
+    background-color: $grey-3;
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
   }
 }
 
 .error {
-  color: #F44236;
+  color: $red500;
 }
 
 .dialogTitle {
@@ -36,7 +37,7 @@
 }
 
 .dialogContent {
-  border: 2px solid #eee;
+  border: 2px solid $grey-2;
   margin-right: 20px;
   margin-left: 20px;
   padding: 0 !important;
@@ -46,20 +47,21 @@
   font-size: 30px !important;
   margin-right: 20px;
   margin-top: 20px;
-  color: #515154;
+  color: $grey-6;
 }
 
 .workIcon {
   font-size: 30px !important;
   margin: 10px;
-  color: #515154;
+  color: $grey-6;
 }
 
 .saveText {
-  color: #1873E8 !important;
+  color: $blue-1 !important;
   padding-left: 30px !important;
   padding-top: 5px !important;
   padding-bottom: 5px !important;
+  text-transform: uppercase;
 }
 
 .button {
@@ -67,21 +69,19 @@
 }
 
 .buttonNewFolder {
-  border: 1px solid #1873E8 !important;
+  border: 1px solid $blue-1 !important;
 }
 
 .buttonSelect {
-  background-color: #1873E8 !important;
+  background-color: $blue-1 !important;
   margin-left: 5px !important;
   &:hover {
-    background-color: #2195F3 !important;
+    background-color: $blue-2 !important;
   }
 }
 
-
-
 .newFolderButton {
-  color: #1873E8 !important;
+  color: $blue-1 !important;
   font-size: 18px !important;
   font-weight: bold !important;
   text-transform: none !important;
@@ -91,45 +91,43 @@
   font-size: 18px !important;
   font-weight: bold !important;
   text-transform: none !important;
-  color: #515154 !important;
+  color: $grey-6 !important;
 }
 
 .selectButton {
   font-size: 18px !important;
   font-weight: bold !important;
   text-transform: none !important;
-  color: #fff !important;
+  color: $fullWhite !important;
 }
 
 .folder {
   height: 50px;
   display: flex;
   align-items: center;
-  color: #515154;
+  color: $grey-6;
 }
 
 .collapsibleFolderIcon {
   font-size: 30px !important;
-  color: #515154;
+  color: $grey-6;
 }
 
 .folderIcon {
   font-size: 30px !important;
-  color: #515154 !important;
+  color: $grey-6 !important;
   margin-left: 30px;
 }
 
 .folderName {
   font-weight: 600;
-  color: #515154;
+  color: $grey-6;
   padding-left: 10px;
 }
 
 .folderNameSelected {
-  color: #1873E8;
+  color: $blue-1;
 }
-
-
 
 .folderPicker ul {
   list-style: none;
@@ -145,37 +143,36 @@
 }
 
 .folderPicker li > div:hover {
-  background-color: #EEE;
+  background-color: $grey-3;
   border-top-right-radius: 50px;
   border-bottom-right-radius: 50px;
 }
 
-.folderPicker li div:first-child  {
+.folderPicker li div:first-child {
   padding-left: 24px;
   overflow: hidden;
 }
 
-.folderPicker li li div:first-child  {
+.folderPicker li li div:first-child {
   padding-left: 48px;
   overflow: hidden;
 }
 
-.folderPicker li li li div:first-child  {
+.folderPicker li li li div:first-child {
   padding-left: 72px;
   overflow: hidden;
 }
 
-.folderPicker li li li li div:first-child  {
+.folderPicker li li li li div:first-child {
   padding-left: 96px;
   overflow: hidden;
 }
 
-.folderPicker li li li li li div:first-child  {
+.folderPicker li li li li li div:first-child {
   padding-left: 120px;
   overflow: hidden;
 }
 
-.folderPicker li li li li li li div:first-child  {
-  padding-left: 144px
+.folderPicker li li li li li li div:first-child {
+  padding-left: 144px;
 }
-

@@ -1,18 +1,13 @@
-import {
-  get,
-  isEmpty,
-  uniqWith,
-  isEqual
-} from 'lodash';
+import { get, isEmpty, uniqWith, isEqual } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer, fetchGraphQLApi } = helpers;
 const { selectSessionToken, selectOAuthToken } = modules.auth;
 const { getConfig } = modules.config;
 
-export const namespace  = 'folderSelectionDialog';
-export const FETCH_ROOT_FOLDER  = `vtn/${namespace}/FETCH_ROOT_FOLDER`;
-export const SELECTED_FOLDER  = `vtn/${namespace}/SELECTED_FOLDER`;
-export const FETCH_SUB_FOLDERS  = `vtn/${namespace}/FETCH_SUB_FOLDERS`;
+export const namespace = 'folderSelectionDialog';
+export const FETCH_ROOT_FOLDER = `vtn/${namespace}/FETCH_ROOT_FOLDER`;
+export const SELECTED_FOLDER = `vtn/${namespace}/SELECTED_FOLDER`;
+export const FETCH_SUB_FOLDERS = `vtn/${namespace}/FETCH_SUB_FOLDERS`;
 export const LOADING = `vtn/${namespace}/LOADING`;
 export const NEW_FOLDER = `vtn/${namespace}/NEW_FOLDER`;
 
@@ -24,75 +19,75 @@ const defaultState = {
   newFolder: {
     loading: false,
     error: false,
-    errorMessage: "",
+    errorMessage: '',
     folder: null
   }
 };
 
-export const rootFolder = (state) => {
+export const rootFolder = state => {
   return get(local(state), 'rootFolder');
 };
 
-export const selectedFolder = (state) => {
+export const selectedFolder = state => {
   return get(local(state), 'selectedFolder');
 };
 
-export const subFolderList = (state) => {
-  return get(local(state), 'subFolderList')
+export const subFolderList = state => {
+  return get(local(state), 'subFolderList');
 };
 
-export const loading = (state) => {
-  return get(local(state), 'loading')
+export const loading = state => {
+  return get(local(state), 'loading');
 };
 
-export const newFolder = (state) => {
-  return get(local(state), 'newFolder')
+export const newFolder = state => {
+  return get(local(state), 'newFolder');
 };
 
-const reducer  = createReducer(defaultState, {
-  [FETCH_ROOT_FOLDER](state, action){
+const reducer = createReducer(defaultState, {
+  [FETCH_ROOT_FOLDER](state, action) {
     const folder = get(action, 'payload');
     return {
       ...state,
       rootFolder: folder
-    }
+    };
   },
 
-  [SELECTED_FOLDER](state, action){
-    const selected = get(action, 'selected');
+  [SELECTED_FOLDER](state, action) {
+    const selected = get(action, 'payload');
     return {
       ...state,
       selectedFolder: selected
-    }
+    };
   },
 
-  [FETCH_SUB_FOLDERS](state, action){
-    let folders = get(action, 'payload')
+  [FETCH_SUB_FOLDERS](state, action) {
+    let folders = get(action, 'payload');
     let previousFolders = get(state, 'subFolderList');
-    let newSubfolderList = {...previousFolders, ...folders};
+    let newSubfolderList = { ...previousFolders, ...folders };
     return {
       ...state,
       subFolderList: newSubfolderList
-    }
+    };
   },
 
-  [LOADING](state, action){
-    let loading = get(action, 'payload')
+  [LOADING](state, action) {
+    let loading = get(action, 'payload');
     return {
       ...state,
       loading: loading
-    }
+    };
   },
 
-  [NEW_FOLDER](state, action){
-    let updatedInfo = get(action, 'payload')
+  [NEW_FOLDER](state, action) {
+    let updatedInfo = get(action, 'payload');
     let previous = get(state, 'newFolder');
-    let folderInfo = {...previous, ...updatedInfo};
+    let folderInfo = { ...previous, ...updatedInfo };
     return {
       ...state,
       newFolder: folderInfo
-    }
-  },
+    };
+  }
 });
 
 export default reducer;
@@ -101,10 +96,10 @@ function local(state) {
   return state[namespace];
 }
 
-export const selectFolder = (folder) => {
+export const selectFolder = folder => {
   return {
     type: SELECTED_FOLDER,
-    selected: folder
+    payload: folder
   };
 };
 
@@ -116,7 +111,7 @@ export function getFolders() {
       payload: true
     });
 
-    let rootFolderType = "cms";
+    let rootFolderType = 'cms';
 
     const query = `
       mutation createRootFolders($rootFolderType: RootFolderType ){
@@ -128,12 +123,6 @@ export function getFolders() {
           ownerId,
           typeId,
           orderIndex,
-          childTDOs {
-            count
-            records{
-              id
-            }
-          }
           childFolders {
             count
           }
@@ -150,13 +139,13 @@ export function getFolders() {
         endpoint: graphQLUrl,
         query,
         variables: {
-          rootFolderType,
+          rootFolderType
         },
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 
       //throw err
-      if (!isEmpty(response.errors)){
+      if (!isEmpty(response.errors)) {
         throw response.errors;
       }
 
@@ -175,25 +164,23 @@ export function getFolders() {
 
       //get the subfolders for the root folder
       dispatch(getAllSubFolders(folder));
-
     } catch (err) {
-        dispatch({
-          type: LOADING,
-          payload: false
-        });
-      console.log(err)
+      dispatch({
+        type: LOADING,
+        payload: false
+      });
+      console.log(err);
     }
   };
 }
 
 // A function that accepts a folder object and fetches all childFolders until the records returned is
-  // less than the CHILD_FOLDER_LIMIT
-
+// less than the CHILD_FOLDER_LIMIT
 
 export function getAllSubFolders(folder) {
   const childFolders = get(folder, 'childFolders.records', []);
-  const limit  = 30;
- 
+  const limit = 30;
+
   return getMoreSubFolders(
     {
       folderId: folder.treeObjectId,
@@ -204,8 +191,7 @@ export function getAllSubFolders(folder) {
   );
 }
 
-export function getMoreSubFolders( variables, accumulator = []) {
-
+export function getMoreSubFolders(variables, accumulator = []) {
   return async function action(dispatch, getState) {
     dispatch({
       type: LOADING,
@@ -234,7 +220,6 @@ export function getMoreSubFolders( variables, accumulator = []) {
               childFolders {
                 count
               }
-             
             }
           }
         }
@@ -251,14 +236,14 @@ export function getMoreSubFolders( variables, accumulator = []) {
         query,
         variables,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
-      })
+      });
 
       const newChildFolders = get(res, 'data.folder.childFolders.records', []);
       // check if data returned is complete set for this folder - if not bump the offset up
       // if data is complete - sort the list by name and dedupe the list
       // we are sorting alphabetically
       if (get(res, 'data.folder.childFolders.count') < variables.limit) {
-        folderList = accumulator.concat(newChildFolders)
+        folderList = accumulator.concat(newChildFolders);
         //sort the list
         folderList.sort((a, b) => {
           let nameA = a.name.toUpperCase();
@@ -270,19 +255,18 @@ export function getMoreSubFolders( variables, accumulator = []) {
             return 1;
           }
           return 0;
-
-        })
+        });
 
         // set id for folder list
         let key = variables.folderId;
         //dedupe the subfolders
         const subfolders = {
-          [key] : uniqWith(folderList, isEqual)
+          [key]: uniqWith(folderList, isEqual)
         };
 
         dispatch({
           type: FETCH_SUB_FOLDERS,
-          payload: subfolders,
+          payload: subfolders
         });
 
         dispatch({
@@ -291,32 +275,41 @@ export function getMoreSubFolders( variables, accumulator = []) {
         });
       } else {
         // get additional subfolders to complete set
-        dispatch(getMoreSubFolders(
-          {
-            ...variables,
-            offset: newChildFolders.length + accumulator.length
-          },
-          accumulator.concat(newChildFolders)
-        ));
+        dispatch(
+          getMoreSubFolders(
+            {
+              ...variables,
+              offset: newChildFolders.length + accumulator.length
+            },
+            accumulator.concat(newChildFolders)
+          )
+        );
       }
     } catch (err) {
-        dispatch({
-          type: LOADING,
-          payload: false
-        });
-      console.log(err)
+      dispatch({
+        type: LOADING,
+        payload: false
+      });
+      console.log(err);
     }
   };
 }
 
 //create a new folder in the folder tree
-export function createFolder(name, description, parentId, orderIndex, appType, folder) {
+export function createFolder(
+  name,
+  description,
+  parentId,
+  orderIndex,
+  appType,
+  folder
+) {
   return async function action(dispatch, getState) {
     dispatch({
       type: NEW_FOLDER,
-      payload: {loading: true}
+      payload: { loading: true }
     });
-    let variables  = {
+    let variables = {
       name: name,
       description: description,
       parentId: parentId,
@@ -366,7 +359,7 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
         throw response.errors;
       }
 
-      let newFolder  = response.data.createFolder;
+      let newFolder = response.data.createFolder;
       // if the folder where this new folder is being created within  has a parent folder
       // and it originally did not have any child folders -
       // we also need to refetch the parent folders subfolders or the DOM won't update correctly
@@ -374,8 +367,8 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
         let parentFolder = {
           treeObjectId: folder.parent.treeObjectId,
           childFolders: {}
-        }
-        dispatch(getAllSubFolders(parentFolder))
+        };
+        dispatch(getAllSubFolders(parentFolder));
       }
       dispatch({
         type: NEW_FOLDER,
@@ -385,15 +378,16 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
         }
       });
       // also get the folders children which will reflect the new folder added
-      dispatch(getAllSubFolders(folder))
-
+      dispatch(getAllSubFolders(folder));
     } catch (err) {
       dispatch({
         type: NEW_FOLDER,
         payload: {
           loading: false,
           error: true,
-          errorMessage: (err[0].message)? err[0].message : "Something went wrong. Could not new folder"
+          errorMessage: err[0].message
+            ? err[0].message
+            : 'Something went wrong. Could not create new folder'
         }
       });
       return err;
@@ -402,18 +396,16 @@ export function createFolder(name, description, parentId, orderIndex, appType, f
 }
 
 // function to reset NewFolder to default state reset to default state or whatever you need
-export function resetNewFolder(loading, error, errorMessage, folder){
-  return function action(dispatch, getState){
+export function resetNewFolder(loading, error, errorMessage, folder) {
+  return function action(dispatch, getState) {
     dispatch({
       type: NEW_FOLDER,
       payload: {
         loading: false || loading,
         error: false || error,
-        errorMessage: "" || errorMessage,
+        errorMessage: '' || errorMessage,
         folder: null || folder
       }
     });
-  }
+  };
 }
-
-
