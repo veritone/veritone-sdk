@@ -37,3 +37,4 @@ export EnginePicker, {
   SelectionInfoPanelWidget
 } from './widgets/EnginePicker';
 export { InfinitePicker } from './widgets/EnginePicker/InfinitePicker';
+export { reducers, rootSaga } from './redux/configureStore';

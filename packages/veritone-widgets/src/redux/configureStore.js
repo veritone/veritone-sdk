@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
 import { getBaseMiddlewares, getDevOnlyMiddlewares } from './store';
-import createRootReducer from './rootReducer';
+import createRootReducer, { reducers } from './rootReducer';
 import rootSaga from './rootSaga';
 
 // Redux devtools browser extension hook
@@ -83,3 +83,5 @@ export default function configureStore(initialState) {
 
   return store;
 }
+
+export { rootSaga, reducers };
