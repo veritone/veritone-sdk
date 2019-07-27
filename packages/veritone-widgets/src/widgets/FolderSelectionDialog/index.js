@@ -11,15 +11,12 @@ import {
   DialogContent,
   DialogActions,
   Typography,
-  Button,
-  FormHelperText,
-  FormControl,
-  InputLabel,
-  Input
+  Button
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
 import FolderList from './FolderList';
+import NewFolder from './NewFolder';
 import styles from './styles.scss';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import widget from '../../shared/widget';
@@ -33,9 +30,7 @@ import widget from '../../shared/widget';
   }),
   {
     selectFolder: folderSelectionModule.selectFolder,
-    getFolders: folderSelectionModule.getFolders,
-    createFolder: folderSelectionModule.createFolder,
-    resetNewFolder: folderSelectionModule.resetNewFolder
+    getFolders: folderSelectionModule.getFolders
   }
 )
 class FolderSelectionDialog extends React.Component {
@@ -43,7 +38,6 @@ class FolderSelectionDialog extends React.Component {
     open: bool,
     loading: bool,
     selectFolder: func,
-    createFolder: func,
     selectedFolder: shape({
       id: string,
       treeObjectId: string,
@@ -75,29 +69,7 @@ class FolderSelectionDialog extends React.Component {
         count: number
       })
     }),
-    newFolder: shape({
-      loading: bool,
-      error: bool,
-      errorMessage: string,
-      folder: shape({
-        id: string,
-        treeObjectId: string,
-        orderIndex: number,
-        name: string,
-        description: string,
-        modifiedDateTime: string,
-        status: string,
-        parent: shape({
-          treeObjectId: string
-        }),
-
-        childFolders: shape({
-          count: number
-        })
-      })
-    }),
     onCancel: func,
-    resetNewFolder: func,
     onSelect: func
   };
 
@@ -106,51 +78,21 @@ class FolderSelectionDialog extends React.Component {
   };
 
   state = {
-    openNewFolder: false,
-    newFolderName: '',
-    error: true,
-    errorMessage: "you can't create this many nested folders"
+    openNewFolder: false
   };
 
   componentDidMount() {
-    const { getFolders, resetNewFolder } = this.props;
+    const { getFolders } = this.props;
     // get root folder and subfolders of root if they exist
     getFolders();
-    // clear the new folder just as safety check
-    resetNewFolder();
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    // we don't want to close the new folder dialog if there is an error creating the new folder
-    if (
-      isEmpty(prevProps.newFolder.folder) &&
-      !isEmpty(this.props.newFolder.folder)
-    ) {
-      this.handleClickNewFolder();
-    }
-  }
+  openNewFolderDialog = () => {
+    this.setState({ openNewFolder: true });
+  };
 
-  handleClickNewFolder = () => {
-    // this opens and closes the new folder dialog
-    const {
-      selectFolder,
-      selectedFolder,
-      rootFolder,
-      resetNewFolder
-    } = this.props;
-    // when opening newfolder dialog - default the folder selected to the root folder if they did not select one
-    if (!selectedFolder.treeObjectId) {
-      selectFolder(rootFolder);
-    }
-    // when closing new folder dialog - meaning previous state was open - reset everything to default state
-    if (this.state.openNewFolder) {
-      resetNewFolder();
-      this.setState({ newFolderName: '' });
-    }
-
-    this.setState(prevState => ({
-      openNewFolder: !prevState.openNewFolder
-    }));
+  closeNewFolderDialog = () => {
+    this.setState({ openNewFolder: false });
   };
 
   handleClick = () => {
@@ -173,36 +115,9 @@ class FolderSelectionDialog extends React.Component {
     this.handleCancel();
   };
 
-  onChange = event => {
-    // set state for name of new folder -  prevents typing an empty space to begin
-    let name = event.target.value.replace(/^\s+/g, '');
-    this.setState({
-      newFolderName: name
-    });
-  };
-  createNewFolder = () => {
-    // creates new folder  - checks for empty name - if no folder name - we resetNewFolder with error to alert them
-    // otherwise we create new folder
-    // from redux createFolder(name, description, parentId, orderIndex, appType, folder) the other fields like description
-    // and order index are here if we ever want to expand this
-    const { createFolder, selectedFolder, resetNewFolder } = this.props;
-    if (this.state.newFolderName) {
-      createFolder(
-        this.state.newFolderName,
-        '',
-        selectedFolder.treeObjectId,
-        0,
-        'cms',
-        selectedFolder
-      );
-    } else {
-      resetNewFolder(null, true, 'Please enter a folder Name');
-    }
-  };
-
   renderLoader() {
-    const { loading, newFolder } = this.props;
-    if (loading || newFolder.loading) {
+    const { loading } = this.props;
+    if (loading) {
       return (
         <div className={styles.loadingContainer}>
           <CircularProgress size={50} />
@@ -212,16 +127,10 @@ class FolderSelectionDialog extends React.Component {
   }
 
   render() {
-    const { rootFolder, selectedFolder, newFolder, loading } = this.props;
-    const errorMessage = newFolder.errorMessage;
-    const error = newFolder.error;
-    const loadingNewFolder = newFolder.loading;
+    const { rootFolder, selectedFolder, loading } = this.props;
     const rootId = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = rootId === selectedId;
-    const selectedFolderName = selectedFolder.parent
-      ? selectedFolder.name
-      : 'My Organization';
 
     if (!loading && isEmpty(rootFolder)) {
       return (
@@ -307,7 +216,7 @@ class FolderSelectionDialog extends React.Component {
                   className={cx(styles.button, styles.buttonNewFolder)}
                   variant="outlined"
                   color="primary"
-                  onClick={this.handleClickNewFolder}
+                  onClick={this.openNewFolderDialog}
                   size="large"
                 >
                   <Typography className={styles.newFolderButton}>
@@ -346,61 +255,12 @@ class FolderSelectionDialog extends React.Component {
             </Grid>
           </DialogActions>
         </Dialog>
-        {/*new folder dialog*/}
-        <Dialog
-          className={styles.folderPicker}
-          fullWidth
-          maxWidth="md"
-          open={this.state.openNewFolder}
-        >
-          <Grid container justify="space-between" alignItems="center">
-            <DialogTitle className={styles.dialogTitle}>New Folder</DialogTitle>
-            <CloseIcon
-              className={styles.closeIcon}
-              onClick={this.handleClickNewFolder}
-            />
-          </Grid>
-          <Typography className={styles.dialogSubTitle} variant="body2">
-            Create folder within{' '}
-            <span className={styles.folderNameSelected}>
-              {selectedFolderName}
-            </span>. If you want to select a different folder click
-            &quot;Cancel&quot; below and select a different folder.
-          </Typography>
-          <DialogContent>
-            <FormControl
-              error={error}
-              aria-describedby="name-error-text"
-              fullWidth
-            >
-              <InputLabel>Folder Name</InputLabel>
-              <Input
-                value={this.state.newFolderName}
-                onChange={this.onChange}
-              />
-              <FormHelperText>{errorMessage}</FormHelperText>
-            </FormControl>
-            <Grid container justify="flex-end" alignContent="center">
-              <Button
-                className={styles.button}
-                onClick={this.handleClickNewFolder}
-                size="large"
-              >
-                <Typography className={styles.cancelButton}>Cancel</Typography>
-              </Button>
-              <Button
-                disabled={loadingNewFolder}
-                className={cx(styles.button, styles.buttonSelect)}
-                onClick={this.createNewFolder}
-                variant="contained"
-                size="large"
-                color="primary"
-              >
-                <Typography className={styles.selectButton}>Create</Typography>
-              </Button>
-            </Grid>
-          </DialogContent>
-        </Dialog>
+        {this.state.openNewFolder ? (
+          <NewFolder
+            open={this.state.openNewFolder}
+            cancel={this.closeNewFolderDialog}
+          />
+        ) : null}
       </React.Fragment>
     );
   }
