@@ -2,7 +2,11 @@ import r from 'regenerator-runtime/runtime';
 window.regeneratorRuntime = r;
 
 export VeritoneApp from './shared/VeritoneApp';
-export AppBar, { AppBarWidget } from './widgets/AppBar';
+export AppBar, {
+  AppBarWidget,
+  defaultAppBarZIndex,
+  appBarHeight
+} from './widgets/AppBar';
 export OAuthLoginButton, {
   OAuthLoginButtonWidget
 } from './widgets/OAuthLoginButton';

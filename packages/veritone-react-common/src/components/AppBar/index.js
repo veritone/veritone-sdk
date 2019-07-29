@@ -27,6 +27,8 @@ import SmallVeritoneLogo from 'images/header-veritone-icon.svg';
 import styles from './styles.scss';
 
 export const appBarHeight = 60;
+export const defaultAppBarZIndex = 1000;
+
 export default class AppBar extends React.Component {
   static propTypes = {
     title: string,
@@ -68,7 +70,8 @@ export default class AppBar extends React.Component {
     notification: shape(notifierPropTypes),
     searchBar: oneOfType([bool, element]),
     searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
-    searchBarLeftMargin: oneOfType([string, number])
+    searchBarLeftMargin: oneOfType([string, number]),
+    zIndex: number
   };
   static defaultProps = {
     logo: true,
@@ -83,7 +86,8 @@ export default class AppBar extends React.Component {
     fetchEnabledApps: () => {},
     onSwitchApp: () => {},
     searchBarJustification: 'center',
-    searchBarLeftMargin: 0
+    searchBarLeftMargin: 0,
+    zIndex: defaultAppBarZIndex
   };
 
   handleRefresh = () => {
@@ -93,6 +97,7 @@ export default class AppBar extends React.Component {
   render() {
     const {
       elevation,
+      zIndex,
 
       logo,
       logoSrc,

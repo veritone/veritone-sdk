@@ -1,7 +1,11 @@
 import React, { Fragment } from 'react';
 import { func, string } from 'prop-types';
 import { connect } from 'react-redux';
-import { AppBar as LibAppBar } from 'veritone-react-common';
+import {
+  AppBar as LibAppBar,
+  appBarHeight,
+  defaultAppBarZIndex
+} from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { user, config } = modules;
 
@@ -74,4 +78,4 @@ class AppBar extends React.Component {
 }
 
 const AppBarWidget = widget(AppBar);
-export { AppBar as default, AppBarWidget };
+export { AppBar as default, AppBarWidget, defaultAppBarZIndex, appBarHeight };
