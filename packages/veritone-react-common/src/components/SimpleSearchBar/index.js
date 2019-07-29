@@ -105,10 +105,7 @@ export class SimpleSearchBarBase extends React.Component {
         <div style={{ marginTop }} className={styles.wrapper}>
           <PaperOrDiv
             style={{
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-              borderBottomLeftRadius: 8,
-              borderBottomRightRadius: 8
+              borderRadius: 8,
             }}
             className={cx(styles.colorContainer)}
           >
@@ -185,7 +182,7 @@ export class SimpleSearchBarBase extends React.Component {
                               } else {
                                 return (
                                   <MenuItem
-                                    key={data.id}
+                                    key={data.id || data.key}
                                     // eslint-disable-next-line react/jsx-no-bind
                                     onClick={() =>
                                       clear() || result.onClick(data)
