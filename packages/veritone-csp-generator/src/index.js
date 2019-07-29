@@ -1,7 +1,9 @@
 import includes from 'lodash/fp/includes';
 import isString from 'lodash/fp/isString';
 import isFunction from 'lodash/fp/isFunction';
-import _ from 'lodash';
+import get from 'lodash/fp/get';
+import isEmpty from 'lodash/fp/isEmpty';
+import filter from 'lodash/fp/filter';
 
 const FaceConditionGenerator = modalState => {
   return {
@@ -103,27 +105,27 @@ const getCoordinatesFromBounding = (boundingPoly) => {
   return boundingPoly.map(item => [item.x, item.y]);
 }
 
-const BoundingBoxGenerator = modalState => {
-  const boundingPoly = _.get(modalState, "advancedOptions.boundingPoly", []);
-  if (_.isEmpty(boundingPoly)) {
+const BoundingBoxGenerator = (modalState, isLogoRecognition) => {
+  const boundingPoly = get(modalState, "advancedOptions.boundingPoly", []);
+  if (isEmpty(boundingPoly)) {
     return {};
   }
   return {
     operator: "bounding_box",
-    field: "logo-recognition.series.boundingBox",
+    field: isLogoRecognition ? "logo-recognition.series.boundingBox" : "object-recognition.series.boundingBox",
     relation: "within", // within | intersects | disjoint
     coordinates: getCoordinatesFromBounding(boundingPoly)
   }
 }
 
-const ConfidenceRangeGenerator = modalState => {
-  const range = _.get(modalState, "advancedOptions.range", []);
-  if (_.isEmpty(range)) {
+const ConfidenceRangeGenerator = (modalState, isLogoRecognition) => {
+  const range = get(modalState, "advancedOptions.range", []);
+  if (isEmpty(range)) {
     return {};
   }
   return {
     operator: "range",
-    field: "logo-recognition.series.confidence",
+    field: isLogoRecognition ? "logo-recognition.series.confidence" : "object-recognition.series.confidence",
     gte: range[0] / 100,
     lt: range[1] / 100
   }
@@ -151,12 +153,12 @@ const LogoConditionGenerator = modalState => {
       value: `*${modalState.id}*`,
       not: modalState.exclude === true
     };
-    if (_.isEmpty(modalState.advancedOptions)) {
+    if (isEmpty(modalState.advancedOptions)) {
       return params;
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
-      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
+      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(filter(conditions, item => !isEmpty(item)));
     }
   } else {
     const params = {
@@ -165,12 +167,12 @@ const LogoConditionGenerator = modalState => {
       value: modalState.id,
       not: modalState.exclude === true
     };
-    if (_.isEmpty(modalState.advancedOptions)) {
+    if (isEmpty(modalState.advancedOptions)) {
       return params
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
-      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
+      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(filter(conditions, item => !isEmpty(item)));
     }
   }
 };
@@ -183,12 +185,12 @@ const ObjectConditionGenerator = modalState => {
       value: `*${modalState.id}*`,
       not: modalState.exclude === true
     };
-    if (_.isEmpty(modalState.advancedOptions)) {
+    if (isEmpty(modalState.advancedOptions)) {
       return params;
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
-      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(filter(conditions, item => !isEmpty(item)));
     }
   } else {
     const params = {
@@ -197,12 +199,12 @@ const ObjectConditionGenerator = modalState => {
       value: modalState.id,
       not: modalState.exclude === true
     };
-    if (_.isEmpty(modalState.advancedOptions)) {
+    if (isEmpty(modalState.advancedOptions)) {
       return params
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
-      return buildAndOperator(_.filter(conditions, item => !_.isEmpty(item)));
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
+      return buildAndOperator(filter(conditions, item => !isEmpty(item)));
     }
   }
 };
