@@ -135,7 +135,11 @@ export default class AppBar extends React.Component {
         square
         elevation={elevation}
         className={styles.appBar}
-        style={{ height: appBarHeight, background: backgroundColor }}
+        style={{
+          height: appBarHeight,
+          background: backgroundColor,
+          zIndex: zIndex
+        }}
       >
         <div
           className={styles.logo}
