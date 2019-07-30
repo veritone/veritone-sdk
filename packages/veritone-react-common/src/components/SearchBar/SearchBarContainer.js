@@ -663,11 +663,6 @@ class SearchBarContainer extends React.Component {
       if (!newSearchParameterValue) {
         return;
       }
-
-      if(newSearchParameterValue && this.state.disableAdvancedSearch){
-        return;
-      }
-
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({

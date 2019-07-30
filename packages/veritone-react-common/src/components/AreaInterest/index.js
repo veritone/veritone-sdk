@@ -32,28 +32,26 @@ export default class index extends Component {
   render() {
     const { onEditAoI, onRemoveAoI } = this.props;
     return (
-      <div>
-        <div className={cx(styles["rectangle"])}>
-          <div className={cx(styles["flex-center"])}>
-            <FilterCenterFocus />
-            <div className={cx(styles["coordinate"])}>
-              {this.AreaOfInterest}
-            </div>
+      <div className={cx(styles["rectangle"])}>
+        <div className={cx(styles["flex-center"])}>
+          <FilterCenterFocus />
+          <div className={cx(styles["coordinate"])}>
+            {this.AreaOfInterest}
           </div>
-          <div className={cx(styles["edit-coordinate"])}>
-            <IconButton
-              className={cx(styles["aoi-icon-button"])}
-              onClick={onEditAoI}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton
-              className={cx(styles["aoi-icon-button"])}
-              onClick={onRemoveAoI}
-            >
-              <Delete />
-            </IconButton>
-          </div>
+        </div>
+        <div className={cx(styles["edit-coordinate"])}>
+          <IconButton
+            className={cx(styles["aoi-icon-button"])}
+            onClick={onEditAoI}
+          >
+            <Edit />
+          </IconButton>
+          <IconButton
+            className={cx(styles["aoi-icon-button"])}
+            onClick={onRemoveAoI}
+          >
+            <Delete />
+          </IconButton>
         </div>
       </div>
     );

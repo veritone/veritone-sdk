@@ -140,9 +140,9 @@ class ResponsiveDialog extends React.Component {
 
   handleApply = () => {
     const { onAddAdvancedSearchParams } = this.props;
-    const { boundingBoxes, selectedConfidenceRange } = this.state;
+    const { boundingBoxes, selectedConfidenceRange, step } = this.state;
     onAddAdvancedSearchParams({
-      boundingPoly: get(boundingBoxes, [0, "boundingPoly"], []),
+      boundingPoly: step === 3 ? get(boundingBoxes, [0, "boundingPoly"], []) : [],
       range: selectedConfidenceRange
     })
   }
