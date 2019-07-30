@@ -243,9 +243,6 @@ module.exports = {
 		"delete": 130,
 		"share": 131,
 		"download": 132
-	},
-	"illuminate": {
-		"access": 254
 	}
 }
 ;
