@@ -53,6 +53,7 @@ export class SimpleSearchBarBase extends React.Component {
 
   clear = () => {
     this.props.onChange('');
+    this.props.onClear('');
     this.setState({
       value: '',
       focused: false,
@@ -213,6 +214,7 @@ SimpleSearchBarBase.propTypes = {
   autocomplete: bool,
   onChange: func,
   onSubmit: func,
+  onClear: func,
   value: string,
   isLoading: bool,
   placeholder: string,
