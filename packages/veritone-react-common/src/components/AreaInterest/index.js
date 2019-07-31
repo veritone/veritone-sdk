@@ -10,7 +10,7 @@ import Delete from "@material-ui/icons/Delete";
 import styles from './styles.scss';
 
 const formatNumber = (number) => Math.round(number * 100) / 100
-export default class index extends Component {
+export default class AreaInterest extends Component {
 
   static propTypes = {
     areaOfInterest: shape({
@@ -58,4 +58,7 @@ export default class index extends Component {
       </div>
     );
   }
+};
+export {
+  AreaInterest
 }
