@@ -122,3 +122,8 @@ export default class LocationSelect extends Component {
     );
   }
 }
+export {
+  LocationSelect,
+  stepIntro,
+  buttonTextStep
+}

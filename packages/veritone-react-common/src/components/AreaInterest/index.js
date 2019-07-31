@@ -9,7 +9,12 @@ import Delete from "@material-ui/icons/Delete";
 
 import styles from './styles.scss';
 
-const formatNumber = (number) => Math.round(number * 100) / 100
+const formatNumber = (number) => Math.round(number * 100) / 100;
+const getAreaOfInterest = (areaOfInterest) => {
+  const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
+  const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
+  return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
+}
 export default class AreaInterest extends Component {
 
   static propTypes = {
@@ -25,9 +30,10 @@ export default class AreaInterest extends Component {
 
   get AreaOfInterest() {
     const { areaOfInterest = {} } = this.props;
-    const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
-    const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
-    return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
+    // const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
+    // const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
+    // return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
+    return getAreaOfInterest(areaOfInterest);
   }
   render() {
     const { onEditAoI, onRemoveAoI } = this.props;
@@ -60,5 +66,7 @@ export default class AreaInterest extends Component {
   }
 };
 export {
-  AreaInterest
+  AreaInterest,
+  getAreaOfInterest,
+  formatNumber
 }

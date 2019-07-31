@@ -1,12 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import { AreaInterest } from './';
-import IconButton from "@material-ui/core/IconButton";
-import Edit from "@material-ui/icons/Edit";
-import FilterCenterFocus from "@material-ui/icons/FilterCenterFocus";
-import Delete from "@material-ui/icons/Delete";
-
+import { AreaInterest, getAreaOfInterest } from './';
 
 describe('RecognizedTextSearchModal', () => {
     const defaultAoI = {
@@ -23,6 +18,21 @@ describe('RecognizedTextSearchModal', () => {
     it('Should render with the default value filled in', () => {
         const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
         expect(wrapper.find('IconButton').exists()).toBeTruthy();
-        console.log(wrapper);
+    });
+    it('Test click Edit', () => {
+        const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
+        wrapper.find('Edit').simulate('click');
+        expect(onEditAoI.mock.calls.length).toEqual(1);
+    });
+    it('Test click Delete', () => {
+        const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
+        wrapper.find('Delete').simulate('click');
+        expect(onRemoveAoI.mock.calls.length).toEqual(1);
+    });
+
+    it('Test render width boundingPoly', () => {
+        const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
+        const location =  getAreaOfInterest(defaultAoI);
+        expect(wrapper.find('.coordinate').text()).toEqual(location);
     });
 });
