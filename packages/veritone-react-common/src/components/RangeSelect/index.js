@@ -81,3 +81,7 @@ export default class RangeSelect extends Component {
     );
   }
 }
+export {
+  RangeSelect
+}
+

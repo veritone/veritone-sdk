@@ -1,7 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import renderer from 'react-test-renderer';
-
+import Button from "@material-ui/core/Button";
+import AreaInterest from '../AreaInterest';
 import { LocationSelect, stepIntro, buttonTextStep } from './';
 import { guid } from '../../helpers/guid';
 import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositioningProvider';
@@ -41,6 +42,45 @@ describe('AreaSelect', () => {
         const testInstance = testRenderer.root;
         expect(testInstance.findByType(OverlayPositioningProvider).props.contentHeight).toBe(200);
         expect(testInstance.findByType(OverlayPositioningProvider).props.contentWidth).toBe(340);
+        expect(testInstance.findByProps({className: "introText"}).children).toEqual([stepIntro[1]]);
+        expect(testInstance.findByType(Button).props.children).toEqual(buttonTextStep[1]);
     });
+
+    it('Should render with the step 2', () => {
+      const step = 2;
+      const testRenderer = renderer.create(
+          <LocationSelect
+              onEditAoI={onEditAoI}
+              onRemoveAoI={onRemoveAoI}
+              onUpdateStep={onUpdateStep}
+              boundingBoxes={boundingBoxes}
+              handleAddBoundingBox={handleAddBoundingBox}
+              handleDeleteBoundingBox={handleDeleteBoundingBox}
+              handleChangeBoundingBox={handleChangeBoundingBox}
+              step={step}
+            />
+      );
+      const testInstance = testRenderer.root;
+      expect(testInstance.findByProps({className: "introText"}).children).toEqual([stepIntro[2]]);
+      expect(testInstance.findByType(Button).props.children).toEqual(buttonTextStep[2]);
+  });
+
+  it('Should render with the step 3', () => {
+    const step = 3;
+    const testRenderer = renderer.create(
+        <LocationSelect
+            onEditAoI={onEditAoI}
+            onRemoveAoI={onRemoveAoI}
+            onUpdateStep={onUpdateStep}
+            boundingBoxes={boundingBoxes}
+            handleAddBoundingBox={handleAddBoundingBox}
+            handleDeleteBoundingBox={handleDeleteBoundingBox}
+            handleChangeBoundingBox={handleChangeBoundingBox}
+            step={step}
+          />
+    );
+    const testInstance = testRenderer.root;
+    expect(testInstance.findByType(AreaInterest)).toBeTruthy();
+  });
 
 });
