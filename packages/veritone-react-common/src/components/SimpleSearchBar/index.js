@@ -48,7 +48,10 @@ export class SimpleSearchBarBase extends React.Component {
   };
 
   onChange = event => {
-    this.props.onChange && this.props.onChange(event.target.value);
+    const newVal = event.target.value;
+    if (newVal !== this.props.value && this.props.onChange) {
+      this.props.onChange();
+    }
   };
 
   clear = () => {
