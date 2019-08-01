@@ -71,6 +71,10 @@ export default class AppBar extends React.Component {
     searchBar: oneOfType([bool, element]),
     searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
     searchBarLeftMargin: oneOfType([string, number]),
+    searchBarAlignSelf:
+      oneOf[
+        ('baseline', 'auto', 'inherit', 'center', 'flex-start', 'flex-end')
+      ],
     zIndex: number
   };
   static defaultProps = {
@@ -87,7 +91,8 @@ export default class AppBar extends React.Component {
     onSwitchApp: () => {},
     searchBarJustification: 'center',
     searchBarLeftMargin: 0,
-    zIndex: defaultAppBarZIndex
+    zIndex: defaultAppBarZIndex,
+    searchBarAlignSelf: 'center'
   };
 
   handleRefresh = () => {
@@ -110,6 +115,7 @@ export default class AppBar extends React.Component {
       searchBar,
       searchBarJustification,
       searchBarLeftMargin,
+      searchBarAlignSelf,
 
       rightActions,
 
@@ -163,7 +169,8 @@ export default class AppBar extends React.Component {
             className={styles.searchBarHolder}
             style={{
               justifyContent: searchBarJustification,
-              marginLeft: searchBarLeftMargin
+              marginLeft: searchBarLeftMargin,
+              alignSelf: searchBarAlignSelf
             }}
           >
             {searchBar}
