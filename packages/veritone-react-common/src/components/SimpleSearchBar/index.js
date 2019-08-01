@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import cx from 'classnames';
-import { bool, func, arrayOf, any, string } from 'prop-types';
+import { bool, func, arrayOf, any, string, shape, element } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
@@ -106,7 +106,7 @@ export class SimpleSearchBarBase extends React.Component {
         <div style={{ marginTop }} className={styles.wrapper}>
           <PaperOrDiv
             style={{
-              borderRadius: 8,
+              borderRadius: 8
             }}
             className={cx(styles.colorContainer)}
           >
@@ -218,7 +218,14 @@ SimpleSearchBarBase.propTypes = {
   value: string,
   isLoading: bool,
   placeholder: string,
-  autocompleteResults: arrayOf(any),
+  autocompleteResults: arrayOf(
+    shape({
+      template: element,
+      // literally array of any
+      data: arrayOf(any),
+      onClick: func
+    })
+  ),
   resetOnClickAway: bool,
   marginTop: string
 };
