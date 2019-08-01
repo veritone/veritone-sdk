@@ -1,6 +1,15 @@
 import React, { Fragment } from 'react';
 import cx from 'classnames';
-import { bool, func, arrayOf, any, string, shape, element } from 'prop-types';
+import {
+  bool,
+  func,
+  arrayOf,
+  any,
+  string,
+  shape,
+  element,
+  oneOfType
+} from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
@@ -50,13 +59,13 @@ export class SimpleSearchBarBase extends React.Component {
   onChange = event => {
     const newVal = event.target.value;
     if (newVal !== this.props.value && this.props.onChange) {
-      this.props.onChange();
+      this.props.onChange(newVal);
     }
   };
 
   clear = () => {
-    this.props.onChange('');
-    this.props.onClear('');
+    this.props.onChange && this.props.onChange('');
+    this.props.onClear && this.props.onClear('');
     this.setState({
       value: '',
       focused: false,
@@ -223,7 +232,7 @@ SimpleSearchBarBase.propTypes = {
   placeholder: string,
   autocompleteResults: arrayOf(
     shape({
-      template: element,
+      template: oneOfType([element, func]),
       // literally array of any
       data: arrayOf(any),
       onClick: func

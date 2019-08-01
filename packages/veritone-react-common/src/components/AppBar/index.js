@@ -73,7 +73,7 @@ export default class AppBar extends React.Component {
     searchBarLeftMargin: oneOfType([string, number]),
     searchBarAlignSelf:
       oneOf([
-        ('baseline', 'auto', 'inherit', 'center', 'flex-start', 'flex-end')
+        'baseline', 'auto', 'inherit', 'center', 'flex-start', 'flex-end'
       ]),
     zIndex: number
   };
