@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 
 import { AreaInterest, getAreaOfInterest } from './';
 
-describe('RecognizedTextSearchModal', () => {
+describe('Scenario: Area Interest', () => {
     const defaultAoI = {
         id: "test id",
         boundingPoly: [
@@ -17,7 +17,10 @@ describe('RecognizedTextSearchModal', () => {
     const onRemoveAoI = jest.fn();
     it('Should render with the default value filled in', () => {
         const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
+        const location =  getAreaOfInterest(defaultAoI);
+        expect(wrapper.find('.coordinate').text()).toEqual(location);
         expect(wrapper.find('IconButton').exists()).toBeTruthy();
+        expect(wrapper.find('FilterCenterFocus').exists()).toBeTruthy();
     });
     it('Test click Edit', () => {
         const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
@@ -28,11 +31,5 @@ describe('RecognizedTextSearchModal', () => {
         const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
         wrapper.find('Delete').simulate('click');
         expect(onRemoveAoI.mock.calls.length).toEqual(1);
-    });
-
-    it('Test render width boundingPoly', () => {
-        const wrapper = mount(<AreaInterest areaOfInterest={defaultAoI} onEditAoI={onEditAoI} onRemoveAoI={onRemoveAoI} />);
-        const location =  getAreaOfInterest(defaultAoI);
-        expect(wrapper.find('.coordinate').text()).toEqual(location);
     });
 });

@@ -30,9 +30,6 @@ export default class AreaInterest extends Component {
 
   get AreaOfInterest() {
     const { areaOfInterest = {} } = this.props;
-    // const basePoint1 = get(areaOfInterest, "boundingPoly[0]", { x: 0, y: 0 });
-    // const basePoint2 = get(areaOfInterest, "boundingPoly[2]", { x: 1, y: 1 });
-    // return `(X ${formatNumber(basePoint1.x)}, Y ${formatNumber(basePoint1.y)}) | (X ${formatNumber(basePoint2.x)}, Y ${formatNumber(basePoint2.y)})`
     return getAreaOfInterest(areaOfInterest);
   }
   render() {
