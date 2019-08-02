@@ -126,6 +126,15 @@
   margin-right: 5px;
 }
 
+.formControl {
+  min-width: 65% !important;
+  top: -5px;
+}
+
+.selectStyles {
+  width: 100% !important;
+}
+
 .exportFormatSelected {
   background-color: transparent !important;
 }
