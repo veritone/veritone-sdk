@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Auston Trusty",
+    "description": "Athlete",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Athlete/Auston-Trusty.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Barron Trump",
+    "description": "US-Politician",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Barron-Trump.jpg"
+  },
+  {
+    "id": 13,
+    "name": "Donald Trump",
+    "description": "US-Politician",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump.jpg"
+  },
+  {
+    "id": 14,
+    "name": "Donald Trump Jr",
+    "description": "US-Politician",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Donald-Trump-Jr.jpg"
+  },
+  {
+    "id": 15,
+    "name": "Garry Trudeau",
+    "description": "Other",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Other/Garry-Trudeau.jpg"
+  },
+  {
+    "id": 16,
+    "name": "Ivana Trump",
+    "description": "Business-Executive",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/Business-Executive/Ivana-Trump.jpg"
+  },
+  {
+    "id": 17,
+    "name": "Ivanka Trump",
+    "description": "US-Politician",
+    "image":
+      "https://s3.amazonaws.com/static.veritone.com/kairos/US-Politician/Ivanka-Trump.jpg"
+  }
+]

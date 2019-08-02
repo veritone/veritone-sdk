@@ -48,12 +48,11 @@ class FolderViewContainer extends React.Component {
     isFullScreen: bool,
     showMediaInfoPanel: bool,
     toggleMediaInfoPanel: func,
-    multiple: bool
+    multiple: bool,
   }
 
   static defaultProps = {
     items: [],
-    selectedItems: [],
     availablePickerTypes: [],
     supportedFormats: []
   }

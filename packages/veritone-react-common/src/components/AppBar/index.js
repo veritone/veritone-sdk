@@ -12,7 +12,9 @@ import {
   arrayOf,
   shape,
   number,
-  element
+  element,
+  oneOfType,
+  oneOf
 } from 'prop-types';
 
 import AppSwitcher from 'components/AppSwitcher';
@@ -25,6 +27,8 @@ import SmallVeritoneLogo from 'images/header-veritone-icon.svg';
 import styles from './styles.scss';
 
 export const appBarHeight = 60;
+export const defaultAppBarZIndex = 1000;
+
 export default class AppBar extends React.Component {
   static propTypes = {
     title: string,
@@ -63,7 +67,15 @@ export default class AppBar extends React.Component {
     onSwitchApp: func,
     additionMenuItems: arrayOf(element),
     help: shape(helpPropTypes),
-    notification: shape(notifierPropTypes)
+    notification: shape(notifierPropTypes),
+    searchBar: oneOfType([bool, element]),
+    searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
+    searchBarLeftMargin: oneOfType([string, number]),
+    searchBarAlignSelf:
+      oneOf([
+        'baseline', 'auto', 'inherit', 'center', 'flex-start', 'flex-end'
+      ]),
+    zIndex: number
   };
   static defaultProps = {
     logo: true,
@@ -76,16 +88,21 @@ export default class AppBar extends React.Component {
     onLogout: () => {},
     onEditProfile: () => {},
     fetchEnabledApps: () => {},
-    onSwitchApp: () => {}
+    onSwitchApp: () => {},
+    searchBarJustification: 'center',
+    searchBarLeftMargin: 0,
+    zIndex: defaultAppBarZIndex,
+    searchBarAlignSelf: 'center'
   };
 
   handleRefresh = () => {
     this.props.fetchEnabledApps();
   };
 
-  render () {
+  render() {
     const {
       elevation,
+      zIndex,
 
       logo,
       logoSrc,
@@ -94,6 +111,11 @@ export default class AppBar extends React.Component {
       logoBackgroundColor,
       title,
       titleColor,
+
+      searchBar,
+      searchBarJustification,
+      searchBarLeftMargin,
+      searchBarAlignSelf,
 
       rightActions,
 
@@ -119,31 +141,47 @@ export default class AppBar extends React.Component {
         square
         elevation={elevation}
         className={styles.appBar}
-        style={{ height: appBarHeight, background: backgroundColor }}
+        style={{
+          height: appBarHeight,
+          background: backgroundColor,
+          zIndex: zIndex
+        }}
       >
-        <div 
+        <div
           className={styles.logo}
           style={{ backgroundColor: logoBackgroundColor }}
         >
-          { logo && <img src={logoSrc} draggable="false"/> }
+          {logo && <img src={logoSrc} draggable="false" />}
         </div>
-        <div className={styles.content} style={{color: titleColor}}>
+        <div className={styles.content} style={{ color: titleColor }}>
           <div className={styles.left}>
-            {
-              appLogoSrc ?
-                <img className={styles.appLogo} src={appLogoSrc} draggable="false" /> :
-                <div className={styles.title}>{title}</div>
-            }
+            {appLogoSrc ? (
+              <img
+                className={styles.appLogo}
+                src={appLogoSrc}
+                draggable="false"
+              />
+            ) : (
+              <div className={styles.title}>{title}</div>
+            )}
           </div>
-          <div className={styles.center} />
+          <div
+            className={styles.searchBarHolder}
+            style={{
+              justifyContent: searchBarJustification,
+              marginLeft: searchBarLeftMargin,
+              alignSelf: searchBarAlignSelf
+            }}
+          >
+            {searchBar}
+          </div>
           <div className={styles.right}>
             <div className={styles.controllers}>
-              {
-                //Custom Controllers (Copy over from the previous app bar version)
-                rightActions && rightActions.length > 0 && (
-                  <div className={styles['iconGroup']}> 
-                  {
-                    rightActions.map(({ label, onClick }) => (
+              {//Custom Controllers (Copy over from the previous app bar version)
+              rightActions &&
+                rightActions.length > 0 && (
+                  <div className={styles['iconGroup']}>
+                    {rightActions.map(({ label, onClick }) => (
                       <div className={styles['iconGroup__icon']} key={label}>
                         <a
                           href="#"
@@ -153,68 +191,56 @@ export default class AppBar extends React.Component {
                           {label}
                         </a>
                       </div>
-                    ))
-                  }
+                    ))}
                   </div>
-                )
-              }
+                )}
 
-              {
-                //Notifications
-                notification && <Notifier {...notification} />
-              }
+              {//Notifications
+              notification && <Notifier {...notification} />}
 
-              {
-                //Help
-                help && <Help {...help} />
-              }
+              {//Help
+              help && <Help {...help} />}
 
-              {
-                //App Switcher
-                appSwitcher && (
-                  <div>
-                    <AppSwitcher
-                      enabledApps={enabledApps}
-                      isFetchingApps={isFetchingApps}
-                      onSwitchApp={onSwitchApp}
-                      handleRefresh={this.handleRefresh}
-                      enabledAppsFailedLoading={enabledAppsFailedLoading}
-                    />
-                  </div>
-                )
-              }
-
-              {
-                //User Profile
-                profileMenu && (
-                  <div>
-                    <ProfileMenu
-                      onLogout={onLogout}
-                      onEditProfile={onEditProfile}
-                      user={user}
-                      additionMenuItems={additionMenuItems}
-                    />
-                  </div>
-                )
-              }
-
-              {
-                //Close Button
-                this.props.closeButton && this.props.onClose && 
-                (
+              {//App Switcher
+              appSwitcher && (
                 <div>
-                  <div style={{ marginLeft: 'auto' }}>
-                    <IconButton onClick={this.props.onClose}>
-                      <CloseIcon nativeColor="white" />
-                    </IconButton>
-                  </div>
+                  <AppSwitcher
+                    enabledApps={enabledApps}
+                    isFetchingApps={isFetchingApps}
+                    onSwitchApp={onSwitchApp}
+                    handleRefresh={this.handleRefresh}
+                    enabledAppsFailedLoading={enabledAppsFailedLoading}
+                  />
                 </div>
-                )
-              }
+              )}
+
+              {//User Profile
+              profileMenu && (
+                <div>
+                  <ProfileMenu
+                    onLogout={onLogout}
+                    onEditProfile={onEditProfile}
+                    user={user}
+                    additionMenuItems={additionMenuItems}
+                  />
+                </div>
+              )}
+
+              {//Close Button
+              this.props.closeButton &&
+                this.props.onClose && (
+                  <div>
+                    <div style={{ marginLeft: 'auto' }}>
+                      <IconButton onClick={this.props.onClose}>
+                        <CloseIcon nativeColor="white" />
+                      </IconButton>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>
       </Paper>
-    )
+    );
   }
 }

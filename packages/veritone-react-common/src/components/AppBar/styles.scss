@@ -9,10 +9,10 @@
 
   .logo {
     //height: 24px;
-    width: 60px;
+    width: 60px !important;
     height: 60px;
     padding: 10px;
-  
+
     img {
       width: 100%;
       height: 100%;
@@ -31,7 +31,7 @@
   align-items: center;
   padding: 0 10px;
 
-  &>div {
+  & > div {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -41,9 +41,8 @@
     justify-content: flex-start;
   }
 
-  .center {
+  .searchBarHolder {
     flex-grow: 1;
-    justify-content: center;
   }
 
   .right {
