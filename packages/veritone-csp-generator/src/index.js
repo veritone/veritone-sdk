@@ -2,7 +2,6 @@ import includes from 'lodash/fp/includes';
 import isString from 'lodash/fp/isString';
 import isFunction from 'lodash/fp/isFunction';
 import isEmpty from 'lodash/fp/isEmpty';
-import flatten from 'lodash/fp/flatten';
 
 const FaceConditionGenerator = modalState => {
   return {
@@ -124,7 +123,7 @@ const BoundingBoxGenerator = (modalState, isLogoRecognition) => {
 
 const ConfidenceRangeGenerator = (modalState, isLogoRecognition) => {
   const range = modalState.advancedOptions.range || [];
-  if (isEmpty(range)) {
+  if (isEmpty(range) || (range[0] === 0 && range[1] === 100)) {
     return {};
   }
   return {
@@ -162,7 +161,7 @@ const LogoConditionGenerator = modalState => {
     }
     else {
       const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
-      return conditions.filter(item => !isEmpty(item));
+      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
     const params = {
@@ -176,7 +175,7 @@ const LogoConditionGenerator = modalState => {
     }
     else {
       const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
-      return conditions.filter(item => !isEmpty(item));
+      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   }
 };
@@ -194,7 +193,7 @@ const ObjectConditionGenerator = modalState => {
     }
     else {
       const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
-      return conditions.filter(item => !isEmpty(item));
+      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
     const params = {
@@ -208,7 +207,7 @@ const ObjectConditionGenerator = modalState => {
     }
     else {
       const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
-      return conditions.filter(item => !isEmpty(item));
+      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   }
 };
@@ -536,7 +535,7 @@ const cspToPartialQuery = csp => {
     const conditions = csp[joinOperator];
     const newBooleanSubtree = {
       operator: convertJoinOperator(joinOperator),
-      conditions: flatten(conditions.map(cspToPartialQuery).filter(Boolean))
+      conditions: conditions.map(cspToPartialQuery).filter(Boolean)
     };
     return newBooleanSubtree;
   }
@@ -602,7 +601,7 @@ const searchQueryGenerator = csp => {
   const baseQuery = {
     query: {
       operator: 'and',
-      conditions: queryFromCsp ? (queryFromCsp.length ? [...queryFromCsp] : [queryFromCsp]) : []
+      conditions: queryFromCsp ? [queryFromCsp] : []
     },
     select: querySelect
   };
