@@ -2,6 +2,7 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import classNames from 'classnames';
 
 import {
   objectOf,
@@ -71,10 +72,14 @@ export default class AppBar extends React.Component {
     searchBar: oneOfType([bool, element]),
     searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
     searchBarLeftMargin: oneOfType([string, number]),
-    searchBarAlignSelf:
-      oneOf([
-        'baseline', 'auto', 'inherit', 'center', 'flex-start', 'flex-end'
-      ]),
+    searchBarAlignSelf: oneOf([
+      'baseline',
+      'auto',
+      'inherit',
+      'center',
+      'flex-start',
+      'flex-end'
+    ]),
     zIndex: number
   };
   static defaultProps = {
@@ -97,6 +102,10 @@ export default class AppBar extends React.Component {
 
   handleRefresh = () => {
     this.props.fetchEnabledApps();
+  };
+
+  goHome = () => {
+    window.location.pathname = '/';
   };
 
   render() {
@@ -150,11 +159,16 @@ export default class AppBar extends React.Component {
         <div
           className={styles.logo}
           style={{ backgroundColor: logoBackgroundColor }}
+          onClick={this.goHome}
         >
           {logo && <img src={logoSrc} draggable="false" />}
         </div>
-        <div className={styles.content} style={{ color: titleColor }}>
-          <div className={styles.left}>
+        <div
+          className={styles.content}
+          style={{ color: titleColor }}
+          onClick={this.goHome}
+        >
+          <div className={classNames(styles.left, styles.noSelect)}>
             {appLogoSrc ? (
               <img
                 className={styles.appLogo}
