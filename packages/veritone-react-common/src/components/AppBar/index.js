@@ -163,12 +163,11 @@ export default class AppBar extends React.Component {
         >
           {logo && <img src={logoSrc} draggable="false" />}
         </div>
-        <div
-          className={styles.content}
-          style={{ color: titleColor }}
-          onClick={this.goHome}
-        >
-          <div className={classNames(styles.left, styles.noSelect)}>
+        <div className={styles.content} style={{ color: titleColor }}>
+          <div
+            className={classNames(styles.left, styles.noSelect)}
+            onClick={this.goHome}
+          >
             {appLogoSrc ? (
               <img
                 className={styles.appLogo}
