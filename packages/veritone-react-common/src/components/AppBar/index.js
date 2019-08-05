@@ -193,16 +193,20 @@ export default class AppBar extends React.Component {
               {//Custom Controllers (Copy over from the previous app bar version)
               rightActions &&
                 rightActions.length > 0 && (
-                  <div className={styles['iconGroup']}>
-                    {rightActions.map(({ label, onClick }) => (
+                  <div
+                    className={classNames(styles['iconGroup'], styles.noSelect)}
+                  >
+                    {rightActions.map(({ label, onClick, isActive }) => (
                       <div className={styles['iconGroup__icon']} key={label}>
-                        <a
-                          href="#"
+                        <span
                           onClick={onClick}
-                          className={styles['rightAction-label']}
+                          className={classNames(
+                            styles['rightAction-label'],
+                            isActive ? styles.active : styles.passive
+                          )}
                         >
                           {label}
-                        </a>
+                        </span>
                       </div>
                     ))}
                   </div>
