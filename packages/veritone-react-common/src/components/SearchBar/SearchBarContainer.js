@@ -633,7 +633,7 @@ class SearchBarContainer extends React.Component {
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
-      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }} data-veritone-component={`search_bar_${this._id}`}>
+      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
           <SearchBar
             onSearch={this.props.onSearch}
             color={this.props.color}
