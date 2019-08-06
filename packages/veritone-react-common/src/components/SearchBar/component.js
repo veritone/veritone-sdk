@@ -783,37 +783,45 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
+  searchBar = () => {
+    return <SearchBarContainer
+        auth={this.state.auth}
+        color={this.props.color}
+        enabledEngineCategories={[...this.extendEngineCategories(
+          this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
+        )]}
+        disableSavedSearch={this.props.disableSavedSearch}
+        onSearch={this.onSearch}
+        api={this.props.api}
+        libraries={this.state.libraries}
+        searchParameters={this.state.searchParameters}
+        addOrModifySearchParameter={this.addOrModifySearchParameter}
+        insertMultipleSearchParameters={this.insertMultipleSearchParameters}
+        removeSearchParameter={this.removeSearchParameter}
+        resetSearchParameters={this.resetSearchParameters}
+        getCSP={this.getCSP}
+        menuActions={this.props.menuActions}
+        showLoadSavedSearch={ this.showLoadSavedSearch }
+        showSavedSearch={ this.showSavedSearch }
+        presetSDOSchema={ this.props.presetSDOSchema }
+        presetSDOAttribute={ this.props.presetSDOAttribute }
+        sourceFilters={ this.props.sourceFilters }
+        defaultJoinOperator={ this.props.defaultJoinOperator }
+      />
+  }
+
+  withTheme = () => {
+    return <JssProvider classNamePrefix={`vsdk_${guid()}`}>
+      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+        {this.searchBar()}
+      </MuiThemeProvider>
+    </JssProvider>
+  }
+
   render() {
     return (
       <Fragment>
-        <JssProvider classNamePrefix={`vsdk_${guid()}`}>
-          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
-            <SearchBarContainer
-              auth={this.state.auth}
-              color={this.props.color}
-              enabledEngineCategories={[...this.extendEngineCategories(
-                this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-              )]}
-              disableSavedSearch={this.props.disableSavedSearch}
-              onSearch={this.onSearch}
-              api={this.props.api}
-              libraries={this.state.libraries}
-              searchParameters={this.state.searchParameters}
-              addOrModifySearchParameter={this.addOrModifySearchParameter}
-              insertMultipleSearchParameters={this.insertMultipleSearchParameters}
-              removeSearchParameter={this.removeSearchParameter}
-              resetSearchParameters={this.resetSearchParameters}
-              getCSP={this.getCSP}
-              menuActions={this.props.menuActions}
-              showLoadSavedSearch={ this.showLoadSavedSearch }
-              showSavedSearch={ this.showSavedSearch }
-              presetSDOSchema={ this.props.presetSDOSchema }
-              presetSDOAttribute={ this.props.presetSDOAttribute }
-              sourceFilters={ this.props.sourceFilters }
-              defaultJoinOperator={ this.props.defaultJoinOperator }
-            />
-          </MuiThemeProvider>
-        </JssProvider>
+        {this.props.withTheme ? this.withTheme() : this.searchBar() }
         <div id="LoadSavedSearch"> </div>
         <div id="SaveSearch"> </div>
       </Fragment>
