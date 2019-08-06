@@ -79,10 +79,21 @@
 }
 
 .rightAction-label {
-  @include mui-text('caption');
-
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
   text-decoration: none;
   color: white;
-  //margin: 0;
-  opacity: 0.87;
+}
+
+.noSelect {
+  user-select: none;
+}
+
+.active {
+  opacity: 1;
+}
+
+.passive {
+  opacity: 0.8;
 }

@@ -6,6 +6,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Tooltip from '@material-ui/core/Tooltip';
 import { string, func, shape, arrayOf, element } from 'prop-types';
 
+import classNames from 'classnames';
+
 import InnerProfileMenu from './InnerProfileMenu';
 import styles from './styles.scss';
 
@@ -60,7 +62,7 @@ export default class ProfileMenu extends React.Component {
       <div>
         <Tooltip title={this.props.tooltipTitle || ''} disableFocusListener>
           <IconButton
-            className={this.props.className}
+            className={classNames(this.props.className, styles.center)}
             onClick={this.openMenu}
             data-veritone-element="profile-menu-button"
           >
