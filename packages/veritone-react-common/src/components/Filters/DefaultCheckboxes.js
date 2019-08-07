@@ -5,46 +5,46 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { isString } from 'lodash';
 import {
-    string,
-    func,
-    arrayOf,
-    number,
-    oneOfType
-  } from 'prop-types';
+  string,
+  func,
+  arrayOf,
+  number,
+  oneOfType
+} from 'prop-types';
 
 
 const DefaultCheckboxes = ({ checkboxValues, onCheckboxChange, formComponentIdAtLeaf }) => (
-    <div>
-        <FormControl>
-            <FormGroup>
-                {
-                    checkboxValues.map((value, index) => {
-                        let checkboxValue = value;
-                        if (isString(value)) {
-                            checkboxValue = value.replace(/\s+/g, '-');
-                        }
-                        return <FormControlLabel key={value + "" + String(index)}
-                            control={
-                                <Checkbox
-                                    id={formComponentIdAtLeaf}
-                                    color="primary"
-                                    value={checkboxValue}
-                                    onChange={onCheckboxChange}
-                                />
-                            }
-                            label={value}
-                        />
-                    })
-                }
-            </FormGroup>
-        </FormControl>
-    </div>
+  <div>
+    <FormControl>
+      <FormGroup>
+        {
+          checkboxValues.map((value, index) => {
+            let checkboxValue = value;
+            if (isString(value)) {
+              checkboxValue = value.replace(/\s+/g, '-');
+            }
+            return <FormControlLabel key={value + "" + String(index)}
+              control={
+                <Checkbox
+                  id={formComponentIdAtLeaf}
+                  color="primary"
+                  value={checkboxValue}
+                  onChange={onCheckboxChange}
+                />
+              }
+              label={value}
+            />
+          })
+        }
+      </FormGroup>
+    </FormControl>
+  </div>
 )
 
 export default DefaultCheckboxes;
 
 DefaultCheckboxes.propTypes = {
-    onCheckboxChange: func,
-    formComponentIdAtLeaf: string,
-    checkboxValues: arrayOf(oneOfType([string, number]))
-  }
+  onCheckboxChange: func,
+  formComponentIdAtLeaf: string,
+  checkboxValues: arrayOf(oneOfType([string, number]))
+}

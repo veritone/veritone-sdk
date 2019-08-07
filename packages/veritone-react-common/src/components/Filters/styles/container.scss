@@ -12,12 +12,16 @@
   background-color: $grey-1;
 }
 
+.collapseButton {
+  padding: 5px 12px;
+}
+
 .buttonContainer {
-  height:36px;
-  justify-content: flex-end;
+  height: 36px;
   width: 100%;
+  justify-content: flex-end;
   display: flex;
-  border-top: 1px solid #DCDCDC;
+  border-top: 1px solid #dcdcdc;
   padding-top: 16px;
   flex-shrink: 0;
   align-items: center;
@@ -25,5 +29,8 @@
 
   > button {
     margin: 0 auto;
+    font-weight: 500;
+    width: 300px;
+    background-color: #2196f3;
   }
 }

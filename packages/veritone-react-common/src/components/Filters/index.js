@@ -5,7 +5,8 @@ import {
   shape,
   objectOf,
   element,
-  object
+  object,
+  bool
 } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
@@ -23,22 +24,24 @@ export default class FiltersContainer extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
     filtersSections: sectionsShape.isRequired,
-    selectedFilters: arrayOf(object), // see AllFiltersList.filters
+    selectedFilters: arrayOf(object),
     onClick: func,
     closeFilter: func,
-    checkboxCount: shape({object
+    checkboxCount: shape({
+      object
     }),
     onCheckboxChange: func,
+    isDisabled: bool
   };
   static defaultProps = {
-    selectedFilters: [],
+    selectedFilters: []
   };
 
   handleApplyFilter = event => {
     const selectedItems = event.target.getAttribute('data-filters');
     this.props.onClick(JSON.parse(selectedItems))
   }
-  
+
   render() {
     return (
       <div className={styles.container}>
@@ -49,26 +52,26 @@ export default class FiltersContainer extends React.Component {
             </IconButton>
           }
         />
-        {<Fragment>
+        <Fragment>
           <SectionTree
             // todo: add filters
             sections={this.props.filtersSections}
             formComponents={this.props.formComponents}
             checkboxCount={this.props.checkboxCount}
             onCheckboxChange={this.props.onCheckboxChange}
-            />
+          />
           <div className={styles.buttonContainer}>
             <Button
               variant="contained"
               color="primary"
-              style={{fontWeight: 500, width: '300px', backgroundColor: '#2196F3'}}
+              disabled={this.props.isDisabled}
               data-filters={JSON.stringify(this.props.selectedFilters)}
               onClick={this.handleApplyFilter}
             >
               Apply Filter
-            </Button>
+              </Button>
           </div>
-        </Fragment>}
+        </Fragment>
       </div>
     );
   }

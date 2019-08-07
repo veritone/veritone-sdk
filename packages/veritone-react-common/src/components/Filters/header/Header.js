@@ -1,21 +1,20 @@
 import React from 'react';
 import { element } from 'prop-types';
-import SingleTabHeader from './SingleTabHeader';
 import styles from './styles.scss';
 
 export default class FiltersHeader extends React.Component {
   static propTypes = {
-    rightIconButtonElement: element,
+    rightIconButtonElement: element
   };
 
   render() {
     return (
       <div className={styles.container}>
-        {(
+        {
           <div className={styles.singleTabContainer}>
-            <SingleTabHeader />
+            <div className={styles.tabLabel}>Filters</div>
           </div>
-        )}
+        }
         <div className={styles.rightIconButtonContainer}>
           {this.props.rightIconButtonElement}
         </div>

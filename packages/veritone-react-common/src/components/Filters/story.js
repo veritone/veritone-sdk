@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import LooksOne from '@material-ui/icons/LooksOne';
 
-import Sidebar from './';
+import Filters from './';
 
 const Container = (
   { children } // eslint-disable-line
@@ -62,24 +62,13 @@ const exampleSectionTree = {
   ]
 }
 
-const exampleSelectedFilters = [
-  {
-    label: '2019-7-2',
-    number: 5,
-    id: '1'
-  },
-  {
-    label: '2019-6-15',
-    number: 10,
-    id: '2'
-  }
-];
 
 storiesOf('Filters', module)
   .add('Filters', () => {
+
     return (
       <Container>
-        <Sidebar
+        <Filters
           tabs={['Filters']}
           closeFilter={action('close filter dialog')}
           filtersSections={exampleSectionTree}
@@ -87,13 +76,15 @@ storiesOf('Filters', module)
             'select-station-form': <div>select a station</div>,
             'smiling-elephant': <div>Beautiful circuit</div>,
           }}
-          selectedFilters={exampleSelectedFilters}
+          selectedFilters
           onClick={action('click apply filter')}
+          // onClick={() => console.log(selectedFilters)}
           checkboxCount={{
             'select-station-form': 3,
             'smiling-elephant': 7,
             'default-checkboxes-3': 9
           }}
+          onCheckboxChange={action('handle change checkboxes in selectedFilters')}
         />
       </Container>
     );
