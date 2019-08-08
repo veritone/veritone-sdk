@@ -729,36 +729,37 @@ class SearchBarContainer extends React.Component {
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
-      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }} data-veritone-component={`search_bar_${this._id}`}>
-        <SearchBar
-          onSearch={this.props.onSearch}
-          color={this.props.color}
-          enabledEngineCategories={this.props.enabledEngineCategories}
-          searchParameters={this.props.searchParameters}
-          addJoiningOperator={this.props.addJoiningOperator}
-          highlightedPills={this.state.highlightedPills}
-          togglePill={this.togglePill}
-          libraries={this.props.libraries}
-          addPill={this.addPill}
-          selectedPill={selectedPill}
-          removePill={this.getRemovePill(this.props.searchParameters)}
-          openPill={this.openPill}
-          modifyPill={this.props.addOrModifySearchParameter}
-          openMenu={this.handleMenuOpen}
-          openMenuExtraActions={this.openMenuExtraActions}
-          resetSearchParameters={this.resetSearchParameters}
-        />
-        <Menu
-          open={Boolean(this.state.menuAnchorEl)}
-          onClose={this.handleMenuClose}
-          anchorEl={this.state.menuAnchorEl}
-          anchorOrigin={{ vertical: 'bottom', ...horizontalAnchorPosition }}
-          transformOrigin={horizontalAnchorPosition}
-          getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
-        >
-          {
-            this.state.menuOptions && this.state.menuOptions.map(menuOption =>
-              menuOption.divider ? <Divider key={'menu_divider'} /> :
+      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
+          <SearchBar
+            onSearch={this.props.onSearch}
+            color={this.props.color}
+            enabledEngineCategories={this.props.enabledEngineCategories}
+            searchParameters={this.props.searchParameters}
+            addJoiningOperator={this.props.addJoiningOperator}
+            highlightedPills={this.state.highlightedPills}
+            togglePill={ this.togglePill }
+            libraries={ this.props.libraries }
+            addPill={this.addPill}
+            selectedPill={selectedPill}
+            removePill={this.getRemovePill(this.props.searchParameters)}
+            openPill={this.openPill}
+            modifyPill={ this.props.addOrModifySearchParameter }
+            openMenu={this.handleMenuOpen}
+            openMenuExtraActions={ this.openMenuExtraActions }
+            resetSearchParameters={this.resetSearchParameters}
+            disabledSavedSearch={ this.props.disabledSavedSearch }
+          />
+          <Menu
+            open={ Boolean(this.state.menuAnchorEl) }
+            onClose={this.handleMenuClose}
+            anchorEl={ this.state.menuAnchorEl }
+            anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
+            transformOrigin={ horizontalAnchorPosition }
+            getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
+          >
+            {
+              this.state.menuOptions && this.state.menuOptions.map(menuOption =>
+                menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
                   <MenuItem key={menuOption.label} data-veritone-element={`${menuOption.label.toLowerCase().split(' ').join('_')}`} onClick={menuOption.onClick} data-preservehighlight={menuOption.preserveHighlight}>
                     {menuOption.label}
