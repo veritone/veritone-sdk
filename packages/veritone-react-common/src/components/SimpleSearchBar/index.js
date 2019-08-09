@@ -8,6 +8,7 @@ import {
   string,
   shape,
   element,
+  number,
   oneOfType
 } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
@@ -97,7 +98,8 @@ export class SimpleSearchBarBase extends React.Component {
         placeholder,
         autocomplete,
         isLoading,
-        marginTop
+        marginTop,
+        width
       }
     } = this;
 
@@ -111,6 +113,15 @@ export class SimpleSearchBarBase extends React.Component {
       focused
     );
 
+    let _width;
+    if(!width && typeof width !=='number'){
+      _width = '512px'
+    } else if (typeof width === 'number'){
+      _width = width + 'px'
+    } else {
+      _width = width;
+    }
+
     return (
       // render key added to force render during cleanup
       <ClickAwayListener onClickAway={clickAway} key={renderKey}>
@@ -122,7 +133,7 @@ export class SimpleSearchBarBase extends React.Component {
             }}
             className={cx(styles.colorContainer)}
           >
-            <div className={styles.searchBarContainer}>
+            <div className={styles.searchBarContainer} style={{ width : _width}}>
               <IconButton disabled={!focused} onClick={onSubmit}>
                 <Search className={styles.iconColor} />
               </IconButton>
@@ -239,5 +250,6 @@ SimpleSearchBarBase.propTypes = {
     })
   ),
   resetOnClickAway: bool,
-  marginTop: string
+  marginTop: string,
+  width: oneOfType([string, number])
 };

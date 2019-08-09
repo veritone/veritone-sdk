@@ -16,6 +16,7 @@ class SimpleSearchBar extends SimpleSearchBarController {
         onChange={this.onChange}
         value={this.state.value}
         onSubmit={this.onSubmit}
+        {...this.props}
       />
     );
   }
