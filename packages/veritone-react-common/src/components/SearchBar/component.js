@@ -592,6 +592,7 @@ export class SampleSearchBar extends React.Component {
   }
 
   onSearch = (searchParameters) => {
+    console.log(this.props.onSearch, searchParameters, this.state.searchParameters);
     if (this.props.onSearch) {
       this.props.onSearch(this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters));
     } else {

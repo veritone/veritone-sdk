@@ -1,7 +1,7 @@
 import React from 'react';
 import { arrayOf, func, object, string, oneOf } from 'prop-types';
 import cx from 'classnames';
-import { get, uniq } from 'lodash';
+import { get, uniq, isEmpty, isEqual, sortBy } from 'lodash';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeWhile";
 import { fromEvent } from 'rxjs/observable/fromEvent';
@@ -124,10 +124,13 @@ class SearchBarContainer extends React.Component {
     const { modalId } = this.state.openModal;
     const boundingPoly = get(advancedOptions, [modalId, 'boundingPoly']);
     const range = get(advancedOptions, [modalId, 'range']);
-    if (boundingPoly && boundingPoly.length && range) {
+    if (!isEmpty(boundingPoly) && (!isEmpty(range) && !isEqual(sortBy(range), sortBy([0, 100])))) {
       return 2;
     }
-    if (boundingPoly || range) {
+    if ((isEmpty(boundingPoly) && (!isEmpty(range) && !isEqual(sortBy(range), sortBy([0, 100]))))) {
+      return 1
+    }
+    if (!isEmpty(boundingPoly) && (isEmpty(range) || isEqual(sortBy(range), sortBy([0, 100])))) {
       return 1
     }
     return null;
@@ -141,7 +144,6 @@ class SearchBarContainer extends React.Component {
     } else if (event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 1) {
       event.preventDefault();
       this.toggleGrouping();
-
     }
   }
 
@@ -583,7 +585,6 @@ class SearchBarContainer extends React.Component {
 
   menuEditPill = () => {
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
-    console.log(selectedPill);
     this.openPill(selectedPill);
     this.setState({
       menuAnchorEl: null
@@ -730,36 +731,36 @@ class SearchBarContainer extends React.Component {
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
-          <SearchBar
-            onSearch={this.props.onSearch}
-            color={this.props.color}
-            enabledEngineCategories={this.props.enabledEngineCategories}
-            searchParameters={this.props.searchParameters}
-            addJoiningOperator={this.props.addJoiningOperator}
-            highlightedPills={this.state.highlightedPills}
-            togglePill={ this.togglePill }
-            libraries={ this.props.libraries }
-            addPill={this.addPill}
-            selectedPill={selectedPill}
-            removePill={this.getRemovePill(this.props.searchParameters)}
-            openPill={this.openPill}
-            modifyPill={ this.props.addOrModifySearchParameter }
-            openMenu={this.handleMenuOpen}
-            openMenuExtraActions={ this.openMenuExtraActions }
-            resetSearchParameters={this.resetSearchParameters}
-            disabledSavedSearch={ this.props.disabledSavedSearch }
-          />
-          <Menu
-            open={ Boolean(this.state.menuAnchorEl) }
-            onClose={this.handleMenuClose}
-            anchorEl={ this.state.menuAnchorEl }
-            anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
-            transformOrigin={ horizontalAnchorPosition }
-            getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
-          >
-            {
-              this.state.menuOptions && this.state.menuOptions.map(menuOption =>
-                menuOption.divider ? <Divider key={'menu_divider'} /> :
+        <SearchBar
+          onSearch={this.props.onSearch}
+          color={this.props.color}
+          enabledEngineCategories={this.props.enabledEngineCategories}
+          searchParameters={this.props.searchParameters}
+          addJoiningOperator={this.props.addJoiningOperator}
+          highlightedPills={this.state.highlightedPills}
+          togglePill={ this.togglePill }
+          libraries={ this.props.libraries }
+          addPill={this.addPill}
+          selectedPill={selectedPill}
+          removePill={this.getRemovePill(this.props.searchParameters)}
+          openPill={this.openPill}
+          modifyPill={ this.props.addOrModifySearchParameter }
+          openMenu={this.handleMenuOpen}
+          openMenuExtraActions={ this.openMenuExtraActions }
+          resetSearchParameters={this.resetSearchParameters}
+          disabledSavedSearch={ this.props.disabledSavedSearch }
+        />
+        <Menu
+          open={ Boolean(this.state.menuAnchorEl) }
+          onClose={this.handleMenuClose}
+          anchorEl={ this.state.menuAnchorEl }
+          anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
+          transformOrigin={ horizontalAnchorPosition }
+          getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
+        >
+          {
+            this.state.menuOptions && this.state.menuOptions.map(menuOption =>
+              menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
                   <MenuItem key={menuOption.label} data-veritone-element={`${menuOption.label.toLowerCase().split(' ').join('_')}`} onClick={menuOption.onClick} data-preservehighlight={menuOption.preserveHighlight}>
                     {menuOption.label}

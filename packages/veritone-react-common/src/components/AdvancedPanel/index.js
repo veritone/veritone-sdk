@@ -15,7 +15,7 @@ import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
 const id = guid();
-
+const helpUrl = 'https://help.veritone.com/collections/1453304-veritone-essentials-discovery';
 class ResponsiveDialog extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
@@ -147,6 +147,10 @@ class ResponsiveDialog extends React.Component {
     })
   }
 
+  handleClickInfoIcon = () => {
+    window.open(helpUrl, "_blank");
+  }
+
   render() {
     const { boundingBoxes, step } = this.state;
     const { open, handleClose, searchByTag } = this.props;
@@ -164,7 +168,7 @@ class ResponsiveDialog extends React.Component {
               <div>
                 <IconButton
                   className={cx(style["advanced-icon-button"])}
-                  onClick={handleClose}
+                  onClick={this.handleClickInfoIcon}
                 >
                   <InfoOutlineIcon />
                 </IconButton>
