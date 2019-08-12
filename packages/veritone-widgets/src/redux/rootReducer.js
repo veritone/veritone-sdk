@@ -41,23 +41,27 @@ const {
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
 
+export const reducers = {
+  [filePickerNamespace]: filePickerReducer,
+  [folderSelectionDialogNamespace]: folderSelectionDialogReducer,
+  [dataPickerNamespace]: dataPickerReducer,
+  [engineSelectionNamespace]: engineSelectionReducer,
+  [notificationsNamespace]: notificationsReducer,
+  [engineOutputExportNamespace]: engineOutputExportReducer,
+  [configNamespace]: configReducer,
+  [multipleEngineSelectionNamespace]: multipleEngineSelectionReducer,
+  [userNamespace]: userReducer,
+  [authNamespace]: authReducer,
+  [appNamespace]: appReducer,
+  [engineNamespace]: engineReducer,
+  player: playerReducer,
+  operation: operationReducer,
+  form: formReducer
+};
+
 export default function createReducer(asyncReducers) {
   return combineReducers({
-    [filePickerNamespace]: filePickerReducer,
-    [folderSelectionDialogNamespace]: folderSelectionDialogReducer,
-    [dataPickerNamespace]: dataPickerReducer,
-    [engineSelectionNamespace]: engineSelectionReducer,
-    [notificationsNamespace]: notificationsReducer,
-    [engineOutputExportNamespace]: engineOutputExportReducer,
-    [configNamespace]: configReducer,
-    [multipleEngineSelectionNamespace]: multipleEngineSelectionReducer,
-    [userNamespace]: userReducer,
-    [authNamespace]: authReducer,
-    [appNamespace]: appReducer,
-    [engineNamespace]: engineReducer,
-    player: playerReducer,
-    operation: operationReducer,
-    form: formReducer,
+    ...reducers,
     ...asyncReducers
   });
 }
