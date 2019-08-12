@@ -34,6 +34,7 @@ import * as folderSelectionModule from '../../redux/modules/folderSelectionDialo
 )
 export default class NewFolder extends React.Component {
   static propTypes = {
+    rootFolderType: string,
     open: bool,
     createFolder: func,
     selectFolder: func,
@@ -144,14 +145,14 @@ export default class NewFolder extends React.Component {
     // otherwise we create new folder
     // from redux createFolder(name, description, parentId, orderIndex, appType, folder) the other fields like description
     // and order index are here if we ever want to expand this
-    const { createFolder, selectedFolder, resetNewFolder } = this.props;
+    const { createFolder, selectedFolder, resetNewFolder, rootFolderType } = this.props;
     if (this.state.newFolderName) {
       createFolder(
         this.state.newFolderName,
         '',
         selectedFolder.id,
         0,
-        'cms',
+        rootFolderType,
         selectedFolder
       );
     } else {

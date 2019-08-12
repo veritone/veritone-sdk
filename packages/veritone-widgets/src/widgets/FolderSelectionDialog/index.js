@@ -84,9 +84,9 @@ class FolderSelectionDialog extends React.Component {
   };
 
   componentDidMount() {
-    const { getFolders } = this.props;
+    const { getFolders, rootFolderType } = this.props;
     // get root folder and subfolders of root if they exist
-    getFolders(this.props.rootFolderType);
+    getFolders(rootFolderType);
   }
 
   openNewFolderDialog = () => {
@@ -129,7 +129,7 @@ class FolderSelectionDialog extends React.Component {
   }
 
   render() {
-    const { rootFolder, selectedFolder, loading } = this.props;
+    const { rootFolder, selectedFolder, loading, rootFolderType } = this.props;
     const rootId = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = rootId === selectedId;
@@ -259,6 +259,7 @@ class FolderSelectionDialog extends React.Component {
         </Dialog>
         {this.state.openNewFolder ? (
           <NewFolder
+            rootFolderType = {rootFolderType}
             open={this.state.openNewFolder}
             cancel={this.closeNewFolderDialog}
           />
