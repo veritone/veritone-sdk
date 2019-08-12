@@ -67,8 +67,7 @@ export default class Notifier extends React.Component {
 
 
     const displayEntries = notifications.concat([]);
-    const numNotifications = totalNotification ? totalNotification : notifications.length || 0;
-
+    const numNotifications = (totalNotification || totalNotification === 0) ? totalNotification : notifications.length || 0;
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
@@ -76,7 +75,7 @@ export default class Notifier extends React.Component {
           <span className={styles.toolTipWrapper}>
             <IconButton
               onClick={showNotifications ? showNotifications : this.showNotifications}
-              disabled={numNotifications === 0}
+              disabled={notifications.length === 0}
               data-veritone-element="notification-button"
             >
               {
