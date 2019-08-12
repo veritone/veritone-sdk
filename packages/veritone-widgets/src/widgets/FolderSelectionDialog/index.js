@@ -35,6 +35,7 @@ import widget from '../../shared/widget';
 )
 class FolderSelectionDialog extends React.Component {
   static propTypes = {
+    rootFolderType: string,
     open: bool,
     loading: bool,
     selectFolder: func,
@@ -74,7 +75,8 @@ class FolderSelectionDialog extends React.Component {
   };
 
   static defaultProps = {
-    open: false
+    open: false,
+    rootFolderType: ''
   };
 
   state = {
@@ -84,7 +86,7 @@ class FolderSelectionDialog extends React.Component {
   componentDidMount() {
     const { getFolders } = this.props;
     // get root folder and subfolders of root if they exist
-    getFolders();
+    getFolders(this.props.rootFolderType);
   }
 
   openNewFolderDialog = () => {

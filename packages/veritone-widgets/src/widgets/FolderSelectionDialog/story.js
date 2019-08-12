@@ -46,6 +46,7 @@ class Story extends React.Component {
       <React.Fragment>
         <DialogButton handleOpen={this.handleOpen} />
         <FolderSelectionDialog
+          rootFolderType='cms'
           open={this.state.isOpen}
           onCancel={this.handleClose}
           onSelect={this.onSelect}
@@ -64,6 +65,7 @@ storiesOf('FolderSelectionDialog', module).add('Base', () => {
     <BaseStory
       widget={FolderSelectionDialogWidget}
       widgetProps={{
+        rootFolderType: "cms",
         onCancel: action('onCancel'),
         onSelect: action('onSelect')
       }}

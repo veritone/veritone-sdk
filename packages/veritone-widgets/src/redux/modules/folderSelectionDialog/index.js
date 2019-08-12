@@ -104,14 +104,14 @@ export const selectFolder = folder => {
 };
 
 // fetch the root folder and childfolder count - if there is a count - it will be a number that is > 0 up to the limits set in graphql - not the total count
-export function getFolders() {
+export function getFolders(rootFolderType) {
   return async function action(dispatch, getState) {
     dispatch({
       type: LOADING,
       payload: true
     });
 
-    let rootFolderType = 'cms';
+    //let rootFolderType = rootFolderType;
 
     const query = `
       mutation createRootFolders($rootFolderType: RootFolderType ){
