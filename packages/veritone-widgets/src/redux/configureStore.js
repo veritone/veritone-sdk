@@ -79,7 +79,6 @@ export default function configureStore(initialState) {
   // Add injectSaga method to our store
   store.injectSaga = createSagaInjector(sagaMiddleware.run, rootSaga);
 
-  store.runSaga(rootSaga);
 
   return store;
 }
