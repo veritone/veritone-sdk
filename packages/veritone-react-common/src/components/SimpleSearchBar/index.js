@@ -20,6 +20,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Search, Clear } from '@material-ui/icons';
+import { isNumber } from 'lodash';
 
 import styles from './styles.scss';
 
@@ -114,9 +115,9 @@ export class SimpleSearchBarBase extends React.Component {
     );
 
     let _width;
-    if(!width && typeof width !=='number'){
+    if (!width && !isNumber(width)) {
       _width = '512px'
-    } else if (typeof width === 'number'){
+    } else if (isNumber(width)) {
       _width = width + 'px'
     } else {
       _width = width;
@@ -133,7 +134,7 @@ export class SimpleSearchBarBase extends React.Component {
             }}
             className={cx(styles.colorContainer)}
           >
-            <div className={styles.searchBarContainer} style={{ width : _width}}>
+            <div className={styles.searchBarContainer} style={{ width: _width }}>
               <IconButton disabled={!focused} onClick={onSubmit}>
                 <Search className={styles.iconColor} />
               </IconButton>
@@ -189,34 +190,34 @@ export class SimpleSearchBarBase extends React.Component {
                         return (
                           <Fragment key={Math.random()}>
                             {// map data to template
-                            result.data.map(data => {
-                              // eslint-disable-next-line lodash/prefer-lodash-typecheck
-                              if (typeof data === 'string') {
-                                return (
-                                  <MenuItem
-                                    key={data}
-                                    // eslint-disable-next-line react/jsx-no-bind
-                                    onClick={() =>
-                                      clear() || result.onClick(data)
-                                    }
-                                  >
-                                    {TemplateComponent(data)}
-                                  </MenuItem>
-                                );
-                              } else {
-                                return (
-                                  <MenuItem
-                                    key={data.id || data.key}
-                                    // eslint-disable-next-line react/jsx-no-bind
-                                    onClick={() =>
-                                      clear() || result.onClick(data)
-                                    }
-                                  >
-                                    <TemplateComponent {...data} />
-                                  </MenuItem>
-                                );
-                              }
-                            })}
+                              result.data.map(data => {
+                                // eslint-disable-next-line lodash/prefer-lodash-typecheck
+                                if (typeof data === 'string') {
+                                  return (
+                                    <MenuItem
+                                      key={data}
+                                      // eslint-disable-next-line react/jsx-no-bind
+                                      onClick={() =>
+                                        clear() || result.onClick(data)
+                                      }
+                                    >
+                                      {TemplateComponent(data)}
+                                    </MenuItem>
+                                  );
+                                } else {
+                                  return (
+                                    <MenuItem
+                                      key={data.id || data.key}
+                                      // eslint-disable-next-line react/jsx-no-bind
+                                      onClick={() =>
+                                        clear() || result.onClick(data)
+                                      }
+                                    >
+                                      <TemplateComponent {...data} />
+                                    </MenuItem>
+                                  );
+                                }
+                              })}
                             <Divider />
                           </Fragment>
                         );
