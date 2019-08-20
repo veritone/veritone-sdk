@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { isEmpty, cloneDeep } from 'lodash';
 
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
+import * as LANGUAGE_SCHEMA from '../schemas/vtn-standard/language/language.json';
 import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
 import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
@@ -83,6 +84,7 @@ const validateBestPath = function(schema, data) {
   }
 };
 
+const verifyLanguage = generateValidationContractValidator(LANGUAGE_SCHEMA);
 const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
 const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
 const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
@@ -92,6 +94,7 @@ const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, 
 }]);
 
 const VALIDATORS = {
+  language: verifyLanguage,
   'media-translated': verifyMediaTranslated,
   object: verifyObject,
   text: verifyText,
@@ -100,6 +103,7 @@ const VALIDATORS = {
 
 export {
   VALIDATORS,
+  verifyLanguage,
   verifyMediaTranslated,
   verifyObject,
   verifyText,

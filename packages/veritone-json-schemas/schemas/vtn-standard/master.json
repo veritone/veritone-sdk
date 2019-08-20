@@ -238,6 +238,7 @@
     "validationContracts": {
       "type": "string",
       "enum": [
+        "language",
         "media-translated",
         "object",
         "text"
