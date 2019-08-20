@@ -4,54 +4,35 @@
   "title": "vtn-standard.media-translated",
   "description": "Standard engine output for translated text files at Veritone",
   "type": "object",
-  "properties": {
-    "validationContracts": {
-      "type": "array",
-      "contains": {
-        "const": "media-translated"
-      }
+  "allOf": [
+    {
+      "$ref": "master.json#/definitions/header"
     },
-    "media": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "assetId": {
-            "type": "string"
-          },
-          "language": {
-            "$ref": "master.json#/definitions/language"
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "media-translated"
           }
         },
-        "required": [
-          "assetId",
-          "language"
-        ]
+        "media": {
+          "allOf": [
+            {
+              "$ref": "master.json#/definitions/media"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "language"
+                ]
+              }
+            }
+          ]
+        }
       }
-    },
-    "language": {
-      "$ref": "master.json#/definitions/language"
-    },
-    "schemaId": {
-      "$ref": "master.json#/definitions/header/properties/schemaId"
-    },
-    "sourceEngineId": {
-      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
-    },
-    "sourceEngineName": {
-      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
-    },
-    "taskPayload": {
-      "$ref": "master.json#/definitions/header/properties/taskPayload"
-    },
-    "taskId": {
-      "$ref": "master.json#/definitions/header/properties/taskId"
-    },
-    "generatedDateUTC": {
-      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
-    },
-    "externalSourceId": {
-      "$ref": "master.json#/definitions/header/properties/externalSourceId"
     }
-  }
+  ]
 }

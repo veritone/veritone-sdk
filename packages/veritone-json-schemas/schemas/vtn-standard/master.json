@@ -228,6 +228,9 @@
         "properties": {
           "assetId": {
             "type": "string"
+          },
+          "language": {
+            "$ref": "#/definitions/language"
           }
         },
         "required": [
