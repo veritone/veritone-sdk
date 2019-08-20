@@ -1,0 +1,10 @@
+{
+  "emotions": [{
+    "emotion": "excited"
+  }, {
+    "emotion": "confused"
+  }, {
+    "emotion": "something",
+    "emotionConfidence": 1
+  }]
+}

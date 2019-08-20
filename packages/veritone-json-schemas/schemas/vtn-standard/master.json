@@ -241,6 +241,7 @@
         "language",
         "media-translated",
         "object",
+        "sentiment",
         "text"
       ]
     },
@@ -256,6 +257,64 @@
         "sentence": {
           "type": "integer"
         }
+      }
+    },
+    "sentiment": {
+      "type": "object",
+      "properties": {
+        "positiveValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Positive sentiment rating"
+        },
+        "positiveConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of positive sentiment rating"
+        },
+        "negativeValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Negative sentiment rating"
+        },
+        "negativeConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of negative sentiment rating"
+        }
+      },
+      "dependencies": {
+        "positiveConfidence": {
+          "required": ["positiveValue"]
+        },
+        "negativeConfidence": {
+          "required": ["negativeValue"]
+        }
+      }
+    },
+    "emotions": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "emotion": {
+            "type": "string"
+          },
+          "emotionValue": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "emotionConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["emotion"]
       }
     }
   }
