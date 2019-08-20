@@ -1,0 +1,11 @@
+{
+  "validationContracts": [
+    "entity"
+  ],
+  "object": [
+    {
+      "type": "namedEntity",
+      "sentence": 1
+    }
+  ]
+}

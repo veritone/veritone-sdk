@@ -1,0 +1,12 @@
+{
+  "validationContracts": [
+    "entity"
+  ],
+  "object": [
+    {
+      "type": "namedEntity",
+      "label": "John",
+      "sentence": 1
+    }
+  ]
+}

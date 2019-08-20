@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { isEmpty, cloneDeep } from 'lodash';
 
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
+import * as ENTITY_SCHEMA from '../schemas/vtn-standard/entity/entity.json';
 import * as LANGUAGE_SCHEMA from '../schemas/vtn-standard/language/language.json';
 import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
@@ -12,7 +13,7 @@ import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcrip
 /**
  * Generates a function that will validate vtn-standard for a validation contract
  * @param {Object} schema json-schema for the vtn-standard validationContract
- * @param {{keyword: String, validator: Function}[]} [customValidators]
+ * @param {{keyword: String, validator: SchemaValidateFunction}[]} [customValidators]
  *   Array of additional validation functions and their keyword names.
  *   Will be added to the ajv parser with .addKeyword().
  * @return {Function} The validation function
@@ -64,7 +65,10 @@ const generateValidationContractValidator = (schema, customValidators = []) => {
   };
 };
 
-// custom function for validating there is only one best path in a transcript lattice
+/**
+ * Custom function for validating there is only one best path in a transcript lattice
+ * @type SchemaValidateFunction
+ */
 const validateBestPath = function(schema, data) {
   validateBestPath.errors = [];
   if (data.filter(word => word.bestPath === true).length !== 1) {
@@ -85,6 +89,7 @@ const validateBestPath = function(schema, data) {
   }
 };
 
+const verifyEntity = generateValidationContractValidator(ENTITY_SCHEMA);
 const verifyLanguage = generateValidationContractValidator(LANGUAGE_SCHEMA);
 const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
 const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
@@ -96,6 +101,7 @@ const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, 
 }]);
 
 const VALIDATORS = {
+  entity: verifyEntity,
   language: verifyLanguage,
   'media-translated': verifyMediaTranslated,
   object: verifyObject,
@@ -106,6 +112,7 @@ const VALIDATORS = {
 
 export {
   VALIDATORS,
+  verifyEntity,
   verifyLanguage,
   verifyMediaTranslated,
   verifyObject,

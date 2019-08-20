@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/entity.json",
+  "title": "vtn-standard.entity",
+  "description": "Standard engine output for Entity at Veritone",
+  "type": "object",
+  "definitions": {
+    "namedEntityObject": {
+      "allOf": [
+        {
+          "$ref": "master.json#/definitions/objectResult"
+        },
+        {
+          "$ref": "master.json#/definitions/documentIndexing"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "namedEntity"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "oneOf": [{
+            "required": ["label"]
+          }, {
+            "required": ["entityId"]
+          }]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "entity"
+          }
+        },
+        "object": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/namedEntityObject"
+          }
+        }
+      },
+      "required": ["object"]
+    }
+  ]
+}
