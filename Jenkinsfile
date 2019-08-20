@@ -65,9 +65,6 @@ def call(body) {
                     allOf {
                         anyOf {
                             expression { BRANCH_NAME == 'master' }
-
-                            // for testing flow:
-                            expression { BRANCH_NAME.trim().toLowerCase().startsWith("jenkins-dev/") }
                         }
                     }
                 }
@@ -82,8 +79,6 @@ def call(body) {
 
                         steps {
                             println "execute database target change scripts"
-                            pipenvInstall()
-                            databaseUpdate(ENVIRONMENT, MASTER_BASELINE_CHANGED_FILE_PATHS, false, false)
                         }
                     }
                 }
