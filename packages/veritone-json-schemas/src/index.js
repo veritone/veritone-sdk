@@ -1,11 +1,20 @@
 import Ajv from 'ajv';
-import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
-import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
-import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
-import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
-
 import { isEmpty, cloneDeep } from 'lodash';
 
+import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
+import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
+import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
+import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
+import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
+
+/**
+ * Generates a function that will validate vtn-standard for a validation contract
+ * @param {Object} schema json-schema for the vtn-standard validationContract
+ * @param {{keyword: String, validator: Function}[]} [customValidators]
+ *   Array of additional validation functions and their keyword names.
+ *   Will be added to the ajv parser with .addKeyword().
+ * @return {Function} The validation function
+ */
 const generateValidationContractValidator = (schema, customValidators = []) => {
   return result => {
 
@@ -76,6 +85,7 @@ const validateBestPath = function(schema, data) {
 
 const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
 const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
+const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
 const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, [{
   keyword: 'requireBestPath',
   validator: validateBestPath
@@ -84,7 +94,14 @@ const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, 
 const VALIDATORS = {
   'media-translated': verifyMediaTranslated,
   object: verifyObject,
+  text: verifyText,
   transcript: verifyTranscript,
 };
 
-export { VALIDATORS, verifyMediaTranslated, verifyObject, verifyTranscript };
+export {
+  VALIDATORS,
+  verifyMediaTranslated,
+  verifyObject,
+  verifyText,
+  verifyTranscript
+};

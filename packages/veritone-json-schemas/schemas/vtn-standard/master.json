@@ -47,6 +47,9 @@
           "description": "Vendor specific referenceId to this engine result (optional)",
           "example": "1"
         },
+        "language": {
+          "$ref": "#/definitions/language"
+        },
         "validationContracts": {
           "type": "array",
           "items": [
@@ -160,19 +163,7 @@
           "type": "string"
         },
         "type": {
-          "if": {
-            "properties": {
-              "objectCategory": {
-                "type": "object"
-              }
-            }
-          },
-          "then": {
-            "const": "object"
-          },
-          "else": {
-            "$ref": "#/definitions/objectResultType"
-          }
+          "$ref": "#/definitions/objectResultType"
         }
       },
       "required": [
@@ -197,31 +188,37 @@
         "en-US"
       ]
     },
+    "seriesItem": {
+      "type": "object",
+      "properties": {
+        "startTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The start time relative to the start of the media asset in milliseconds.",
+          "example": 0
+        },
+        "stopTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The stop time relative to the start of the media asset in milliseconds.",
+          "example": 3000
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        }
+      },
+      "required": [
+        "startTimeMs",
+        "stopTimeMs"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/objectResult"
+      }
+    },
     "series": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "startTimeMs": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "The start time relative to the start of the media asset in milliseconds.",
-            "example": 0
-          },
-          "stopTimeMs": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "The stop time relative to the start of the media asset in milliseconds.",
-            "example": 3000
-          }
-        },
-        "required": [
-          "startTimeMs",
-          "stopTimeMs"
-        ],
-        "additionalProperties": {
-          "$ref": "#/definitions/objectResult"
-        }
+        "$ref": "#/definitions/seriesItem"
       }
     },
     "media": {
@@ -242,8 +239,23 @@
       "type": "string",
       "enum": [
         "media-translated",
-        "object"
+        "object",
+        "text"
       ]
+    },
+    "documentIndexing": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer"
+        },
+        "paragraph": {
+          "type": "integer"
+        },
+        "sentence": {
+          "type": "integer"
+        }
+      }
     }
   }
 }

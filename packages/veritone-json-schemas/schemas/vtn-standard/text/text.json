@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/text.json",
+  "title": "vtn-standard.text",
+  "description": "Standard engine output for Text at Veritone",
+  "type": "object",
+  "definitions": {
+    "textObject": {
+      "allOf": [
+        {
+          "$ref": "master.json#/definitions/objectResult"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "text"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "items": {
+            "const": "text"
+          }
+        },
+        "object": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/textObject"
+              },
+              {
+                "$ref": "master.json#/definitions/documentIndexing"
+              }
+            ]
+          }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "properties": {
+                  "object": {
+                    "$ref": "#/definitions/textObject"
+                  }
+                }
+              },
+              {
+                "$ref": "master.json#/definitions/seriesItem"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
