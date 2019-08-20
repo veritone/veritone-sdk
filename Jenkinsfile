@@ -39,27 +39,11 @@ def call(body) {
                             """
                         }
 
-                        prod_tags = getMatchingTags("prod")
-                        env.LATEST_PROD_TAG = prod_tags[0]
-                        env.PREVIOUS_PROD_TAG = prod_tags[1]
-                        sh "echo LATEST_PROD_TAG = ${LATEST_PROD_TAG}"
-                        sh "echo PREVIOUS_PROD_TAG = ${PREVIOUS_PROD_TAG}"
-
-                        sh "echo PROD_BASELINE_CHANGED_FILE_PATHS"
-                        PROD_BASELINE_CHANGED_FILE_PATHS = getGitDiffChangedFilePaths(GIT_COMMIT, PREVIOUS_PROD_TAG)
-
-                        sh "echo STAGE_BASELINE_CHANGED_FILE_PATHS"
-                        STAGE_BASELINE_CHANGED_FILE_PATHS = getGitDiffChangedFilePaths(GIT_COMMIT, LATEST_PROD_TAG)
-
-                        sh "git branch -a"
-                        sh "echo MASTER_BASELINE_CHANGED_FILE_PATHS"
-                        MASTER_BASELINE_CHANGED_FILE_PATHS = getGitDiffChangedFilePaths("remotes/origin/master", "remotes/origin/master~1")
-
                         PULL_REQUEST_URL = getGitPullRequest(GIT_REPO_NAME, GIT_COMMIT)
                     }
                 }
             }
-            stage("Execute Scripts 'DEV'") {
+            stage("Build") {
                 when {
                     beforeAgent true
                     allOf {
@@ -78,7 +62,7 @@ def call(body) {
                         }
 
                         steps {
-                            println "execute database target change scripts"
+                            println "build "
                         }
                     }
                 }
