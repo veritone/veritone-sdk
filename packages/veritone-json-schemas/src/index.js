@@ -1,103 +1,90 @@
 import Ajv from 'ajv';
+import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
 import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
 
 import { isEmpty, cloneDeep } from 'lodash';
 
-const verifyObject = objectResult => {
-  // validate object
-  const ajv = new Ajv({
-    allErrors: true,
-    schemas: [MASTER_SCHEMA, OBJECT_SCHEMA]
-  });
-  const validate = ajv.compile(OBJECT_SCHEMA);
-  const valid = validate(objectResult);
+const generateValidationContractValidator = (schema, customValidators = []) => {
+  return result => {
 
-  // filtered results after validation
-  const objectResultFiltered = cloneDeep(objectResult);
-  const ajvFilter = new Ajv({
-    schemas: [MASTER_SCHEMA, OBJECT_SCHEMA],
-    removeAdditional: 'all'
-  });
-  const validateWithFilter = ajvFilter.compile(OBJECT_SCHEMA);
-  validateWithFilter(objectResultFiltered);
-
-  if (!valid) {
-    return {
-      errors: validate.errors
-    };
-  } else {
-    return {
-      valid: true,
-      processed: objectResultFiltered
-    };
-  }
-};
-
-const verifyTranscript = transcriptResult => {
-  // custom function for validating there is only one best path in a transcript lattice
-  const validateBestPath = function(schema, data) {
-    validateBestPath.errors = [];
-    if (data.filter(word => word.bestPath === true).length !== 1) {
-      validateBestPath.errors.push({
-        keyword: 'requireBestPath',
-        message:
-          'there should be one and only one bestPath in a transcription lattice',
-        params: {
-          words: data
-        }
+    // validate results
+    const ajv = new Ajv({
+      allErrors: true,
+      schemas: [MASTER_SCHEMA, schema]
+    });
+    for (const {keyword, validator} of customValidators) {
+      ajv.addKeyword(keyword, {
+        validate: validator,
+        errors: true
       });
-      return false;
     }
 
-    if (isEmpty(validateBestPath.errors)) {
-      this.errors = undefined;
-      return true;
+    const validate = ajv.compile(schema);
+    const valid = validate(result);
+
+    // validate results and filter out everything not validated
+    const resultFiltered = cloneDeep(result);
+    const ajvFilter = new Ajv({
+      schemas: [MASTER_SCHEMA, schema],
+      removeAdditional: 'all'
+    });
+    for (const {keyword, validator} of customValidators) {
+      ajvFilter.addKeyword(keyword, {
+        validate: validator,
+        errors: true
+      });
+    }
+
+    const validateWithFilter = ajvFilter.compile(schema);
+    validateWithFilter(resultFiltered);
+
+    if (!valid) {
+      return {
+        errors: validate.errors
+      };
+    } else {
+      return {
+        valid: true,
+        processed: resultFiltered
+      };
     }
   };
+};
 
-  // validate transcript
-  const ajv = new Ajv({
-    allErrors: true,
-    schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA]
-  });
-  ajv.addKeyword('requireBestPath', {
-    validate: validateBestPath,
-    errors: true
-  });
-  const validate = ajv.compile(TRANSCRIPT_SCHEMA);
-  const valid = validate(transcriptResult);
+// custom function for validating there is only one best path in a transcript lattice
+const validateBestPath = function(schema, data) {
+  validateBestPath.errors = [];
+  if (data.filter(word => word.bestPath === true).length !== 1) {
+    validateBestPath.errors.push({
+      keyword: 'requireBestPath',
+      message:
+        'there should be one and only one bestPath in a transcription lattice',
+      params: {
+        words: data
+      }
+    });
+    return false;
+  }
 
-  // validate transcript and filter out everything not validated
-  const transcriptResultFiltered = cloneDeep(transcriptResult);
-  const ajvFilter = new Ajv({
-    schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA],
-    removeAdditional: 'all'
-  });
-  ajvFilter.addKeyword('requireBestPath', {
-    validate: validateBestPath,
-    errors: true
-  });
-
-  const validateWithFilter = ajvFilter.compile(TRANSCRIPT_SCHEMA);
-  validateWithFilter(transcriptResultFiltered);
-
-  if (!valid) {
-    return {
-      errors: validate.errors
-    };
-  } else {
-    return {
-      valid: true,
-      processed: transcriptResultFiltered
-    };
+  if (isEmpty(validateBestPath.errors)) {
+    this.errors = undefined;
+    return true;
   }
 };
 
+const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
+const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
+const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, [{
+  keyword: 'requireBestPath',
+  validator: validateBestPath
+}]);
+
 const VALIDATORS = {
+  'media-translated': verifyMediaTranslated,
+  object: verifyObject,
   transcript: verifyTranscript,
-  object: verifyObject
 };
 
-export { VALIDATORS, verifyObject, verifyTranscript };
+export { VALIDATORS, verifyMediaTranslated, verifyObject, verifyTranscript };

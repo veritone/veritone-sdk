@@ -55,7 +55,7 @@ Object.keys(validationContracts).forEach(validationContract => {
         }
       }
     } else {
-      console.warn(`No validator for validationConract: ${validationContract}`);
+      console.warn(`No validator for validationContract: ${validationContract}`);
     }
   });
 });
@@ -432,3 +432,5 @@ test('it should validate a transcript and filter out extra fields', () => {
   expect(results.processed).toEqual(transcriptWithoutExtraField);
   expect(results.errors).toBe(undefined);
 });
+
+// TODO: Add media-translated-specific tests

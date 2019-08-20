@@ -51,7 +51,7 @@
           "type": "array",
           "items": [
             {
-              "$ref": "#/definitions/objectResultType"
+              "$ref": "#/definitions/validationContracts"
             }
           ]
         }
@@ -79,7 +79,10 @@
           "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
         }
       },
-      "required": ["x", "y"],
+      "required": [
+        "x",
+        "y"
+      ],
       "description": "A point describing the 2d coordinates from the top left corner of the source."
     },
     "boundingPoly": {
@@ -105,7 +108,9 @@
             "example": "1"
           }
         },
-        "required": ["class"]
+        "required": [
+          "class"
+        ]
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
@@ -170,7 +175,9 @@
           }
         }
       },
-      "required": ["type"]
+      "required": [
+        "type"
+      ]
     },
     "word": {
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
@@ -184,7 +191,11 @@
     },
     "language": {
       "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
-      "type": "string"
+      "type": "string",
+      "examples": [
+        "en",
+        "en-US"
+      ]
     },
     "series": {
       "type": "array",
@@ -204,11 +215,35 @@
             "example": 3000
           }
         },
-        "required": ["startTimeMs", "stopTimeMs"],
+        "required": [
+          "startTimeMs",
+          "stopTimeMs"
+        ],
         "additionalProperties": {
           "$ref": "#/definitions/objectResult"
         }
       }
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId"
+        ]
+      }
+    },
+    "validationContracts": {
+      "type": "string",
+      "enum": [
+        "media-translated",
+        "object"
+      ]
     }
   }
 }

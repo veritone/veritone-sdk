@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/media-translated.json",
+  "title": "vtn-standard.media-translated",
+  "description": "Standard engine output for translated text files at Veritone",
+  "type": "object",
+  "properties": {
+    "validationContracts": {
+      "type": "array",
+      "contains": {
+        "const": "media-translated"
+      }
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "language": {
+            "$ref": "master.json#/definitions/language"
+          }
+        },
+        "required": [
+          "assetId",
+          "language"
+        ]
+      }
+    },
+    "language": {
+      "$ref": "master.json#/definitions/language"
+    },
+    "schemaId": {
+      "$ref": "master.json#/definitions/header/properties/schemaId"
+    },
+    "sourceEngineId": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
+    },
+    "sourceEngineName": {
+      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
+    },
+    "taskPayload": {
+      "$ref": "master.json#/definitions/header/properties/taskPayload"
+    },
+    "taskId": {
+      "$ref": "master.json#/definitions/header/properties/taskId"
+    },
+    "generatedDateUTC": {
+      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
+    },
+    "externalSourceId": {
+      "$ref": "master.json#/definitions/header/properties/externalSourceId"
+    }
+  }
+}

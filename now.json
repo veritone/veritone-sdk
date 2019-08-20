@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "builds": [{
+    "src": "packages/veritone-json-schemas/build_and_test.sh"
+  }]
+}
