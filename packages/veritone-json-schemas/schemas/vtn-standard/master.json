@@ -241,6 +241,7 @@
     "validationContracts": {
       "type": "string",
       "enum": [
+        "concept",
         "entity",
         "language",
         "media-translated",
