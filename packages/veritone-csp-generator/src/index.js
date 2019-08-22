@@ -162,7 +162,7 @@ const TagConditionGenerator = modalState => {
 };
 
 const TimeConditionGenerator = modalState => {
-  const dayPartTimeToMinutes = function(hourMinuteTime) {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
       !isString(hourMinuteTime) ||
@@ -217,7 +217,7 @@ const TimeConditionGenerator = modalState => {
     const selectedIsoWeekdays = [];
     daysOfTheWeek.forEach(weekday => {
       if (modalState.search.selectedDays[weekday.isoWeekday - 1]) {
-        selectedIsoWeekdays.push(String(weekday.isoWeekday));
+        selectedIsoWeekdays.push(String(weekday.isoWeekday % 7));
       }
     });
     conditions.push({
