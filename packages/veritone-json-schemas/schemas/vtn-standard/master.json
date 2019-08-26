@@ -247,6 +247,7 @@
         "media-translated",
         "object",
         "sentiment",
+        "summary",
         "text"
       ]
     },

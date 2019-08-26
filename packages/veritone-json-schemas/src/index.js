@@ -8,6 +8,7 @@ import * as LANGUAGE_SCHEMA from '../schemas/vtn-standard/language/language.json
 import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
 import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
 import * as SENTIMENT_SCHEMA from '../schemas/vtn-standard/sentiment/sentiment.json';
+import * as SUMMARY_SCHEMA from '../schemas/vtn-standard/summary/summary.json';
 import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
 import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
 
@@ -96,6 +97,7 @@ const verifyLanguage = generateValidationContractValidator(LANGUAGE_SCHEMA);
 const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
 const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
 const verifySentiment = generateValidationContractValidator(SENTIMENT_SCHEMA);
+const verifySummary = generateValidationContractValidator(SUMMARY_SCHEMA);
 const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
 const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, [{
   keyword: 'requireBestPath',
@@ -109,6 +111,7 @@ const VALIDATORS = {
   'media-translated': verifyMediaTranslated,
   object: verifyObject,
   sentiment: verifySentiment,
+  summary: verifySummary,
   text: verifyText,
   transcript: verifyTranscript,
 };
