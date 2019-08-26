@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/keyword.json",
+  "title": "vtn-standard.keyword",
+  "description": "Standard engine output for Keyword at Veritone",
+  "type": "object",
+  "definitions": {
+    "keywordObject": {
+      "allOf": [
+        {
+          "$ref": "master.json#/definitions/objectResult"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "keyword"
+            }
+          },
+          "required": [
+            "type",
+            "label"
+          ]
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "keyword"
+          }
+        },
+        "object": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/keywordObject"
+          }
+        }
+      },
+      "required": ["object"]
+    }
+  ]
+}

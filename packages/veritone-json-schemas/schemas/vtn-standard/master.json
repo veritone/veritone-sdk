@@ -243,6 +243,7 @@
       "enum": [
         "concept",
         "entity",
+        "keyword",
         "language",
         "media-translated",
         "object",
