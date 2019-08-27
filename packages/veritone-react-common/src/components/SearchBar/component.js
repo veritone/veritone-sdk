@@ -813,6 +813,7 @@ export class SampleSearchBar extends React.Component {
               presetSDOAttribute={this.props.presetSDOAttribute}
               sourceFilters={this.props.sourceFilters}
               defaultJoinOperator={this.props.defaultJoinOperator}
+              enabledAdvancedSearch={this.props.enabledAdvancedSearch}
             />
           </MuiThemeProvider>
         </JssProvider>

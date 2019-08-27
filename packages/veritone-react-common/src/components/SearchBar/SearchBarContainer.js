@@ -728,6 +728,7 @@ class SearchBarContainer extends React.Component {
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
+    const { enabledAdvancedSearch } = this.props;
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
@@ -738,24 +739,24 @@ class SearchBarContainer extends React.Component {
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
           highlightedPills={this.state.highlightedPills}
-          togglePill={ this.togglePill }
-          libraries={ this.props.libraries }
+          togglePill={this.togglePill}
+          libraries={this.props.libraries}
           addPill={this.addPill}
           selectedPill={selectedPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
-          modifyPill={ this.props.addOrModifySearchParameter }
+          modifyPill={this.props.addOrModifySearchParameter}
           openMenu={this.handleMenuOpen}
-          openMenuExtraActions={ this.openMenuExtraActions }
+          openMenuExtraActions={this.openMenuExtraActions}
           resetSearchParameters={this.resetSearchParameters}
-          disabledSavedSearch={ this.props.disabledSavedSearch }
+          disabledSavedSearch={this.props.disabledSavedSearch}
         />
         <Menu
-          open={ Boolean(this.state.menuAnchorEl) }
+          open={Boolean(this.state.menuAnchorEl)}
           onClose={this.handleMenuClose}
-          anchorEl={ this.state.menuAnchorEl }
-          anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
-          transformOrigin={ horizontalAnchorPosition }
+          anchorEl={this.state.menuAnchorEl}
+          anchorOrigin={{ vertical: 'bottom', ...horizontalAnchorPosition }}
+          transformOrigin={horizontalAnchorPosition}
           getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
         >
           {
@@ -836,7 +837,7 @@ class SearchBarContainer extends React.Component {
                 ) : null}
               </CardContent>
               <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
-                {(openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
+                {enabledAdvancedSearch && (openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
                   <div className={cx(styles["advancedButton"])}>
                     <Button disabled={this.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
                     {this.getBadgeLength ? <div className={cx(styles["customBadge"])}>
@@ -860,14 +861,14 @@ class SearchBarContainer extends React.Component {
                 </Button>
               </CardActions>
             </Card>
-            <AdvancedPanel
+            {enabledAdvancedSearch && <AdvancedPanel
               open={this.state.openAdvancedPanel}
               handleClose={this.handleCloseAdvanced}
               handleReset={this.handleResetAdvanced}
               advancedOptions={this.getAdvancedOptions}
               onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
               searchByTag={openModal.dataTag}
-            />
+            />}
           </Popover>
         ) : null}
 
