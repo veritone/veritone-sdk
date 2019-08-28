@@ -1,13 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 import cx from 'classnames';
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import IconButton from "@material-ui/core/IconButton";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
 import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
-import { findIndex, get, isEqual } from "lodash";
+import { findIndex, get, isEqual } from 'lodash';
 
 import { guid } from '../../helpers/guid';
 import LocationSelect from '../AreaSelect';
@@ -32,15 +32,15 @@ class ResponsiveDialog extends React.Component {
   };
 
   static getDerivedStateFromProps(nextProps, currentState) {
-    const currentParentBoudingPoly = get(currentState, "parentBoudingPoly", []);
-    const currentParentRange = get(currentState, "parentRange", [0, 100]);
-    const nextBoundingPoly = get(nextProps, "advancedOptions.boundingPoly", []);
-    const nextRange = get(nextProps, "advancedOptions.range", [0, 100]);
+    const currentParentBoudingPoly = get(currentState, 'parentBoudingPoly', []);
+    const currentParentRange = get(currentState, 'parentRange', [0, 100]);
+    const nextBoundingPoly = get(nextProps, 'advancedOptions.boundingPoly', []);
+    const nextRange = get(nextProps, 'advancedOptions.range', [0, 100]);
     if (!isEqual(currentParentBoudingPoly, nextBoundingPoly) || !isEqual(currentParentRange, nextRange)) {
       return {
         boundingBoxes: nextBoundingPoly.length ? [{
           boundingPoly: nextBoundingPoly,
-          overlayObjectType: "c",
+          overlayObjectType: 'c',
           id: id
         }] : [],
         step: (nextBoundingPoly && nextBoundingPoly.length) ? 3 : 1,
@@ -116,7 +116,7 @@ class ResponsiveDialog extends React.Component {
           { x: 1, y: 1 },
           { x: 1, y: 0 }
         ],
-        overlayObjectType: "c",
+        overlayObjectType: 'c',
         id: guid()
       }
       this.handleAddBoundingBox(defaultBoundingBox);
@@ -142,13 +142,13 @@ class ResponsiveDialog extends React.Component {
     const { onAddAdvancedSearchParams } = this.props;
     const { boundingBoxes, selectedConfidenceRange, step } = this.state;
     onAddAdvancedSearchParams({
-      boundingPoly: step === 3 ? get(boundingBoxes, [0, "boundingPoly"], []) : [],
+      boundingPoly: step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
       range: selectedConfidenceRange
     })
   }
 
   handleClickInfoIcon = () => {
-    window.open(helpUrl, "_blank");
+    window.open(helpUrl, '_blank');
   }
 
   render() {
@@ -163,17 +163,17 @@ class ResponsiveDialog extends React.Component {
           aria-labelledby="advanced-search-panel"
         >
           <div id="advanced-search-panel">
-            <div className={cx(style["title"])}>
-              <div className={cx(style["title-text"])}>Advanced Options</div>
+            <div className={cx(style['title'])}>
+              <div className={cx(style['title-text'])}>Advanced Options</div>
               <div>
                 <IconButton
-                  className={cx(style["advanced-icon-button"])}
+                  className={cx(style['advanced-icon-button'])}
                   onClick={this.handleClickInfoIcon}
                 >
                   <InfoOutlineIcon />
                 </IconButton>
                 <IconButton
-                  className={cx(style["advanced-icon-button"])}
+                  className={cx(style['advanced-icon-button'])}
                   onClick={handleClose}
                 >
                   <CloseIcon />
@@ -182,12 +182,12 @@ class ResponsiveDialog extends React.Component {
             </div>
           </div>
           <Divider />
-          <div className={cx(style["dialog-content"])}>
-            <div className={cx(style["area-text"])}>Area of Interest</div>
-            <div className={cx(style["only-return-text"])}>
+          <div className={cx(style['dialog-content'])}>
+            <div className={cx(style['area-text'])}>Area of Interest</div>
+            <div className={cx(style['only-return-text'])}>
               Only return search results for this {searchByTag} if they appear in a defined region.
             </div>
-            <div className={cx(style["location-select-div"])}>
+            <div className={cx(style['location-select-div'])}>
               <LocationSelect
                 onEditAoI={this.onEditAoI}
                 onRemoveAoI={this.onRemoveAoI}
@@ -201,36 +201,36 @@ class ResponsiveDialog extends React.Component {
             </div>
           </div>
           <Divider />
-          <div className={cx(style["dialog-content"])}>
-            <div className={cx(style["area-text"])}>Confidence</div>
-            <div className={cx(style["only-return-text"])}>
+          <div className={cx(style['dialog-content'])}>
+            <div className={cx(style['area-text'])}>Confidence</div>
+            <div className={cx(style['only-return-text'])}>
               Search by the percentage of confidence of this {searchByTag}.
             </div>
-            <div className={cx(style["location-select-div"])}>
+            <div className={cx(style['location-select-div'])}>
               <RangeSelect
                 onChangeConfidenceRange={this.onChangeConfidenceRange}
                 selectedConfidenceRange={this.state.selectedConfidenceRange}
               />
             </div>
           </div>
-          <div className={cx(style["dialog-content"], style["action"])}>
+          <div className={cx(style['dialog-content'], style['action'])}>
             <div
               onClick={this.handleResetAll}
-              className={cx(style["reset-all"])}
+              className={cx(style['reset-all'])}
             >
               RESET ALL
             </div>
             <div>
               <Button
                 onClick={handleClose}
-                className={cx(style["vbtn-black-color"], style["vbtn-cancel"])}
+                className={cx(style['vbtn-black-color'], style['vbtn-cancel'])}
               >
                 CANCEL
                 </Button>
               <Button
                 onClick={this.handleApply}
                 variant="raised"
-                className={cx(style["vbtn-blue"])}
+                className={cx(style['vbtn-blue'])}
               >
                 APPLY
               </Button>

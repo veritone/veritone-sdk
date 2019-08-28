@@ -112,7 +112,7 @@ export default class Overlay extends React.Component {
         props.overlayPositioningContext.width,
         props.overlayPositioningContext.height
       ),
-      focusedBoundingBoxId: get(initialBoundingBoxPolys, [0, "id"], null)
+      focusedBoundingBoxId: get(initialBoundingBoxPolys, [0, 'id'], null)
     };
   }
 

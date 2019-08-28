@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { func, arrayOf, number } from 'prop-types';
 import cx from 'classnames';
-import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
 
 import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositioningProvider';
 import Overlay from '../BoundingPolyOverlay/Overlay';
@@ -50,7 +50,7 @@ export default class LocationSelect extends Component {
     open: false,
     boundingBoxes: [],
     frame: 0,
-    selected: "",
+    selected: '',
     step: 1,
     readOnly: true
   };
@@ -92,24 +92,24 @@ export default class LocationSelect extends Component {
               key={this.state.frame}
               readOnly={step !== 2}
             />
-            <div className={cx(styles["image-default"])} />
+            <div className={cx(styles['image-default'])} />
           </OverlayPositioningProvider>
         </div>
         <div className={styles.locationalCheckbox}>
           {step !== 3 ?
-            <div className={cx(styles["step-item"])}>
+            <div className={cx(styles['step-item'])}>
               <div className={styles.introText}>
                 {stepIntro[step]}
               </div>
               <Button
                 onClick={this.onUpdateStep(step + 1)}
-                className={cx(styles["btn-action-area"])}
+                className={cx(styles['btn-action-area'])}
               >
                 {buttonTextStep[step]}
               </Button>
             </div>
             :
-            <div className={cx(styles["aria-item"])}>
+            <div className={cx(styles['aria-item'])}>
               <AreaInterest
                 areaOfInterest={boundingBoxes[0]}
                 onEditAoI={onEditAoI}
