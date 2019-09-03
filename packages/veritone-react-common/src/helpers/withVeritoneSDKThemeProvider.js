@@ -1,12 +1,12 @@
 import React from 'react';
 import { oneOfType, func, node, objectOf, object, any } from 'prop-types';
+import { createMuiTheme } from '@material-ui/core/styles';
 import {
-  MuiThemeProvider,
-  createMuiTheme,
-  jssPreset
-} from '@material-ui/core/styles';
+  jssPreset,
+  ThemeProvider
+} from '@material-ui/styles';
 import { create } from 'jss';
-import JssProvider from 'react-jss/lib/JssProvider';
+import { JssProvider } from 'react-jss';
 import blue from '@material-ui/core/colors/blue';
 import merge from 'lodash/merge';
 
@@ -44,9 +44,9 @@ export class VeritoneSDKThemeProvider extends React.Component {
 
     return (
       <JssProvider jss={this.jss} classNamePrefix={this.jssNamespace}>
-        <MuiThemeProvider theme={mergedTheme}>
+        <ThemeProvider theme={mergedTheme}>
           {this.props.children}
-        </MuiThemeProvider>
+        </ThemeProvider>
       </JssProvider>
     );
   }
