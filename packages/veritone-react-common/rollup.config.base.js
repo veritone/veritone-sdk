@@ -62,6 +62,26 @@ export default {
       // modulesOnly: true
     }),
     commonjs({
+      namedExports: {
+        '../../node_modules/react-is/index.js': [
+          'isElement',
+          'isValidElementType',
+          'ForwardRef'
+        ],
+        '../../node_modules/jss/lib/index.js': [
+          'createRule',
+          'hasCSSTOMSupport'
+        ],
+        '../../node_modules/jss-plugin-vendor-prefixer/dist/jss-plugin-vendor-prefixer.esm.js': [
+          'supportedKeyframes', 'supportedProperty', 'supportedValue'
+        ],
+        '../../node_modules/css-vendor/lib/index.js': [
+          'supportedKeyframes'
+        ],
+        '../../node_modules/react-jss/lib/index.js': [
+          'JssProvider'
+        ]
+      },
       include: ['../../node_modules/**', 'node_modules/**', '../**']
     }),
 
