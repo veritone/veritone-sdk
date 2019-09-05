@@ -4,9 +4,6 @@
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
   "type": "object",
-  "definitions": {
-
-  },
   "allOf": [
     {
       "$ref": "master.json#/definitions/header"
