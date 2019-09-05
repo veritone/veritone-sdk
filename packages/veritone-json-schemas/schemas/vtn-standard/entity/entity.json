@@ -11,9 +11,6 @@
           "$ref": "master.json#/definitions/objectResult"
         },
         {
-          "$ref": "master.json#/definitions/documentIndexing"
-        },
-        {
           "type": "object",
           "properties": {
             "type": {

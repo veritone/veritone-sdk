@@ -15,9 +15,6 @@
           "properties": {
             "type": {
               "const": "text"
-            },
-            "text": {
-              "type": "string"
             }
           },
           "required": [
@@ -36,21 +33,14 @@
       "properties": {
         "validationContracts": {
           "type": "array",
-          "items": {
+          "contains": {
             "const": "text"
           }
         },
         "object": {
           "type": "array",
           "items": {
-            "allOf": [
-              {
-                "$ref": "#/definitions/textObject"
-              },
-              {
-                "$ref": "master.json#/definitions/documentIndexing"
-              }
-            ]
+            "$ref": "#/definitions/textObject"
           }
         },
         "series": {
@@ -60,7 +50,14 @@
               {
                 "properties": {
                   "object": {
-                    "$ref": "#/definitions/textObject"
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textObject"
+                      },
+                      {
+                        "$ref": "master.json#/definitions/noDocumentIndexing"
+                      }
+                    ]
                   }
                 }
               },

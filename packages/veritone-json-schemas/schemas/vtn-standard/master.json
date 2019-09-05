@@ -86,6 +86,7 @@
         "x",
         "y"
       ],
+      "additionalProperties": false,
       "description": "A point describing the 2d coordinates from the top left corner of the source."
     },
     "boundingPoly": {
@@ -109,11 +110,15 @@
             "type": "string",
             "description": "Private id variable used by the engine to refer to its internal dataset",
             "example": "1"
+          },
+          "confidence": {
+            "$ref": "#/definitions/confidence"
           }
         },
         "required": [
           "class"
-        ]
+        ],
+        "additionalProperties": false
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
@@ -164,11 +169,34 @@
         },
         "type": {
           "$ref": "#/definitions/objectResultType"
+        },
+        "sentiment": {
+          "$ref": "#/definitions/sentiment"
+        },
+        "emotions": {
+          "$ref": "#/definitions/emotions"
+        },
+        "text": {
+          "$ref": "#/definitions/objectText"
+        },
+        "page": {
+          "$ref": "#/definitions/page"
+        },
+        "paragraph": {
+          "$ref": "#/definitions/paragraph"
+        },
+        "sentence": {
+          "$ref": "#/definitions/sentence"
         }
       },
       "required": [
         "type"
-      ]
+      ],
+      "additionalProperties": false
+    },
+    "objectText": {
+      "description": "The extracted textual content of a found object.",
+      "type": "string"
     },
     "word": {
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
@@ -210,10 +238,7 @@
       "required": [
         "startTimeMs",
         "stopTimeMs"
-      ],
-      "additionalProperties": {
-        "$ref": "#/definitions/objectResult"
-      }
+      ]
     },
     "series": {
       "type": "array",
@@ -249,21 +274,28 @@
         "object",
         "sentiment",
         "summary",
-        "text"
+        "text",
+        "transcript"
       ]
     },
-    "documentIndexing": {
-      "type": "object",
+    "page": {
+      "type": "integer",
+      "description": "The page on which the text or insight appears"
+    },
+    "paragraph": {
+      "type": "integer",
+      "description": "The paragraph in which the text or insight appears. If page is provided, it should be the paragraph number on the page (restart at 1 for each new page). Otherwise it may be an increasing number for the whole document."
+    },
+    "sentence": {
+      "type": "integer",
+      "description": "The sentence in which the text or insight appears. If paragraph is provided, it should be the sentence number within the paragraph (restart at 1 for each new paragraph). Otherwise it may be an increasing number for the whole document."
+    },
+    "noDocumentIndexing": {
+      "description": "Disable document indexing (page/paragraph/sentence) for the object",
       "properties": {
-        "page": {
-          "type": "integer"
-        },
-        "paragraph": {
-          "type": "integer"
-        },
-        "sentence": {
-          "type": "integer"
-        }
+        "page": false,
+        "paragraph": false,
+        "sentence": false
       }
     },
     "sentiment": {
@@ -296,10 +328,14 @@
       },
       "dependencies": {
         "positiveConfidence": {
-          "required": ["positiveValue"]
+          "required": [
+            "positiveValue"
+          ]
         },
         "negativeConfidence": {
-          "required": ["negativeValue"]
+          "required": [
+            "negativeValue"
+          ]
         }
       }
     },
@@ -321,7 +357,9 @@
             "maximum": 1
           }
         },
-        "required": ["emotion"]
+        "required": [
+          "emotion"
+        ]
       }
     }
   }

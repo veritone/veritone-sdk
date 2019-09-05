@@ -66,7 +66,7 @@ test('it should export a transcript validator', () => {
   expect(verifyTranscript).not.toBeNull();
 });
 
-test('it should validate an object but strip out startTimeMs and stopTimeMs in the summary object array', () => {
+test('it should invalidate an object with extra properties in the summary object array', () => {
   const objectSummaryWithTimeFields = {
     schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
     validationContracts: ['object'],
@@ -99,43 +99,12 @@ test('it should validate an object but strip out startTimeMs and stopTimeMs in t
     ]
   };
 
-  const objectSummaryWithoutTimeFields = {
-    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
-    validationContracts: ['object'],
-    object: [
-      {
-        type: 'object',
-        label: 'dog',
-        confidence: 0.9,
-        boundingPoly: [
-          {
-            x: 0.1,
-            y: 0.1
-          },
-          {
-            x: 0.1,
-            y: 0.5
-          },
-          {
-            x: 0.5,
-            y: 0.5
-          },
-          {
-            x: 0.5,
-            y: 0.1
-          }
-        ]
-      }
-    ]
-  };
-
   const results = verifyObject(objectSummaryWithTimeFields);
-  expect(results.valid).toBe(true);
-  expect(results.processed).toEqual(objectSummaryWithoutTimeFields);
-  expect(results.errors).toBe(undefined);
+  expect(results.valid).not.toBe(true);
+  expect(results.errors.length).toBe(2);
 });
 
-test('it should validate an object and filter out extra fields', () => {
+test('it should invalidate an object with extra properties in the objectCategory', () => {
   const objectWithExtraFields = {
     schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
     validationContracts: ['object'],
@@ -236,109 +205,12 @@ test('it should validate an object and filter out extra fields', () => {
     ]
   };
 
-  const objectWithoutExtraFields = {
-    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
-    validationContracts: ['object'],
-    object: [
-      {
-        type: 'object',
-        label: 'dog',
-        confidence: 0.9,
-        boundingPoly: [
-          {
-            x: 0.1,
-            y: 0.1
-          },
-          {
-            x: 0.1,
-            y: 0.5
-          }
-        ],
-        objectCategory: [
-          {
-            class: 'animal',
-            '@id': '1576'
-          }
-        ]
-      },
-      {
-        type: 'object',
-        label: 'cat',
-        confidence: 0.55,
-        objectCategory: [
-          {
-            class: 'animal',
-            '@id': '1576'
-          }
-        ]
-      }
-    ],
-    series: [
-      {
-        startTimeMs: 2000,
-        stopTimeMs: 2100,
-        object: {
-          type: 'object',
-          label: 'dog',
-          objectCategory: [
-            {
-              class: 'animal',
-              '@id': '1576'
-            }
-          ],
-          confidence: 0.9,
-          boundingPoly: [
-            {
-              x: 0.1,
-              y: 0.1
-            },
-            {
-              x: 0.1,
-              y: 0.5
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 2100,
-        stopTimeMs: 2200,
-        object: {
-          type: 'object',
-          label: 'cat',
-          confidence: 0.55,
-          objectCategory: [
-            {
-              class: 'animal',
-              '@id': '1576'
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 1400,
-        stopTimeMs: 2200,
-        object: {
-          type: 'object',
-          label: 'ball',
-          confidence: 0.55,
-          objectCategory: [
-            {
-              class: 'toys',
-              '@id': '3526'
-            }
-          ]
-        }
-      }
-    ]
-  };
-
   const results = verifyObject(objectWithExtraFields);
-  expect(results.valid).toBe(true);
-  expect(results.processed).toEqual(objectWithoutExtraFields);
-  expect(results.errors).toBe(undefined);
+  expect(results.valid).not.toBe(true);
+  expect(results.errors.length).toBe(4);
 });
 
-test('it should validate a transcript and filter out extra fields', () => {
+test('it should invalidate a transcript with extra properties', () => {
   const transcriptWithExtraField = {
     schemaId: 'https://docs.veritone.com/schemas/vtn-standard/transcript.json',
     validationContracts: ['transcript'],
@@ -384,57 +256,14 @@ test('it should validate a transcript and filter out extra fields', () => {
     ]
   };
 
-  const transcriptWithoutExtraField = {
-    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/transcript.json',
-    validationContracts: ['transcript'],
-    series: [
-      {
-        startTimeMs: 0,
-        stopTimeMs: 300,
-        words: [
-          {
-            word: 'is'
-          }
-        ]
-      },
-      {
-        startTimeMs: 300,
-        stopTimeMs: 500,
-        words: [
-          {
-            word: 'is'
-          }
-        ]
-      },
-      {
-        startTimeMs: 500,
-        stopTimeMs: 800,
-        words: [
-          {
-            word: 'a'
-          }
-        ]
-      },
-      {
-        startTimeMs: 800,
-        stopTimeMs: 1200,
-        words: [
-          {
-            word: 'sentence'
-          }
-        ]
-      }
-    ]
-  };
-
   const results = verifyTranscript(transcriptWithExtraField);
-  expect(results.valid).toBe(true);
-  expect(results.processed).toEqual(transcriptWithoutExtraField);
-  expect(results.errors).toBe(undefined);
+  expect(results.valid).not.toBe(true);
+  expect(results.errors.length).toBe(2);
 });
 
-// TODO: Add media-translated-specific tests
+// TODO: Add media-translated (and other categories)-specific tests
 
+// TODO: Write tests for this
 test('it should validate the big example json from the docs', () => {
   const sample = {
     /**

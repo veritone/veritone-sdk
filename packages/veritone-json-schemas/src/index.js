@@ -43,7 +43,7 @@ const generateValidationContractValidator = (schema, customValidators = []) => {
     const resultFiltered = cloneDeep(result);
     const ajvFilter = new Ajv({
       schemas: [MASTER_SCHEMA, schema],
-      removeAdditional: 'all'
+      removeAdditional: true
     });
     for (const {keyword, validator} of customValidators) {
       ajvFilter.addKeyword(keyword, {
