@@ -23,7 +23,7 @@
           "required": [
             "type"
           ],
-          "oneOf": [{
+          "anyOf": [{
             "required": ["label"]
           }, {
             "required": ["entityId"]
