@@ -52,13 +52,15 @@
         },
         "validationContracts": {
           "type": "array",
+          "minItems": 1,
           "items": [
             {
               "$ref": "#/definitions/validationContracts"
             }
           ]
         }
-      }
+      },
+      "required": ["validationContracts"]
     },
     "confidence": {
       "type": "number",
