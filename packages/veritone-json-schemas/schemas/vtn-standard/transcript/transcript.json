@@ -5,51 +5,7 @@
   "description": "Standard engine output for Object at Veritone",
   "type": "object",
   "definitions": {
-    "words": {
-      "allOf": [
-        {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "properties": {
-              "word": {
-                "$ref": "master.json#/definitions/word"
-              },
-              "confidence": {
-                "$ref": "master.json#/definitions/confidence"
-              },
-              "utteranceLength": {
-                "$ref": "master.json#/definitions/utteranceLength"
-              },
-              "bestPath": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "word"
-            ],
-            "additionalProperties": false
-          }
-        },
-        {
-          "type": "array",
-          "if": {
-            "minItems": 2
-          },
-          "then": {
-            "items": {
-              "required": [
-                "confidence",
-                "utteranceLength"
-              ]
-            },
-            "uniqueItems": true,
-            "requireBestPath": true
-          }
-        }
-      ]
-    }
+
   },
   "allOf": [
     {
@@ -66,28 +22,14 @@
         "series": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "words": {
-                "$ref": "#/definitions/words"
+            "allOf": [
+              {
+                "$ref": "master.json#/definitions/seriesItem"
               },
-              "startTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "stopTimeMs": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "language": {
-                "$ref": "master.json#/definitions/language"
+              {
+                "required": ["words"]
               }
-            },
-            "required": [
-              "startTimeMs",
-              "stopTimeMs"
-            ],
-            "additionalProperties": false
+            ]
           }
         }
       }

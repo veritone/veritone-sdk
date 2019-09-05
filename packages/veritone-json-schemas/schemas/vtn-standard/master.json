@@ -202,6 +202,51 @@
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
       "type": "string"
     },
+    "words": {
+      "allOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": {
+                "$ref": "#/definitions/word"
+              },
+              "confidence": {
+                "$ref": "#/definitions/confidence"
+              },
+              "utteranceLength": {
+                "$ref": "#/definitions/utteranceLength"
+              },
+              "bestPath": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "word"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "array",
+          "if": {
+            "minItems": 2
+          },
+          "then": {
+            "items": {
+              "required": [
+                "confidence",
+                "utteranceLength"
+              ]
+            },
+            "uniqueItems": true,
+            "requireBestPath": true
+          }
+        }
+      ]
+    },
     "utteranceLength": {
       "description": "Number of consecutive time-slices the utterance spans. example: of->thrones----->of->their-->own-> utteranceLength: thrones: 2; their,own: 1",
       "type": "integer",
@@ -236,6 +281,9 @@
         },
         "object": {
           "$ref": "#/definitions/objectResult"
+        },
+        "words": {
+          "$ref": "#/definitions/words"
         }
       },
       "required": [

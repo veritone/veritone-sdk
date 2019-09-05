@@ -207,7 +207,7 @@ test('it should invalidate an object with extra properties in the objectCategory
 
   const results = verifyObject(objectWithExtraFields);
   expect(results.valid).not.toBe(true);
-  expect(results.errors.length).toBe(5);
+  expect(results.errors.length).toBe(4);
 });
 
 test('it should invalidate a transcript with extra properties', () => {
