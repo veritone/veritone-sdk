@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
-  "title": "vtn-standard.object",
-  "description": "Standard engine output for Object at Veritone",
+  "title": "vtn-standard.transcript",
+  "description": "Standard engine output for Transcription at Veritone",
   "type": "object",
   "allOf": [
     {
