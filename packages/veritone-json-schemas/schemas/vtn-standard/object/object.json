@@ -33,14 +33,7 @@
                 "type": "object",
                 "properties": {
                   "object": {
-                    "allOf": [
-                      {
-                        "$ref": "master.json#/definitions/objectResult"
-                      },
-                      {
-                        "$ref": "master.json#/definitions/noDocumentIndexing"
-                      }
-                    ]
+                    "$ref": "master.json#/definitions/noDocumentIndexing"
                   }
                 },
                 "required": [
