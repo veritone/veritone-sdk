@@ -304,7 +304,8 @@
         "type": "object",
         "properties": {
           "assetId": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the asset output by the engine"
           },
           "language": {
             "$ref": "#/definitions/language"

@@ -18,7 +18,6 @@
             }
           },
           "required": [
-            "type",
             "label"
           ]
         }

@@ -207,7 +207,9 @@ test('it should invalidate an object with extra properties in the objectCategory
 
   const results = verifyObject(objectWithExtraFields);
   expect(results.valid).not.toBe(true);
-  expect(results.errors.length).toBe(4);
+  // This is 5 even though there's only 4 errors in the input because
+  // a duplicate additionalFields: false is double-reporting the same error.
+  expect(results.errors.length).toBe(5);
 });
 
 test('it should invalidate a transcript with extra properties', () => {

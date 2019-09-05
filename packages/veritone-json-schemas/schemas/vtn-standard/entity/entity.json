@@ -17,9 +17,6 @@
               "const": "namedEntity"
             }
           },
-          "required": [
-            "type"
-          ],
           "anyOf": [{
             "required": ["label"]
           }, {
