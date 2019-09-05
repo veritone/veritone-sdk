@@ -1,4 +1,4 @@
-import { verifyObject, verifyTranscript, VALIDATORS } from './index';
+import { VALIDATORS, verifyObject, verifyTranscript } from './index';
 import _ from 'lodash';
 
 import glob from 'glob';
@@ -54,6 +54,13 @@ Object.keys(validationContracts).forEach(validationContract => {
           });
         }
       }
+      it('should NOT validate empty output', function() {
+        const invalidResult = validator({});
+        expect(invalidResult).not.toHaveProperty('valid');
+        expect(invalidResult.errors).not.toBeNull();
+        expect(invalidResult.errors).not.toBeUndefined();
+        expect(invalidResult.errors.length).toBeGreaterThan(0);
+      });
     } else {
       console.warn(`No validator for validationContract: ${validationContract}`);
     }

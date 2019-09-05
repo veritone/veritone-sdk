@@ -61,12 +61,20 @@
                       }
                     ]
                   }
-                }
+                },
+                "required": ["object"]
               }
             ]
           }
         }
       }
+    },
+    {
+      "anyOf": [{
+        "required": ["object"]
+      }, {
+        "required": ["series"]
+      }]
     }
   ]
 }
