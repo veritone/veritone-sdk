@@ -3,6 +3,25 @@
   "$id": "https://docs.veritone.com/schemas/vtn-standard/object.json",
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
+  "definitions": {
+    "objectTypeObject": {
+      "allOf": [
+        {
+          "$ref": "master.json#/definitions/objectResult"
+        },
+        {
+          "$ref": "master.json#/definitions/noDocumentIndexing"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "object"
+            }
+          }
+        }
+      ]
+    }
+  },
   "allOf": [
     {
       "$ref": "master.json#/definitions/header"
@@ -19,7 +38,7 @@
         "object": {
           "type": "array",
           "items": {
-            "$ref": "master.json#/definitions/objectResult"
+            "$ref": "#/definitions/objectTypeObject"
           }
         },
         "series": {
@@ -30,10 +49,9 @@
                 "$ref": "master.json#/definitions/seriesItem"
               },
               {
-                "type": "object",
                 "properties": {
                   "object": {
-                    "$ref": "master.json#/definitions/noDocumentIndexing"
+                    "$ref": "#/definitions/objectTypeObject"
                   }
                 },
                 "required": [

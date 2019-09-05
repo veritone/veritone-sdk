@@ -1,0 +1,16 @@
+{
+  "object": [
+    {
+      "page": 3,
+      "paragraph": 15,
+      "sentence": 104,
+
+      "sentiment": {
+        "positiveValue": 0.56,
+        "positiveConfidence": 0.80,
+        "negativeValue": 0.20,
+        "negativeConfidence": 0.50
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
+  "validationContracts": ["object"],
+  "object": [
+    {
+      "type": "face",
+      "label": "some person",
+      "confidence": 0.9,
+      "boundingPoly": [
+        {
+          "x": 0.1,
+          "y": 0.1
+        },
+        {
+          "x": 0.1,
+          "y": 0.5
+        },
+        {
+          "x": 0.5,
+          "y": 0.5
+        },
+        {
+          "x": 0.5,
+          "y": 0.1
+        }
+      ]
+    }
+  ]
+}
