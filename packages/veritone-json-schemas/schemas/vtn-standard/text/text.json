@@ -48,6 +48,9 @@
           "items": {
             "allOf": [
               {
+                "$ref": "master.json#/definitions/seriesItem"
+              },
+              {
                 "properties": {
                   "object": {
                     "allOf": [
@@ -60,9 +63,6 @@
                     ]
                   }
                 }
-              },
-              {
-                "$ref": "master.json#/definitions/seriesItem"
               }
             ]
           }

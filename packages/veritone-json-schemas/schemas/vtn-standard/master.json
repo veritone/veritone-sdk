@@ -233,12 +233,16 @@
         },
         "language": {
           "$ref": "#/definitions/language"
+        },
+        "object": {
+          "$ref": "#/definitions/objectResult"
         }
       },
       "required": [
         "startTimeMs",
         "stopTimeMs"
-      ]
+      ],
+      "additionalProperties": false
     },
     "series": {
       "type": "array",
