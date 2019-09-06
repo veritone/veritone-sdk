@@ -287,14 +287,14 @@ export class SampleSearchBar extends React.Component {
   }
 
   cleanupLoadSavedSearch = () => {
-    if(this.loadSavedSearchWidget) {
+    if (this.loadSavedSearchWidget) {
       this.loadSavedSearchWidget.destroy();
       this.loadSavedSearchWidget = undefined;
     }
   }
 
   cleanupSavedSearch = () => {
-    if(this.savedSearchWidget) {
+    if (this.savedSearchWidget) {
       this.savedSearchWidget.destroy();
       this.savedSearchWidget = undefined;
     }
@@ -305,12 +305,12 @@ export class SampleSearchBar extends React.Component {
     let libraries = [];
     let getEntity = null;
     try {
-      if(!auth) {
-        auth =  await this.getAuth();
+      if (!auth) {
+        auth = await this.getAuth();
       }
 
-      if(!window._veritoneApp) {
-        this._veritoneApp = new VeritoneApp({apiRoot: this.props.api && this.props.api.replace(/\/$/, ""), theme: { typography: { htmlFontSize: this.props.relativeSize}}});
+      if (!window._veritoneApp) {
+        this._veritoneApp = new VeritoneApp({ apiRoot: this.props.api && this.props.api.replace(/\/$/, ""), theme: { typography: { htmlFontSize: this.props.relativeSize } } });
         this._veritoneApp.login({ sessionToken: auth });
         window._veritoneApp = this._veritoneApp;
       }
@@ -322,8 +322,8 @@ export class SampleSearchBar extends React.Component {
     let searchParameters = [];
 
     //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
-    if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
-    if(this.props.csp) {
+    if (this.props.toCSP) this.props.toCSP(() => this.convertSearchParametersToCSP(this.state.searchParameters));
+    if (this.props.csp) {
       searchParameters = this.CSPToSearchParameters(this.props.csp);
 
       if (getEntity) {
@@ -345,7 +345,7 @@ export class SampleSearchBar extends React.Component {
         }))
       }
     }
-    this.setState( { auth: auth, searchParameters: searchParameters, libraries: libraries });
+    this.setState({ auth: auth, searchParameters: searchParameters, libraries: libraries });
   }
 
   async getAuth() {
@@ -353,16 +353,16 @@ export class SampleSearchBar extends React.Component {
       return await fetch(`${this.props.api}v1/admin/current-user`, {
         credentials: 'include'
       })
-      .then(
-        response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            return false;
+        .then(
+          response => {
+            if (response.status === 200) {
+              return response.json();
+            } else {
+              return false;
+            }
           }
-        }
-      )
-      .then(y => y.token);
+        )
+        .then(y => y.token);
     }
   }
 
@@ -409,7 +409,7 @@ export class SampleSearchBar extends React.Component {
   }
 
   getEntityFetch = (auth) => {
-    if(auth) {
+    if (auth) {
       return async (entityId) => {
         return await fetch(`${this.props.api}v3/graphql`, {
           method: 'POST',
@@ -417,8 +417,9 @@ export class SampleSearchBar extends React.Component {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + auth
           },
-          body: JSON.stringify({query:
-            `query {
+          body: JSON.stringify({
+            query:
+              `query {
               entity(id: "${entityId}") {
                 id
                 name
@@ -434,7 +435,7 @@ export class SampleSearchBar extends React.Component {
               return false;
             }
           }
-        ).then( y => y.data.entity )
+        ).then(y => y.data.entity)
       }
     }
   }
@@ -479,11 +480,11 @@ export class SampleSearchBar extends React.Component {
           nud: () => {
             const expr = expression();
             match();
-            if(expr['and']) {
+            if (expr['and']) {
               return {
                 'and(': expr['and']
               };
-            } else if(expr['or']) {
+            } else if (expr['or']) {
               return {
                 'or(': expr['or']
               };
@@ -506,21 +507,21 @@ export class SampleSearchBar extends React.Component {
     };
 
     const resolveGroup = (operator, left, right) => {
-      if(!right) {
+      if (!right) {
         return left;
       }
       const leftType = getNodeType(left);
       const rightType = getNodeType(right);
       let resultGroup;
-      if(leftType === 'implicitGroup' && rightType === 'pill' && left[operator]) {
+      if (leftType === 'implicitGroup' && rightType === 'pill' && left[operator]) {
         resultGroup = {
           [operator]: [...left[operator], right]
         };
-      } else if(leftType === 'pill' && rightType === 'implicitGroup' && right[operator]) {
+      } else if (leftType === 'pill' && rightType === 'implicitGroup' && right[operator]) {
         resultGroup = {
           [operator]: [left, ...right[operator]]
         };
-      } else if(leftType === 'implicitGroup' && rightType === 'implicitGroup' && left[operator] && right[operator]) {
+      } else if (leftType === 'implicitGroup' && rightType === 'implicitGroup' && left[operator] && right[operator]) {
         resultGroup = {
           [operator]: [...left[operator], ...right[operator]]
         };
@@ -533,12 +534,12 @@ export class SampleSearchBar extends React.Component {
     }
 
     const getNodeType = (node) => {
-      if(!node) {
+      if (!node) {
         return null;
       }
-      if(node['and'] || node['or']) {
+      if (node['and'] || node['or']) {
         return 'implicitGroup';
-      } else if(node['and('] || node['or(']) {
+      } else if (node['and('] || node['or(']) {
         return 'explicitGroup';
       } else {
         return 'pill';
@@ -551,12 +552,12 @@ export class SampleSearchBar extends React.Component {
 
     const expression = (rbp = 0) => {
       let t = token;
-      if(!t.nud) {
+      if (!t.nud) {
         return null;
       }
       token = getNextToken();
       let left = t.nud();
-      while(rbp < token.lbp) {
+      while (rbp < token.lbp) {
         t = token;
         token = getNextToken();
         left = t.led(left);
@@ -567,11 +568,11 @@ export class SampleSearchBar extends React.Component {
     const getNextToken = () => {
       const nextSearchParameter = tokenIterable.next();
       let token;
-      if(nextSearchParameter.done) {
+      if (nextSearchParameter.done) {
         token = operators['end']();
       } else {
         const type = nextSearchParameter.value.conditionType;
-        if(type === 'join' || type === 'group') {
+        if (type === 'join' || type === 'group') {
           token = operators[nextSearchParameter.value.value]();
         } else {
           const cspNode = {
@@ -591,6 +592,7 @@ export class SampleSearchBar extends React.Component {
   }
 
   onSearch = (searchParameters) => {
+    console.log(this.props.onSearch, searchParameters, this.state.searchParameters);
     if (this.props.onSearch) {
       this.props.onSearch(this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters));
     } else {
@@ -604,7 +606,7 @@ export class SampleSearchBar extends React.Component {
 
   CSPToSearchParameters = (cognitiveSearchProfile, parentJoinOperator) => {
     //handle case where csp is just a single term without any join groups
-    if(cognitiveSearchProfile.state && cognitiveSearchProfile.engineCategoryId) {
+    if (cognitiveSearchProfile.state && cognitiveSearchProfile.engineCategoryId) {
       return [
         {
           id: guid(),
@@ -614,7 +616,7 @@ export class SampleSearchBar extends React.Component {
       ]
     }
 
-    const getJoinOperator = ( query ) => {
+    const getJoinOperator = (query) => {
       const operators = Object.keys(query);
       return operators[0];
     }
@@ -624,24 +626,24 @@ export class SampleSearchBar extends React.Component {
     const joinOperator = cspJoinOperator.replace('(', '');
     const conditions = cognitiveSearchProfile[cspJoinOperator];
     const shouldAddParens = cspJoinOperator.endsWith('(') || (parentJoinOperator === 'and' && cspJoinOperator === 'or');
-    if(shouldAddParens) {
-      searchParameters.push({id: guid(), conditionType: 'group', value: '(' });
+    if (shouldAddParens) {
+      searchParameters.push({ id: guid(), conditionType: 'group', value: '(' });
     }
 
-    for(let i = 0; i < conditions.length; i++) {
-      if('engineCategoryId' in conditions[i]) {
+    for (let i = 0; i < conditions.length; i++) {
+      if ('engineCategoryId' in conditions[i]) {
         const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
-        searchParameters.push( newSearchPill );
+        searchParameters.push(newSearchPill);
       } else {
         const subSearchParameters = this.CSPToSearchParameters(conditions[i], cspJoinOperator);
         searchParameters = [...searchParameters, ...subSearchParameters];
       }
-      if(i < conditions.length - 1) {
-        searchParameters.push( { id: guid(), conditionType: 'join', value: joinOperator } );
+      if (i < conditions.length - 1) {
+        searchParameters.push({ id: guid(), conditionType: 'join', value: joinOperator });
       }
     }
-    if(shouldAddParens) {
-      searchParameters.push({id: guid(), conditionType: 'group', value: ')' });
+    if (shouldAddParens) {
+      searchParameters.push({ id: guid(), conditionType: 'group', value: ')' });
     }
     return searchParameters;
   }
@@ -666,9 +668,9 @@ export class SampleSearchBar extends React.Component {
       }));
 
       return newSearchParameters;
-    } else if (existing === -1 && typeof(index) === 'number' ) {
+    } else if (existing === -1 && typeof (index) === 'number') {
       // not existing, index given, insert at a given position
-      const newSearchParameter = Array.isArray(parameter) ? parameter.map( x => ({ ...x, id: guid() }) ) : { ...parameter, id: guid() };
+      const newSearchParameter = Array.isArray(parameter) ? parameter.map(x => ({ ...x, id: guid() })) : { ...parameter, id: guid() };
 
       const newSearchParameters = newSearchParameter.length > 1 ? update(this.state.searchParameters, {
         $splice: [[index, 0, ...newSearchParameter]]
@@ -677,7 +679,7 @@ export class SampleSearchBar extends React.Component {
       });
 
       this.setState(prevState => ({
-          searchParameters: newSearchParameters
+        searchParameters: newSearchParameters
       }));
 
       return newSearchParameters;
@@ -693,7 +695,7 @@ export class SampleSearchBar extends React.Component {
   };
 
   insertMultipleSearchParameters = (parametersToAdd) => {
-    const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, {parameter, index}) => {
+    const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, { parameter, index }) => {
       const newSearchParameter = {
         ...parameter,
         id: guid()
@@ -738,7 +740,7 @@ export class SampleSearchBar extends React.Component {
     return engineCategoriesWithFunctions;
   };
 
-  getTheme = ( { color, relativeSize } ) => {
+  getTheme = ({ color, relativeSize }) => {
     const theme = createMuiTheme({
       typography: {
         htmlFontSize: relativeSize,
@@ -758,12 +760,12 @@ export class SampleSearchBar extends React.Component {
 
   showLoadSavedSearch = (e) => {
     this.cleanupLoadSavedSearch();
-    this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP});
+    this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP });
     this.loadSavedSearchWidget.open();
   }
 
   hideLoadSavedSearch = (e) => {
-    if(this.loadSavedSearchWidget) {
+    if (this.loadSavedSearchWidget) {
       this.loadSavedSearchWidget.close();
       this.cleanupLoadSavedSearch();
     }
@@ -772,56 +774,49 @@ export class SampleSearchBar extends React.Component {
   showSavedSearch = (e) => {
     this.cleanupSavedSearch();
     const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-    this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
+    this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp });
     this.savedSearchWidget.open();
   }
 
   hideSavedSearch = (e) => {
-    if(this.savedSearchWidget) {
+    if (this.savedSearchWidget) {
       this.savedSearchWidget.close();
       this.cleanupSavedSearch();
     }
   }
 
-  searchBar = () => {
-    return <SearchBarContainer
-        auth={this.state.auth}
-        color={this.props.color}
-        enabledEngineCategories={[...this.extendEngineCategories(
-          this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-        )]}
-        disableSavedSearch={this.props.disableSavedSearch}
-        onSearch={this.onSearch}
-        api={this.props.api}
-        libraries={this.state.libraries}
-        searchParameters={this.state.searchParameters}
-        addOrModifySearchParameter={this.addOrModifySearchParameter}
-        insertMultipleSearchParameters={this.insertMultipleSearchParameters}
-        removeSearchParameter={this.removeSearchParameter}
-        resetSearchParameters={this.resetSearchParameters}
-        getCSP={this.getCSP}
-        menuActions={this.props.menuActions}
-        showLoadSavedSearch={ this.showLoadSavedSearch }
-        showSavedSearch={ this.showSavedSearch }
-        presetSDOSchema={ this.props.presetSDOSchema }
-        presetSDOAttribute={ this.props.presetSDOAttribute }
-        sourceFilters={ this.props.sourceFilters }
-        defaultJoinOperator={ this.props.defaultJoinOperator }
-      />
-  }
-
-  withTheme = () => {
-    return <JssProvider classNamePrefix={`vsdk_${guid()}`}>
-      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
-        {this.searchBar()}
-      </MuiThemeProvider>
-    </JssProvider>
-  }
-
   render() {
     return (
       <Fragment>
-        {this.props.withTheme ? this.withTheme() : this.searchBar() }
+        <JssProvider classNamePrefix={`vsdk_${guid()}`}>
+          <MuiThemeProvider theme={this.getTheme({ color: this.props.color, relativeSize: this.props.relativeSize })}>
+            <SearchBarContainer
+              auth={this.state.auth}
+              color={this.props.color}
+              enabledEngineCategories={[...this.extendEngineCategories(
+                this.props.enabledEngineCategories ? enabledEngineCategories.filter(engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
+              )]}
+              disableSavedSearch={this.props.disableSavedSearch}
+              onSearch={this.onSearch}
+              api={this.props.api}
+              libraries={this.state.libraries}
+              searchParameters={this.state.searchParameters}
+              addOrModifySearchParameter={this.addOrModifySearchParameter}
+              insertMultipleSearchParameters={this.insertMultipleSearchParameters}
+              removeSearchParameter={this.removeSearchParameter}
+              resetSearchParameters={this.resetSearchParameters}
+              getCSP={this.getCSP}
+              menuActions={this.props.menuActions}
+              showLoadSavedSearch={this.showLoadSavedSearch}
+              showSavedSearch={this.showSavedSearch}
+              presetSDOSchema={this.props.presetSDOSchema}
+              presetSDOAttribute={this.props.presetSDOAttribute}
+              sourceFilters={this.props.sourceFilters}
+              defaultJoinOperator={this.props.defaultJoinOperator}
+              enabledAdvancedSearch={this.props.enabledAdvancedSearch}
+            />
+          </MuiThemeProvider>
+        </JssProvider>
         <div id="LoadSavedSearch"> </div>
         <div id="SaveSearch"> </div>
       </Fragment>

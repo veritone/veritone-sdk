@@ -7,7 +7,7 @@ import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
 import ModalSubtitle from '../ModalSubtitle';
-import LinearProgress  from '@material-ui/core/LinearProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import Dialog, {
   DialogActions,
@@ -67,10 +67,10 @@ export default class ObjectSearchModal extends React.Component {
     cancel: func
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false } )));
+  state = JSON.parse(JSON.stringify(Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false })));
 
   componentWillMount() {
-    if(this.props.modalState.label) {
+    if (this.props.modalState.label) {
       const selectedItem = {
         description: this.props.modalState.description,
         id: this.props.modalState.id,
@@ -86,6 +86,9 @@ export default class ObjectSearchModal extends React.Component {
   }
 
   onChange = debouncedQueryString => {
+
+    const { onChangeSearchInput } = this.props;
+
     if (debouncedQueryString) {
       this.setState({
         queryResults: [],
@@ -107,6 +110,7 @@ export default class ObjectSearchModal extends React.Component {
         return debouncedQueryString;
       });
     } else {
+      onChangeSearchInput(false);
       this.setState({
         loading: false,
         queryResults: [],
@@ -121,16 +125,18 @@ export default class ObjectSearchModal extends React.Component {
   };
 
   selectResult = result => {
+    const { onChangeSearchInput } = this.props;
     if (result) {
       this.setState({
         selectedResult: result,
         queryString: result.label
       });
+      onChangeSearchInput(result);
     }
   };
 
   returnValue() {
-    if(!this.state.selectedResult) {
+    if (!this.state.selectedResult) {
       return;
     } else {
       return {
@@ -149,33 +155,33 @@ export default class ObjectSearchModal extends React.Component {
   render() {
     return (
       <ObjectSearchForm
-        cancel={ this.props.cancel }
-        onChange={ this.onChange }
-        showAutocomplete={ this.state.showAutocomplete }
-        modalState={ this.state }
-        selectResult={ this.selectResult }
-        toggleExclude={ this.toggleExclude }
-        onClickAutocomplete={ this.onClickAutocomplete }
+        cancel={this.props.cancel}
+        onChange={this.onChange}
+        showAutocomplete={this.state.showAutocomplete}
+        modalState={this.state}
+        selectResult={this.selectResult}
+        toggleExclude={this.toggleExclude}
+        onClickAutocomplete={this.onClickAutocomplete}
         loading={this.state.loading}
       />
     );
   }
 }
 
-export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
+export const ObjectSearchForm = ({ cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading }) => {
   return (
     <Grid container spacing={8}>
-      <Grid item style={{flex: '1'}}>
+      <Grid item style={{ flex: '1' }}>
         <SearchAutocompleteContainer
           id="object_autocomplete_container"
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          cancel={ cancel }
-          componentState={ modalState }
-          selectResult={ selectResult }
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          cancel={cancel}
+          componentState={modalState}
+          selectResult={selectResult}
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.1em" }} /> : null }
+        {loading ? <LinearProgress style={{ height: "0.1em" }} /> : null}
       </Grid>
       <Grid item>
         <FormControlLabel
@@ -193,7 +199,7 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
 };
 
 const ObjectConditionGenerator = modalState => {
-  if(modalState.type === 'fullText') {
+  if (modalState.type === 'fullText') {
     return {
       operator: 'query_string',
       field: 'object-recognition.series.found.fulltext',

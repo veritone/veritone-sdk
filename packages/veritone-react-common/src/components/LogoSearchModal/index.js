@@ -9,7 +9,8 @@ import attachAutocomplete from '../SearchAutocomplete/helper.js';
 import ModalSubtitle from '../ModalSubtitle';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import {Dialog,
+import {
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle
@@ -79,7 +80,7 @@ export default class LogoSearchModal extends React.Component {
   );
 
   componentWillMount() {
-    if(this.props.modalState.label) {
+    if (this.props.modalState.label) {
       const selectedItem = {
         description: this.props.modalState.description,
         id: this.props.modalState.id,
@@ -101,11 +102,11 @@ export default class LogoSearchModal extends React.Component {
         loading: true
       });
       return this.props.fetchAutocomplete(
-          debouncedQueryString,
-          this.props.auth,
-          this.props.api,
-          this.props.libraries
-        )
+        debouncedQueryString,
+        this.props.auth,
+        this.props.api,
+        this.props.libraries
+      )
         .then(response => {
           this.setState({
             loading: false,
@@ -139,16 +140,18 @@ export default class LogoSearchModal extends React.Component {
   };
 
   selectResult = result => {
+    const { onChangeSearchInput } = this.props;
     if (result) {
       this.setState({
         selectedResult: result,
         queryString: result.label
       });
+      onChangeSearchInput(result);
     }
   };
 
   returnValue() {
-    if(!this.state.selectedResult) {
+    if (!this.state.selectedResult) {
       return;
     } else {
       return {
@@ -172,8 +175,8 @@ export default class LogoSearchModal extends React.Component {
         modalState={this.state}
         showAutocomplete={this.state.showAutocomplete}
         selectResult={this.selectResult}
-        toggleExclude={ this.toggleExclude }
-        onClickAutocomplete={ this.onClickAutocomplete }
+        toggleExclude={this.toggleExclude}
+        onClickAutocomplete={this.onClickAutocomplete}
         loading={this.state.loading}
       />
     );
@@ -193,17 +196,17 @@ export const LogoSearchForm = ({
 }) => {
   return (
     <Grid container spacing={8}>
-      <Grid item style={{flex: '1'}}>
+      <Grid item style={{ flex: '1' }}>
         <SearchAutocompleteContainer
           id="logo_autocomplete_container"
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          cancel={ cancel }
-          componentState={ modalState }
-          selectResult={ selectResult }
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          cancel={cancel}
+          componentState={modalState}
+          selectResult={selectResult}
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.1em" }}/> : null }
+        {loading ? <LinearProgress style={{ height: "0.1em" }} /> : null}
       </Grid>
       <Grid item>
         <FormControlLabel
