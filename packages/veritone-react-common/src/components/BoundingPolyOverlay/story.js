@@ -2,7 +2,7 @@ import React from 'react';
 import { findIndex } from 'lodash';
 import { storiesOf } from '@storybook/react';
 import { select, number, text, boolean } from '@storybook/addon-knobs';
-import Slider from '@material-ui/lab/Slider';
+import { Slider } from '@material-ui/core';
 import faker from 'faker';
 
 import { guid } from 'helpers/guid';

@@ -26,11 +26,11 @@ const FailureScreen = ({
   return (
     <div className={styles.container}>
       <ErrorOutlineIcon classes={classes.errorOutlineIcon} />
-      <Typography variant="headline" classes={classes.message}>
+      <Typography variant="h5" classes={classes.message}>
         {message}
       </Typography>
-      <Button variant="raised" classes={classes.button} onClick={onRetry}>
-        <RefreshIcon nativeColor={blue[500]} style={{ marginRight: '10px' }} />
+      <Button variant="contained" classes={classes.button} onClick={onRetry}>
+        <RefreshIcon htmlColor={blue[500]} style={{ marginRight: '10px' }} />
         Retry
       </Button>
     </div>

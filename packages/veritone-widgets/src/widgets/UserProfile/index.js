@@ -207,14 +207,14 @@ export class UserProfile extends React.Component {
 
           <div className={styles.section}>
             <Typography
-              variant="title"
+              variant="h6"
               gutterBottom
               classes={{ root: styles.title }}
             >
               Your Personal Info
             </Typography>
             <Typography
-              variant="subheading"
+              variant="subtitle1"
               gutterBottom
               classes={{ root: styles.subheading }}
             >
@@ -231,14 +231,14 @@ export class UserProfile extends React.Component {
 
           <div className={styles.section}>
             <Typography
-              variant="title"
+              variant="h6"
               gutterBottom
               classes={{ root: styles.title }}
             >
               Signing in to Veritone
             </Typography>
             <Typography
-              variant="subheading"
+              variant="subtitle1"
               gutterBottom
               classes={{ root: styles.subheading }}
             >
@@ -321,7 +321,7 @@ class UserProfileDialog extends React.Component {
             <IconButton color="inherit" onClick={this.handleClose}>
               <CloseIcon />
             </IconButton>
-            <Typography variant="title" color="inherit">
+            <Typography variant="h6" color="inherit">
               {title}
             </Typography>
           </Toolbar>
