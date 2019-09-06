@@ -21,7 +21,12 @@ import Slide from '@material-ui/core/Slide';
 import { Avatar } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const {
-  user: { resetUserPassword, updateCurrentUserProfile, selectUser }
+  user: {
+    resetUserPassword,
+    updateCurrentUserProfile,
+    selectUser,
+    selectUserOrganizationKvp
+  }
 } = modules;
 import widget from '../../shared/widget';
 import FilePicker from '../FilePicker';
@@ -36,7 +41,13 @@ const defaultAvatarImg =
 
 @connect(
   state => ({
-    user: selectUser(state)
+    user: selectUser(state),
+    enablePasswordReset:
+      get(
+        selectUserOrganizationKvp(state),
+        'features.oktaAuthentication.enabled',
+        false
+      ) !== true
   }),
   {
     resetForm,
@@ -92,11 +103,13 @@ export class UserProfile extends React.Component {
     onUserUpdated: func,
     invalid: bool,
     pristine: bool,
-    submitting: bool
+    submitting: bool,
+    enablePasswordReset: bool
   };
 
   static defaultProps = {
-    onUserUpdated: noop
+    onUserUpdated: noop,
+    enablePasswordReset: true
   };
 
   state = {
@@ -228,8 +241,8 @@ export class UserProfile extends React.Component {
               onEditEmail={this.openChangeEmailModal}
             />
           </div>
-
-          <div className={styles.section}>
+          {this.props.enablePasswordReset === true && (
+            <div className={styles.section}>
             <Typography
               variant="h6"
               gutterBottom
@@ -250,7 +263,7 @@ export class UserProfile extends React.Component {
               onEdit={this.openChangePasswordModal}
             />
           </div>
-
+          )}
           <ChangeNameModal
             open={this.state.currentModal === 'changeName'}
             onConfirm={this.submitChanges}

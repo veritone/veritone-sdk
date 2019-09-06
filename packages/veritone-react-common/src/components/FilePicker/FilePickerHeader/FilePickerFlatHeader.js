@@ -8,7 +8,7 @@ import styles from './styles.scss';
 const FilePickerFlatHeader = ({ title, fileCount, maxFiles }) => {
   return (
     <div className={styles.filePickerFlatHeader}>
-      <Typography variant={'title'}>
+      <Typography variant="h6">
         {title}
         &nbsp;<span className={styles.count}>
           {fileCount}/{maxFiles}
