@@ -97,16 +97,6 @@ export default class Overlay extends React.Component {
     }
   };
 
-  static getDerivedStateFromProps(props) {
-    return {
-      boundingBoxPositions: Overlay.mapPolysToInternalFormat(
-        props.initialBoundingBoxPolys,
-        props.overlayPositioningContext.width,
-        props.overlayPositioningContext.height
-      )
-    };
-  }
-
   // memoize so we don't update/render on every video frame
   /* eslint-disable-next-line react/sort-comp */
   static mapPolysToInternalFormat = memoize(
@@ -130,7 +120,16 @@ export default class Overlay extends React.Component {
     userActingOnBoundingBox: false,
     drawingInitialBoundingBox: false
   };
-
+  
+  static getDerivedStateFromProps(props) {
+    return {
+      boundingBoxPositions: Overlay.mapPolysToInternalFormat(
+        props.initialBoundingBoxPolys,
+        props.overlayPositioningContext.width,
+        props.overlayPositioningContext.height
+      )
+    };
+  }
   handleResizeExistingBox = (e, direction, ref, delta, position) => {
     this.removeStagedBoundingBox();
 

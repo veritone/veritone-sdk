@@ -5,10 +5,10 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func } from 'prop-types';
+import { string, func, number } from 'prop-types';
 
 import classNames from 'classnames';
-import styles from './styles.scss';  
+import styles from './styles.scss';
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notifierPropTypes = {
@@ -18,7 +18,10 @@ export const notifierPropTypes = {
   onClose: func,
   headerBackgroundColor: string,
   bodyBackgroundColor: string,
-  notifications: notificationListPropTypes
+  notifications: notificationListPropTypes,
+  totalNotification: number,
+  showNotifications: func,
+  hideNotification: func
 };
 
 export default class Notifier extends React.Component {
@@ -56,33 +59,35 @@ export default class Notifier extends React.Component {
       headerText,
       headerBackgroundColor,
       bodyBackgroundColor,
-      notifications
+      notifications,
+      totalNotification,
+      showNotifications,
+      hideNotification
     } = this.props;
 
 
     const displayEntries = notifications.concat([]);
-    const numNotifications = notifications.length || 0;
-
+    const numNotifications = (totalNotification || totalNotification === 0) ? totalNotification : notifications.length || 0;
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
         <Tooltip title={tooltipTitle || ''}>
           <span className={styles.toolTipWrapper}>
-            <IconButton 
-              onClick={this.showNotifications}
-              disabled={numNotifications === 0}
+            <IconButton
+              onClick={showNotifications ? showNotifications : this.showNotifications}
+              disabled={notifications.length === 0}
               data-veritone-element="notification-button"
             >
               {
                 numNotifications > 0 && !anchorEl ?
-                  <Badge 
-                    color="primary" 
+                  <Badge
+                    color="primary"
                     badgeContent={numNotifications}
                     classes={{ badge: styles.badge }}
                   >
                     <NotificationIcon nativeColor="white" />
                   </Badge>
-                :
+                  :
                   <NotificationIcon nativeColor="white" />
               }
             </IconButton>
@@ -101,20 +106,20 @@ export default class Notifier extends React.Component {
             vertical: 'top',
             horizontal: 'center',
           }}
-          onClose={this.hideNotification}
-          className={ classNames(styles.popover) }
+          onClose={hideNotification ? hideNotification : this.hideNotification}
+          className={classNames(styles.popover)}
         >
           <div className={classNames(styles.notificationWindow)}>
-            <div className={classNames(styles.header)} style={{backgroundColor: headerBackgroundColor}}>
+            <div className={classNames(styles.header)} style={{ backgroundColor: headerBackgroundColor }}>
               <div className={classNames(styles.label)}>{headerText}</div>
               <div className={classNames(styles.chip)}>{numNotifications}</div>
-              <IconButton className={classNames(styles.controls)} onClick={this.hideNotification}>
+              <IconButton className={classNames(styles.controls)} onClick={hideNotification ? hideNotification : this.hideNotification}>
                 <KeyboardArrowUpIcon nativeColor="white" />
               </IconButton>
             </div>
-            
-            <div className={classNames(styles.body)} style={{backgroundColor: bodyBackgroundColor}}>
-              <NotificationList notifications={displayEntries}/>
+
+            <div className={classNames(styles.body)} style={{ backgroundColor: bodyBackgroundColor }}>
+              <NotificationList notifications={displayEntries} />
             </div>
           </div>
         </Popover>

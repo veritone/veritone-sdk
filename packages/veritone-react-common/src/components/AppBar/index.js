@@ -80,7 +80,10 @@ export default class AppBar extends React.Component {
       'flex-start',
       'flex-end'
     ]),
-    zIndex: number
+    zIndex: number,
+    totalNotification: number,
+    showNotifications: func,
+    hideNotification: func
   };
   static defaultProps = {
     logo: true,
@@ -90,10 +93,10 @@ export default class AppBar extends React.Component {
     logoBackgroundColor: 'rgba(0,0,0,0.2)',
     rightActions: [],
     elevation: 2,
-    onLogout: () => {},
-    onEditProfile: () => {},
-    fetchEnabledApps: () => {},
-    onSwitchApp: () => {},
+    onLogout: () => { },
+    onEditProfile: () => { },
+    fetchEnabledApps: () => { },
+    onSwitchApp: () => { },
     searchBarJustification: 'center',
     searchBarLeftMargin: 0,
     zIndex: defaultAppBarZIndex,
@@ -141,7 +144,10 @@ export default class AppBar extends React.Component {
       user,
       onLogout,
       onEditProfile,
-      additionMenuItems
+      additionMenuItems,
+      totalNotification,
+      showNotifications,
+      hideNotification
     } = this.props;
 
     return (
@@ -175,8 +181,8 @@ export default class AppBar extends React.Component {
                 draggable="false"
               />
             ) : (
-              <div className={styles.title}>{title}</div>
-            )}
+                <div className={styles.title}>{title}</div>
+              )}
           </div>
           <div
             className={styles.searchBarHolder}
@@ -191,7 +197,7 @@ export default class AppBar extends React.Component {
           <div className={styles.right}>
             <div className={styles.controllers}>
               {//Custom Controllers (Copy over from the previous app bar version)
-              rightActions &&
+                rightActions &&
                 rightActions.length > 0 && (
                   <div
                     className={classNames(styles['iconGroup'], styles.noSelect)}
@@ -213,38 +219,44 @@ export default class AppBar extends React.Component {
                 )}
 
               {//Notifications
-              notification && <Notifier {...notification} />}
+                notification && <Notifier
+                  {...notification}
+                  totalNotification={totalNotification}
+                  showNotifications={showNotifications}
+                  hideNotification={hideNotification}
+                />
+              }
 
               {//Help
-              help && <Help {...help} />}
+                help && <Help {...help} />}
 
               {//App Switcher
-              appSwitcher && (
-                <div>
-                  <AppSwitcher
-                    enabledApps={enabledApps}
-                    isFetchingApps={isFetchingApps}
-                    onSwitchApp={onSwitchApp}
-                    handleRefresh={this.handleRefresh}
-                    enabledAppsFailedLoading={enabledAppsFailedLoading}
-                  />
-                </div>
-              )}
+                appSwitcher && (
+                  <div>
+                    <AppSwitcher
+                      enabledApps={enabledApps}
+                      isFetchingApps={isFetchingApps}
+                      onSwitchApp={onSwitchApp}
+                      handleRefresh={this.handleRefresh}
+                      enabledAppsFailedLoading={enabledAppsFailedLoading}
+                    />
+                  </div>
+                )}
 
               {//User Profile
-              profileMenu && (
-                <div>
-                  <ProfileMenu
-                    onLogout={onLogout}
-                    onEditProfile={onEditProfile}
-                    user={user}
-                    additionMenuItems={additionMenuItems}
-                  />
-                </div>
-              )}
+                profileMenu && (
+                  <div>
+                    <ProfileMenu
+                      onLogout={onLogout}
+                      onEditProfile={onEditProfile}
+                      user={user}
+                      additionMenuItems={additionMenuItems}
+                    />
+                  </div>
+                )}
 
               {//Close Button
-              this.props.closeButton &&
+                this.props.closeButton &&
                 this.props.onClose && (
                   <div>
                     <div style={{ marginLeft: 'auto' }}>
