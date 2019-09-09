@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, func } from 'prop-types';
+import {string, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import { noop } from 'lodash';
