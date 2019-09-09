@@ -169,7 +169,7 @@ class InfiniteTablePicker extends React.Component {
         <div className={styles.infinitePickerContainer}>
           <div className={styles.pickerTitle}>
             <div className={styles.pickerTitleContainer}>
-              <Typography variant="headline">
+              <Typography variant="h5">
                 {this.props.pickerTitle}
               </Typography>
             </div>
@@ -193,7 +193,7 @@ class InfiniteTablePicker extends React.Component {
                       paddingLeft: column.paddingLeft
                     }}
                   >
-                    <Typography variant="subheading">{column.name}</Typography>
+                    <Typography variant="subtitle1">{column.name}</Typography>
                   </TableCell>
                 ))}
               </TableHead>
@@ -204,7 +204,7 @@ class InfiniteTablePicker extends React.Component {
                       colSpan={this.props.columns.length}
                       className={styles.rowLoaderSpinner}
                     >
-                      <Typography variant="subheading" gutterBottom>
+                      <Typography variant="subtitle1" gutterBottom>
                         {this.props.failedToLoadMessage}
                       </Typography>
                       <Button

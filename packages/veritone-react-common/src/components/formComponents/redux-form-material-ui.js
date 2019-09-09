@@ -4,7 +4,7 @@
 // that library, once the 5.0 branch is released.
 import { Component, createElement } from 'react';
 
-export const isStateLess = Component => !Component.prototype.render;
+export const isStateLess = (ReactComponent => ReactComponent.prototype && !ReactComponent.prototype.render);
 
 export function createComponent(MaterialUIComponent, mapProps) {
   class InputComponent extends Component {

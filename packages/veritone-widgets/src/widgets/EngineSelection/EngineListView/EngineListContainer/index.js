@@ -95,7 +95,7 @@ export default class EngineListContainer extends React.Component {
               You have no enabled engines.
             </div>
             <Button
-              variant="raised"
+              variant="contained"
               color="primary"
               onClick={this.handleExploreAllEnginesClick}
             >

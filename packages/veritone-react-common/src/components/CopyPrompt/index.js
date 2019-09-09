@@ -68,7 +68,7 @@ export default class CopyPrompt extends React.Component {
         {Clipboard.isSupported() && (
           <span ref={this.triggerRef}>
             <Button
-              variant="raised"
+              variant="contained"
               color="primary"
               classes={{ root: styles.button }}
             >

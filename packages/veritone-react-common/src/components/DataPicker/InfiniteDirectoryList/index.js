@@ -219,7 +219,7 @@ class FilesTable extends React.Component {
           finishedLoading={finishedLoading}
           threshold={DEFAULT_THRESHOLD}
           onMount={onMount}
-          loadMore={triggerPagination}
+          triggerPagination={triggerPagination}
           loadingComponent={loadingComponent}
         >
           <Table>
