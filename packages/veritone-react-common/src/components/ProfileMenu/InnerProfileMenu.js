@@ -53,7 +53,7 @@ export default class InnerProfileMenu extends React.Component {
             </div>
             <div className={styles['editButton']}>
               <Button
-                variant="raised"
+                variant="contained"
                 color="secondary"
                 onClick={this.props.onEditProfile}
                 className="editProfileButton"
@@ -65,7 +65,7 @@ export default class InnerProfileMenu extends React.Component {
         </ListSubheader>
 
         {this.props.additionMenuItems}
-        
+
         <Divider />
         <MenuItem
           onClick={this.props.onLogout}

@@ -14,13 +14,11 @@ const MultipleTabHeader = ({ tabs, selectedTab, onSelectTab }) => {
       classes={{
         flexContainer: styles.muiTabsFlexContainerOverride
       }}
-      fullWidth
     >
       {tabs.map(t => (
         <Tab
           classes={{
-            root: styles.muiTabButtonRootOverride,
-            label: styles.muiTabButtonLabelOverride
+            root: styles.muiTabButtonRootOverride
           }}
           value={t}
           label={t}

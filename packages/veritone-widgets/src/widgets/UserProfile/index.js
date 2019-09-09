@@ -220,14 +220,14 @@ export class UserProfile extends React.Component {
 
           <div className={styles.section}>
             <Typography
-              variant="title"
+              variant="h6"
               gutterBottom
               classes={{ root: styles.title }}
             >
               Your Personal Info
             </Typography>
             <Typography
-              variant="subheading"
+              variant="subtitle1"
               gutterBottom
               classes={{ root: styles.subheading }}
             >
@@ -243,28 +243,27 @@ export class UserProfile extends React.Component {
           </div>
           {this.props.enablePasswordReset === true && (
             <div className={styles.section}>
-              <Typography
-                variant="title"
-                gutterBottom
-                classes={{ root: styles.title }}
-              >
-                Signing in to Veritone
-              </Typography>
-              <Typography
-                variant="subheading"
-                gutterBottom
-                classes={{ root: styles.subheading }}
-              >
-                Control your password and account access.
-              </Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              classes={{ root: styles.title }}
+            >
+              Signing in to Veritone
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              classes={{ root: styles.subheading }}
+            >
+              Control your password and account access.
+            </Typography>
 
-              <PasswordField
-                lastUpdated={this.props.user.lastPasswordUpdated}
-                onEdit={this.openChangePasswordModal}
-              />
-            </div>
+            <PasswordField
+              lastUpdated={this.props.user.lastPasswordUpdated}
+              onEdit={this.openChangePasswordModal}
+            />
+          </div>
           )}
-
           <ChangeNameModal
             open={this.state.currentModal === 'changeName'}
             onConfirm={this.submitChanges}
@@ -335,7 +334,7 @@ class UserProfileDialog extends React.Component {
             <IconButton color="inherit" onClick={this.handleClose}>
               <CloseIcon />
             </IconButton>
-            <Typography variant="title" color="inherit">
+            <Typography variant="h6" color="inherit">
               {title}
             </Typography>
           </Toolbar>

@@ -261,7 +261,7 @@ export default class AppBar extends React.Component {
                   <div>
                     <div style={{ marginLeft: 'auto' }}>
                       <IconButton onClick={this.props.onClose}>
-                        <CloseIcon nativeColor="white" />
+                        <CloseIcon htmlColor="white" />
                       </IconButton>
                     </div>
                   </div>
