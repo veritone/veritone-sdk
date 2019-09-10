@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/text.json",
+  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/text/text.json",
   "title": "vtn-standard.text",
   "description": "Standard engine output for Text at Veritone",
   "type": "object",
@@ -8,7 +8,7 @@
     "textObject": {
       "allOf": [
         {
-          "$ref": "master.json#/definitions/objectResult"
+          "$ref": "../master.json#/definitions/objectResult"
         },
         {
           "type": "object",
@@ -26,7 +26,7 @@
   },
   "allOf": [
     {
-      "$ref": "master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/header"
     },
     {
       "properties": {
@@ -47,7 +47,7 @@
           "items": {
             "allOf": [
               {
-                "$ref": "master.json#/definitions/seriesItem"
+                "$ref": "../master.json#/definitions/seriesItem"
               },
               {
                 "properties": {
@@ -57,7 +57,7 @@
                         "$ref": "#/definitions/textObject"
                       },
                       {
-                        "$ref": "master.json#/definitions/noDocumentIndexing"
+                        "$ref": "../master.json#/definitions/noDocumentIndexing"
                       }
                     ]
                   }

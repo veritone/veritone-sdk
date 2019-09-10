@@ -1,12 +1,12 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/sentiment.json",
+  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/sentiment/sentiment.json",
   "title": "vtn-standard.sentiment",
   "description": "Standard engine output for Sentiment at Veritone",
   "type": "object",
   "allOf": [
     {
-      "$ref": "master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/header"
     },
     {
       "properties": {
@@ -17,26 +17,26 @@
           }
         },
         "sentiment": {
-          "$ref": "master.json#/definitions/sentiment"
+          "$ref": "../master.json#/definitions/sentiment"
         },
         "emotions": {
-          "$ref": "master.json#/definitions/emotions"
+          "$ref": "../master.json#/definitions/emotions"
         },
         "object": {
           "type": "array",
           "items": {
             "allOf": [
               {
-                "$ref": "master.json#/definitions/objectResult"
+                "$ref": "../master.json#/definitions/objectResult"
               },
               {
                 "type": "object",
                 "properties": {
                   "sentiment": {
-                    "$ref": "master.json#/definitions/sentiment"
+                    "$ref": "../master.json#/definitions/sentiment"
                   },
                   "emotions": {
-                    "$ref": "master.json#/definitions/emotions"
+                    "$ref": "../master.json#/definitions/emotions"
                   }
                 }
               }

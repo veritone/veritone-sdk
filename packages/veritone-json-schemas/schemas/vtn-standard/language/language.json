@@ -1,12 +1,12 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/language.json",
+  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/language/language.json",
   "title": "vtn-standard.language",
   "description": "Standard engine output for Language Identification at Veritone",
   "type": "object",
   "allOf": [
     {
-      "$ref": "master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/header"
     },
     {
       "properties": {
@@ -17,7 +17,7 @@
           }
         },
         "language": {
-          "$ref": "master.json#/definitions/language"
+          "$ref": "../master.json#/definitions/language"
         }
       },
       "required": ["language"]

@@ -1,16 +1,16 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/object.json",
+  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/object/object.json",
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
   "definitions": {
     "objectTypeObject": {
       "allOf": [
         {
-          "$ref": "master.json#/definitions/objectResult"
+          "$ref": "../master.json#/definitions/objectResult"
         },
         {
-          "$ref": "master.json#/definitions/noDocumentIndexing"
+          "$ref": "../master.json#/definitions/noDocumentIndexing"
         },
         {
           "properties": {
@@ -24,7 +24,7 @@
   },
   "allOf": [
     {
-      "$ref": "master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/header"
     },
     {
       "type": "object",
@@ -46,7 +46,7 @@
           "items": {
             "allOf": [
               {
-                "$ref": "master.json#/definitions/seriesItem"
+                "$ref": "../master.json#/definitions/seriesItem"
               },
               {
                 "properties": {
