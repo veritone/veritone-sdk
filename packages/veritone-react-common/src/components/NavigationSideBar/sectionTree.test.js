@@ -1,6 +1,7 @@
 import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
+import Button from '@material-ui/core/Button';
 import AttachMoneyIcon from '@material-ui/icons/Apps';
 
 import SectionTree, { SectionTreeTab } from './SectionTree';
@@ -361,8 +362,7 @@ describe('SectionTreeTab', function() {
 
   it('adds selected styling with props.selected', function() {
     const wrapper = mount(<SectionTreeTab {...defaultProps} selected />);
-
-    expect(wrapper.find('Button').props().classes.root).toContain('selected');
+    expect(wrapper.find(Button).first().props().classes.root).toContain('selected');
   });
 
   it('calls props.onClick with props.id', function() {

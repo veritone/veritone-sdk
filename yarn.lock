@@ -5599,6 +5599,17 @@ discontinuous-range@1.0.0:
   resolved "https://registry.yarnpkg.com/discontinuous-range/-/discontinuous-range-1.0.0.tgz#e38331f0844bba49b9a9cb71c771585aab1bc65a"
   integrity sha1-44Mx8IRLukm5qctxx3FYWqsbxlo=
 
+dnd-core-cjs@^9.3.9:
+  version "9.3.9"
+  resolved "https://registry.yarnpkg.com/dnd-core-cjs/-/dnd-core-cjs-9.3.9.tgz#fb172672624e84f670d7e059d997ec577ae64355"
+  integrity sha512-/n7q6uqimK5dHhKDAsOAcXSY/eKqcH1N4vAJOijEx20e0AXYe2xDdxVBqX9UBqe9qavJIW67AaEmodfcIT5cZA==
+  dependencies:
+    "@types/asap" "^2.0.0"
+    "@types/invariant" "^2.2.30"
+    asap "^2.0.6"
+    invariant "^2.2.4"
+    redux "^4.0.1"
+
 dnd-core@^9.3.4:
   version "9.3.4"
   resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-9.3.4.tgz#56b5fdc165aa7d102506d3d5a08ec1fa789e0775"
@@ -5899,7 +5910,7 @@ envinfo@^5.7.0:
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.10.0.tgz#503a9774ae15b93ea68bdfae2ccd6306624ea6df"
   integrity sha512-rXbzXWvnQxy+TcqZlARbWVQwgGVVouVJgFZhLVN5htjLxl1thstrP2ZGi0pXC309AbK7gVOPU+ulz/tmpCI7iw==
 
-enzyme-adapter-react-16@^1.0.0:
+enzyme-adapter-react-16@^1.0.0, enzyme-adapter-react-16@^1.14.0:
   version "1.14.0"
   resolved "https://registry.yarnpkg.com/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.14.0.tgz#204722b769172bcf096cb250d33e6795c1f1858f"
   integrity sha512-7PcOF7pb4hJUvjY7oAuPGpq3BmlCig3kxXGi2kFx0YzJHppqX1K8IIV9skT1IirxXlu8W7bneKi+oQ10QRnhcA==
@@ -5925,7 +5936,7 @@ enzyme-adapter-utils@^1.12.0:
     prop-types "^15.7.2"
     semver "^5.6.0"
 
-enzyme@^3.5.0:
+enzyme@^3.10.0, enzyme@^3.5.0:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/enzyme/-/enzyme-3.10.0.tgz#7218e347c4a7746e133f8e964aada4a3523452f6"
   integrity sha512-p2yy9Y7t/PFbPoTvrWde7JIYB2ZyGC+NgTNbVEGvZ5/EyoYSr9aG/2rSbVvyNvMHEhw9/dmGUJHWtfQIEiX9pg==
@@ -10937,16 +10948,7 @@ jss-vendor-prefixer@^7.0.0:
   dependencies:
     css-vendor "^0.3.8"
 
-jss@10.0.0-alpha.17:
-  version "10.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/jss/-/jss-10.0.0-alpha.17.tgz#3057c85a846c3bd207c04aafd91c8277955d9c57"
-  integrity sha512-egGIUg+YRu0+U+XXlD0gmVtU/gW5sn7+qmDv7opwK5s8emZBE/VoN55X6CaMrAa0kLeGMldnI43KOWea6M9/mA==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    is-in-browser "^1.1.3"
-    tiny-warning "^1.0.2"
-
-jss@10.0.0-alpha.24:
+jss@10.0.0-alpha.24, jss@^10.0.0-alpha.24:
   version "10.0.0-alpha.24"
   resolved "https://registry.yarnpkg.com/jss/-/jss-10.0.0-alpha.24.tgz#f8e2044b6b2f034db05a685d99c599095baf8b61"
   integrity sha512-kfuSitcj7MTrDtSPLkrWcZppgZlTE3A+cqrkC+Z10WYROt0RXIWINAaK8tE2ohwkDfUlaM1YcRYvV3iT6YNFTA==
@@ -14605,12 +14607,23 @@ react-datetime@^2.11.1:
     prop-types "^15.5.7"
     react-onclickoutside "^6.5.0"
 
-react-dnd-html5-backend@^9.3.4:
-  version "9.3.4"
-  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-9.3.4.tgz#5d1f5ac608206d7b294b7407b9e1a336589eedd7"
-  integrity sha512-s+Xu0j7fHV9bLMSaOCuX76baQKcZfycAx0EzDmkxcFXPBiiFlI8l6rzwURdSJCjNcvLYXd8MLb4VkSNSq5ISZQ==
+react-dnd-cjs@^9.3.9:
+  version "9.3.9"
+  resolved "https://registry.yarnpkg.com/react-dnd-cjs/-/react-dnd-cjs-9.3.9.tgz#7d2e8beaa13337e348db8b2e4f5a4f5f18fcebd6"
+  integrity sha512-iAQ32N2BKP9vx5W9+sBLUoU9NxwsdXh0GjQMvISaiRAmxqrx7t/Kjw9z8FbBfbfSZ8INQdmXiH9AADQznmzMfg==
   dependencies:
-    dnd-core "^9.3.4"
+    "@types/hoist-non-react-statics" "^3.3.1"
+    "@types/shallowequal" "^1.1.1"
+    dnd-core-cjs "^9.3.9"
+    hoist-non-react-statics "^3.3.0"
+    shallowequal "^1.1.0"
+
+react-dnd-html5-backend-cjs@^9.3.9:
+  version "9.3.9"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend-cjs/-/react-dnd-html5-backend-cjs-9.3.9.tgz#53f4e23fc8571818fb7b9eb4b373aa5d2e7ce08e"
+  integrity sha512-XD5FIcEwtTXiZOMYYX7S547pB7Axoz/bi18LF6YKIfS/662rvD2R/vC7jjiJZDzak326WBoCVRjM/XZaBWNBTQ==
+  dependencies:
+    dnd-core-cjs "^9.3.9"
 
 react-dnd-test-backend@^9.3.4:
   version "9.3.4"
@@ -14618,17 +14631,6 @@ react-dnd-test-backend@^9.3.4:
   integrity sha512-WGvAMNb4IpHFVlKDJopQcp3nQoXqjWPxXICKEMSoIM3Vi92bThYOxTrjmIHli1qSgIlhnjePZxGQT9aDSemeMQ==
   dependencies:
     dnd-core "^9.3.4"
-
-react-dnd@^9.3.4:
-  version "9.3.4"
-  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-9.3.4.tgz#ebab4b5b430b72f3580c058a29298054e1f9d2b8"
-  integrity sha512-UUtyoHFRrryMxVMEGYa3EdZIdibnys/ax7ZRs6CKpETHlnJQOFhHE3rpI+ManvKS0o3MFc1DZ+aoudAFtrOvFA==
-  dependencies:
-    "@types/hoist-non-react-statics" "^3.3.1"
-    "@types/shallowequal" "^1.1.1"
-    dnd-core "^9.3.4"
-    hoist-non-react-statics "^3.3.0"
-    shallowequal "^1.1.0"
 
 react-docgen@^3.0.0-beta11:
   version "3.0.0-beta9"

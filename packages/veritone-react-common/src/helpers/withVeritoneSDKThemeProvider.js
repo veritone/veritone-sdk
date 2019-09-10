@@ -40,7 +40,8 @@ const generateClassName = createGenerateClassName({
 export class VeritoneSDKThemeProvider extends React.Component {
   static propTypes = {
     theme: objectOf(any),
-    children: node
+    children: node,
+    generateClassName: func
   };
 
   render() {
@@ -49,7 +50,10 @@ export class VeritoneSDKThemeProvider extends React.Component {
     );
 
     return (
-      <StylesProvider jss={jss} generateClassName={generateClassName}>
+      <StylesProvider
+        jss={jss}
+        generateClassName={this.props.generateClassName || generateClassName}
+      >
         <ThemeProvider theme={mergedTheme}>
           {this.props.children}
         </ThemeProvider>
