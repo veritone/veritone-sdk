@@ -346,7 +346,7 @@ The Veritone export engine outputs full screen dialog. This will fetch the engin
 5. When the build finishes, access the storybook at the url provided in your terminal.
 
 ## License
-Copyright 2017, Veritone Inc.
+Copyright 2019, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
