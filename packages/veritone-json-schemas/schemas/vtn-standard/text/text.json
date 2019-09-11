@@ -1,23 +1,23 @@
 {
   "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/object/object.json",
-  "title": "vtn-standard.object",
-  "description": "Standard engine output for Object at Veritone",
+  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/text/text.json",
+  "title": "vtn-standard.text",
+  "description": "Standard engine output for Text at Veritone",
+  "type": "object",
   "definitions": {
-    "objectTypeObject": {
+    "textObject": {
       "allOf": [
         {
           "$ref": "../master.json#/definitions/objectResult"
         },
         {
-          "$ref": "../master.json#/definitions/noDocumentIndexing"
-        },
-        {
+          "type": "object",
           "properties": {
             "type": {
-              "const": "object"
+              "const": "text"
             }
-          }
+          },
+          "required": ["text"]
         }
       ]
     }
@@ -27,18 +27,17 @@
       "$ref": "../master.json#/definitions/header"
     },
     {
-      "type": "object",
       "properties": {
         "validationContracts": {
           "type": "array",
           "contains": {
-            "const": "object"
+            "const": "text"
           }
         },
         "object": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/objectTypeObject"
+            "$ref": "#/definitions/textObject"
           }
         },
         "series": {
@@ -51,7 +50,14 @@
               {
                 "properties": {
                   "object": {
-                    "$ref": "#/definitions/objectTypeObject"
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textObject"
+                      },
+                      {
+                        "$ref": "../master.json#/definitions/noDocumentIndexing"
+                      }
+                    ]
                   }
                 },
                 "required": ["object"]
