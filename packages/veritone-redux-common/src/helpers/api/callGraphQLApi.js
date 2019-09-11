@@ -61,6 +61,7 @@ async function callGraphQLApi({
       error: true,
       payload: e,
       meta: {
+        response,
         variables,
         operationName,
         query,
@@ -82,6 +83,7 @@ async function callGraphQLApi({
       error: true,
       payload: response.errors,
       meta: {
+        response,
         variables,
         operationName,
         query,
@@ -99,6 +101,7 @@ async function callGraphQLApi({
     type: successType,
     payload: response.data,
     meta: {
+      response,
       variables,
       operationName,
       query,
