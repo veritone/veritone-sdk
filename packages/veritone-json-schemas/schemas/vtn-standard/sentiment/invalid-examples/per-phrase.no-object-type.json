@@ -7,9 +7,9 @@
 
       "sentiment": {
         "positiveValue": 0.56,
-        "positiveConfidence": 0.80,
-        "negativeValue": 0.20,
-        "negativeConfidence": 0.50
+        "positiveConfidence": 0.8,
+        "negativeValue": 0.2,
+        "negativeConfidence": 0.5
       }
     }
   ]

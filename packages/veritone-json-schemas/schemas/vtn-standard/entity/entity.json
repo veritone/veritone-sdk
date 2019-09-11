@@ -17,11 +17,14 @@
               "const": "namedEntity"
             }
           },
-          "anyOf": [{
-            "required": ["label"]
-          }, {
-            "required": ["entityId"]
-          }]
+          "anyOf": [
+            {
+              "required": ["label"]
+            },
+            {
+              "required": ["entityId"]
+            }
+          ]
         }
       ]
     }

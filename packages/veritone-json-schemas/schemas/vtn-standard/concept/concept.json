@@ -17,9 +17,7 @@
               "const": "concept"
             }
           },
-          "required": [
-            "objectCategory"
-          ]
+          "required": ["objectCategory"]
         }
       ]
     }

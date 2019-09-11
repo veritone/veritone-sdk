@@ -1,7 +1,5 @@
 {
-  "validationContracts": [
-    "media-translated"
-  ],
+  "validationContracts": ["media-translated"],
   "media": [
     {
       "language": "en"

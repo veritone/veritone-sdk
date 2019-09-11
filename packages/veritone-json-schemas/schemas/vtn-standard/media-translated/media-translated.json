@@ -25,9 +25,7 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "required": [
-                  "language"
-                ]
+                "required": ["language"]
               }
             }
           ]

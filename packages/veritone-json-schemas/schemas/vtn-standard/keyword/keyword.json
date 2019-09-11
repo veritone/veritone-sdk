@@ -17,9 +17,7 @@
               "const": "keyword"
             }
           },
-          "required": [
-            "label"
-          ]
+          "required": ["label"]
         }
       ]
     }

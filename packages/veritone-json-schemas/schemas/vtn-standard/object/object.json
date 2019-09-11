@@ -54,9 +54,7 @@
                     "$ref": "#/definitions/objectTypeObject"
                   }
                 },
-                "required": [
-                  "object"
-                ]
+                "required": ["object"]
               }
             ]
           }
@@ -66,14 +64,10 @@
     {
       "anyOf": [
         {
-          "required": [
-            "object"
-          ]
+          "required": ["object"]
         },
         {
-          "required": [
-            "series"
-          ]
+          "required": ["series"]
         }
       ]
     }

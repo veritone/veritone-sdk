@@ -1,8 +1,6 @@
 {
   "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "validationContracts": [
-    "text"
-  ],
+  "validationContracts": ["text"],
   "object": [
     {
       "type": "text",
@@ -10,7 +8,8 @@
       "page": 1,
       "paragraph": 1,
       "sentence": 1
-    }, {
+    },
+    {
       "type": "text",
       "text": "Cela a effrayé le chien.",
       "page": 1,

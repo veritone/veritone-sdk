@@ -17,9 +17,7 @@
               "const": "text"
             }
           },
-          "required": [
-            "text"
-          ]
+          "required": ["text"]
         }
       ]
     }
@@ -70,11 +68,14 @@
       }
     },
     {
-      "anyOf": [{
-        "required": ["object"]
-      }, {
-        "required": ["series"]
-      }]
+      "anyOf": [
+        {
+          "required": ["object"]
+        },
+        {
+          "required": ["series"]
+        }
+      ]
     }
   ]
 }

@@ -1,7 +1,5 @@
 {
-  "validationContracts": [
-    "concept"
-  ],
+  "validationContracts": ["concept"],
   "object": [
     {
       "type": "concept",

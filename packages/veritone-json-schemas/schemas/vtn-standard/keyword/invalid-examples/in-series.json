@@ -1,7 +1,5 @@
 {
-  "validationContracts": [
-    "keyword"
-  ],
+  "validationContracts": ["keyword"],
   "series": [
     {
       "startTimeMs": 0,

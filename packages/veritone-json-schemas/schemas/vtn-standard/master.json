@@ -84,10 +84,7 @@
           "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
         }
       },
-      "required": [
-        "x",
-        "y"
-      ],
+      "required": ["x", "y"],
       "additionalProperties": false,
       "description": "A point describing the 2d coordinates from the top left corner of the source."
     },
@@ -117,9 +114,7 @@
             "$ref": "#/definitions/confidence"
           }
         },
-        "required": [
-          "class"
-        ],
+        "required": ["class"],
         "additionalProperties": false
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
@@ -191,9 +186,7 @@
           "$ref": "#/definitions/sentence"
         }
       },
-      "required": [
-        "type"
-      ],
+      "required": ["type"],
       "additionalProperties": false
     },
     "objectText": {
@@ -225,9 +218,7 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "word"
-            ],
+            "required": ["word"],
             "additionalProperties": false
           }
         },
@@ -238,10 +229,7 @@
           },
           "then": {
             "items": {
-              "required": [
-                "confidence",
-                "utteranceLength"
-              ]
+              "required": ["confidence", "utteranceLength"]
             },
             "uniqueItems": true,
             "requireBestPath": true
@@ -258,10 +246,7 @@
     "language": {
       "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
       "type": "string",
-      "examples": [
-        "en",
-        "en-US"
-      ]
+      "examples": ["en", "en-US"]
     },
     "seriesItem": {
       "type": "object",
@@ -288,10 +273,7 @@
           "$ref": "#/definitions/words"
         }
       },
-      "required": [
-        "startTimeMs",
-        "stopTimeMs"
-      ],
+      "required": ["startTimeMs", "stopTimeMs"],
       "additionalProperties": false
     },
     "series": {
@@ -313,9 +295,7 @@
             "$ref": "#/definitions/language"
           }
         },
-        "required": [
-          "assetId"
-        ]
+        "required": ["assetId"]
       }
     },
     "validationContracts": {
@@ -383,14 +363,10 @@
       },
       "dependencies": {
         "positiveConfidence": {
-          "required": [
-            "positiveValue"
-          ]
+          "required": ["positiveValue"]
         },
         "negativeConfidence": {
-          "required": [
-            "negativeValue"
-          ]
+          "required": ["negativeValue"]
         }
       }
     },
@@ -412,9 +388,7 @@
             "maximum": 1
           }
         },
-        "required": [
-          "emotion"
-        ]
+        "required": ["emotion"]
       }
     }
   }

@@ -46,25 +46,32 @@
       }
     },
     {
-      "anyOf": [{
-        "required": ["sentiment"]
-      }, {
-        "required": ["emotions"]
-      }, {
-        "required": ["object"],
-        "properties": {
-          "object": {
-            "type": "array",
-            "items": {
-              "anyOf": [{
-                "required": ["sentiment"]
-              }, {
-                "required": ["emotions"]
-              }]
+      "anyOf": [
+        {
+          "required": ["sentiment"]
+        },
+        {
+          "required": ["emotions"]
+        },
+        {
+          "required": ["object"],
+          "properties": {
+            "object": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "required": ["sentiment"]
+                  },
+                  {
+                    "required": ["emotions"]
+                  }
+                ]
+              }
             }
           }
         }
-      }]
+      ]
     }
   ]
 }

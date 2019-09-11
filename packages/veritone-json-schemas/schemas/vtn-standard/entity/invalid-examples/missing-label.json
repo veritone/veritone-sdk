@@ -1,7 +1,5 @@
 {
-  "validationContracts": [
-    "entity"
-  ],
+  "validationContracts": ["entity"],
   "object": [
     {
       "type": "namedEntity",

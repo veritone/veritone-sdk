@@ -1,11 +1,15 @@
 {
   "validationContracts": ["sentiment"],
-  "emotions": [{
-    "emotion": "excited"
-  }, {
-    "emotion": "confused"
-  }, {
-    "emotion": "something",
-    "emotionConfidence": 1
-  }]
+  "emotions": [
+    {
+      "emotion": "excited"
+    },
+    {
+      "emotion": "confused"
+    },
+    {
+      "emotion": "something",
+      "emotionConfidence": 1
+    }
+  ]
 }

@@ -1,5 +1,3 @@
 {
-  "validationContracts": [
-    "language"
-  ]
+  "validationContracts": ["language"]
 }

@@ -23,13 +23,12 @@ import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcrip
  */
 const generateValidationContractValidator = (schema, customValidators = []) => {
   return result => {
-
     // validate results
     const ajv = new Ajv({
       allErrors: true,
       schemas: [MASTER_SCHEMA, schema]
     });
-    for (const {keyword, validator} of customValidators) {
+    for (const { keyword, validator } of customValidators) {
       ajv.addKeyword(keyword, {
         validate: validator,
         errors: true
@@ -45,7 +44,7 @@ const generateValidationContractValidator = (schema, customValidators = []) => {
       schemas: [MASTER_SCHEMA, schema],
       removeAdditional: true
     });
-    for (const {keyword, validator} of customValidators) {
+    for (const { keyword, validator } of customValidators) {
       ajvFilter.addKeyword(keyword, {
         validate: validator,
         errors: true
@@ -96,15 +95,22 @@ const verifyConcept = generateValidationContractValidator(CONCEPT_SCHEMA);
 const verifyEntity = generateValidationContractValidator(ENTITY_SCHEMA);
 const verifyKeyword = generateValidationContractValidator(KEYWORD_SCHEMA);
 const verifyLanguage = generateValidationContractValidator(LANGUAGE_SCHEMA);
-const verifyMediaTranslated = generateValidationContractValidator(MEDIA_TRANSLATED_SCHEMA);
+const verifyMediaTranslated = generateValidationContractValidator(
+  MEDIA_TRANSLATED_SCHEMA
+);
 const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
 const verifySentiment = generateValidationContractValidator(SENTIMENT_SCHEMA);
 const verifySummary = generateValidationContractValidator(SUMMARY_SCHEMA);
 const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
-const verifyTranscript = generateValidationContractValidator(TRANSCRIPT_SCHEMA, [{
-  keyword: 'requireBestPath',
-  validator: validateBestPath
-}]);
+const verifyTranscript = generateValidationContractValidator(
+  TRANSCRIPT_SCHEMA,
+  [
+    {
+      keyword: 'requireBestPath',
+      validator: validateBestPath
+    }
+  ]
+);
 
 const VALIDATORS = {
   concept: verifyConcept,
@@ -116,7 +122,7 @@ const VALIDATORS = {
   sentiment: verifySentiment,
   summary: verifySummary,
   text: verifyText,
-  transcript: verifyTranscript,
+  transcript: verifyTranscript
 };
 
 export {

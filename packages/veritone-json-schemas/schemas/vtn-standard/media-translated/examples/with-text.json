@@ -1,8 +1,5 @@
 {
-  "validationContracts": [
-    "media-translated",
-    "text"
-  ],
+  "validationContracts": ["media-translated", "text"],
   "media": [
     {
       "assetId": "<ID of asset uploaded of english language translation>",
