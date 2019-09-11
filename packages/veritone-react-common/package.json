@@ -5,23 +5,26 @@
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
   "dependencies": {
-    "@material-ui/core": "^1.0.0",
-    "@material-ui/icons": "^2.0.0",
+    "@material-ui/core": "^4.3.3",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.24",
+    "@material-ui/styles": "^4.3.3",
     "classnames": "^2.2.5",
     "clipboard": "^2.0.4",
     "date-fns": "^1.29.0",
     "google-maps": "^3.3.0",
+    "jss": "^10.0.0-alpha.24",
     "lodash": "^4.17.4",
     "memoize-one": "^4.0.0",
     "mime-types": "^2.1.17",
     "pluralize": "^7.0.0",
     "prop-types": "^15.6.0",
-    "react": "^16.3.0",
+    "react": "^16.9.0",
     "react-addons-css-transition-group": "^15.6.2",
-    "react-dnd": "^2.5.4",
-    "react-dnd-html5-backend": "^2.5.4",
-    "react-dnd-test-backend": "^2.5.4",
-    "react-dom": "^16.3.0",
+    "react-dnd-cjs": "^9.3.9",
+    "react-dnd-html5-backend-cjs": "^9.3.9",
+    "react-dnd-test-backend": "^9.3.4",
+    "react-dom": "^16.9.0",
     "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
     "react-jss": "^8.6.1",
@@ -53,7 +56,6 @@
     "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "devDependencies": {
-    "@material-ui/lab": "^1.0.0-alpha.5",
     "@storybook/addon-knobs": "3.3.9",
     "@storybook/react": "v3.3.9",
     "babel-eslint": "^8.0.1",
@@ -71,8 +73,8 @@
     "babel-preset-env": "^1.6.1",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
-    "enzyme": "^3.5.0",
-    "enzyme-adapter-react-16": "^1.0.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.10.0",
@@ -105,9 +107,9 @@
     "stylelint-config-prettier": "^4.0.0",
     "stylelint-config-standard": "^17.0.0",
     "url-loader": "^0.6.2",
+    "veritone-csp-generator": "^3.5.1",
     "veritone-dev-env": "^3.0.0",
-    "veritone-searchbar-react-export": "^20.0.0",
-    "veritone-csp-generator": "^3.5.1"
+    "veritone-searchbar-react-export": "^20.0.0"
   },
   "license": "Apache-2.0",
   "jest": {
@@ -128,6 +130,9 @@
     "setupFiles": [
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-dnd|react-dnd-html5-backend)/)"
     ]
   },
   "peerDependencies": {}

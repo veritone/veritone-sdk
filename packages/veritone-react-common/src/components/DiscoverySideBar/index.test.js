@@ -1,6 +1,7 @@
 import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
 
 import { DiscoverySideBarContainerPure as Sidebar } from './';
 
@@ -29,12 +30,12 @@ describe('DiscoverySideBarContainerPure', function() {
   it('should render a rightIconButton into the header if props.clearAllFilters is true', function() {
     const wrapper = mount(<Sidebar {...defaultProps} />);
     expect(
-      wrapper.find('DiscoverySidebarHeader').find('IconButton')
+      wrapper.find('DiscoverySidebarHeader').find(IconButton)
     ).toHaveLength(0);
 
     wrapper.setProps({ clearAllFilters: true });
     expect(
-      wrapper.find('DiscoverySidebarHeader').find('IconButton')
+      wrapper.find('DiscoverySidebarHeader').find(IconButton)
     ).toHaveLength(1);
   });
 
@@ -46,7 +47,7 @@ describe('DiscoverySideBarContainerPure', function() {
 
     wrapper
       .find('DiscoverySidebarHeader')
-      .find('IconButton')
+      .find(IconButton)
       .simulate('click');
 
     expect(handler).toHaveBeenCalled();

@@ -98,13 +98,13 @@ class EnginePicker extends React.Component {
 
   renderRow = engine => [
     <TableCell key={columns[1].name} style={{ width: columns[1].width }}>
-      <Typography variant="subheading">{engine.name}</Typography>
+      <Typography variant="subtitle1">{engine.name}</Typography>
       <Typography variant="caption">
         {!this.props.onlyShowMyEngines && engine.ownerOrganization.name}
       </Typography>
     </TableCell>,
     <TableCell key={columns[2].name} style={{ width: columns[2].width }}>
-      <Typography variant="subheading">{engine.deployedVersion}</Typography>
+      <Typography variant="subtitle1">{engine.deployedVersion}</Typography>
     </TableCell>
   ];
 

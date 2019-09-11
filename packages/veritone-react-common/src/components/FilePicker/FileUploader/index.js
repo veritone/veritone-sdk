@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { noop, startsWith, endsWith } from 'lodash';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
-import { DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd-cjs';
 import { string, func, arrayOf, bool } from 'prop-types';
-import { NativeTypes } from 'react-dnd-html5-backend';
+import { NativeTypes } from 'react-dnd-html5-backend-cjs';
 const { FILE } = NativeTypes;
 
 import ExtensionPanel from './ExtensionPanel';
