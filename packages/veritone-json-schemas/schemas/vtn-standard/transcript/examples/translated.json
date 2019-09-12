@@ -4,41 +4,71 @@
   "series": [
     {
       "startTimeMs": 0,
-      "stopTimeMs": 300,
+      "stopTimeMs": 1201,
       "language": "es",
       "words": [
         {
-          "word": "this"
+          "word": "esto"
         }
       ]
     },
     {
-      "startTimeMs": 300,
-      "stopTimeMs": 500,
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
       "language": "es",
       "words": [
         {
-          "word": "is"
+          "word": "es"
         }
       ]
     },
     {
-      "startTimeMs": 500,
-      "stopTimeMs": 800,
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
       "language": "es",
       "words": [
         {
-          "word": "a"
+          "word": "una"
         }
       ]
     },
     {
-      "startTimeMs": 800,
-      "stopTimeMs": 1200,
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
       "language": "es",
       "words": [
         {
-          "word": "sentence"
+          "word": "frase"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 2500,
+      "stopTimeMs": 3200,
+      "language": "es",
+      "words": [
+        {
+          "word": "ahora"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 2500,
+      "stopTimeMs": 3200,
+      "language": "es",
+      "words": [
+        {
+          "word": "otro"
         }
       ]
     }
