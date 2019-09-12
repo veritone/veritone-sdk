@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/concept/concept.json",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/concept/concept.json",
   "title": "vtn-standard.concept",
   "description": "Standard engine output for Content Classification at Veritone",
   "type": "object",

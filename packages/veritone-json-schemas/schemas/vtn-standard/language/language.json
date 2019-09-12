@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/language/language.json",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/language/language.json",
   "title": "vtn-standard.language",
   "description": "Standard engine output for Language Identification at Veritone",
   "type": "object",

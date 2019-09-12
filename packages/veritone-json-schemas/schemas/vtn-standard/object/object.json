@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/object/object.json",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/object/object.json",
   "title": "vtn-standard.object",
   "description": "Standard engine output for Object at Veritone",
   "definitions": {

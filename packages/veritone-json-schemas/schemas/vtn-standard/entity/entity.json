@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/docs/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/docs/schemas/vtn-standard/entity/entity.json",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/entity/entity.json",
   "title": "vtn-standard.entity",
   "description": "Standard engine output for Entity Extraction at Veritone",
   "type": "object",
