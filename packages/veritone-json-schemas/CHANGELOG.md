@@ -47,3 +47,6 @@
 * Fixes the schema IDs to reflect their proper public hosting location.
 * Depending on your use of the json-schemas, this could be considered a breaking change if you previously referenced
   the schema IDs.
+
+## 1.0.2
+* Changes to examples to integrate nicely with our docs site.
