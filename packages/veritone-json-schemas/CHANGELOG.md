@@ -42,3 +42,8 @@
 * Add a number of new json-schema validators for engine categories centered around text analytics and translation.
 * See [160904a](https://github.com/veritone/veritone-sdk/commit/160904a60180e9e2bcf26c84efacea38c80ad58f) for full 
   details.
+
+## 1.0.1
+* Fixes the schema IDs to reflect their proper public hosting location.
+* Depending on your use of the json-schemas, this could be considered a breaking change if you previously referenced
+  the schema IDs.
