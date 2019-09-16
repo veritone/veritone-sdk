@@ -159,7 +159,7 @@ const LogoConditionGenerator = modalState => {
       return params;
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
+      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState, true)];
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
@@ -173,7 +173,7 @@ const LogoConditionGenerator = modalState => {
       return params
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState)];
+      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState, true)];
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   }
@@ -191,7 +191,7 @@ const ObjectConditionGenerator = modalState => {
       return params;
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
@@ -205,7 +205,7 @@ const ObjectConditionGenerator = modalState => {
       return params
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState)];
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   }
