@@ -1,0 +1,23 @@
+@import 'src/styles/modules/variables';
+
+.summaryContainer {
+  display: flex;
+  margin-left: 16px;
+  margin-right: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+.detailsContainer {
+  width: 100%;
+  padding: 8px 16px;
+}
+
+.expansionContainer {
+  display: flex;
+  cursor: pointer;
+}
+
+.row {
+  width: 100%;
+}

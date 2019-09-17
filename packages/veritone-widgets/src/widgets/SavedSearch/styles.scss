@@ -1,0 +1,76 @@
+@import 'src/styles/modules/_variables';
+
+.tableHeaderActions {
+  padding-right: 8px !important;
+  border-bottom: 0 !important;
+  padding-top: 8px !important;
+  text-align: right !important;
+}
+
+.column {
+  flex-basis: 33%;
+}
+
+.loadingContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-content: center;
+  margin-top: 2.75em;
+  padding-top: 15vh;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.rowActions {
+  flex: 0 0 125px;
+  align-items: center;
+  display: flex;
+
+  & a {
+    padding-right: 2em;
+  }
+
+  & p :link, :visited, :active {
+    color: $blue-1 !important;
+  }
+
+  & p :hover {
+    color: $blue-2 !important;
+    text-decoration: none !important;
+  }
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.tabbedPaperContainer {
+  margin-top: 2em;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableHeader {
+  display: flex;
+  margin-left: 16px;
+  margin-right: 58px;
+  margin-top: 2em;
+  padding-bottom: 1em;
+}
+
+.infiniteRow {
+  border-top: 1px solid $grey-4;
+}
+
+.lastRow {
+  border-bottom: 1px solid $grey-4;
+}

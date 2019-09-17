@@ -10,7 +10,6 @@ import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
-@withMuiThemeProvider
 @connect(
   (state, { _widgetId }) => ({
     deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(

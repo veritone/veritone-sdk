@@ -3,7 +3,9 @@ export default function callGraphQLApi({
   query,
   variables,
   operationName,
-  token
+  token,
+  dispatch,
+  getState
 }) {
   return fetch(endpoint, {
     method: 'post',

@@ -13,3 +13,4 @@ export {
   GlobalNotificationDialog,
   GlobalSnackBar
 } from './widgets/Notifications';
+export { LoadSavedSearchWidget, SaveSearchWidget } from './widgets/SavedSearch';

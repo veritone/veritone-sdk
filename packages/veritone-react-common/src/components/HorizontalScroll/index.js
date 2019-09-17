@@ -79,7 +79,7 @@ class HorizontalScroll extends React.Component {
 
   render() {
     return (
-      <Fragment>
+      <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center'}}>
         <div onMouseDown={this.scrollLeft} onMouseUp={this.stopScrolling}>
           {this.state.showScrollButtons
             ? this.props.leftScrollButton
@@ -98,7 +98,7 @@ class HorizontalScroll extends React.Component {
             ? this.props.rightScrollButton
             : undefined}
         </div>
-      </Fragment>
+      </div>
     );
   }
 }

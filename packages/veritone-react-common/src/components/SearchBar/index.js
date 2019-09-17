@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { any, shape, string, oneOf, number, object } from 'prop-types';
+import { array, any, shape, string, oneOfType, number, objectOf, object, arrayOf } from 'prop-types';
 
 import SearchPill from 'components/SearchPill';
 
@@ -41,7 +41,7 @@ const SearchParameters = ({ parameters, level }) => {
       const after = group.afterGroup;
 
       searchParameters.push(
-        <span className={getGroupStyling({ before, after, level })}>
+        <span className={getGroupStyling({ before, after, level })} key={`${searchParameter.id}_group`}>
           <SearchParameters
             key={searchParameter.id}
             level={1 + level}
@@ -68,7 +68,7 @@ const SearchParameters = ({ parameters, level }) => {
       );
     } else if (searchParameter.conditionType === 'join') {
       // render a joining operator
-      searchParameters.push(<span className={styles['joiningOperator']}><Typography color="textSecondary" variant="subheading" key={searchParameter.id}>{searchParameter.value}</Typography></span>);
+      searchParameters.push(<span className={ cx(styles['joiningOperator']) } key={`${searchParameter.id}_joining`}><Typography color="textSecondary" variant="subheading" key={searchParameter.id}>{searchParameter.value}</Typography></span>);
     } else if (searchParameter.conditionType !== 'group') {
       throw new SearchBarError('Invalid search parameter', searchParameter);
     }
@@ -78,11 +78,11 @@ const SearchParameters = ({ parameters, level }) => {
 };
 
 SearchParameters.propTypes = {
-  parameters: shape({
+  parameters: arrayOf(shape({
     id: string,
     conditionType: string,
-    value: oneOf([string, object, number])
-  }),
+    value: oneOfType([string, object, number])
+  })),
   level: number
 };
 
@@ -92,7 +92,7 @@ SearchParameters.defaultProps = {
 
 class SearchBar extends React.Component {
   static propTypes = {
-    csp: any(object)
+    csp: objectOf(any)
   };
 
   state = {
@@ -107,7 +107,7 @@ class SearchBar extends React.Component {
     if (this.state.hasError) {
       return <div>Invalid searchQuery</div>;
     } else {
-      return <div className={ styles['searchBarContainer'] }> <SearchParameters parameters={ CSPToSearchParameters(this.props.csp) } /> </div>;
+      return <div className={ cx(styles['searchBarContainer']) }> <SearchParameters parameters={ CSPToSearchParameters(this.props.csp) } /> </div>;
     }
   }
 }

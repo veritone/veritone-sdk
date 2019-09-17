@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string, node } from 'prop-types';
+import { func, string, node, object } from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
@@ -17,12 +17,14 @@ class ExpandableInputField extends React.Component {
     onChange: func,
     onReset: func,
     icon: node.isRequired,
+    expandedInputProps: object,
     onFocus: func,
-    onBlur: func
+    onBlur: func,
+    dataTag: string
   };
 
   state = {
-    expanded: false
+    expanded: !!this.props.value
   };
 
   resetSearch = evt => {
@@ -72,6 +74,7 @@ class ExpandableInputField extends React.Component {
             value={this.props.value}
             autoFocus
             inputProps={{
+              ...this.props.expandedInputProps,
               onBlur: this.hideSearchBar
             }}
             inputRef={this.setInputRef}

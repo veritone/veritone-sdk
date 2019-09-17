@@ -3,7 +3,71 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { object } from '@storybook/addon-knobs/react';
 
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import CloseIcon from '@material-ui/icons/Close';
+
+import HorizontalScroll from '../HorizontalScroll';
 import SearchBar from './';
+
+
+storiesOf('SearchBar', module).add('horizontal scroll', () => {
+  const csp = {
+    and: [
+      {
+        'and(': [
+          {
+            and: [
+              {
+                state: { search: 'Lakers', language: 'en' },
+                engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+              },
+              {
+                'and(': [
+                  {
+                    state: { search: 'Kobe', language: 'en' },
+                    engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+                  },
+                  {
+                    state: { search: 'Bryant', language: 'en' },
+                    engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            'and(': [
+              {
+                state: { search: 'Shaq', language: 'en' },
+                engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+              },
+              {
+                state: { search: 'Friendly', language: 'en' },
+                engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        state: { search: 'Hello', language: 'en' },
+        engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+      }
+    ]
+  };
+
+  return (
+    <div style={{ width: "200px"}}>
+    <HorizontalScroll
+    leftScrollButton={<KeyboardArrowLeft />}
+    rightScrollButton={<KeyboardArrowRight />}
+    >
+      <SearchBar csp={object('CSP', csp)} />
+    </HorizontalScroll>
+    </div>
+  )
+});
 
 storiesOf('SearchBar', module).add('Base (render only)', () => {
   const csp = {

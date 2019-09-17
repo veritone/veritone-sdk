@@ -1,48 +1,84 @@
 import React from 'react';
-import { func } from 'prop-types';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { oneOfType, func, node, objectOf, object, any } from 'prop-types';
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  jssPreset
+} from '@material-ui/core/styles';
+import { create } from 'jss';
+import JssProvider from 'react-jss/lib/JssProvider';
 import blue from '@material-ui/core/colors/blue';
 
-export default function withMuiThemeProvider(Component) {
-  class WrappedWithMuiTheme extends React.Component {
-    static displayName = Component.displayName || Component.name;
-    static propTypes = {
-      forwardedRef: func
-    };
+import { guid } from './guid';
 
-    render() {
-      const { forwardedRef, ...rest } = this.props;
-      return (
-        <MuiThemeProvider
-          theme={createMuiTheme({
-            palette: {
-              primary: {
-                light: blue[300],
-                main: blue[500],
-                dark: blue[700]
-              }
-            },
-            typography: {
-              button: {
-                fontWeight: 400
-              }
-            }
-          })}
-        >
-          <Component ref={forwardedRef} {...rest} />
-        </MuiThemeProvider>
-      );
+export class VSDKStyleWrapper extends React.PureComponent {
+  static propTypes = {
+    theme: objectOf(any),
+    children: node
+  };
+
+  constructor() {
+    super();
+    this._style = `vsdk-${guid()}`;
+    this._jss = create(jssPreset());
+  }
+
+  static defaultTheme = {
+    palette: {
+      primary: {
+        light: blue[300],
+        main: blue[500],
+        dark: blue[700]
+      }
+    },
+    typography: {
+      button: {
+        fontWeight: 400
+      }
     }
   }
 
-  function forwardRef(props, ref) {
-    return <WrappedWithMuiTheme {...props} forwardedRef={ref} />;
+  render() {
+    const mergedTheme = this.props.theme
+      ? createMuiTheme({
+        ...VSDKStyleWrapper.defaultTheme, ...this.props.theme
+        })
+      : createMuiTheme({...VSDKStyleWrapper.defaultTheme});
+
+    return (
+      <JssProvider jss={this._jss} classNamePrefix={this._style}>
+        <MuiThemeProvider theme={mergedTheme}>
+          {this.props.children}
+        </MuiThemeProvider>
+      </JssProvider>
+    );
   }
+}
 
-  // Give this component a more helpful display name in DevTools.
-  // e.g. "ForwardRef(logProps(MyComponent))"
-  const name = Component.displayName || Component.name;
-  forwardRef.displayName = `WrappedWithMuiTheme(${name})`;
+export function withMuiThemeProvider(theme) {
+  return function decorator(Class) {
+    class WrappedWithMuiThemeProvider extends React.PureComponent {
+      static propTypes = {
+        forwardedRef: oneOfType([func, object])
+      };
 
-  return React.forwardRef(forwardRef);
+      render() {
+        const { forwardedRef, ...rest } = this.props;
+        return (
+          <VSDKStyleWrapper theme={theme}>
+            <Class ref={forwardedRef} {...rest} />
+          </VSDKStyleWrapper>
+        );
+      }
+    }
+
+    function forwardRef(props, ref) {
+      return <WrappedWithMuiThemeProvider {...props} forwardedRef={ref} />;
+    }
+
+    const name = Class.displayName || Class.name;
+    forwardRef.displayName = `WrappedWithMuiThemeProvider(${name})`;
+
+    return React.forwardRef(forwardRef);
+  };
 }

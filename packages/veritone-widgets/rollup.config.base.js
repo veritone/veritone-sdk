@@ -33,7 +33,8 @@ export default {
     'veritone-react-common',
     'veritone-redux-common',
     'react-virtualized',
-    'redux-thunk'
+    'redux-thunk',
+    id => /react|react-dom|material-ui\/.*/.test(id)
   ],
   plugins: [
     replace({
