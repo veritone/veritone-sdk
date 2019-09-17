@@ -7,7 +7,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
-import _ from 'lodash';
 import styles from './styles.scss';
 
 export default function Checkboxes({
@@ -21,11 +20,11 @@ export default function Checkboxes({
   error
 }) {
   const handleChange = React.useCallback((e) => {
-    const isItemChecked = _.includes(value, e.target.value);
+    const isItemChecked = value.includes(e.target.value);
     if (isItemChecked) {
       onChange({
         name,
-        value: _.filter(value, itemValue => itemValue !== e.target.value)
+        value: value.filter(itemValue => itemValue !== e.target.value)
       });
     } else {
       onChange({ name, value: [...value, e.target.value] });
@@ -37,9 +36,6 @@ export default function Checkboxes({
       <Box
         component="fieldset"
         className={styles.box}
-        // borderRadius={5}
-        // width="100%"
-        // borderColor="rgba(0, 0, 0, 0.23)"
       >
         <Typography component="legend">
           {`${label || name}` + `${required ? ' *' : ''}`}
@@ -53,7 +49,7 @@ export default function Checkboxes({
                 control={
                   <Checkbox
                     value={item.value}
-                    checked={_.includes(value, item.value)}
+                    checked={value.includes(item.value)}
                     onChange={handleChange}
                     color="primary"
                   />
