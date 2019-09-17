@@ -3,6 +3,7 @@ import { string, bool, func } from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import itemPropType from './itemPropType';
+import styles from './styles.scss';
 
 
 export default function Select({
@@ -23,15 +24,15 @@ export default function Select({
   return (
     <TextField
       error={error.length > 0}
-      label={label || name}
+      label={label}
       variant="outlined"
       select
-      classes={{ root: "configuration-input" }}
       fullWidth
       required={required}
       helperText={error || instruction}
       value={value}
       onChange={handleChange}
+      className={styles['form-item']}
     >
       {items.map(({ id, value }) => (
         <MenuItem key={id} value={value}>

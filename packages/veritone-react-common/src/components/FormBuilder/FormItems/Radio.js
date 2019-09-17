@@ -25,14 +25,20 @@ export default function Radio({
     [name, onChange, value]
   );
   return (
-    <FormControl error={error.length > 0} fullWidth>
+    <FormControl
+      error={error.length > 0}
+      fullWidth
+      className={styles['form-item']}
+    >
       <Box
         component="fieldset"
         className={styles.box}
       >
-        <Typography component="legend">
-          {`${label || name}` + `${required ? ' *' : ''}`}
-        </Typography>
+        {
+          label && <Typography component="legend">
+            {label + `${required ? '*' : ''}`}
+          </Typography>
+        }
         <RadioGroup
           name={name}
           value={value}
@@ -69,7 +75,7 @@ Radio.propTypes = {
 }
 
 Radio.defaultProps = {
-  onChange: () => {},
+  onChange: () => { },
   items: [],
   error: ''
 };

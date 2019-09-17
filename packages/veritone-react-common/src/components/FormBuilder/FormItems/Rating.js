@@ -5,7 +5,7 @@ import MuiRating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-
+import styles from './styles.scss';
 
 export default function Rating({
   label,
@@ -19,16 +19,18 @@ export default function Rating({
   error
 }) {
   const handleChange = React.useCallback(
-    (e) => onChange({ name, value: parseInt(e.target.value, 10)}),
+    (e) => onChange({ name, value: parseInt(e.target.value, 10) }),
     [name, onChange]
   );
 
   return (
-    <FormControl error={error.length > 0}>
-      <Box mb={3} borderColor="transparent">
-        <Typography component="legend">
-          {`${label || name}` + `${required ? ' *': ''}`}
-        </Typography>
+    <FormControl error={error.length > 0} className={styles['form-item']}>
+      <Box mb={3} borderColor="transparent" className={styles['rating-box']}>
+        {
+          label && <Typography component="legend">
+            {label + `${required ? '*' : ''}`}
+          </Typography>
+        }
         <MuiRating
           name={name}
           value={value}
@@ -57,6 +59,6 @@ Rating.propTypes = {
 Rating.defaultProps = {
   min: 0,
   max: 5,
-  onChange: () => {},
+  onChange: () => { },
   error: ''
 }

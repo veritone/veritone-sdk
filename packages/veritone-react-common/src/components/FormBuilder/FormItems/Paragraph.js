@@ -1,10 +1,12 @@
 import React from 'react';
 import { string, bool, func } from 'prop-types';
+import cx from 'classnames';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Typography from '@material-ui/core/Typography';
+import styles from './styles.scss';
 
 export default function Paragraph({
   name,
@@ -21,8 +23,16 @@ export default function Paragraph({
   );
 
   return (
-    <FormControl error={error.length > 0} fullWidth>
-      <Typography>{`${label || name}` + `${required ? ' *' : ''}`}</Typography>
+    <FormControl
+      error={error.length > 0}
+      fullWidth
+      className={cx(styles['form-item'])}
+    >
+      {
+        label && <Typography component="legend">
+          {label + `${required ? '*' : ''}`}
+        </Typography>
+      }
       <CKEditor
         editor={ClassicEditor}
         data={value}
@@ -45,6 +55,6 @@ Paragraph.propTypes = {
 }
 
 Paragraph.defaultProps = {
-  onChange: () => {},
+  onChange: () => { },
   error: ''
 }
