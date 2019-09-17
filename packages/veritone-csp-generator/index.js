@@ -107,27 +107,27 @@ const getCoordinatesFromBounding = (boundingPoly) => {
   }, []);
 }
 
-const BoundingBoxGenerator = (modalState, isLogoRecognition) => {
+const BoundingBoxGenerator = (modalState) => {
   const boundingPoly = modalState.advancedOptions.boundingPoly || [];
   if (!boundingPoly.length) {
     return {};
   }
   return {
     operator: "bounding_box",
-    field: isLogoRecognition ? "logo-recognition.series.boundingBox" : "object-recognition.series.boundingBox",
+    field: "boundingBox",
     relation: "within", // within | intersects | disjoint
     coordinates: getCoordinatesFromBounding(boundingPoly)
   }
 }
 
-const ConfidenceRangeGenerator = (modalState, isLogoRecognition) => {
+const ConfidenceRangeGenerator = (modalState) => {
   const range = modalState.advancedOptions.range || [];
   if (!range.length || (range[0] === 0 && range[1] === 100)) {
     return {};
   }
   return {
     operator: "range",
-    field: isLogoRecognition ? "logo-recognition.series.confidence" : "object-recognition.series.confidence",
+    field: "confidence",
     gte: range[0] / 100,
     lt: range[1] / 100
   }
@@ -163,18 +163,27 @@ const LogoConditionGenerator = modalState => {
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
-    const params = {
-      operator: 'term',
-      field: 'logo-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
     if (isEmpty(modalState.advancedOptions)) {
-      return params
+      return {
+        operator: 'term',
+        field: 'logo-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      }
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState, true)];
-      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
     }
   }
 };
@@ -195,18 +204,27 @@ const ObjectConditionGenerator = modalState => {
       return buildAndOperator(conditions.filter(item => !isEmpty(item)));
     }
   } else {
-    const params = {
-      operator: 'term',
-      field: 'object-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
     if (isEmpty(modalState.advancedOptions)) {
-      return params
+      return {
+        operator: 'term',
+        field: 'object-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
-      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
     }
   }
 };
