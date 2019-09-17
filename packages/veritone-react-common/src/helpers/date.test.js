@@ -355,7 +355,7 @@ describe('date interval helpers', function() {
     });
 
     it('returns formatted string for valid dates', function() {
-      expect(format('jan 1, 2018', 'MM/DD/YYYY')).toEqual('01/01/2018');
+      expect(format('jan 1, 2018', 'MM/dd/yyyy')).toEqual('01/01/2018');
     });
   });
 });

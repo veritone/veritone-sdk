@@ -1,6 +1,6 @@
 import React from 'react';
 import Today from '@material-ui/icons/Today';
-import dateFns from 'date-fns';
+import * as dateFns from 'date-fns';
 import TextField from '@material-ui/core/TextField';
 import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
 
@@ -144,7 +144,7 @@ function consolidate(dateString, timeString) {
 }
 
 function getDateString(date) {
-  return dateFns.format(date, 'YYYY-MM-DD');
+  return dateFns.format(date, 'yyyy-MM-dd');
 }
 
 function getTimeString(date) {

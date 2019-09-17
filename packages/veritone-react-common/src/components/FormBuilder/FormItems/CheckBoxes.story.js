@@ -23,4 +23,5 @@ storiesOf('FormBuilder/CheckBox', module)
           value: 'option-2'
         }
       ]}
-    />))
+    />
+  ))

@@ -20,7 +20,7 @@ import MediaInfoPanel from './';
 
 const getLocalTimeString = (date) => format(
   date,
-  'dddd, MMMM D, YYYY [at] h:mm A'
+  'dddd, MMMM d, yyyy [at] h:mm A'
 );
 
 describe('MediaInfoPanel', () => {
