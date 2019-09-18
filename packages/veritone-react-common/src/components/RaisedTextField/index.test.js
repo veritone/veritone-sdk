@@ -1,5 +1,9 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Edit from '@material-ui/icons/Edit';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 import RaisedTextField from './';
 
@@ -18,7 +22,7 @@ describe('RaisedTextField', function() {
       />
     );
 
-    expect(wrapper.find('Paper').props().style.background).toBe('red');
+    expect(wrapper.find(Paper).props().style.background).toBe('red');
   });
 
   it('shows the label', function() {
@@ -41,13 +45,13 @@ describe('RaisedTextField', function() {
 
   it('shows correct action icon', function() {
     let wrapper = mount(<RaisedTextField action="go" />);
-    expect(wrapper.find('KeyboardArrowRight')).toHaveLength(1);
+    expect(wrapper.find(KeyboardArrowRight)).toHaveLength(1);
 
     wrapper = mount(<RaisedTextField action="edit" />);
-    expect(wrapper.find('Edit')).toHaveLength(1);
+    expect(wrapper.find(Edit)).toHaveLength(1);
 
     wrapper = mount(<RaisedTextField />);
-    expect(wrapper.find('IconButton').find('svg')).toHaveLength(0);
+    expect(wrapper.find(IconButton).find('svg')).toHaveLength(0);
   });
 
   it('calls onClickAction', function() {
@@ -57,11 +61,11 @@ describe('RaisedTextField', function() {
       <RaisedTextField action="go" onClickAction={handler} />
     );
 
-    wrapper.find('IconButton').simulate('click');
+    wrapper.find(IconButton).simulate('click');
     expect(handler).toHaveBeenCalled();
 
     wrapper = mount(<RaisedTextField action="edit" onClickAction={handler2} />);
-    wrapper.find('IconButton').simulate('click');
+    wrapper.find(IconButton).simulate('click');
     expect(handler2).toHaveBeenCalled();
   });
 });

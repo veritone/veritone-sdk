@@ -80,6 +80,10 @@ export default {
         ],
         '../../node_modules/react-jss/lib/index.js': [
           'JssProvider'
+        ],
+        '../../node_modules/react-dnd/lib/index.js': [
+          'DndProvider',
+          'DropTarget'
         ]
       },
       include: ['../../node_modules/**', 'node_modules/**', '../**']
