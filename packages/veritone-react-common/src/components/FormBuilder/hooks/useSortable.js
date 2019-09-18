@@ -1,4 +1,4 @@
-import { useDrag, useDrop } from 'react-dnd-cjs';
+import { useDrag, useDrop } from 'react-dnd';
 
 export default function useSortable(index, type, dropRef, addBlock, swapBlock) {
   const [{ isDragging }, drag, preview] = useDrag({
