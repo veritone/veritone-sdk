@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Button from '@material-ui/core/Button';
+import _ from 'lodash';
 import Form from './Form';
 import { generateState, validateForm } from './utils';
 
@@ -121,7 +122,8 @@ function FormWithInitialState() {
       {
         'textInput-1234': 'Hello world, this text is initialized',
         'select': 'option 1',
-        'rating-123': 4
+        'rating-123': 4,
+        'checkBox-3456': ['option 1']
       }
     )
   );
@@ -143,7 +145,7 @@ const validateObject = {
     return re.test(String(value).toLowerCase()) ? '' : 'Not an email';
   },
   'textInput-1234': (value) => value ? '' : requiredErrors['textInput-1234'],
-  'checkBox-3456': (value) => value ? '' : requiredErrors['checkBox-3456']
+  'checkBox-3456': (value) => !_.isEmpty(value) ? '' : requiredErrors['checkBox-3456']
 }
 
 function FormWithValidate() {
@@ -167,8 +169,6 @@ function FormWithValidate() {
     const errors = validateForm(formDefinition, formState, validateObject);
     setErrors(errors);
   }, [formState]);
-
-  console.log(errors)
 
   return (
     <div>
