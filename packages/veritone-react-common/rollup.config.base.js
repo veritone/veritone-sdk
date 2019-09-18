@@ -81,7 +81,7 @@ export default {
         '../../node_modules/react-jss/lib/index.js': [
           'JssProvider'
         ],
-        '../../node_modules/react-dnd-cjs/lib/index.js': [
+        '../../node_modules/react-dnd/lib/index.js': [
           'DndProvider',
           'DropTarget'
         ]

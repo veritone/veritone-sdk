@@ -25,8 +25,8 @@
     "prop-types": "^15.6.0",
     "react": "^16.9.0",
     "react-addons-css-transition-group": "^15.6.2",
-    "react-dnd-cjs": "^9.3.9",
-    "react-dnd-html5-backend-cjs": "^9.3.9",
+    "react-dnd": "^9.3.4",
+    "react-dnd-html5-backend": "^9.3.4",
     "react-dnd-test-backend": "^9.3.4",
     "react-dom": "^16.9.0",
     "react-dotdotdot": "^1.2.3",
@@ -129,14 +129,17 @@
       "^helpers(.*)$": "<rootDir>/src/helpers$1",
       "^components(.*)$": "<rootDir>/src/components$1",
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
-      "\\.(css|scss)$": "identity-obj-proxy"
+      "\\.(css|scss)$": "identity-obj-proxy",
+      "^dnd-core$": "dnd-core/dist/cjs",
+      "^react-dnd$": "react-dnd/dist/cjs",
+      "^react-dnd-html5-backend$": "react-dnd-html5-backend/dist/cjs",
+      "^react-dnd-touch-backend$": "react-dnd-touch-backend/dist/cjs",
+      "^react-dnd-test-backend$": "react-dnd-test-backend/dist/cjs",
+      "^react-dnd-test-utils$": "react-dnd-test-utils/dist/cjs"
     },
     "setupFiles": [
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!(react-dnd|react-dnd-html5-backend)/)"
     ]
   },
   "peerDependencies": {}

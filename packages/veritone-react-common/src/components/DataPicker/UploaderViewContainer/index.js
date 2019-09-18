@@ -1,8 +1,8 @@
 import React from 'react';
 import { arrayOf, string, func, shape, bool, number, object, oneOfType } from 'prop-types';
 
-import HTML from 'react-dnd-html5-backend-cjs';
-import { DndProvider } from 'react-dnd-cjs';
+import HTML from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 import Button from '@material-ui/core/Button';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Info from '@material-ui/icons/Info';

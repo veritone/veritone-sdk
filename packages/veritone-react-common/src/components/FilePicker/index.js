@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { isString, isArray } from 'lodash';
-import HTML from 'react-dnd-html5-backend-cjs';
-import { DndProvider } from 'react-dnd-cjs';
+import HTML from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
