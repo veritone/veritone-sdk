@@ -4,6 +4,9 @@ import MuiTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import Menu from '@material-ui/core/Menu';
+import Select from '@material-ui/core/Select';
+
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
 import { LOADING } from './shared';
@@ -152,7 +155,7 @@ describe('MenuColumn', function() {
       </SupressColumnWarnings>
     );
 
-    const menuItems = wrapper.find('Menu').prop('children');
+    const menuItems = wrapper.find(Menu).prop('children');
     expect(
       filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
         .length
@@ -169,7 +172,7 @@ describe('MenuColumn', function() {
       </SupressColumnWarnings>
     );
 
-    const menuItems = wrapper.find('Menu').prop('children');
+    const menuItems = wrapper.find(Menu).prop('children');
     expect(
       filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
         .length
@@ -190,7 +193,7 @@ describe('MenuColumn', function() {
       </SupressColumnWarnings>
     );
 
-    const menuItems = wrapper.find('Menu').prop('children');
+    const menuItems = wrapper.find(Menu).prop('children');
     expect(
       filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
         .length
@@ -212,7 +215,7 @@ describe('MenuColumn', function() {
       </SupressColumnWarnings>
     );
 
-    const menuItems = wrapper.find('Menu').prop('children');
+    const menuItems = wrapper.find(Menu).prop('children');
     expect(map(menuItems, 'key')).not.toContain('alter');
     expect(map(menuItems, 'key')).toEqual(
       expect.arrayContaining(['delete', 'manage'])
@@ -236,7 +239,7 @@ describe('MenuColumn', function() {
       </SupressColumnWarnings>
     );
 
-    const menuItems = wrapper.find('Menu').prop('children');
+    const menuItems = wrapper.find(Menu).prop('children');
     expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(actions));
   });
 });
@@ -612,7 +615,7 @@ describe('PaginatedTable', function() {
       </PaginatedTable>
     );
 
-    expect(wrapper.find('Select').exists()).toBeTruthy();
+    expect(wrapper.find(Select).exists()).toBeTruthy();
 
     wrapper.find('PaginatedTableFooter').prop('onChangePerPage')({
       target: { value: 20 }
