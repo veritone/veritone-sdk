@@ -192,7 +192,7 @@ export default class AppBar extends React.Component {
               alignSelf: searchBarAlignSelf
             }}
           >
-            {searchBar}
+            {searchBar || <div id='veritone-search-bar'></div>}
           </div>
           <div className={styles.right}>
             <div className={styles.controllers}>
