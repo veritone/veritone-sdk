@@ -3,8 +3,12 @@ import { string, func } from 'prop-types';
 import _ from 'lodash';
 import TextField from '@material-ui/core/TextField';
 
-export default function createTextInput({ type='text', itemType, label}) {
-  function TextInputComponent({ value, onChange }) {
+export default function createTextInput({
+  type = 'text',
+  itemType,
+  label
+}) {
+  function TextInputComponent({ value, onChange, className }) {
     const handleChange = React.useCallback(
       (e) => onChange({ name: itemType, value: e.target.value }),
       [onChange]
@@ -17,13 +21,15 @@ export default function createTextInput({ type='text', itemType, label}) {
         value={value}
         type={type}
         onChange={handleChange}
+        className={className}
       />
     )
   }
 
   TextInputComponent.propTypes = {
     value: string,
-    onChange: func
+    onChange: func,
+    className: string
   }
 
   TextInputComponent.defaultProps = {

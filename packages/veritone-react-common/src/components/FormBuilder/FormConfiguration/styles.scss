@@ -1,4 +1,4 @@
-.configuration-input {
+.configuration-item {
   margin-top: 8px !important;
 }
 
@@ -10,4 +10,10 @@
 
 .list-items-container {
   margin-top: 16px;
+}
+
+.preview-icon {
+  cursor: pointer;
+  opacity: 0.7;
+  margin: 0 8px;
 }

@@ -2,8 +2,14 @@ import React from 'react';
 import { shape, string, number, func, arrayOf } from 'prop-types';
 import { noop } from 'lodash';
 import TextField from '@material-ui/core/TextField';
-import { AddCircleOutline, DeleteOutlined, DragHandleOutlined } from '@material-ui/icons';
+import {
+  AddCircleOutline,
+  DeleteOutlined,
+  DragHandleOutlined
+} from '@material-ui/icons';
 import useSortable from '../../hooks/useSortable';
+
+import styles from '../styles.scss';
 
 const type = "items"
 
@@ -51,7 +57,7 @@ export default function ListItems({ value, onChange }) {
   }, [])
 
   return (
-    <div className="list-items-container">
+    <div className={styles['list-items-container']}>
       <label>Field Items</label>
       <div>
         {
@@ -67,7 +73,6 @@ export default function ListItems({ value, onChange }) {
             />
           ))
         }
-
       </div>
     </div>
   )
@@ -111,7 +116,11 @@ const Item = function Item({
   const handleRemove = React.useCallback(() => removeBlock(index), [index]);
 
   return drop(preview(
-    <div ref={dropRef} className="item-container" style={(isDragging) ? { opacity: 0 } : {}}>
+    <div
+      ref={dropRef}
+      className={styles['item-container']}
+      style={(isDragging) ? { opacity: 0 } : {}}
+    >
       <TextField
         label={`Option-${index + 1}`}
         variant="outlined"
@@ -120,10 +129,16 @@ const Item = function Item({
         fullWidth
       />
       <div ref={drag}>
-        <DragHandleOutlined className="preview-icon" />
+        <DragHandleOutlined className={styles['preview-icon']} />
       </div>
-      <AddCircleOutline onClick={handleAdd} className="preview-icon" />
-      <DeleteOutlined onClick={handleRemove} className="preview-icon" />
+      <AddCircleOutline
+        onClick={handleAdd}
+        className={styles['preview-icon']}
+      />
+      <DeleteOutlined
+        onClick={handleRemove}
+        className={styles['preview-icon']}
+      />
     </div>
   ))
 }
