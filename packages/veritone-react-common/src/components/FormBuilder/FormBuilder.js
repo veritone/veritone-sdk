@@ -11,6 +11,8 @@ import PreviewDialog from './PreviewDialog';
 import { form as formType } from './configuration';
 import { generateSchema } from './utils';
 
+import styles from './styles.scss';
+
 function formEqual({ form }, { form: nextForm }) {
   return _.isEqual(form, nextForm);
 }
@@ -35,24 +37,23 @@ function FormBuilder({
     }
   });
 
-  const onUpdateForm =
+  const onUpdateForm = React.useCallback(
     ({ name, value }) => {
-      console.log(name, value)
       updateBlock(form.selected, {
         ...form.definition[form.selected],
         [name]: value
       })
-    }
+    }, [updateBlock]);
 
   const handleClickPreview = React.useCallback(() => {
     setIsPreview(x => !x);
   }, []);
 
   return (
-    <div className="form-builder">
+    <div className={styles['form-builder']}>
       <Grid container spacing={3}>
         <Grid item xs>
-          <div className="blocks-wrapper">
+          <div className={styles['blocks-wrapper']}>
             {blockTypes.map(block => (
               <Block key={block.type} {...block} removeBlock={removeBlock} />
             ))}

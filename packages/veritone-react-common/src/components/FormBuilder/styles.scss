@@ -1,0 +1,45 @@
+.form-builder {
+  display: flex;
+  margin: auto;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.blocks-wrapper {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+}
+
+.form-preview-container {
+  min-width: 500px;
+}
+.form-configuration {
+  margin: 10px;
+  min-width: 350px;
+}
+
+.form-configuration .configurationItem {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  align-content: flex-start;
+}
+.form-configuration .configurationItem {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  align-content: flex-start;
+}
+.form-configuration .list-items {
+  margin: 10px 0 10px 15px;
+}
+
+.form-configuration .list-items .item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-configuration .list-items .item .item-action {
+  line-height: 4;
+}
