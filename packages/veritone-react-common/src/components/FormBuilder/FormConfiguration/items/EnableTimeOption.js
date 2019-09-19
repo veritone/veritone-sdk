@@ -1,20 +1,21 @@
 import React from 'react';
-import { bool, func } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 import { noop } from 'lodash';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 const type = "enableTimeOption"
 
-export default function EnableTimeOption({ value, onChange }) {
+export default function EnableTimeOption({ value, onChange, className }) {
   const handleChange = React.useCallback(
     (e) => {
-      onChange({name: type, value: e.target.checked})
+      onChange({ name: type, value: e.target.checked })
     },
     [],
   );
   return (
     <FormControlLabel
+      className={className}
       control={
         <Checkbox
           color="primary"
@@ -29,7 +30,8 @@ export default function EnableTimeOption({ value, onChange }) {
 
 EnableTimeOption.propTypes = {
   value: bool,
-  onChange: func
+  onChange: func,
+  className: string
 }
 
 EnableTimeOption.defaultProps = {

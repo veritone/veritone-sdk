@@ -3,7 +3,7 @@ import EnableTimeOption from './EnableTimeOption';
 import ListItems from './ListItems';
 import createTextInput from './createTextInput';
 import Required from './Required';
-import './styles.css';
+
 
 export default {
   name: createTextInput({ itemType: "name", label: "Field Name" }),
