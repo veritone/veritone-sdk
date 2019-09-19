@@ -1,50 +1,53 @@
 import React from 'react';
-import { string, bool, func } from 'prop-types';
-import CKEditor from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Typography from '@material-ui/core/Typography';
+import { bool, string, func } from 'prop-types';
+import TextField from '@material-ui/core/TextField';
 
 export default function Paragraph({
-  name,
   label,
   required,
-  value,
-  error,
+  name,
+  onChange,
   instruction,
-  onChange
+  value,
+  error
 }) {
   const handleChange = React.useCallback(
-    (_, editor) => onChange({ name, value: editor.getData() }),
-    [onChange, name]
+    (e) => {
+      onChange({ name, value: e.target.value })
+    },
+    [name, onChange],
   );
 
   return (
-    <FormControl error={error.length > 0} fullWidth>
-      <Typography>{`${label || name}` + `${required ? ' *' : ''}`}</Typography>
-      <CKEditor
-        editor={ClassicEditor}
-        data={value}
-        onChange={handleChange}
-        className
-      />
-      <FormHelperText variant="outlined">{error || instruction}</FormHelperText>
-    </FormControl>
-  );
+    <TextField
+      fullWidth
+      label={label || name}
+      required={required}
+      error={error.length > 0}
+      helperText={error || instruction}
+      variant="outlined"
+      value={value}
+      onChange={handleChange}
+      multiline
+      rows={4}
+    />
+  )
 }
 
 Paragraph.propTypes = {
-  name: string,
   label: string,
-  value: string,
   required: bool,
-  error: string,
+  name: string,
   onChange: func,
-  instruction: string
+  instruction: string,
+  value: string,
+  error: string
 }
 
 Paragraph.defaultProps = {
-  onChange: () => {},
+  label: 'Paragraph',
+  name: `paragraph-${Date.now()}`,
+  onChange: () => { },
+  value: '',
   error: ''
 }
