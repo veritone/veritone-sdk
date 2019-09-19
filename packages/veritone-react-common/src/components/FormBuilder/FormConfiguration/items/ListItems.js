@@ -36,11 +36,11 @@ export default function ListItems({ value, onChange }) {
         ...value.slice(index + 1)
       ]
     })
-  }, []);
+  }, [value]);
 
   const removeBlock = React.useCallback((index) => {
     onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
-  }, []);
+  }, [value]);
 
   const updateBlock = React.useCallback((index, newValue) => {
     onChange({
@@ -54,7 +54,7 @@ export default function ListItems({ value, onChange }) {
         }
       })
     })
-  }, [])
+  }, [value])
 
   return (
     <div className={styles['list-items-container']}>
@@ -109,7 +109,7 @@ const Item = function Item({
 
   const handleChange = React.useCallback(
     (e) => updateBlock(index, e.target.value),
-    [index]
+    [index, updateBlock]
   )
 
   const handleAdd = React.useCallback(() => addBlock(index), [index]);
