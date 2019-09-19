@@ -162,8 +162,8 @@ export const defaultIntervals = {
 };
 
 export const dateFormats = {
-  full: 'MMM Do, YYYY hh:mmA',
-  short: 'MM/DD/YYYY'
+  full: 'MMM Do, yyyy hh:mmA',
+  short: 'MM/dd/yyyy'
 };
 
 export function format(date, ...args) {

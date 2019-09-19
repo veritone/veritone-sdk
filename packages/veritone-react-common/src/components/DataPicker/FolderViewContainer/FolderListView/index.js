@@ -26,7 +26,7 @@ const FILE_ICONS = {
 }
 
 const formatDateString = date => {
-  return format(date, 'MMM D, YYYY h:mm A');
+  return format(date, 'MMM d, yyyy h:mm A');
 };
 const useHideWrap = (children, key) => (
   <Hidden key={key} initialWidth="md" smDown>

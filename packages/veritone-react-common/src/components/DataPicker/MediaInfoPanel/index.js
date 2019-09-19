@@ -44,7 +44,7 @@ const tdoShape = shape({
 });
 
 const formatDateString = date => {
-  return format(date, 'dddd, MMM D, YYYY [at] h:mm A');
+  return format(date, 'dddd, MMM d, yyyy [at] h:mm A');
 };
 
 const getDuration = (startTime, stopTime) => {
