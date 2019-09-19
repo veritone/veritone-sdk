@@ -88,7 +88,7 @@ const sampleForm = [
     value: 'option 1',
     instruction: 'Select you gender'
   }
-]
+];
 
 storiesOf('FormBuilder', module)
   .add('Preview', () => (

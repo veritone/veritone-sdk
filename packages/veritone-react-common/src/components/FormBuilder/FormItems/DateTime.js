@@ -6,6 +6,7 @@ import {
   DatePicker,
   DateTimePicker
 } from '@material-ui/pickers';
+import styles from './styles.scss';
 
 export default function DateTime({
   enableTimeSelect,
@@ -29,7 +30,7 @@ export default function DateTime({
       <TimePicker
         error={error.length > 0}
         instruction={instruction}
-        label={label || name}
+        label={label}
         inputVariant="outlined"
         value={value}
         required={required}
@@ -37,6 +38,7 @@ export default function DateTime({
         format={dateFormat}
         onChange={handleChange}
         helperText={error || instruction}
+        className={styles['form-item']}
       />
     </MuiPickersUtilsProvider>
   )

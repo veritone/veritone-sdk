@@ -5,7 +5,7 @@ import CheckBoxes from './CheckBoxes';
 
 
 storiesOf('FormBuilder/CheckBox', module)
-  .add('CheckBox', () => (
+  .add('Basic', () => (
     <CheckBoxes
       label="Checkbox"
       name="Checkbox-123"
