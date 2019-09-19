@@ -81,7 +81,8 @@ ListItems.propTypes = {
 }
 
 ListItems.defaultProps = {
-  onChange: noop
+  onChange: noop,
+  value: []
 }
 
 const Item = function Item({

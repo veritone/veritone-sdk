@@ -1,19 +1,18 @@
 import React from 'react';
 import { string, func } from 'prop-types';
-import { noop } from 'lodash';
+import _ from 'lodash';
 import TextField from '@material-ui/core/TextField';
 
-export default function createTextInput({ type="text", itemType, label}) {
+export default function createTextInput({ type='text', itemType, label}) {
   function TextInputComponent({ value, onChange }) {
     const handleChange = React.useCallback(
       (e) => onChange({ name: itemType, value: e.target.value }),
-      []
+      [onChange]
     );
     return (
       <TextField
         label={label}
         variant="outlined"
-        classes={{root: "configuration-input"}}
         fullWidth
         value={value}
         type={type}
@@ -28,7 +27,8 @@ export default function createTextInput({ type="text", itemType, label}) {
   }
 
   TextInputComponent.defaultProps = {
-    onChange: noop
+    onChange: _.noop,
+    value: ''
   }
   return TextInputComponent;
 }
