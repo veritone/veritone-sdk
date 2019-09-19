@@ -58,7 +58,7 @@ class SearchPill extends React.PureComponent {
           }}
         />
         <Typography
-          variant="subheading"
+          variant="subtitle1"
           className={cx({
             [styles.searchPillSelectedColor]: this.props.selected
           })}

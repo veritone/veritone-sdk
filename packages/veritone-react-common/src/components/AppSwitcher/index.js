@@ -59,7 +59,7 @@ export default class AppSwitcher extends React.Component {
             onClick={this.openMenu}
             data-veritone-element="app-switcher-button"
           >
-            <AppsIcon nativeColor="white" />
+            <AppsIcon htmlColor="white" />
           </IconButton>
         </Tooltip>
         <Menu

@@ -1,6 +1,8 @@
 import React from 'react';
 import { sortBy, noop } from 'lodash';
 import { mount } from 'enzyme';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 import AppSwitcherList from './AppSwitcherList';
@@ -31,7 +33,7 @@ describe('AppSwitcherErrorState', () => {
     const wrapper = mount(<AppSwitcherErrorState onRefresh={handler} />);
     expect(wrapper.text()).toMatch(/error/i);
 
-    wrapper.find('Button').simulate('click');
+    wrapper.find(Button).simulate('click');
     expect(handler).toHaveBeenCalled();
   });
 });
@@ -84,7 +86,7 @@ describe('AppSwitcherList', () => {
     const wrapper = mount(
       <AppSwitcherList onSwitchApp={handleSwitchApp} enabledApps={sampleApps} />
     );
-    const buttons = wrapper.find('MenuItem');
+    const buttons = wrapper.find(MenuItem);
     expect(buttons).toHaveLength(3);
 
     const sortedApps = sortBy(sampleApps, 'applicationName');
