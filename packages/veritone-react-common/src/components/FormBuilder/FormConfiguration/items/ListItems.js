@@ -32,15 +32,18 @@ export default function ListItems({ value, onChange }) {
     onChange({
       name: type, value: [
         ...value.slice(0, index + 1),
-        { value: `option-${(new Date()).getTime()}`, id: (new Date()).getTime() },
+        {
+          value: `option-${(new Date()).getTime()}`,
+          id: (new Date()).getTime().toString()
+        },
         ...value.slice(index + 1)
       ]
     })
-  }, []);
+  }, [value, onChange]);
 
   const removeBlock = React.useCallback((index) => {
     onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
-  }, []);
+  }, [value]);
 
   const updateBlock = React.useCallback((index, newValue) => {
     onChange({
@@ -54,7 +57,7 @@ export default function ListItems({ value, onChange }) {
         }
       })
     })
-  }, [])
+  }, [value])
 
   return (
     <div className={styles['list-items-container']}>
@@ -109,11 +112,11 @@ const Item = function Item({
 
   const handleChange = React.useCallback(
     (e) => updateBlock(index, e.target.value),
-    [index]
+    [index, updateBlock]
   )
 
-  const handleAdd = React.useCallback(() => addBlock(index), [index]);
-  const handleRemove = React.useCallback(() => removeBlock(index), [index]);
+  const handleAdd = React.useCallback(() => addBlock(index), [index, addBlock]);
+  const handleRemove = React.useCallback(() => removeBlock(index), [index, removeBlock]);
 
   return drop(preview(
     <div
