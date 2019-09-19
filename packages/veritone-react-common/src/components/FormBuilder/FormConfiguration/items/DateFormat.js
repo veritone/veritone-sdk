@@ -2,7 +2,7 @@ import React from 'react';
 import {string, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import { noop } from 'lodash';
+import _ from 'lodash';
 
 const dateFormats = [
   'dd-MM-yyyy',
@@ -46,5 +46,6 @@ DateFormat.propTypes = {
 }
 
 DateFormat.defaultProps = {
-  onChange: noop
+  onChange: _.noop,
+  value: dateFormats[0]
 }

@@ -33,5 +33,6 @@ EnableTimeOption.propTypes = {
 }
 
 EnableTimeOption.defaultProps = {
-  onChange: noop
+  onChange: noop,
+  value: false
 }

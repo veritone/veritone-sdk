@@ -11,8 +11,9 @@ export default function Required({ value, onChange }) {
     (e) => {
       onChange({name: type, value: e.target.checked})
     },
-    [],
+    [onChange],
   );
+
   return (
     <FormControlLabel
       control={
@@ -33,5 +34,6 @@ Required.propTypes = {
 }
 
 Required.defaultProps = {
-  onChange: noop
+  onChange: noop,
+  value: false
 }
