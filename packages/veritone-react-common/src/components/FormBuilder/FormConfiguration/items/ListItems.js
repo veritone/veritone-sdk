@@ -32,11 +32,14 @@ export default function ListItems({ value, onChange }) {
     onChange({
       name: type, value: [
         ...value.slice(0, index + 1),
-        { value: `option-${(new Date()).getTime()}`, id: (new Date()).getTime() },
+        {
+          value: `option-${(new Date()).getTime()}`,
+          id: (new Date()).getTime().toString()
+        },
         ...value.slice(index + 1)
       ]
     })
-  }, [value]);
+  }, [value, onChange]);
 
   const removeBlock = React.useCallback((index) => {
     onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
@@ -112,8 +115,8 @@ const Item = function Item({
     [index, updateBlock]
   )
 
-  const handleAdd = React.useCallback(() => addBlock(index), [index]);
-  const handleRemove = React.useCallback(() => removeBlock(index), [index]);
+  const handleAdd = React.useCallback(() => addBlock(index), [index, addBlock]);
+  const handleRemove = React.useCallback(() => removeBlock(index), [index, removeBlock]);
 
   return drop(preview(
     <div
