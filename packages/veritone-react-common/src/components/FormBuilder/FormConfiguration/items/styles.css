@@ -1,0 +1,13 @@
+.configuration-input {
+  margin-top: 8px !important;
+}
+
+.item-container {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.list-items-container {
+  margin-top: 16px;
+}
