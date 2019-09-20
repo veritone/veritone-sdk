@@ -53,7 +53,7 @@ function SimpleMediaCard(props) {
           <Typography
             className={cx(styles["item-card-name"])}
             gutterBottom
-            variant="headline"
+            variant="h5"
             component="h2"
           >
             <div className={cx(styles["item-name"])}>

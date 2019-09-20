@@ -17,7 +17,7 @@ const NullState = ({ imgProps, titleText, btnProps, children, inWidgets }) => {
       {btnProps && (
         <Button
           className={styles.buttonStyle}
-          variant="raised"
+          variant="contained"
           color="primary"
           onClick={btnProps.onClick}
         >

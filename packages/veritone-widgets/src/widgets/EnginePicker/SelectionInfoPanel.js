@@ -50,10 +50,10 @@ class SelectionInfoPanel extends React.PureComponent {
     return (
       <Paper elevation={4} style={{ height: '100%', minHeight: '300px' }}>
         <div className={styles.pickerTitle}>
-          <Typography variant="headline">
+          <Typography variant="h5">
             Selected Engines{' '}
             <Typography
-              variant="subheading"
+              variant="subtitle1"
               style={{ display: 'inline-block' }}
             >
               {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
@@ -79,7 +79,7 @@ class SelectionInfoPanel extends React.PureComponent {
                       )}
                     </Grid>
                     <Grid item xs={this.props.selectBaseline ? 8 : 9}>
-                      <Typography variant="subheading">
+                      <Typography variant="subtitle1">
                         {engine.name}
                       </Typography>
                       <Typography variant="caption">

@@ -136,7 +136,9 @@ class _VeritoneApp {
                   return ReactDOM.createPortal(
                     <PropUpdater
                       initialProps={w.props}
+                      // eslint-disable-next-line react/jsx-no-bind
                       ref={this.setPropsUpdaterRef.bind(this, w)}
+                      // eslint-disable-next-line react/jsx-no-bind
                       render={props => (
                         <w.Component
                           {...props}

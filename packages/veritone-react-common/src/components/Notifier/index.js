@@ -85,10 +85,10 @@ export default class Notifier extends React.Component {
                     badgeContent={numNotifications}
                     classes={{ badge: styles.badge }}
                   >
-                    <NotificationIcon nativeColor="white" />
+                    <NotificationIcon htmlColor="white" />
                   </Badge>
                   :
-                  <NotificationIcon nativeColor="white" />
+                  <NotificationIcon htmlColor="white" />
               }
             </IconButton>
           </span>
@@ -114,7 +114,7 @@ export default class Notifier extends React.Component {
               <div className={classNames(styles.label)}>{headerText}</div>
               <div className={classNames(styles.chip)}>{numNotifications}</div>
               <IconButton className={classNames(styles.controls)} onClick={hideNotification ? hideNotification : this.hideNotification}>
-                <KeyboardArrowUpIcon nativeColor="white" />
+                <KeyboardArrowUpIcon htmlColor="white" />
               </IconButton>
             </div>
 

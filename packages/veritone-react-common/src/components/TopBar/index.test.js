@@ -61,9 +61,9 @@ describe('TopBar', function() {
 
     // leftText
     expect(
-      wrapper.findWhere(n => n.text() === 'test' && n.hasClass('selected'))
+      wrapper.findWhere(n => n.text() === 'test')
         .length
-    ).toBe(1);
+    ).toBeGreaterThan(1);
   });
 
   it('shows text passed via props.leftText', function() {

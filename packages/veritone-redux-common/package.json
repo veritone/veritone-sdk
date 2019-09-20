@@ -4,8 +4,8 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "react-redux": "^5.0.6",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.16.0",

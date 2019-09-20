@@ -29,7 +29,7 @@ export default class ToggleButton extends React.Component {
     return (
       <Button
         className={buttonClasses}
-        variant={this.props.isSelected ? 'flat' : 'raised'}
+        variant={this.props.isSelected ? 'text' : 'contained'}
         color={this.props.isSelected ? 'default' : 'primary'}
         onClick={this.props.isSelected ? this.handleRemove : this.handleAdd}
       >

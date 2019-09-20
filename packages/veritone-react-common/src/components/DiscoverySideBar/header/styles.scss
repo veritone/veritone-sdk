@@ -26,9 +26,6 @@
   .muiTabButtonRootOverride {
     min-width: initial; // hack: get rid of material-ui's responsive scaling of tabs
     color: $dark-black;
-  }
-
-  .muiTabButtonLabelOverride {
     font-size: 14px; // hack: get rid of material-ui's responsive scaling of tabs
   }
 }

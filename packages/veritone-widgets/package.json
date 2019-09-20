@@ -2,13 +2,15 @@
   "name": "veritone-widgets",
   "version": "8.0.4",
   "dependencies": {
-    "@material-ui/core": "^1.0.0",
-    "@material-ui/icons": "^2.0.0",
+    "@material-ui/core": "^4.4.0",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.25",
+    "@material-ui/styles": "^4.3.3",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "immutability-helper": "^3.0.0",
-    "react": "^16.3.0",
-    "react-dom": "^16.3.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "react-redux": "^5.0.6",
     "react-redux-saga": "^1.0.2",
     "react-virtualized": "^9.18.5",
@@ -111,7 +113,13 @@
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
-      "\\.(css|scss)$": "identity-obj-proxy"
+      "\\.(css|scss)$": "identity-obj-proxy",
+      "^dnd-core$": "dnd-core/dist/cjs",
+      "^react-dnd$": "react-dnd/dist/cjs",
+      "^react-dnd-html5-backend$": "react-dnd-html5-backend/dist/cjs",
+      "^react-dnd-touch-backend$": "react-dnd-touch-backend/dist/cjs",
+      "^react-dnd-test-backend$": "react-dnd-test-backend/dist/cjs",
+      "^react-dnd-test-utils$": "react-dnd-test-utils/dist/cjs"
     },
     "setupFiles": [
       "<rootDir>/test/testSuitePolyfills.js",
