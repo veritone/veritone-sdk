@@ -129,13 +129,18 @@ export default function Block({ type, label, icon, onCancel, onClick }) {
     preview(getEmptyImage(), { captureDraggingState: true })
   }, []);
 
+  const onBlockClick = React.useCallback(() => {
+      onClick(type)
+    },
+    [type, onClick],
+  );
 
   return (
     <div
       ref={drag}
       style={{ opacity }}
       className={styles['block-container']}
-      onClick={onClick}
+      onClick={onBlockClick}
     >
       {icon}
       <p>{label}</p>
