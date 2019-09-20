@@ -1,17 +1,9 @@
-import React from 'react'
-import { useDragLayer } from 'react-dnd'
+import React from 'react';
+import { useDragLayer } from 'react-dnd';
 import { form } from './configuration';
-import { BlockPreview } from './FormBlocks'
+import { BlockPreview } from './FormBlocks';
+import styles from './styles.scss';
 
-const layerStyles = {
-  position: 'fixed',
-  pointerEvents: 'none',
-  zIndex: 100,
-  left: 0,
-  top: 0,
-  width: '100%',
-  height: '100%',
-}
 function getItemStyles(initialOffset, currentOffset) {
   if (!initialOffset || !currentOffset) {
     return {
@@ -26,7 +18,7 @@ function getItemStyles(initialOffset, currentOffset) {
     WebkitTransform: transform,
   }
 }
-const CustomDragLayer = props => {
+const CustomDragLayer = () => {
   const {
     itemType,
     isDragging,
@@ -54,8 +46,9 @@ const CustomDragLayer = props => {
   if (!isDragging) {
     return null
   }
+
   return (
-    <div style={layerStyles}>
+    <div className={styles.layer}>
       <div
         style={getItemStyles(initialOffset, currentOffset)}
       >

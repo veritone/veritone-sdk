@@ -16,4 +16,4 @@ storiesOf('FormBuilder/FormBlocks', module)
         ))}
       </div>
     </DndProvider>
-  ))
+  ));
