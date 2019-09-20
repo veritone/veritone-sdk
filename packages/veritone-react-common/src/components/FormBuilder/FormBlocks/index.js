@@ -108,7 +108,7 @@ BlockPreview.propTypes = {
   type: string
 }
 
-export default function Block({ type, label, icon, removeBlock, addBlock }) {
+export default function Block({ type, label, icon, onCancel, onClick }) {
   const [{ opacity }, drag, preview] = useDrag({
     item: {
       id: type,
@@ -120,7 +120,7 @@ export default function Block({ type, label, icon, removeBlock, addBlock }) {
     }),
     end: (item, monitor) => {
       if (!monitor.didDrop() && !isNaN(item.index)) {
-        removeBlock(item.index);
+        onCancel(item.index);
       }
     }
   });
@@ -135,7 +135,7 @@ export default function Block({ type, label, icon, removeBlock, addBlock }) {
       ref={drag}
       style={{ opacity }}
       className={styles['block-container']}
-      onClick={addBlock}
+      onClick={onClick}
     >
       {icon}
       <p>{label}</p>
@@ -147,11 +147,11 @@ Block.propTypes = {
   type: string,
   label: string,
   icon: node,
-  removeBlock: func,
-  addBlock: func
+  onCancel: func,
+  onClick: func
 }
 
 Block.defaultProps = {
-  removeBlock: noop,
-  addBlock: noop
+  onCancel: noop,
+  onClick: noop
 }

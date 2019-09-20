@@ -14,7 +14,7 @@ export const initData = {
   label: '',
   instruction: '',
   required: false,
-  items: [{ value: 'option 1', id: (new Date()).getTime() }],
+  items: [{ value: 'option 1', id: (new Date()).getTime().toString() }],
   dateFormat: 'dd-MM-yyyy',
   enableTimeOption: true,
   min: 0,
