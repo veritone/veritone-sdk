@@ -55,7 +55,12 @@ function FormBuilder({
         <Grid item xs>
           <div className={styles['blocks-wrapper']}>
             {blockTypes.map(block => (
-              <Block key={block.type} {...block} removeBlock={removeBlock} />
+              <Block
+                key={block.type}
+                {...block}
+                removeBlock={removeBlock}
+                addBlock={() => addBlock(form.definition.length, block.type)}
+              />
             ))}
           </div>
           <hr />
