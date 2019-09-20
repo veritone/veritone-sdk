@@ -51,7 +51,7 @@ function FormBuilder({
 
   const onBlockClick = React.useCallback((type) => {
     addBlock(form.definition.length, type);
-  }, [addBlock, form])
+  }, [addBlock, form]);
 
   return (
     <div className={styles['form-builder']}>

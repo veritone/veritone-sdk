@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, func } from 'prop-types';
+import { string, func, number, oneOfType } from 'prop-types';
 import _ from 'lodash';
 import TextField from '@material-ui/core/TextField';
 
@@ -27,7 +27,7 @@ export default function createTextInput({
   }
 
   TextInputComponent.propTypes = {
-    value: string,
+    value: oneOfType([string, number]),
     onChange: func,
     className: string
   }

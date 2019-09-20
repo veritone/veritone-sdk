@@ -21,7 +21,12 @@ export default function Switch({
   );
 
   return (
-    <FormControl error={error.length > 0} className={styles['form-item']}>
+    <FormControl
+      fullWidth
+      error={error.length > 0}
+      className={styles['form-item']}
+      required={required}
+    >
       <FormControlLabel
         control={
           <MuiSwitch
@@ -32,7 +37,13 @@ export default function Switch({
         }
         label={label}
       />
-      <FormHelperText>{error || instruction}</FormHelperText>
+      {
+        (error || instruction) && (
+          <FormHelperText variant="outlined">
+            {error || instruction}
+          </FormHelperText>
+        )
+      }
     </FormControl>
   );
 }

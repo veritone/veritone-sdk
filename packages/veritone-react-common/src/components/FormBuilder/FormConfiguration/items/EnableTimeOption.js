@@ -11,7 +11,7 @@ export default function EnableTimeOption({ value, onChange, className }) {
     (e) => {
       onChange({ name: type, value: e.target.checked })
     },
-    [],
+    [value, onChange],
   );
   return (
     <FormControlLabel

@@ -44,9 +44,9 @@ export default function PreviewDialog({ form, handleClose }) {
 
 PreviewDialog.propTypes = {
   form: shape({
-    definition: arrayOf({
+    definition: arrayOf(shape({
       name: string
-    })
+    }))
   }),
   handleClose: func
 }

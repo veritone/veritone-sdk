@@ -7,7 +7,7 @@ export default function Form({ formDefinition, onChange, value, errors }) {
     ({ name, value: itemValue }) => {
       onChange(Object.assign({}, value, { [name]: itemValue }))
     },
-    [value],
+    [value, onChange],
   );
 
   return (

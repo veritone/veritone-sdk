@@ -61,7 +61,7 @@ function formReducer(state, action) {
       const type = action.payload.blockType;
       const name = `${type}-${(new Date()).getTime()}`;
       return {
-        selected: action.payload.position <= state.selected ? state.selected + 1 : state.selected,
+        selected: action.payload.position >= state.selected ? state.selected : state.selected + 1,
         definition: [
           ...state.definition.slice(0, action.payload.position),
           typeConfiguration[type].slice(1).reduce((data, type) => ({

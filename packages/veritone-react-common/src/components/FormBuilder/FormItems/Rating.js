@@ -1,13 +1,13 @@
 import React from 'react';
 import { string, bool, number, func } from 'prop-types';
 import Typography from '@material-ui/core/Typography';
-import MuiRating from '@material-ui/lab/Rating';
+import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import styles from './styles.scss';
 
-export default function Rating({
+export default function RatingNumber({
   label,
   required,
   name,
@@ -18,20 +18,26 @@ export default function Rating({
   value,
   error
 }) {
-  const handleChange = React.useCallback(
-    (e) => onChange({ name, value: parseInt(e.target.value, 10) }),
-    [name, onChange]
-  );
+
+  const handleChange = React.useCallback((_, newValue) => {
+      onChange({ name, value: newValue })
+    },
+    [value, onChange],
+  )
 
   return (
-    <FormControl error={error.length > 0} className={styles['form-item']}>
+    <FormControl
+      error={error.length > 0}
+      className={styles['form-item']}
+      fullWidth
+    >
       <Box mb={3} borderColor="transparent" className={styles['rating-box']}>
         {
           label && <Typography component="legend">
             {label + `${required ? '*' : ''}`}
           </Typography>
         }
-        <MuiRating
+        <Rating
           name={name}
           value={value}
           min={min}
@@ -39,12 +45,18 @@ export default function Rating({
           onChange={handleChange}
         />
       </Box>
-      <FormHelperText variant="outlined">{error || instruction}</FormHelperText>
+      {
+        (error || instruction) && (
+          <FormHelperText variant="outlined">
+            {error || instruction}
+          </FormHelperText>
+        )
+      }
     </FormControl>
   )
 }
 
-Rating.propTypes = {
+RatingNumber.propTypes = {
   instruction: string,
   error: string,
   min: number,
@@ -56,9 +68,10 @@ Rating.propTypes = {
   onChange: func
 }
 
-Rating.defaultProps = {
+RatingNumber.defaultProps = {
   min: 0,
   max: 5,
-  onChange: () => { },
-  error: ''
+  error: '',
+  value: 0,
+  onChange: () => { }
 }

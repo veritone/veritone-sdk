@@ -39,7 +39,7 @@ TextInput.propTypes = {
 TextInput.defaultProps = {
   label: 'Text Input',
   name: `textInput-${Date.now()}`,
-  onChange: () => {},
+  onChange: () => { },
   value: '',
   error: ''
 }

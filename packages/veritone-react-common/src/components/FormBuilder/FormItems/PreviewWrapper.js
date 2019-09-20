@@ -11,7 +11,6 @@ import styles from './styles.scss';
 
 
 export default function PreviewWrapper({
-  isPreview,
   selected,
   children,
   index,
@@ -40,7 +39,7 @@ export default function PreviewWrapper({
         className={cx(
           styles['preview-container'],
           {
-            [styles['preview-container--selected']]: selected && isPreview
+            [styles['preview-container--selected']]: selected
           }
         )}
         style={isDragging || isHovered ? { opacity: 0, height: 60 } : {}}

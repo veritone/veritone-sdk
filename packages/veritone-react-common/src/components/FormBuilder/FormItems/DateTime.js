@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool, string, func, number } from 'prop-types';
+import { bool, string, func, number, oneOfType, instanceOf } from 'prop-types';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
@@ -9,7 +9,7 @@ import {
 import styles from './styles.scss';
 
 export default function DateTime({
-  enableTimeSelect,
+  enableTimeOption,
   value,
   onChange,
   name,
@@ -19,7 +19,7 @@ export default function DateTime({
   instruction,
   error
 }) {
-  const TimePicker = enableTimeSelect ? DateTimePicker : DatePicker;
+  const TimePicker = enableTimeOption ? DateTimePicker : DatePicker;
   const handleChange = React.useCallback(
     (date) => onChange({ name, value: date }),
     [name, onChange]
@@ -45,10 +45,10 @@ export default function DateTime({
 }
 
 DateTime.propTypes = {
-  enableTimeSelect: bool,
+  enableTimeOption: bool,
   required: bool,
   error: string,
-  value: number,
+  value: oneOfType([instanceOf(Date), number, string]),
   onChange: func,
   dateFormat: string,
   name: string,
