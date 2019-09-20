@@ -49,6 +49,10 @@ function FormBuilder({
     setIsPreview(x => !x);
   }, []);
 
+  const onBlockClick = React.useCallback((type) => {
+    addBlock(form.definition.length, type);
+  }, [addBlock, form])
+
   return (
     <div className={styles['form-builder']}>
       <Grid container spacing={3}>
@@ -58,8 +62,8 @@ function FormBuilder({
               <Block
                 key={block.type}
                 {...block}
-                removeBlock={removeBlock}
-                addBlock={() => addBlock(form.definition.length, block.type)}
+                onCancel={removeBlock}
+                onClick={onBlockClick}
               />
             ))}
           </div>
