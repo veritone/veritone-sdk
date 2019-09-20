@@ -1,107 +1,36 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
-  "title": "vtn-standard.object",
-  "description": "Standard engine output for Object at Veritone",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/transcript/transcript.json",
+  "title": "vtn-standard.transcript",
+  "description": "Standard engine output for Transcription at Veritone",
   "type": "object",
-  "definitions": {
-    "words": {
-      "type": "array",
-      "minItems": 1,
-      "if": {
-        "minItems": 2
-      },
-      "then": {
-        "items": {
-          "type": "object",
-          "properties": {
-            "word": {
-              "$ref": "master.json#/definitions/word"
-            },
-            "confidence": {
-              "$ref": "master.json#/definitions/confidence"
-            },
-            "utteranceLength": {
-              "$ref": "master.json#/definitions/utteranceLength"
-            },
-            "bestPath": {
-              "type": "boolean"
-            }
-          },
-          "required": ["word", "confidence", "utteranceLength"]
-        },
-        "uniqueItems": true,
-        "requireBestPath": true
-      },
-      "else": {
-        "items": {
-          "type": "object",
-          "properties": {
-            "word": {
-              "$ref": "master.json#/definitions/word"
-            },
-            "confidence": {
-              "$ref": "master.json#/definitions/confidence"
-            }
-          },
-          "required": ["word"]
-        }
-      }
-    }
-  },
-  "properties": {
-    "validationContracts": {
-      "type": "array",
-      "items": {
-        "const": "transcript"
-      }
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/header"
     },
-    "series": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "words": {
-            "$ref": "#/definitions/words"
-          },
-          "startTimeMs": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "stopTimeMs": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "language": {
-            "$ref": "master.json#/definitions/language"
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "transcript"
           }
         },
-        "required": ["startTimeMs", "stopTimeMs"]
-      }
-    },
-    "language": {
-      "$ref": "master.json#/definitions/language"
-    },
-    "schemaId": {
-      "$ref": "master.json#/definitions/header/properties/schemaId"
-    },
-    "sourceEngineId": {
-      "$ref": "master.json#/definitions/header/properties/sourceEngineId"
-    },
-    "sourceEngineName": {
-      "$ref": "master.json#/definitions/header/properties/sourceEngineName"
-    },
-    "taskPayload": {
-      "$ref": "master.json#/definitions/header/properties/taskPayload"
-    },
-    "taskId": {
-      "$ref": "master.json#/definitions/header/properties/taskId"
-    },
-    "generatedDateUTC": {
-      "$ref": "master.json#/definitions/header/properties/generatedDateUTC"
-    },
-    "externalSourceId": {
-      "$ref": "master.json#/definitions/header/properties/externalSourceId"
+        "series": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../master.json#/definitions/seriesItem"
+              },
+              {
+                "required": ["words"]
+              }
+            ]
+          }
+        }
+      },
+      "required": ["series"]
     }
-  }
+  ]
 }

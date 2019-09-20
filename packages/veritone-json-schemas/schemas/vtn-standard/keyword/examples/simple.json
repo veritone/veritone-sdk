@@ -1,0 +1,37 @@
+{
+  "validationContracts": ["keyword"],
+  "object": [
+    {
+      "type": "keyword",
+      "label": "true gentleman"
+    },
+    {
+      "type": "keyword",
+      "label": "courteous"
+    },
+    {
+      "type": "keyword",
+      "label": "pleasant"
+    },
+    {
+      "type": "keyword",
+      "label": "pleasure"
+    },
+    {
+      "type": "keyword",
+      "label": "quiet"
+    },
+    {
+      "type": "keyword",
+      "label": "host"
+    },
+    {
+      "type": "keyword",
+      "label": "clean"
+    },
+    {
+      "type": "keyword",
+      "label": "john"
+    }
+  ]
+}

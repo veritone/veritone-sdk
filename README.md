@@ -48,7 +48,7 @@ Occasionally you may need to integrate unfinished work on an SDK package with an
 
 
 # License
-Copyright 2017, Veritone Inc.
+Copyright 2019, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

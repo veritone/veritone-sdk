@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { noop, initial, get, map } from 'lodash';
+import { noop, initial, get, map, kebabCase } from 'lodash';
 import {
   string,
   arrayOf,
@@ -107,6 +107,7 @@ class SectionTree extends React.Component {
               leftIcon={<ArrowBackIcon />}
               onClick={this.handleNavigateBack}
               data-testtarget="back-button"
+              btnActionTrackName={currentVisibleSection.btnActionTrackName}
             />
           )}
 
@@ -116,7 +117,7 @@ class SectionTree extends React.Component {
           currentVisibleSection.children
             ? currentVisibleSection.children
             : currentVisibleSectionParent.children,
-          ({ label, formComponentId, children, icon, iconClassName }, path) => (
+          ({ label, formComponentId, children, icon, iconClassName, btnActionTrackName }, path) => (
             <SectionTreeTab
               selectedClasses={this.props.selectedItemClasses}
               classes={this.props.classes}
@@ -135,6 +136,7 @@ class SectionTree extends React.Component {
                   ? this.handleNavigateForward
                   : this.handleNavigateSibling
               }
+              btnActionTrackName={btnActionTrackName}
             />
           )
         )}
@@ -146,14 +148,15 @@ class SectionTree extends React.Component {
 export default SectionTree;
 
 export const SectionTreeTab = ({
-  label,
+  label = '',
   id,
   leftIcon,
   rightIcon,
   selected,
   selectedClasses = {},
   classes = {},
-  onClick = noop
+  onClick = noop,
+  btnActionTrackName
 }) => (
   /* eslint-disable react/jsx-no-bind */
   <Button
@@ -162,6 +165,7 @@ export const SectionTreeTab = ({
       label: styles.muiButtonLabelOverride
     }}
     onClick={() => onClick(id)}
+    data-veritone-element={btnActionTrackName || `sidebar-${kebabCase(label.toLowerCase())}-button`}
   >
     <span
       className={cx(styles.leftIcon, classes.leftIcon, {
@@ -183,5 +187,6 @@ SectionTreeTab.propTypes = {
   selected: bool,
   onClick: func,
   classes: objectOf(any),
-  selectedClasses: objectOf(any)
+  selectedClasses: objectOf(any),
+  btnActionTrackName: string
 };
