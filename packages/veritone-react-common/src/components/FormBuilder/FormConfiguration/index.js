@@ -18,6 +18,7 @@ export default function Configuration({ type, onChange, ...data }) {
               value={data[configurationType]}
               onChange={onChange}
               className={styles['configuration-item']}
+              {...data}
             />);
         })
       }
