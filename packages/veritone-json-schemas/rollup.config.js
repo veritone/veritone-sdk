@@ -13,7 +13,7 @@ export default {
   external: [],
   plugins: [
     json({
-      include: ['schemas/**', 'node_modules/ajv/**/*'],
+      include: ['schemas/**', 'node_modules/ajv/**/*', '../../node_modules/ajv/**/*'],
       preferConst: true,
       indent: '  ',
       compact: true,
