@@ -1,6 +1,10 @@
 import React from 'react';
 import Today from '@material-ui/icons/Today';
-import dateFns from 'date-fns';
+import isValid from 'date-fns/isValid'
+import getYear from 'date-fns/getYear'
+import parse from 'date-fns/parse'
+import format from 'date-fns/format'
+import isDate from 'date-fns/isDate'
 import TextField from '@material-ui/core/TextField';
 import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
 
@@ -23,8 +27,8 @@ export default class DateTimePicker extends React.Component {
     const newDate = target.value;
 
     if (
-      !dateFns.isValid(new Date(newDate)) ||
-      dateFns.getYear(newDate) > 9999
+      !isValid(new Date(newDate)) ||
+      getYear(newDate) > 9999
     ) {
       return;
     }
@@ -140,20 +144,20 @@ TimeZoneField.propTypes = {
 };
 
 function consolidate(dateString, timeString) {
-  return dateFns.parse(`${dateString}T${timeString}:00`);
+  return parse(`${dateString}T${timeString}:00`);
 }
 
 function getDateString(date) {
-  return dateFns.format(date, 'YYYY-MM-DD');
+  return format(date, 'yyyy-MM-dd');
 }
 
 function getTimeString(date) {
-  return dateFns.format(date, 'HH:mm');
+  return format(date, 'HH:mm');
 }
 
 function getTimeZone(date) {
   let tzDate = date;
-  if (dateFns.isDate(tzDate)) {
+  if (isDate(tzDate)) {
     const tzMatch = tzDate.toTimeString().match(/\(([^)]+)\)$/);
     if (tzMatch && tzMatch.length > 1) {
       const tzParts = tzMatch[1].split(' ');

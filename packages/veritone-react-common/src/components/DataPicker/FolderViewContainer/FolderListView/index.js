@@ -1,6 +1,7 @@
 import React from 'react';
 import { get } from 'lodash';
-import { format } from 'date-fns';
+import format from 'date-fns/format'
+import parseISO from 'date-fns/parseISO'
 import { arrayOf, func, objectOf, bool } from 'prop-types';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
@@ -26,7 +27,7 @@ const FILE_ICONS = {
 }
 
 const formatDateString = date => {
-  return format(date, 'MMM D, YYYY h:mm A');
+  return format(parseISO(date), 'MMM d, yyyy h:mm a..aaa');
 };
 const useHideWrap = (children, key) => (
   <Hidden key={key} initialWidth="md" smDown>
@@ -109,12 +110,12 @@ const FolderListView = ({
                 className={styles['table-row']}
               >
                 <div className={cx(styles['table-first-column'])}>
-                <FileIcon className={styles['table-icon']}/>
+                  <FileIcon className={styles['table-icon']} />
                   <span className={
                     cx(styles['table-first-column--text'],
-                    {
-                      [styles['table-first-column--folder']]: type === 'folder'
-                    })
+                      {
+                        [styles['table-first-column--folder']]: type === 'folder'
+                      })
                   }
                   >
                     {name}
@@ -138,8 +139,8 @@ const FolderListView = ({
               <TableCell align="right" className={styles['table-row']}>
                 {
                   type === 'folder' ?
-                  'folder' :
-                  get(primaryAsset, 'contentType', 'doc')
+                    'folder' :
+                    get(primaryAsset, 'contentType', 'doc')
                 }
               </TableCell>
             </TableRow>

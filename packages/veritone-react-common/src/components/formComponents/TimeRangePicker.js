@@ -1,6 +1,6 @@
 import React from 'react';
 import { string, func, shape, bool, oneOfType } from 'prop-types';
-import dateFns from 'date-fns';
+import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
 
 import styles from './styles/timeRangePicker.scss';
@@ -37,7 +37,7 @@ export default class TimeRangePicker extends React.Component {
 
   getTimeZone() {
     const tzDate = new Date();
-    if (dateFns.isDate(tzDate)) {
+    if (isDate(tzDate)) {
       const tzMatch = tzDate.toTimeString().match(/\(([^)]+)\)$/);
       if (tzMatch && tzMatch.length > 1) {
         const tzParts = tzMatch[1].split(' ');
