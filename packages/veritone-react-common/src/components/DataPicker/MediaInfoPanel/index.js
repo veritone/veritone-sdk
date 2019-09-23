@@ -1,7 +1,8 @@
 import React from 'react';
 import { string, arrayOf, shape, bool, number, func, object, node } from 'prop-types';
 import { get } from 'lodash';
-import { format, parseISO } from 'date-fns';
+import format from 'date-fns/format' 
+import parseISO from 'date-fns/parseISO'
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import Typography from '@material-ui/core/Typography';

@@ -1,5 +1,8 @@
 import sinon from 'sinon';
-import { subDays, subHours, subMonths, parse } from 'date-fns';
+import subDays from 'date-fns/subDays'
+import subHours from 'date-fns/subHours'
+import subMonths from 'date-fns/subMonths'
+import parse from 'date-fns/parse'
 
 import { Interval, format } from './date';
 

@@ -1,11 +1,9 @@
 import { isArray, isMatch, isDate } from 'lodash';
-import {
-  subHours,
-  subDays,
-  subMonths,
-  format as libFormat,
-  isValid
-} from 'date-fns';
+import subHours from 'date-fns/subHours';
+import subDays from 'date-fns/subDays';
+import subMonths from 'date-fns/subMonths';
+import isValid from 'date-fns/isValid';
+import libFormat from 'date-fns/format';
 
 export class Interval {
   constructor({ label, start, end, window } = {}) {

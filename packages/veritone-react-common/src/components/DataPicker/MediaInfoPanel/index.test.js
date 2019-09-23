@@ -5,7 +5,8 @@ import { noop } from 'lodash';
 import Typography from '@material-ui/core/Typography';
 import Folder from '@material-ui/icons/Folder';
 
-import { format, parseISO } from 'date-fns';
+import format from 'date-fns/format' 
+import parseISO from 'date-fns/parseISO'
 
 import MediaPlayer from '../../MediaPlayer';
 

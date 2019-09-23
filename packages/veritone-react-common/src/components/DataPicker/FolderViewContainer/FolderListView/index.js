@@ -1,6 +1,7 @@
 import React from 'react';
 import { get } from 'lodash';
-import { format, parseISO } from 'date-fns';
+import format from 'date-fns/format'
+import parseISO from 'date-fns/parseISO'
 import { arrayOf, func, objectOf, bool } from 'prop-types';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
