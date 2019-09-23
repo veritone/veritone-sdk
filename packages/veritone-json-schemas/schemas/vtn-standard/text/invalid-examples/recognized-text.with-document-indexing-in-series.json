@@ -1,0 +1,61 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "validationContracts": ["text"],
+  "series": [
+    {
+      "startTimeMs": 12000,
+      "stopTimeMs": 13000,
+      "object": {
+        "type": "text",
+        "text": "the quick brown fox",
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.1
+          },
+          {
+            "x": 0.1,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.1
+          }
+        ],
+        "page": 1
+      }
+    },
+    {
+      "startTimeMs": 13000,
+      "stopTimeMs": 14000,
+      "object": {
+        "type": "text",
+        "text": "the quick brown fox jumped over the lazy dog",
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.1
+          },
+          {
+            "x": 0.1,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.1
+          }
+        ],
+        "paragraph": 2,
+        "sentence": 3
+      }
+    }
+  ]
+}

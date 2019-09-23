@@ -1,0 +1,48 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
+  "validationContracts": ["object"],
+  "series": [
+    {
+      "startTimeMs": 2000,
+      "stopTimeMs": 2100,
+      "object": {
+        "type": "object",
+        "label": "dog",
+        "confidence": 0.9,
+        "objectCategory": [
+          {
+            "class": "animal"
+          }
+        ],
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.1
+          },
+          {
+            "x": 0.1,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.1
+          }
+        ]
+      },
+      "something": "extra"
+    },
+    {
+      "startTimeMs": 2100,
+      "stopTimeMs": 2200,
+      "object": {
+        "type": "object",
+        "label": "cat",
+        "confidence": 0.55
+      }
+    }
+  ]
+}

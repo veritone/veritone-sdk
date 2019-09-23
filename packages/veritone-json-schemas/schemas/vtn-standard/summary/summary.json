@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/summary/summary.json",
+  "title": "vtn-standard.summary",
+  "description": "Standard engine output for Text Summary at Veritone",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "summary"
+          }
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": ["summary"]
+    }
+  ]
+}
