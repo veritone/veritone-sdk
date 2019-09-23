@@ -1,0 +1,14 @@
+.search-box-root {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  width: 240px;
+  border-bottom: 1px solid #e3e3e3;
+  .input {
+    margin-left: 8px;
+    flex: 1;
+  }
+  .icon-button {
+    padding: 10px;
+  }
+}
