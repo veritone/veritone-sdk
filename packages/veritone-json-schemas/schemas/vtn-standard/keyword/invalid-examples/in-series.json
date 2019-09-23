@@ -1,0 +1,13 @@
+{
+  "validationContracts": ["keyword"],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1,
+      "object": {
+        "type": "keyword",
+        "label": "true gentleman"
+      }
+    }
+  ]
+}

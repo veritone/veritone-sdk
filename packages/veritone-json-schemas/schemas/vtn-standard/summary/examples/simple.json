@@ -1,0 +1,4 @@
+{
+  "validationContracts": ["summary"],
+  "summary": "textual summary of the entire document goes here"
+}

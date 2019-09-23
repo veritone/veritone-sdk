@@ -1,0 +1,20 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "validationContracts": ["text"],
+  "object": [
+    {
+      "type": "text",
+      "text": "Le rapide renard brun sauta par dessus le chien paresseux.",
+      "page": 1,
+      "paragraph": 1,
+      "sentence": 1
+    },
+    {
+      "type": "text",
+      "text": "Cela a effrayé le chien.",
+      "page": 1,
+      "paragraph": 1,
+      "sentence": 2
+    }
+  ]
+}

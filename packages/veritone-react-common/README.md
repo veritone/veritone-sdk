@@ -29,7 +29,7 @@ A list of all components can be found in `src/index.js`. Usage examples of each 
 problems with storybook can usually be resolved by `cd`ing to the veritone-sdk root and running `yarn install --force`
 
 # License
-Copyright 2017, Veritone Inc.
+Copyright 2019, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
