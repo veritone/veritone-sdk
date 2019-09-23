@@ -66,9 +66,13 @@ export default function Checkboxes({
           })}
         </FormGroup>
       </Box>
-      <FormHelperText variant="outlined">
-        {error || instruction}
-      </FormHelperText>
+      {
+        (error || instruction) && (
+          <FormHelperText variant="outlined">
+            {error || instruction}
+          </FormHelperText>
+        )
+      }
     </FormControl>
   )
 }

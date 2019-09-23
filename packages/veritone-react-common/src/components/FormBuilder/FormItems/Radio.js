@@ -55,7 +55,13 @@ export default function Radio({
           }
         </RadioGroup>
       </Box>
-      <FormHelperText variant="outlined">{error || instruction}</FormHelperText>
+      {
+        (error || instruction) && (
+          <FormHelperText variant="outlined">
+            {error || instruction}
+          </FormHelperText>
+        )
+      }
     </FormControl>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { string, arrayOf, shape, bool, number, func, object, node } from 'prop-types';
 import { get } from 'lodash';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import Typography from '@material-ui/core/Typography';
@@ -44,7 +44,7 @@ const tdoShape = shape({
 });
 
 const formatDateString = date => {
-  return format(date, 'dddd, MMM d, yyyy [at] h:mm A');
+  return format(parseISO(date), 'dddd, MMM d, yyyy [at] h:mm a..aaa');
 };
 
 const getDuration = (startTime, stopTime) => {
@@ -198,7 +198,7 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
                     </span>
                   </TableCell>
                 </TableRow>
-            )}
+              )}
           </TableBody>
         </Table>
         {
