@@ -1,11 +1,9 @@
 import { isArray, isMatch, isDate } from 'lodash';
-import {
-  subHours,
-  subDays,
-  subMonths,
-  format as libFormat,
-  isValid
-} from 'date-fns';
+import subHours from 'date-fns/subHours';
+import subDays from 'date-fns/subDays';
+import subMonths from 'date-fns/subMonths';
+import isValid from 'date-fns/isValid';
+import libFormat from 'date-fns/format';
 
 export class Interval {
   constructor({ label, start, end, window } = {}) {
@@ -162,8 +160,8 @@ export const defaultIntervals = {
 };
 
 export const dateFormats = {
-  full: 'MMM Do, YYYY hh:mmA',
-  short: 'MM/DD/YYYY'
+  full: 'MMM Do, yyyy hh:mmA',
+  short: 'MM/dd/yyyy'
 };
 
 export function format(date, ...args) {
