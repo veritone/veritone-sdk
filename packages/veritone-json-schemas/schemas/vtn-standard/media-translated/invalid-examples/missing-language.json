@@ -1,0 +1,12 @@
+{
+  "validationContracts": ["media-translated"],
+  "media": [
+    {
+      "language": "en",
+      "assetId": "<ID of asset uploaded of english language translation>"
+    },
+    {
+      "assetId": "<ID of asset uploaded for french language translation>"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 import { modules, util, helpers } from 'veritone-redux-common';
 import { VeritoneSDKThemeProvider } from 'veritone-react-common';
+import { PropUpdater } from './PropUpdater';
 
 const { auth: authModule, config: configModule, user: userModule } = modules;
 const { promiseMiddleware } = helpers;
@@ -99,6 +100,15 @@ class _VeritoneApp {
     widget.setRefProperties(r);
   };
 
+  setPropsUpdaterRef = (widget, ref) => {
+    if (!ref) {
+      // protect against errors when destroying the app
+      return;
+    }
+
+    widget.setUpdaterProperties(ref);
+  };
+
   _renderReactApp() {
     this._containerEl = document.getElementById('veritone-react-app');
     if (!this._containerEl) {
@@ -124,12 +134,20 @@ class _VeritoneApp {
 
                 if (document.getElementById(w._elId)) {
                   return ReactDOM.createPortal(
-                    <w.Component
-                      {...w.props}
-                      // bind is OK because this isn't a component -- only renders
-                      // when mount() is called.
-                      // eslint-disable-next-line
-                      ref={this.setWidgetRef.bind(this, w)}
+                    <PropUpdater
+                      initialProps={w.props}
+                      // eslint-disable-next-line react/jsx-no-bind
+                      ref={this.setPropsUpdaterRef.bind(this, w)}
+                      // eslint-disable-next-line react/jsx-no-bind
+                      render={props => (
+                        <w.Component
+                          {...props}
+                          // bind is OK because this isn't a component -- only renders
+                          // when mount() is called.
+                          // eslint-disable-next-line
+                          ref={this.setWidgetRef.bind(this, w)}
+                        />
+                      )}
                     />,
                     document.getElementById(w._elId)
                   );

@@ -1,0 +1,32 @@
+{
+  "validationContracts": ["sentiment"],
+  "object": [
+    {
+      "type": "text",
+      "text": "I'm feeling mostly good but a little bad I think, with just a twitch of anger; but mostly I'm confused.",
+      "page": 3,
+      "paragraph": 15,
+      "sentence": 104,
+
+      "sentiment": {
+        "positiveValue": 0.56,
+        "positiveConfidence": 0.8,
+        "negativeValue": 0.2,
+        "negativeConfidence": 0.5
+      },
+
+      "emotions": [
+        {
+          "emotion": "excited",
+          "emotionValue": 0.14,
+          "emotionConfidence": 0.88
+        },
+        {
+          "emotion": "confused",
+          "emotionValue": 0.82,
+          "emotionConfidence": 0.75
+        }
+      ]
+    }
+  ]
+}

@@ -62,7 +62,7 @@ This modules uses ES6 imports. Run `yarn build` to generate CommonJS and ES6 bun
 
 # License
 
-Copyright 2018, Veritone Inc.
+Copyright 2019, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
