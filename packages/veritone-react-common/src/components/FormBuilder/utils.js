@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import { errorChain } from './helpers';
 
-function ratingSchema(block) {
+export function ratingSchema(block) {
   return {
     name: block.name,
     schema: {
@@ -11,7 +11,7 @@ function ratingSchema(block) {
   }
 }
 
-function stringSchema(block) {
+export function stringSchema(block) {
   return {
     name: block.name,
     schema: {
@@ -20,7 +20,7 @@ function stringSchema(block) {
   }
 }
 
-function enumSchema(block) {
+export function enumSchema(block) {
   return {
     name: block.name,
     schema: {
@@ -33,7 +33,7 @@ function enumSchema(block) {
   }
 }
 
-function arraySchema(block) {
+export function arraySchema(block) {
   return {
     name: block.name,
     schema: {
@@ -49,7 +49,7 @@ function arraySchema(block) {
   }
 }
 
-function booleanSchema(block) {
+export function booleanSchema(block) {
   return {
     name: block.name,
     schema: {
@@ -88,6 +88,12 @@ export const formDefaultValue = {
 export function generateSchema(formDefinition) {
   return {
     type: 'object',
+    required: formDefinition.reduce((requiredFields, { name, required }) => {
+      if (required) {
+        return [...requiredFields, name]
+      }
+      return requiredFields;
+    }, []),
     properties: formDefinition.reduce((currentForm, block) => {
       const { name, schema } = mapSchema[block.type](block);
       return {
@@ -102,20 +108,15 @@ export function generateState(formDefinition=[], initialState={}) {
   const emptyState = formDefinition.reduce((currentForm, { name, type }) => ({
     ...currentForm,
     [name]: formDefaultValue[type],
-    error: ''
+    error: {}
   }), {});
 
   return Object.assign({}, emptyState, initialState);
 }
 
 export function validateForm(formDefinition=[], value={}, validate={}) {
-  return formDefinition.reduce((formError, { name } ) => {
-    if (_.isFunction(validate[name])) {
-      return {
-        ...formError,
-        [name]: validate[name](value[name])
-      }
-    }
-    return formError;
-  }, {});
+  return formDefinition.reduce((formError, form ) => ({
+    ...formError,
+    [form.name]: errorChain({ data: value, settings: form})(validate[form.name])
+  }), {});
 }
