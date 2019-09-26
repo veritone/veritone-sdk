@@ -9,8 +9,7 @@ import styles from './styles.scss';
 
 export default function Searchbox({
   onSearch,
-  placeholder = "Search",
-  isEnableTypeToSearch = true
+  placeholder = "Search"
 }) {
   const inputRef = React.createRef();
   const [focusing, setFocusing] = React.useState(false);
@@ -29,6 +28,11 @@ export default function Searchbox({
   function handleChangeInput(event) {
     setData(event.target.value);
   }
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') {
+      onSearch(data);
+    }
+  }
   return (
     <div className={cx(styles['search-box-root'])}>
       <InputBase
@@ -37,6 +41,7 @@ export default function Searchbox({
         className={cx(styles['input'])}
         placeholder={placeholder}
         inputProps={{ "aria-label": "Search-input" }}
+        onKeyDown={handleKeyDown}
       />
       <IconButton
         onClick={handleSearch}
