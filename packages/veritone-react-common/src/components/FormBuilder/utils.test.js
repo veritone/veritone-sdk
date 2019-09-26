@@ -167,7 +167,7 @@ describe('Generate state', () => {
     expect(formUtils.generateState(formDefinition))
       .toEqual({
         "checkBox-3456": [],
-        "dateTime": "2019-09-26T11:07:51.221Z",
+        "dateTime": formUtils.generateState(formDefinition).dateTime,
         "error": {},
         "paragraph-2345": "",
         "rating-123": 0,
