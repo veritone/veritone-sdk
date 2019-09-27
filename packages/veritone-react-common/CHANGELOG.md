@@ -239,4 +239,4 @@
 Updates with potential of affecting existing styles / behaviours  
 * React version updated to 16.9.0
 * Material-ui version updated to 4.4
-* Minor chances on component's appearances
+* Minor changes on component's appearances
