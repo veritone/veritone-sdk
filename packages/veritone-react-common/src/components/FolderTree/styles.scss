@@ -1,21 +1,37 @@
 .folder-item-container{
   display: flex;
   align-items: center;
-  .folder-item{
-    margin-right: 10px;
-    font-size: 25px;
-    line-height: inherit;
-  }
-  .selected{
-    color: #2196F3;
-  }
-  .folder-icon {
-    color: #F0C56A;
-    margin-right: 10px;
-    font-size: 25px;
-    line-height: inherit;
-  }
 }
 .folder-tree-container {
   width: 100%;
+}
+.folder-item{
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+  color: #555;
+}
+.selected{
+  color: #2196F3;
+}
+.folder-icon {
+  color: #F0C56A;
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+}
+.content-icon{
+  color: #555;
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+}
+.expand-icon {
+  width: 20px;
+  height: 20px;
+  color: rgb(85, 85, 85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 }
