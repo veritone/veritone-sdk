@@ -230,3 +230,13 @@
 
 ## 8.0.3 
 * Add Dosis font to global style import for the AppBar title
+
+## Next Release [Major]
+* [NEW] search bar with auto suggestion template support
+* [NEW] Form builder components
+* Added analytics tracking to Sidebar component
+
+Updates with potential of affecting existing styles / behaviours  
+* React version updated to 16.9.0
+* Material-ui version updated to 4.4
+* Minor chances on component's appearances
