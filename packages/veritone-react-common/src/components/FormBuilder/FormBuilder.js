@@ -94,7 +94,7 @@ function FormBuilder({
                   removeBlock={removeBlock}
                   selectBlock={selectBlock}
                 >
-                  <BlockItem {...block} />
+                  <BlockItem {...block} name={`preview-${block.name}`} />
                 </PreviewWrapper>
               );
             })}

@@ -33,6 +33,7 @@ export default function Select({
       value={value}
       onChange={handleChange}
       className={styles['form-item']}
+      name={name}
     >
       {items.map(({ id, value }) => (
         <MenuItem key={id} value={value}>

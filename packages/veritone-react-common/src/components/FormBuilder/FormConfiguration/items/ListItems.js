@@ -42,7 +42,9 @@ export default function ListItems({ value, onChange }) {
   }, [value, onChange]);
 
   const removeBlock = React.useCallback((index) => {
-    onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
+    if(value.length > 1) {
+      onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
+    }
   }, [value]);
 
   const updateBlock = React.useCallback((index, newValue) => {

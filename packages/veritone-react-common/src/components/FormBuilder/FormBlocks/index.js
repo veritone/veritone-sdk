@@ -1,56 +1,20 @@
 import React from 'react';
 import { string, func, node } from 'prop-types';
-import {
-  Title,
-  RadioButtonChecked,
-  CheckBoxOutlined,
-  CalendarToday,
-  StarBorderOutlined,
-  Notes
-} from '@material-ui/icons';
 import { noop } from 'lodash';
+import Typography from '@material-ui/core/Typography';
+import Title from '@material-ui/icons/Title';
+import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
+import CheckBoxOutlined from '@material-ui/icons/CheckBoxOutlined';
+import CalendarToday from '@material-ui/icons/CalendarToday';
+import StarBorderOutlined from '@material-ui/icons/StarBorderOutlined';
+import Notes from '@material-ui/icons/Notes';
+import ExposurePlus1 from '@material-ui/icons/ExposurePlus1';
 import MenuIcon from '@material-ui/icons/Menu';
 import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { form } from '../configuration';
 import styles from './styles.scss';
-
-
-export const blockMaps = {
-  textInput: {
-    label: 'Input Text',
-    icon: <Title />
-  },
-  paragraph: {
-    label: 'Paragraph',
-    icon: <Notes />,
-  },
-  radio: {
-    label: 'Radio',
-    icon: <RadioButtonChecked />
-  },
-  checkBox: {
-    label: 'Checkbox',
-    icon: <CheckBoxOutlined />
-  },
-  dateTime: {
-    label: 'Date Time',
-    icon: <CalendarToday />
-  },
-  rating: {
-    label: 'Rating',
-    icon: <StarBorderOutlined />
-  },
-  select: {
-    label: 'Select',
-    icon: <MenuIcon />
-  },
-  switch: {
-    label: 'Switch',
-    icon: <EditAttributesIcon />
-  }
-}
 
 export const blockTypes = [
   {
@@ -92,14 +56,27 @@ export const blockTypes = [
     type: 'switch',
     label: 'Switch',
     icon: <EditAttributesIcon />
+  },
+  {
+    type: 'number',
+    label: 'Number',
+    icon: <ExposurePlus1 />
   }
 ];
+
+export const blockMaps = blockTypes.reduce((blocks, { type, label, icon }) => ({
+  ...blocks,
+  [type]: {
+    label,
+    icon
+  }
+}), {});
 
 export function BlockPreview({ type }) {
   return (
     <div className={styles['drag-preview-container']}>
       {blockMaps[type].icon}
-      {blockMaps[type].label}
+      <Typography className={styles['preview-text']}>{blockMaps[type].label}</Typography>
     </div>
   )
 }
@@ -143,7 +120,12 @@ export default function Block({ type, label, icon, onCancel, onClick }) {
       onClick={onBlockClick}
     >
       {icon}
-      <p>{label}</p>
+      <Typography
+        variant="caption"
+        className={styles['block-text']}
+      >
+        {label}
+      </Typography>
     </div>
   )
 }

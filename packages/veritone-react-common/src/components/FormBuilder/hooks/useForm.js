@@ -100,13 +100,12 @@ function formReducer(state, action) {
 
     case REMOVE_BLOCK:
       return {
-        selected: state.selected > action.payload.index ? state.selected - 1 : state.selected,
+        selected: state.selected > action.payload.index ? state.selected - 1 : Math.max(0, Math.min(state.selected, state.definition.length - 2)),
         definition: state.definition.filter((_, index) => index !== action.payload.index)
       };
     case SELECT_BLOCK:
       return {
-        ...state,
-        selected: action.payload.blockIndex
+        ...state,        selected: action.payload.blockIndex
       }
     default:
       return state;

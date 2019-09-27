@@ -42,7 +42,7 @@ export default function Checkboxes({
         className={styles.box}
       >
         {
-          label && <Typography component="legend">
+          label && <Typography component="legend" variant="caption">
             {label + `${required ? '*' : ''}`}
           </Typography>
         }
@@ -58,6 +58,7 @@ export default function Checkboxes({
                     checked={value.includes(item.value)}
                     onChange={handleChange}
                     color="primary"
+                    name={name}
                   />
                 }
                 label={item.value}

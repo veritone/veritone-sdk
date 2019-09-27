@@ -1,6 +1,6 @@
 import React from 'react';
 import { string, func } from 'prop-types';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import { RaisedTextField } from 'veritone-react-common';
 
 import styles from './styles.scss';

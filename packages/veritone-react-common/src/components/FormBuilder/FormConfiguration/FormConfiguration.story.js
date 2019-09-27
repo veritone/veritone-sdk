@@ -128,5 +128,13 @@ storiesOf('FormBuilder/FormConfiguration', module)
       />
     </DndProvider>
   ))
+  .add('number', () => (
+    <DndProvider backend={HTML5Backend}>
+      <FormConfiguration
+        type="number"
+        onChange={action('update number')}
+      />
+    </DndProvider>
+  ))
 
 

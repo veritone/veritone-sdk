@@ -23,7 +23,7 @@ export default function PreviewDialog({ form, handleClose }) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle id="form-dialog-title">Form builder</DialogTitle>
+        <DialogTitle id="form-dialog-title">Form builder Preview</DialogTitle>
         <DialogContent dividers>
           <Form
             formDefinition={form.definition}

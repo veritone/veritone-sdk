@@ -6,7 +6,8 @@ export default {
   dateTime: ['name', 'label', 'dateFormat', 'instruction', 'required', 'enableTimeOption'],
   rating: ['name', 'label', 'min', 'max', 'instruction', 'required'],
   select: ['name', 'label', 'items', 'instruction', 'required'],
-  switch: ['name', 'label', 'instruction', 'required']
+  switch: ['name', 'label', 'instruction', 'required'],
+  number: ['name', 'label', 'min', 'max', 'instruction', 'required'],
 };
 
 export const initData = {

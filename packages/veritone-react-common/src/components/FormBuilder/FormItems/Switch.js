@@ -33,6 +33,7 @@ export default function Switch({
             checked={value}
             onChange={handleChange}
             color="primary"
+            name={name}
           />
         }
         label={label}
