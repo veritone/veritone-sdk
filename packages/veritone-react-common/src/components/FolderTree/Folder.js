@@ -1,10 +1,9 @@
-/* eslint-disable react/prop-types */
 import React from "react";
-import { arrayOf, bool, shape, objectOf, string } from "prop-types";
+import { arrayOf, bool, shape, string, oneOfType, number, func } from "prop-types";
 import cx from "classnames";
 import _ from "lodash";
 
-import { Collapse, List, ListItem, ListItemText } from "@material-ui/core";
+import { Collapse, List, ListItem, ListItemText, Checkbox } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Menu from './Menu';
@@ -17,7 +16,7 @@ const useStyles = makeStyles({
     marginLeft: 20
   },
   folder: {
-    padding: 2,
+    padding: '2px 0',
     cursor: "pointer"
   },
   itemStyles: {
@@ -57,41 +56,15 @@ function FolderIcon({ folder, highlightedIds, isRootFolder, isOpening }) {
     )
   }
   const folderIcon = (isOpening || folder.id === highlightedIds) ? 'icon-open-folder'
-    : (folder.subfolders.length || folder.subcontents.length) ? 'icon-full-folder' : 'icon-empty-folder'
-  return (
-    <div className={cx([
-      folderIcon,
-      styles['folder-icon']
-    ])} />
-  )
-}
-
-function ExpandIcon({ folder, opening, handleOpenFolder }) {
-  const expanded = _.includes(opening, folder.id);
-  const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
-  if (folder.subcontents.length === 0 && folder.subfolders.length === 0) {
-    return (
-      <div style={{
-        width: 30
-      }}
-      />
-    )
-  }
-  return (
-    <div
-      data-id={folder.id}
-      onClick={handleOpenFolder}
-      className={cx([
-        expandStyle,
-        styles['expand-icon']
-      ])}
-    />
-  )
-}
-
-function ContentIcon({ content }) {
-  const { contentType } = content;
-  switch (contentType) {
+    : (folder.childs && folder.childs.length) ? 'icon-full-folder' : 'icon-empty-folder'
+  switch (folder.contentType) {
+    case 'folder':
+      return (
+        <div className={cx([
+          folderIcon,
+          styles['folder-icon']
+        ])} />
+      );
     case 'collection':
       return (
         <div className={cx([
@@ -117,39 +90,93 @@ function ContentIcon({ content }) {
           styles['content-icon']
         ])} />);
   }
-} 
+}
+FolderIcon.propTypes = {
+  folder: shape(Object),
+  highlightedIds: oneOfType(number, string),
+  isRootFolder: bool,
+  isOpening: bool
+}
+
+function ExpandIcon({ folder, opening, handleOpenFolder, isEnableShowingContent }) {
+  const expanded = _.includes(opening, folder.id);
+  const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
+  if (!folder.childs || folder.childs.length === 0) {
+    return (
+      <div style={{
+        width: 30
+      }}
+      />
+    )
+  }
+  if (
+    !isEnableShowingContent &&
+    folder.contentType === 'folder' &&
+    folder.subfolders.length === 0
+  ) {
+    return (
+      <div style={{
+        width: 30
+      }}
+      />
+    )
+  }
+  return (
+    <div
+      data-id={folder.id}
+      onClick={handleOpenFolder(folder.id)}
+      className={cx([
+        expandStyle,
+        styles['expand-icon']
+      ])}
+    />
+  )
+}
+ExpandIcon.propTypes = {
+  folder: shape(Object),
+  handleOpenFolder: func,
+  opening: bool,
+  isEnableShowingContent: bool
+}
 
 function Folder({
-  subfolders = [],
-  subcontents = [],
   opening = [],
   folders,
+  childs,
   folder,
   contents,
   selectedFolderIds = [],
   highlightedIds,
   searching,
   isRootFolder,
-  handleClick,
-  handleOpenFolder
+  handleClickFolder,
+  handleOpenFolder,
+  selectable,
+  isEnableShowingContent,
 }) {
-  const [hovering, sethovering] = React.useState(false);
-  function onMouseEnter() {
-    sethovering(true);
+  const [hovering, sethovering] = React.useState(null);
+  function onMouseEnter(e) {
+    const id = e.target.getAttribute('data-id');
+    sethovering(parseInt(id));
   }
   function onMouseLeave() {
-    sethovering(false);
+    sethovering(null);
   }
   const classes = useStyles();
   const isOpening = _.includes(opening, folder.id);
   const folderLabel = isRootFolder ? 'My organization' : folder.name || "Untitled";
+  const isChecked = (id) => _.includes(selectedFolderIds, id);
+  if (folder.contentType !== 'folder' && !isEnableShowingContent) {
+    return null;
+  }
   return (
     <List className={classes.folder}>
       <ListItem
         button
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onClick={handleClick(folder)}
+        data-id={folder.id}
+        onClick={handleClickFolder(folder)}
         className={cx({
           [classes.folder]: true,
           [classes.highlighted]: highlightedIds === folder.id
@@ -159,7 +186,14 @@ function Folder({
           handleOpenFolder={handleOpenFolder}
           folder={folder}
           opening={opening}
+          isEnableShowingContent={isEnableShowingContent}
         />
+        {selectable && (
+          <Checkbox
+            checked={isChecked(folder.id)}
+            color="primary"
+          />
+        )}
         <FolderIcon
           folder={folder}
           highlightedIds={highlightedIds}
@@ -167,30 +201,30 @@ function Folder({
           isOpening={isOpening}
         />
         <ListItemText primary={folderLabel} />
-        {hovering && <Menu />}
+        {hovering === folder.id && <Menu />}
       </ListItem>
       <Collapse in={isOpening} style={{ padding: 0 }}>
         <List component="div" disablePadding className={classes.subFolder}>
           {
-            subfolders.map(subfolder => {
-              const nestedSubfolders = subfolder.subfolders || [];
-              const nestedSubcontents = subfolder.subcontents || [];
+            childs.map(child => {
+              console.log(child)
+              const nestedChilds = child.childs || [];
               return (
                 <Folder
                   isRootFolder={false}
-                  key={subfolder.id}
+                  key={child.id}
                   classes={classes}
                   opening={opening}
+                  selectable={selectable}
+                  isEnableShowingContent={isEnableShowingContent}
                   selectedFolderIds={selectedFolderIds}
                   highlightedIds={highlightedIds}
                   rootIds={folders.rootIds}
-                  handleClick={handleClick}
+                  handleClickFolder={handleClickFolder}
                   handleOpenFolder={handleOpenFolder}
-                  folder={folders.byId[subfolder.id]}
-                  subfolders={nestedSubfolders.map(subfolderId =>
-                    folders.byId[subfolderId])}
-                  subcontents={nestedSubcontents.map(subcontentId =>
-                    contents.byId[subcontentId])}
+                  folder={folders.byId[child.id]}
+                  childs={nestedChilds.map(childId =>
+                    folders.byId[childId])}
                   folders={folders}
                   contents={contents}
                   searching={searching}
@@ -198,32 +232,26 @@ function Folder({
               );
             })
           }
-          {
-            subcontents.map(subcontent => {
-              return (
-                <ListItem
-                  key={subcontent.id}
-                  button
-                  // onMouseEnter={onMouseEnter}
-                  // onMouseLeave={onMouseLeave}
-                  className={cx({
-                    [classes.folder]: true,
-                    [classes.highlighted]: highlightedIds === subcontent.id
-                  })}
-                  onClick={handleClick(subcontent)}
-                >
-                  <div style={{ width: 30 }} />
-                  <ContentIcon content={subcontent} />
-                  <ListItemText primary={subcontent.name || 'My content'} />
-                  {hovering && <Menu />}
-                </ListItem>
-              );
-            })
-          }
         </List>
       </Collapse>
     </List>
   );
+}
+
+Folder.propTypes = {
+  childs: arrayOf(Object),
+  opening: bool,
+  folders: shape(Object),
+  folder: shape(Object),
+  contents: shape(Object),
+  selectedFolderIds: arrayOf(oneOfType(number, string)),
+  highlightedIds: oneOfType(number, string),
+  searching: bool,
+  isRootFolder: bool,
+  handleClickFolder: func,
+  handleOpenFolder: func,
+  selectable: bool,
+  isEnableShowingContent: bool
 }
 
 export default Folder;
