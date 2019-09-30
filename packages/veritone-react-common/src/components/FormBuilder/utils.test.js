@@ -1,4 +1,5 @@
 import * as formUtils from './utils';
+import * as formHelpers from './helpers';
 
 describe('Boolean schema', () => {
   it('Should return boolean schema', () => {
@@ -173,5 +174,25 @@ describe('Generate state', () => {
         "rating-123": 0,
         "textInput-1234": ""
       })
+  })
+})
+
+describe('Validate form', () => {
+  it('Shoud validate data with validate object', () => {
+    expect(formUtils.validateForm(
+      formDefinition,
+      {
+        "checkBox-3456": [],
+        "dateTime": formUtils.generateState(formDefinition).dateTime,
+        "error": {},
+        "paragraph-2345": "",
+        "rating-123": 0,
+        "textInput-1234": ""
+      },
+      {
+        "textInput-1234": formHelpers.validateEmpty
+      }
+    )["textInput-1234"])
+      .toBe("TEXTINPUT-1234 is required")
   })
 })
