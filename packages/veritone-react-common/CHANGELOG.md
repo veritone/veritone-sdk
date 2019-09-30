@@ -285,7 +285,6 @@
 * Form builder components
 * Added analytics tracking to Sidebar component
 
-* (breaking) Updates with potential of affecting existing styles / behaviours
+* **POTENTIONALLY BREAKING UPDATES** that may or may not affect existing styles / behaviours
   * React version updated to 16.9.0
   * Material-ui version updated to 4.4
-  * Minor changes on component's appearances
