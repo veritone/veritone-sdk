@@ -1,9 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Button from '@material-ui/core/Button';
-import _ from 'lodash';
 import Form from './Form';
 import { generateState, validateForm } from './utils';
+import { validateEmail, validateEmpty, validateRange } from './helpers';
 
 const formDefinition = [
   {
@@ -55,7 +55,9 @@ const formDefinition = [
     label: 'Rating',
     name: 'rating-123',
     type: 'rating',
-    instruction: 'Rating'
+    instruction: 'Rating',
+    min: 3,
+    max: 5
   },
   {
     name: 'radio',
@@ -97,12 +99,6 @@ const formDefinition = [
   }
 ];
 
-const requiredErrors = {
-  'textInput-1234': 'Do not let this text empty',
-  'email': 'Email is required',
-  'checkBox-3456': 'You should select at least one'
-}
-
 
 function BasicForm() {
   const [formState, setFormState] = React.useState(generateState(formDefinition));
@@ -137,15 +133,14 @@ function FormWithInitialState() {
 }
 
 const validateObject = {
-  'email': (value) => {
-    const re = /.+@.+\..+/;
-    if (!value) {
-      return requiredErrors['email'];
+  'email': [validateEmpty, validateEmail],
+  'textInput-1234': validateEmpty,
+  'checkBox-3456': ({ data, settings: { name } }) => {
+    if(data[name].length === 0) {
+      return 'You should choose at lest one option';
     }
-    return re.test(String(value).toLowerCase()) ? '' : 'Not an email';
   },
-  'textInput-1234': (value) => value ? '' : requiredErrors['textInput-1234'],
-  'checkBox-3456': (value) => !_.isEmpty(value) ? '' : requiredErrors['checkBox-3456']
+  'rating-123': validateRange
 }
 
 function FormWithValidate() {
