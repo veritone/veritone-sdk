@@ -13,7 +13,7 @@ import styles from '../styles.scss';
 
 const type = "items"
 
-export default function ListItems({ value, onChange }) {
+export default function ListItems({ value, onChange, className }) {
   const swapBlock = React.useCallback((from, to) => {
     onChange({
       name: type, value: value.map((valueBlock, index) => {
@@ -62,7 +62,7 @@ export default function ListItems({ value, onChange }) {
   }, [value])
 
   return (
-    <div className={styles['list-items-container']}>
+    <div className={className}>
       <label>Field Items</label>
       <div>
         {
@@ -87,7 +87,8 @@ ListItems.propTypes = {
   value: arrayOf(shape({
     id: string,
   })),
-  onChange: func
+  onChange: func,
+  className: string
 }
 
 ListItems.defaultProps = {

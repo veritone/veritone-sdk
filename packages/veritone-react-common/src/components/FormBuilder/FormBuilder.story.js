@@ -58,7 +58,7 @@ function BasicFormBuilder() {
 }
 
 
-storiesOf('FormBuilder/Basic', module)
+storiesOf('FormBuilder/FormBuilder', module)
   .add('Display form builder', () => (
     <BasicFormBuilder />
   ))
