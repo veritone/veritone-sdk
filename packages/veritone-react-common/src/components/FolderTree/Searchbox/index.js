@@ -1,6 +1,6 @@
 import React from "react";
 import cx from 'classnames';
-import { func, string, bool } from 'prop-types';
+import { func, string } from 'prop-types';
 import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
@@ -55,6 +55,5 @@ export default function Searchbox({
 }
 Searchbox.propTypes = {
   onSearch: func.isRequired,
-  placeholder: string,
-  isEnableTypeToSearch: bool
+  placeholder: string
 }

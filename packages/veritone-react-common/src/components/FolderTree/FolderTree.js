@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from "react";
-import { arrayOf, bool, func, number, shape } from "prop-types";
+import { bool, func, shape } from "prop-types";
 import _ from 'lodash';
 import cx from "classnames";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -8,12 +8,21 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Folder from "./Folder";
 import styles from "./styles.scss";
 
-const getAllChildId = (item) => {
+export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item.childs) || _.isEmpty(item.childs)) {
     return [item.id]
   }
   else {
-    return [item.id, ...item.childs.map(subitem => getAllChildId(subitem))]
+    return [item.id, ...item.childs.map(subitem => getAllChildId(foldersData.byId[subitem], foldersData))]
+  }
+}
+
+export const getAllParentId = (item, folderDataFlatten) => {
+  if (_.isNil(item.parentId)) {
+    return []
+  }
+  else {
+    return [item.parentId, ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)]
   }
 }
 
@@ -33,6 +42,57 @@ function FolderTree({
     setopening(newOpening);
     onExpand(folderId);
   }
+  const onChangeSelectedFolder = folder => {
+    if (!selectable) {
+      onChange({
+        [folder.id]: true
+      })
+    } else {
+      const folderId = folder.id;
+      const allChildId = _.flattenDeep(getAllChildId(folder, foldersData));
+      const allParentId = _.flattenDeep(getAllParentId(folder, foldersData));
+      const parentFolder = foldersData.byId[folder.parentId] || {};
+      const childs = parentFolder.childs || [];
+
+      if (selected[folderId]) {
+        const childsRemove = allChildId.reduce((acum, currentValue, currentIndex) => {
+          return {
+            ...acum,
+            [currentValue]: undefined
+          }
+        }, {});
+        const parentRemove = allParentId.reduce((acum, currentValue, currentIndex) => {
+          return {
+            ...acum,
+            [currentValue]: undefined
+          }
+        }, {});
+        const selectedFolder = {
+          ...selected,
+          ...childsRemove,
+          ...parentRemove,
+          [folderId]: undefined
+        }
+        const newSelected = _.pickBy(selectedFolder, _.identity);
+        onChange({ ...newSelected } || {});
+      } else {
+        const newSelected = allChildId.reduce((acum, currentValue, currentIndex) => {
+          return {
+            ...acum,
+            [currentValue]: true
+          }
+        }, {});
+        const selectedIds = Object.keys({ ...selected, ...newSelected })
+          .map(item => parseInt(item));
+        const diff = _.difference(childs, selectedIds);
+        if (diff.length === 0 && childs.length !== 0) {
+          return onChangeSelectedFolder(parentFolder);
+        }
+        onChange({ ...selected, ...newSelected } || {});
+      }
+    }
+  }
+
   if (loading) {
     return (<div className={cx(styles["loading"])}><CircularProgress /></div>);
   }
@@ -47,7 +107,7 @@ function FolderTree({
             selectable={selectable}
             selected={selected}
             isEnableShowingContent={isEnableShowContent}
-            onChange={onChange}
+            onChange={onChangeSelectedFolder}
             opening={opening}
             onExpand={handleOpenFolder}
             rootIds={foldersData.rootIds}

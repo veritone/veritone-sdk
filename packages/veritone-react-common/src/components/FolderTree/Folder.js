@@ -7,6 +7,8 @@ import _ from "lodash";
 import { Collapse, List, ListItem, ListItemText, Checkbox } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { getAllChildId } from './FolderTree';
+
 import Menu from './Menu';
 import styles from './styles.scss';
 
@@ -62,7 +64,7 @@ function FolderIcon({
       ])} />
     )
   }
-  const folderIcon = (isOpening || (_.includes(highlightedIds, folder.id && selectable)))
+  const folderIcon = (isOpening || (_.includes(highlightedIds, folder.id) && !selectable))
     ? 'icon-open-folder'
     : (folder.childs && folder.childs.length) ? 'icon-full-folder' : 'icon-empty-folder'
   switch (folder.contentType) {
@@ -143,7 +145,7 @@ function ExpandIcon({ folder, opening, onExpand, isEnableShowingContent }) {
 ExpandIcon.propTypes = {
   folder: shape(Object),
   onExpand: func,
-  opening: bool,
+  opening: arrayOf(oneOfType([number, string])),
   isEnableShowingContent: bool
 }
 
@@ -175,7 +177,7 @@ function Folder({
 
   const isIndeterminate = folderId => {
     const folder = folders.byId[folderId];
-    const childs = folder.childs || [];
+    const childs = _.flattenDeep(getAllChildId(folder, folders));
     const diff = _.difference(childs, selectedIds);
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
   }
@@ -183,7 +185,6 @@ function Folder({
   const onChangeItem = folder => e => {
     onChange(folder);
   }
-  console.log(selectedIds);
 
   if (folder.contentType !== 'folder' && !isEnableShowingContent) {
     return null;
