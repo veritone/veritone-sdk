@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import React from "react";
 import { arrayOf, bool, shape, string, oneOfType, number, func } from "prop-types";
 import cx from "classnames";
@@ -44,9 +45,15 @@ const useStyles = makeStyles({
   }
 })
 
-function FolderIcon({ folder, highlightedIds, isRootFolder, isOpening }) {
+function FolderIcon({
+  folder,
+  highlightedIds,
+  isRootFolder,
+  isOpening,
+  selectable
+}) {
   if (isRootFolder) {
-    const selected = highlightedIds === folder.id ? styles['selected'] : null;
+    const selected = _.includes(highlightedIds, folder.id) ? styles['selected'] : null;
     return (
       <div className={cx([
         'icon-work',
@@ -55,7 +62,8 @@ function FolderIcon({ folder, highlightedIds, isRootFolder, isOpening }) {
       ])} />
     )
   }
-  const folderIcon = (isOpening || folder.id === highlightedIds) ? 'icon-open-folder'
+  const folderIcon = (isOpening || (_.includes(highlightedIds, folder.id && selectable)))
+    ? 'icon-open-folder'
     : (folder.childs && folder.childs.length) ? 'icon-full-folder' : 'icon-empty-folder'
   switch (folder.contentType) {
     case 'folder':
@@ -95,10 +103,11 @@ FolderIcon.propTypes = {
   folder: shape(Object),
   highlightedIds: oneOfType(number, string),
   isRootFolder: bool,
-  isOpening: bool
+  isOpening: bool,
+  selectable: bool,
 }
 
-function ExpandIcon({ folder, opening, handleOpenFolder, isEnableShowingContent }) {
+function ExpandIcon({ folder, opening, onExpand, isEnableShowingContent }) {
   const expanded = _.includes(opening, folder.id);
   const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
   if (!folder.childs || folder.childs.length === 0) {
@@ -123,8 +132,7 @@ function ExpandIcon({ folder, opening, handleOpenFolder, isEnableShowingContent 
   }
   return (
     <div
-      data-id={folder.id}
-      onClick={handleOpenFolder(folder.id)}
+      onClick={onExpand(folder.id)}
       className={cx([
         expandStyle,
         styles['expand-icon']
@@ -134,7 +142,7 @@ function ExpandIcon({ folder, opening, handleOpenFolder, isEnableShowingContent 
 }
 ExpandIcon.propTypes = {
   folder: shape(Object),
-  handleOpenFolder: func,
+  onExpand: func,
   opening: bool,
   isEnableShowingContent: bool
 }
@@ -144,13 +152,10 @@ function Folder({
   folders,
   childs,
   folder,
-  contents,
-  selectedFolderIds = [],
-  highlightedIds,
-  searching,
+  selected,
   isRootFolder,
-  handleClickFolder,
-  handleOpenFolder,
+  onChange,
+  onExpand,
   selectable,
   isEnableShowingContent,
 }) {
@@ -165,10 +170,25 @@ function Folder({
   const classes = useStyles();
   const isOpening = _.includes(opening, folder.id);
   const folderLabel = isRootFolder ? 'My organization' : folder.name || "Untitled";
-  const isChecked = (id) => _.includes(selectedFolderIds, id);
+  const selectedIds = Object.keys(selected).map(item => parseInt(item));
+  const isChecked = id => _.includes(selectedIds, id);
+
+  const isIndeterminate = folderId => {
+    const folder = folders.byId[folderId];
+    const childs = folder.childs || [];
+    const diff = _.difference(childs, selectedIds);
+    return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
+  }
+
+  const onChangeItem = folder => e => {
+    onChange(folder);
+  }
+  console.log(selectedIds);
+
   if (folder.contentType !== 'folder' && !isEnableShowingContent) {
     return null;
   }
+
   return (
     <List className={classes.folder}>
       <ListItem
@@ -176,14 +196,14 @@ function Folder({
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         data-id={folder.id}
-        onClick={handleClickFolder(folder)}
+        onClick={onChangeItem(folder)}
         className={cx({
           [classes.folder]: true,
-          [classes.highlighted]: highlightedIds === folder.id
+          [classes.highlighted]: _.includes(selectedIds, folder.id) && !selectable
         })}
       >
         <ExpandIcon
-          handleOpenFolder={handleOpenFolder}
+          onExpand={onExpand}
           folder={folder}
           opening={opening}
           isEnableShowingContent={isEnableShowingContent}
@@ -191,14 +211,16 @@ function Folder({
         {selectable && (
           <Checkbox
             checked={isChecked(folder.id)}
+            indeterminate={isIndeterminate(folder.id)}
             color="primary"
           />
         )}
         <FolderIcon
           folder={folder}
-          highlightedIds={highlightedIds}
+          highlightedIds={selectedIds}
           isRootFolder={isRootFolder}
           isOpening={isOpening}
+          selectable={selectable}
         />
         <ListItemText primary={folderLabel} />
         {hovering === folder.id && <Menu />}
@@ -207,27 +229,22 @@ function Folder({
         <List component="div" disablePadding className={classes.subFolder}>
           {
             childs.map(child => {
-              console.log(child)
               const nestedChilds = child.childs || [];
               return (
                 <Folder
-                  isRootFolder={false}
                   key={child.id}
-                  classes={classes}
-                  opening={opening}
+                  isRootFolder={false}
                   selectable={selectable}
+                  selected={selected}
                   isEnableShowingContent={isEnableShowingContent}
-                  selectedFolderIds={selectedFolderIds}
-                  highlightedIds={highlightedIds}
+                  onChange={onChange}
+                  opening={opening}
+                  onExpand={onExpand}
                   rootIds={folders.rootIds}
-                  handleClickFolder={handleClickFolder}
-                  handleOpenFolder={handleOpenFolder}
                   folder={folders.byId[child.id]}
                   childs={nestedChilds.map(childId =>
                     folders.byId[childId])}
                   folders={folders}
-                  contents={contents}
-                  searching={searching}
                 />
               );
             })
@@ -240,16 +257,13 @@ function Folder({
 
 Folder.propTypes = {
   childs: arrayOf(Object),
-  opening: bool,
+  opening: arrayOf(oneOfType([number, string])),
   folders: shape(Object),
   folder: shape(Object),
-  contents: shape(Object),
-  selectedFolderIds: arrayOf(oneOfType(number, string)),
-  highlightedIds: oneOfType(number, string),
-  searching: bool,
+  selected: shape(Object),
   isRootFolder: bool,
-  handleClickFolder: func,
-  handleOpenFolder: func,
+  onChange: func,
+  onExpand: func,
   selectable: bool,
   isEnableShowingContent: bool
 }
