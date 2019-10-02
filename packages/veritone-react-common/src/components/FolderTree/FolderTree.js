@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from "react";
-import { bool, func, shape } from "prop-types";
+import { bool, func, shape, arrayOf } from "prop-types";
 import _ from 'lodash';
 import cx from "classnames";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -9,6 +9,9 @@ import Folder from "./Folder";
 import styles from "./styles.scss";
 
 export const getAllChildId = (item, foldersData) => {
+  if (_.isNil(item)) {
+    return []
+  }
   if (_.isNil(item.childs) || _.isEmpty(item.childs)) {
     return [item.id]
   }
@@ -18,7 +21,7 @@ export const getAllChildId = (item, foldersData) => {
 }
 
 export const getAllParentId = (item, folderDataFlatten) => {
-  if (_.isNil(item.parentId)) {
+  if (_.isNil(item) || _.isNil(item.parentId)) {
     return []
   }
   else {
@@ -33,7 +36,9 @@ function FolderTree({
   onChange,
   onExpand,
   isEnableShowContent,
-  selected
+  selected,
+  folderAction,
+  onMenuClick
 }) {
   const [opening, setopening] = useState([]);
   const handleOpenFolder = folderId => event => {
@@ -103,6 +108,8 @@ function FolderTree({
         return (
           <Folder
             key={folderId}
+            folderAction={folderAction}
+            onMenuClick={onMenuClick}
             isRootFolder
             selectable={selectable}
             selected={selected}
@@ -113,7 +120,7 @@ function FolderTree({
             rootIds={foldersData.rootIds}
             folder={foldersData.byId[folderId]}
             childs={childs.map(childId =>
-              foldersData.byId[childId])}
+              foldersData.byId[childId] || {})}
             folders={foldersData}
           />
         );
@@ -129,6 +136,8 @@ FolderTree.propTypes = {
   selected: shape(Object),
   onChange: func,
   onExpand: func,
+  folderAction: arrayOf(Object),
+  onMenuClick: func,
   isEnableShowContent: bool
 };
 

@@ -1,10 +1,17 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import _ from 'lodash';
-import FolderTree from './FolderTree';
+import { connect } from 'react-redux';
+import {
+  FolderTree as Folder,
+  SearchBox
+} from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const { user, config } = modules;
 
-function StoryComponent() {
+import widget from '../../shared/widget';
+
+function FolderTreeWrapper() {
   const foldersDataDefault = {
     rootIds: [1],
     allId: [1, 11, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -64,7 +71,7 @@ function StoryComponent() {
       },
       7: {
         id: 7,
-        name: 'Folder 7',
+        name: 'Folder 7 long name name name',
         contentType: 'folder',
         childs: [9, 128],
         parentId: 3,
@@ -168,8 +175,8 @@ function StoryComponent() {
       }
     }
   }
-  const selectable = true;
-  const isEnableShowContent = true;
+  const selectable = false;
+  const isEnableShowContent = false;
   const folderAction = [
     {
       id: 1,
@@ -226,31 +233,38 @@ function StoryComponent() {
       setSelectedFolder({ ...selectedFolder, ...additionSelected })
     }
   }
-
   return (
-    <FolderTree
-      selectable={selectable}
-      loading={false}
-      selected={selectedFolder}
-      foldersData={foldersData}
-      onChange={onChange}
-      onExpand={onExpand}
-      isEnableShowContent={isEnableShowContent}
-      folderAction={folderAction}
-      onMenuClick={onMenuClick}
-    />
+    <div style={{
+      width: 260
+    }}>
+      <SearchBox />
+      <Folder
+        selectable={selectable}
+        loading={false}
+        selected={selectedFolder}
+        foldersData={foldersData}
+        onChange={onChange}
+        onExpand={onExpand}
+        isEnableShowContent={isEnableShowContent}
+        folderAction={folderAction}
+        onMenuClick={onMenuClick}
+      />
+    </div>
   )
 }
 
-storiesOf('FolderTree', module)
-  .add('new folder tree', () => {
-    return (
-      <div style={{
-        padding: 20,
-        width: 500,
-        height: '100vh'
-      }}>
-        <StoryComponent />
-      </div>
-    );
-  });
+const FolderTree = connect(
+  state => ({
+    user: user.selectUser(state),
+    enabledApps: user.selectEnabledApps(state),
+    enabledAppsFailedLoading: user.enabledAppsFailedLoading(state),
+    isFetchingApps: user.isFetchingApps(state),
+    switchAppRoute: config.getConfig(state).switchAppRoute
+  }),
+  { fetchEnabledApps: user.fetchEnabledApps },
+  null,
+  { withRef: true }
+)(FolderTreeWrapper);
+
+const FolderTreeWidget = widget(FolderTree);
+export { FolderTree as default, FolderTreeWidget, Folder };
