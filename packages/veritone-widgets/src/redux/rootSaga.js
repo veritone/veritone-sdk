@@ -10,6 +10,7 @@ import dataPickerRootSaga from './modules/dataPicker/dataPickerSaga';
 import engineSelectionRootSaga from './modules/engineSelection/saga';
 import engineOutputExportSaga from './modules/engineOutputExport/saga';
 import editProfileRootSaga from './modules/userProfile/saga';
+import folderTreeSaga from './modules/folder/sagas';
 
 export default function* root() {
   yield all([
@@ -19,6 +20,7 @@ export default function* root() {
     fork(appRootSaga),
     fork(engineSelectionRootSaga),
     fork(engineOutputExportSaga),
-    fork(editProfileRootSaga)
+    fork(editProfileRootSaga),
+    fork(folderTreeSaga)
   ]);
 }
