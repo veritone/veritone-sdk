@@ -29,7 +29,7 @@ export default function ExpandIcon({ folder, opening, onExpand, isEnableShowingC
   if (
     !isEnableShowingContent &&
     folder.contentType === 'folder' &&
-    folder.subfolders.length === 0
+    folder.childs.length === 0
   ) {
     return (
       <div style={{

@@ -192,8 +192,7 @@ const defaultFolderState = {
   foldersData: {
     rootIds: [],
     allId: [],
-    byId: {},
-    ...fakeData
+    byId: {}
   },
   expandingFolderIds: [],
   expandedFolderIds: [],
@@ -221,8 +220,12 @@ export const initRootFolderError = () => ({
   type: INIT_ROOT_FOLDER_ERROR
 });
 
-export const initFolder = () => ({
-  type: INIT_FOLDER
+export const initFolder = (type, isEnablePersonalFolder) => ({
+  type: INIT_FOLDER,
+  payload: {
+    type,
+    isEnablePersonalFolder
+  }
 });
 
 export const initFolderStart = () => ({
@@ -303,7 +306,7 @@ export default createReducer(defaultFolderState, {
   }),
   [INIT_FOLDER_SUCCESS]: (state, action) => {
     const { folders, rootFolderId } = action.payload;
-    const folderIds = folders.map(folder => folders.id);
+    const folderIds = folders.map(folder => folder.id);
     const folderByIds = folders.reduce((accum, currentFolder) => ({
       ...accum,
       [currentFolder.id]: currentFolder
@@ -314,8 +317,8 @@ export default createReducer(defaultFolderState, {
       fetched: true,
       foldersData: {
         ...state.foldersData,
-        rootIds: [...state.foldersData.rootIds, rootFolderId],
-        allId: [...state.foldersData.byId, rootFolderId, ...folderIds],
+        rootIds: [...state.foldersData.rootIds, ...rootFolderId],
+        allId: [...state.foldersData.byId, ...rootFolderId, ...folderIds],
         byId: {
           ...state.foldersData.byId,
           ...folderByIds

@@ -6,7 +6,8 @@ import {
   oneOfType,
   number,
   string,
-  bool
+  bool,
+  arrayOf
 } from 'prop-types';
 
 import styles from '../styles.scss';
@@ -67,7 +68,7 @@ export default function FolderIcon({
   }
   FolderIcon.propTypes = {
     folder: shape(Object),
-    highlightedIds: oneOfType(number, string),
+    highlightedIds: arrayOf(oneOfType([number, string])),
     isRootFolder: bool,
     isOpening: bool,
     selectable: bool,

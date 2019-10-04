@@ -25,7 +25,8 @@ function Folder({
   selectable,
   isEnableShowingContent,
   folderAction,
-  onMenuClick
+  onMenuClick,
+  searchingStatus
 }) {
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
@@ -38,11 +39,11 @@ function Folder({
     const childs = _.flattenDeep(getAllChildId(folder, folders));
     const diff = _.difference(childs, selectedIds);
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
-  }
+  };
 
   const onChangeItem = folder => e => {
     onChange(folder);
-  }
+  };
 
   if (_.isNil(folder)) {
     return null;
@@ -64,12 +65,14 @@ function Folder({
           [styles['list-item']]: true
         })}
       >
-        <ExpandIcon
-          onExpand={onExpand}
-          folder={folder}
-          opening={opening}
-          isEnableShowingContent={isEnableShowingContent}
-        />
+        {!searchingStatus && (
+          <ExpandIcon
+            onExpand={onExpand}
+            folder={folder}
+            opening={opening}
+            isEnableShowingContent={isEnableShowingContent}
+          />
+        )}
         {selectable && (
           <Checkbox
             checked={isChecked(folderId)}
@@ -119,6 +122,7 @@ function Folder({
                   folders={folders}
                   folderAction={folderAction}
                   onMenuClick={onMenuClick}
+                  searchingStatus={searchingStatus}
                 />
               );
             })
@@ -142,6 +146,7 @@ Folder.propTypes = {
   isEnableShowingContent: bool,
   folderAction: arrayOf(Object),
   onMenuClick: func,
+  searchingStatus: bool
 }
 
 export default Folder;

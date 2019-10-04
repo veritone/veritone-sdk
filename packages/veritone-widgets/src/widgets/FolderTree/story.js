@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import FolderTree, { FolderTreeWidget } from './';
+import { FolderTreeWidget } from './';
 
 storiesOf('FolderTree', module).add('Base', () => {
   const props = {
@@ -15,8 +15,6 @@ storiesOf('FolderTree', module).add('Base', () => {
     <BaseStory
       widget={FolderTreeWidget}
       widgetProps={{ ...props, title: 'AppBar Widget' }}
-      componentClass={FolderTree}
-      componentProps={{ ...props, title: 'AppBar Component' }}
     />
   );
 });
