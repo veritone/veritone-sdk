@@ -35,12 +35,6 @@ const folderActionDefault = [
   }
 ]
 
-const foldersDataDefault = {
-  rootIds: [],
-  allId: [],
-  byId: {}
-}
-
 function FolderTreeWrapper({
   type,
   state,
@@ -157,7 +151,7 @@ const FolderTree = connect(
   }),
   {
     initFolder: folderModule.initFolder,
-    expandFolder: folderModule.expandFolder
+    expandFolder: folderModule.fetchMore
   },
   null,
   { withRef: true }

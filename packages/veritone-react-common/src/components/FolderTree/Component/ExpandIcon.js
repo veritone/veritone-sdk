@@ -17,20 +17,7 @@ export default function ExpandIcon({ folder, opening, onExpand, isEnableShowingC
   const folderId = _.get(folder, 'id');
   const expanded = _.includes(opening, folderId);
   const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
-  if (!folder.childs || folder.childs.length === 0) {
-    return (
-      <div style={{
-        width: 30,
-        minWidth: 30
-      }}
-      />
-    )
-  }
-  if (
-    !isEnableShowingContent &&
-    folder.contentType === 'folder' &&
-    folder.childs.length === 0
-  ) {
+  if (folder.contentType !== 'folder' || !folder.hasContent) {
     return (
       <div style={{
         width: 30,

@@ -8,6 +8,12 @@ export const folderFetched = state => state.folderTree.fetched;
 
 export const folderError = state => state.folderTree.error;
 
+export const rootFolderIds = state => state.folderTree.foldersData.rootIds;
+
+export const folderById = state => folderId => state.folderTree.foldersData.byId[folderById];
+
+export const folderExpanded = state => state.folderTree.expandedFolderIds;
+
 export const foldersDataSelector = createSelector(
     [folderData],
     foldersData => foldersData

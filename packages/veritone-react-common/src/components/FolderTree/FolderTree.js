@@ -32,14 +32,14 @@ export const getAllParentId = (item, folderDataFlatten) => {
 function FolderTree({
   selectable,
   loading,
+  inSearching,
+  isEnableShowContent,
   foldersData,
   onChange,
   onExpand,
-  isEnableShowContent,
   selected,
   folderAction,
-  onMenuClick,
-  searchingStatus,
+  onMenuClick
 }) {
   const [opening, setopening] = useState([]);
   const handleOpenFolder = folderId => event => {
@@ -99,7 +99,7 @@ function FolderTree({
     }
   }
 
-  const dataForMapping = !searchingStatus ? foldersData.rootIds : foldersData.allId;
+  const dataForMapping = !inSearching ? foldersData.rootIds : foldersData.allId;
 
   if (loading) {
     return (<div className={cx(styles["loading"])}><CircularProgress /></div>);
@@ -113,7 +113,7 @@ function FolderTree({
             key={folderId}
             folderAction={folderAction}
             onMenuClick={onMenuClick}
-            isRootFolder={!searchingStatus}
+            isRootFolder={!inSearching}
             selectable={selectable}
             selected={selected}
             isEnableShowingContent={isEnableShowContent}
@@ -125,7 +125,7 @@ function FolderTree({
             childs={childs.map(childId =>
               foldersData.byId[childId] || {})}
             folders={foldersData}
-            searchingStatus={searchingStatus}
+            inSearching={inSearching}
           />
         );
       })}
@@ -143,7 +143,7 @@ FolderTree.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   isEnableShowContent: bool,
-  searchingStatus: bool
+  inSearching: bool
 };
 
 export default FolderTree;

@@ -30,7 +30,7 @@ function Folder({
 }) {
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
-  const folderLabel = isRootFolder ? 'My organization' : _.get(folder, 'name');
+  const folderLabel = _.get(folder, 'name', 'My organization');
   const selectedIds = Object.keys(selected).map(item => parseInt(item));
   const isChecked = id => _.includes(selectedIds, id);
 
