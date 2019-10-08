@@ -35,7 +35,9 @@ function BasicFormBuilder() {
   ]);
 
   return (
-   <FormBuilder form={form} onChange={setForm} />
+    <div style={{ height: '95vh' }}>
+      <FormBuilder form={form} onChange={setForm} />
+    </div>
   );
 }
 

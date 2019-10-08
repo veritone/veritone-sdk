@@ -1,6 +1,5 @@
 
 export const add = (index, block, item) => {
-  console.log(index, block, item)
   return [
     ...block.slice(0, index),
     item,
