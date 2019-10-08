@@ -11,7 +11,7 @@ import { generateState } from "./utils";
 
 export default function PreviewDialog({ form, handleClose }) {
   const [formState, setFormState] = React.useState(
-    generateState(form.definition)
+    generateState(form)
   );
 
   return (
@@ -26,7 +26,7 @@ export default function PreviewDialog({ form, handleClose }) {
         <DialogTitle id="form-dialog-title">Form builder Preview</DialogTitle>
         <DialogContent dividers>
           <Form
-            formDefinition={form.definition}
+            formDefinition={form}
             value={formState}
             onChange={setFormState}
           />

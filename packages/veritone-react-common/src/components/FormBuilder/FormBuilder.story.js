@@ -1,20 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { DndProvider } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
-import DragLayer from './DragLayer';
 import FormBuilder from './FormBuilder';
-import useForm from "./hooks/useForm";
 
 function BasicFormBuilder() {
   const [
-    form,
-    addBlock,
-    swapBlock,
-    updateBlock,
-    removeBlock,
-    selectBlock
-  ] = useForm([
+    form, setForm
+  ] = React.useState([
     {
       name: "textInput-1234",
       type: "textInput"
@@ -42,18 +33,9 @@ function BasicFormBuilder() {
       ]
     }
   ]);
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <DragLayer />
-      <FormBuilder
-        form={form}
-        addBlock={addBlock}
-        swapBlock={swapBlock}
-        updateBlock={updateBlock}
-        removeBlock={removeBlock}
-        selectBlock={selectBlock}
-      />
-    </DndProvider>
+   <FormBuilder form={form} onChange={setForm} />
   );
 }
 

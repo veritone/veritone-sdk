@@ -1,8 +1,15 @@
 .form-builder {
   display: flex;
-  margin: auto;
   max-width: 1200px;
-  width: 100%;
+  margin: auto;
+}
+
+.drawer-placeholder {
+  width: 300px;
+}
+
+.drawer-placeholder--shift {
+  width: 0;
 }
 
 .blocks-wrapper {
@@ -52,4 +59,18 @@
   top: 0;
   width: 100%;
   height: 100%;
+}
+
+.configuration-container {
+  padding-left: 10px;
+  width: 400px;
+}
+
+.form-blocks {
+  max-width: 350px;
+  flex-basis: 50%;
+}
+
+.blocks-preview {
+  flex-basis: 70%;
 }

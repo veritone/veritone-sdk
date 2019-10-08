@@ -1,15 +1,20 @@
 import React from 'react';
-import { shape, func, number, string, arrayOf } from 'prop-types';
+import { shape, func, string, arrayOf } from 'prop-types';
+import { DndProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
 import { useDrop } from 'react-dnd';
 import _ from 'lodash';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import cx from 'classnames';
+import DragLayer from './DragLayer';
 import Block, { blockTypes } from './FormBlocks';
 import formItems, { PreviewWrapper } from './FormItems';
 import FormConfiguration from './FormConfiguration';
 import PreviewDialog from './PreviewDialog';
 import { form as formType } from './configuration';
 import { generateSchema } from './utils';
+import * as blockUtils from './blockUtils';
+import typeConfiguration, { initData } from './typeConfiguration';
 
 import styles from './styles.scss';
 
@@ -17,7 +22,7 @@ function formEqual({ form }, { form: nextForm }) {
   return _.isEqual(form, nextForm);
 }
 
-function FormBuilder({
+function FormBuilderComponent({
   form,
   addBlock,
   swapBlock,
@@ -30,7 +35,7 @@ function FormBuilder({
   const [, drop] = useDrop({
     accept: formType,
     drop: item => {
-      if (isNaN(item.index) && form.definition.length === 0) {
+      if (isNaN(item.index) && form.length === 0) {
         addBlock(0, item.id);
         item.index = 0;
       }
@@ -39,95 +44,97 @@ function FormBuilder({
 
   const onUpdateForm = React.useCallback(
     ({ name, value }) => {
-      updateBlock(form.selected, {
-        ...form.definition[form.selected],
-        [name]: value
-      })
-    }, [updateBlock]);
+      const updateIndex = form.findIndex(formItem => formItem.selected);
+      updateBlock(updateIndex, { [name]: value });
+    }, [updateBlock, form]);
 
   const handleClickPreview = React.useCallback(() => {
     setIsPreview(x => !x);
   }, []);
 
   const onBlockClick = React.useCallback((type) => {
-    addBlock(form.definition.length, type);
+    addBlock(form.length, type);
   }, [addBlock, form]);
 
+  const configurationOpen = form.filter(formItem => formItem.selected);
+
   return (
-    <div className={styles['form-builder']}>
-      <Grid container spacing={3}>
-        <Grid item xs>
-          <div className={styles['blocks-wrapper']}>
-            {blockTypes.map(block => (
-              <Block
-                key={block.type}
-                {...block}
-                onCancel={removeBlock}
-                onClick={onBlockClick}
-              />
-            ))}
-          </div>
-          <hr />
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleClickPreview}
-          >
-            Preview
+    <div className={cx(styles['form-builder'])}>
+      <div className={cx(styles['form-blocks'])}>
+        <div className={styles['blocks-wrapper']}>
+          {blockTypes.map(block => (
+            <Block
+              key={block.type}
+              {...block}
+              onCancel={removeBlock}
+              onClick={onBlockClick}
+            />
+          ))}
+        </div>
+        <hr />
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleClickPreview}
+        >
+          Preview
           </Button>
-          {isPreview && (
-            <PreviewDialog form={form} handleClose={handleClickPreview} />
-          )}
-        </Grid>
-        <Grid item xs={6}>
-          <div ref={drop}>
-            {form.definition.map((block, index) => {
-              const BlockItem = formItems[block.type];
-              return (
-                <PreviewWrapper
-                  index={index}
-                  selected={index === form.selected}
-                  key={block.name}
-                  addBlock={addBlock}
-                  swapBlock={swapBlock}
-                  updateBlock={updateBlock}
-                  removeBlock={removeBlock}
-                  selectBlock={selectBlock}
-                >
-                  <BlockItem {...block} name={`preview-${block.name}`} />
-                </PreviewWrapper>
-              );
-            })}
-            {
-              <pre>
-                {JSON.stringify(generateSchema(form.definition), null, 2)}
-              </pre>
-            }
-          </div>
-        </Grid>
-        <Grid item xs={3}>
+        {isPreview && (
+          <PreviewDialog
+            form={form}
+            handleClose={handleClickPreview}
+          />
+        )}
+      </div>
+      <div className={styles['blocks-preview']}>
+        <div ref={drop}>
+          {form.map((block, index) => {
+            const BlockItem = formItems[block.type];
+            return (
+              <PreviewWrapper
+                index={index}
+                key={block.name}
+                selected={block.selected}
+                addBlock={addBlock}
+                swapBlock={swapBlock}
+                updateBlock={updateBlock}
+                removeBlock={removeBlock}
+                selectBlock={selectBlock}
+              >
+                <BlockItem {...block} name={`preview-${block.name}`} />
+              </PreviewWrapper>
+            );
+          })}
           {
-            (form.definition.length > 0) && (
-              <FormConfiguration
-                onChange={onUpdateForm}
-                {...form.definition[form.selected]}
-              />
-            )
+            <pre>
+              {JSON.stringify(generateSchema(form), null, 2)}
+            </pre>
           }
-        </Grid>
-      </Grid>
+        </div>
+      </div>
+      <div className={styles['configuration-container']}>
+        {
+          (configurationOpen.length > 0) && (
+            <FormConfiguration
+              onChange={onUpdateForm}
+              {...configurationOpen[0]}
+            />
+          )
+        }
+      </div>
     </div>
   );
 }
 
-FormBuilder.propTypes = {
-  form: shape({
-    selected: number,
-    definition: arrayOf(shape({
-      type: string,
-      name: string
-    })),
-  }),
+const formPropType = arrayOf(
+  shape({
+    type: string,
+    name: string
+  })
+);
+
+FormBuilderComponent.propTypes = {
+  form: formPropType,
   addBlock: func,
   swapBlock: func,
   removeBlock: func,
@@ -135,16 +142,68 @@ FormBuilder.propTypes = {
   updateBlock: func,
 }
 
-FormBuilder.defaultProps = {
+FormBuilderComponent.defaultProps = {
   addBlock: _.noop,
   swapBlock: _.noop,
   removeBlock: _.noop,
   selectBlock: _.noop,
   updateBlock: _.noop,
-  form: {
-    selected: 0,
-    definition: []
-  }
+  form: []
 }
 
-export default React.memo(FormBuilder, formEqual);
+const FormBuilderComponentMemo = React.memo(FormBuilderComponent, formEqual);
+
+function FormBuilder({ form, onChange }) {
+  const addBlock = React.useCallback((index, type) => {
+    const name = `${type}-${(new Date()).getTime()}`;
+    const item = typeConfiguration[type]
+      .slice(1)
+      .reduce((data, type) => ({
+        ...data,
+        [type]: initData[type]
+      }), { type, name });
+    onChange(blockUtils.add(index, form, item));
+  }, [onChange, form]);
+
+  const removeBlock = React.useCallback((index) => {
+    onChange(blockUtils.remove(index, form));
+  }, [onChange, form]);
+
+  const updateBlock = React.useCallback((index, item) => {
+    onChange(blockUtils.update(index, form, item));
+  }, [onChange, form]);
+
+  const swapBlock = React.useCallback((from, to) => {
+    onChange(blockUtils.swap({ from, to }, form));
+  }, [onChange, form]);
+
+  const selectBlock = React.useCallback((index) => {
+    onChange(blockUtils.select(index, form));
+  }, [onChange, form]);
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <DragLayer />
+      <FormBuilderComponentMemo
+        form={form}
+        addBlock={addBlock}
+        removeBlock={removeBlock}
+        updateBlock={updateBlock}
+        swapBlock={swapBlock}
+        selectBlock={selectBlock}
+      />
+    </DndProvider>
+  )
+}
+
+FormBuilder.propTypes = {
+  onChange: func,
+  form: formPropType,
+}
+
+FormBuilder.defaultProps = {
+  onChange: _.noop,
+  form: []
+}
+
+export default FormBuilder;
