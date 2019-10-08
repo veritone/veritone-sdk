@@ -1,17 +1,30 @@
 /* eslint-disable react/jsx-no-bind */
 import React from "react";
-import { arrayOf, bool, shape, string, oneOfType, number, func } from "prop-types";
+import {
+  arrayOf,
+  bool,
+  shape,
+  string,
+  oneOfType,
+  number,
+  func
+} from "prop-types";
 import cx from "classnames";
 import _ from "lodash";
-import { Collapse, List, ListItem, ListItemText, Checkbox } from "@material-ui/core";
+import {
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+  Checkbox,
+  CircularProgress
+} from "@material-ui/core";
 
-import { getAllChildId } from './FolderTree';
 import ExpandIcon from './Component/ExpandIcon';
 import FolderIcon from './Component/FolderIcon';
 import Menu from './Menu';
 import styles from './styles.scss';
-
-
+import { getAllChildId } from './index';
 
 function Folder({
   opening = [],
@@ -26,12 +39,13 @@ function Folder({
   isEnableShowingContent,
   folderAction,
   onMenuClick,
-  searchingStatus
+  searchingStatus,
+  processingFolder
 }) {
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
   const folderLabel = _.get(folder, 'name', 'My organization');
-  const selectedIds = Object.keys(selected).map(item => parseInt(item));
+  const selectedIds = Object.keys(selected);
   const isChecked = id => _.includes(selectedIds, id);
 
   const isIndeterminate = folderId => {
@@ -41,7 +55,9 @@ function Folder({
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
   };
 
-  const onChangeItem = folder => e => {
+  const isProgressing = _.includes(processingFolder, folderId);
+
+  const onChangeItem = folder => () => {
     onChange(folder);
   };
 
@@ -91,6 +107,14 @@ function Folder({
           className={cx(styles['list-item-text'])}
           primary={folderLabel}
         />
+        {isProgressing && (
+          <div className={cx(styles['icon-progress'])}>
+            <CircularProgress
+              disableShrink
+              size={20}
+            />
+          </div>
+        )}
         <div className={cx(styles['icon-menu'])}>
           <Menu
             folderAction={folderAction}
@@ -123,6 +147,7 @@ function Folder({
                   folderAction={folderAction}
                   onMenuClick={onMenuClick}
                   searchingStatus={searchingStatus}
+                  processingFolder={processingFolder}
                 />
               );
             })
@@ -146,7 +171,8 @@ Folder.propTypes = {
   isEnableShowingContent: bool,
   folderAction: arrayOf(Object),
   onMenuClick: func,
-  searchingStatus: bool
+  searchingStatus: bool,
+  processingFolder: arrayOf(string)
 }
 
 export default Folder;

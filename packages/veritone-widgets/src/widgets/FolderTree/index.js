@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   string,
   bool,
@@ -11,7 +11,9 @@ import {
 import { connect } from 'react-redux';
 import {
   FolderTree as Folder,
-  SearchBox
+  SearchBox,
+  FolderNullState,
+  LoadingState
 } from 'veritone-react-common';
 import _ from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
@@ -36,77 +38,55 @@ const folderActionDefault = [
 ]
 
 function FolderTreeWrapper({
-  type,
+  type = 'watchlist',
   state,
   initFolder,
   expandFolder,
   foldersData,
   onSelectFolder,
   onSelectMenuItem = _.noop,
-  selectable = false,
+  selectable = true,
   isEnableShowContent = false,
   folderAction = folderActionDefault,
   selectedFolder = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
-  errorStatus
+  errorStatus,
+  expandingFolderIds
 }) {
-  // const [selectedFolder, setSelectedFolder] = useState({});
-  // const [foldersData, setFoldersData] = useState(foldersDataDefault);
-  // const onMenuClick = (item, type) => {
-  //   console.log(item, type);
-  // }
-
   useEffect(() => {
-    initFolder('cms', false);
+    initFolder(type, false);
   }, [])
-  console.log(foldersData);
   const onChange = selectedfolder => {
-    console.log(selectedfolder);
-    // setSelectedFolder(selectedfolder);
+    onSelectFolder(selectedfolder);
   }
   const onExpand = folderId => {
-    console.log(folderId);
     expandFolder(folderId);
-
-    // if (_.includes(foldersData.rootIds, folderId)) {
-    //   return;
-    // }
-    // const dataAfterCallAPI = {
-    //   127: {
-    //     id: 127,
-    //     parentId: 6,
-    //     contentType: 'collection',
-    //     name: 'Content 7',
-    //   },
-    // }
-    // setFoldersData(foldersData => ({
-    //   ...foldersData,
-    //   allId: [...foldersData.allId, ...Object.keys(dataAfterCallAPI)],
-    //   byId: {
-    //     ...foldersData.byId,
-    //     ...dataAfterCallAPI
-    //   }
-    // }))
-    // if (selectedFolder[folderId]) {
-    //   const additionSelected = Object.keys(dataAfterCallAPI).reduce((accum, currentData) => {
-    //     return {
-    //       ...accum,
-    //       [currentData]: true
-    //     };
-    //   }, {})
-    //   setSelectedFolder({ ...selectedFolder, ...additionSelected })
-    // }
   }
+
+  if (fetchingFolderStatus) {
+    return (
+      <div>
+        <SearchBox />
+        <LoadingState />
+      </div>
+    );
+  }
+
+  if(fetchedFolderStatus && foldersData.allId.length === 0) {
+    return (
+      <div>
+        <SearchBox />
+        <FolderNullState message={errorStatus ? 'Something wrong' : 'No content in this org'} />
+      </div>
+    )
+  }
+
   return (
-    <div style={{
-      width: 260,
-      height: '100%'
-    }}>
+    <div>
       <SearchBox />
       <Folder
         selectable={selectable}
-        loading={fetchingFolderStatus}
         errorStatus={errorStatus}
         loaded={fetchedFolderStatus}
         selected={selectedFolder}
@@ -116,6 +96,7 @@ function FolderTreeWrapper({
         isEnableShowContent={isEnableShowContent}
         folderAction={folderAction}
         onMenuClick={onSelectMenuItem}
+        processingFolder={expandingFolderIds}
       />
     </div>
   )
@@ -139,7 +120,8 @@ FolderTreeWrapper.propTypes = {
   expandFolder: func,
   fetchingFolderStatus: bool,
   fetchedFolderStatus: bool,
-  errorStatus: bool
+  errorStatus: bool,
+  expandingFolderIds: arrayOf(string)
 }
 
 const FolderTree = connect(
@@ -147,11 +129,15 @@ const FolderTree = connect(
     foldersData: folderSelector.foldersDataSelector(state),
     fetchingFolderStatus: folderSelector.folderFetchingStatus(state),
     fetchedFolderStatus: folderSelector.folderFetchedStatus(state),
-    errorStatus: folderSelector.folderErrorStatus(state)
+    errorStatus: folderSelector.folderErrorStatus(state),
+    selectedFolder: folderSelector.selectedFolder(state),
+    expandingFolderIds: folderSelector.expandingFolderIdsSelector(state)
   }),
   {
     initFolder: folderModule.initFolder,
-    expandFolder: folderModule.fetchMore
+    expandFolder: folderModule.fetchMore,
+    onSelectFolder: folderModule.selectFolder,
+    onSelectAllFolder: folderModule.selectAllFolder
   },
   null,
   { withRef: true }

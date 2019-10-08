@@ -7,13 +7,12 @@ import {
   func,
   oneOfType,
   number,
-  string,
-  bool
+  string
 } from 'prop-types';
 
 import styles from '../styles.scss';
 
-export default function ExpandIcon({ folder, opening, onExpand, isEnableShowingContent }) {
+export default function ExpandIcon({ folder, opening, onExpand }) {
   const folderId = _.get(folder, 'id');
   const expanded = _.includes(opening, folderId);
   const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
@@ -39,6 +38,5 @@ export default function ExpandIcon({ folder, opening, onExpand, isEnableShowingC
 ExpandIcon.propTypes = {
   folder: shape(Object),
   onExpand: func,
-  opening: arrayOf(oneOfType([number, string])),
-  isEnableShowingContent: bool
+  opening: arrayOf(oneOfType([number, string]))
 }

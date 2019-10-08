@@ -14,6 +14,10 @@ export const folderById = state => folderId => state.folderTree.foldersData.byId
 
 export const folderExpanded = state => state.folderTree.expandedFolderIds;
 
+export const selected = state => state.folderTree.selectedFolder;
+
+export const expandingFolderIds = state => state.folderTree.expandingFolderIds;
+
 export const foldersDataSelector = createSelector(
     [folderData],
     foldersData => foldersData
@@ -33,3 +37,13 @@ export const folderErrorStatus = createSelector(
     [folderError],
     folderError => folderError
 );
+
+export const selectedFolder = createSelector(
+    [selected],
+    selected => selected
+);
+
+export const expandingFolderIdsSelector = createSelector(
+    [expandingFolderIds],
+    expandingFolderIds => expandingFolderIds
+)

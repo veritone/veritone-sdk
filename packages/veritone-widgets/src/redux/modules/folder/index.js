@@ -19,6 +19,7 @@ export const SEARCH_START = 'folder/SEARCH_START';
 export const SEARCH_SUCCESS = 'folder/SEARCH_SUCCESS';
 export const SEARCH_ERROR = 'folder/SEARCH_ERROR';
 export const SELECT_FOLDER = 'folder/SELECT_FOLDER';
+export const SELECT_ALL_FOLDER = 'folder/SELECT_ALL_FOLDER';
 
 export const namespace = 'folderTree';
 
@@ -31,6 +32,7 @@ const defaultFolderState = {
     allId: [],
     byId: {}
   },
+  selectedFolder: {},
   expandingFolderIds: [],
   expandedFolderIds: [],
   searchFolderData: {
@@ -57,10 +59,11 @@ export const initRootFolderError = () => ({
   type: INIT_ROOT_FOLDER_ERROR
 });
 
-export const initFolder = (type, isEnablePersonalFolder) => ({
+export const initFolder = (type, isEnableContent, isEnablePersonalFolder) => ({
   type: INIT_FOLDER,
   payload: {
     type,
+    isEnableContent,
     isEnablePersonalFolder
   }
 });
@@ -136,6 +139,17 @@ export const searchFolderError = searchValue => ({
   }
 });
 
+export const selectFolder = selected => ({
+  type: SELECT_FOLDER,
+  payload: {
+    selected
+  }
+});
+
+export const selectAllFolder = () => ({
+  type: SELECT_FOLDER
+});
+
 export default createReducer(defaultFolderState, {
   [INIT_FOLDER_START]: (state, action) => ({
     ...state,
@@ -202,6 +216,19 @@ export default createReducer(defaultFolderState, {
       }
     }
   },
+  [SELECT_FOLDER]: (state, action) => ({
+    ...state,
+    selectedFolder: action.payload.selected
+  }),
+  [SELECT_ALL_FOLDER]: (state, action) => ({
+    ...state,
+    selectedFolder: {
+      ...state.foldersData.allId.reduce((accum, currentFolderId) => ({
+        ...accum,
+        [currentFolderId]: true
+      }), {})
+    }
+  }),
   [SEARCH_START]: (state, action) => ({
     ...state,
     fetching: true,

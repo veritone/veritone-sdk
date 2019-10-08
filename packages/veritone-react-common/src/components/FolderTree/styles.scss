@@ -39,6 +39,7 @@
 }
 .loading {
   text-align: center;
+  padding: 10px;
 }
 .icon-menu {
   display: none;
@@ -47,6 +48,10 @@
   &:hover .icon-menu {
     display: block;
   }
+}
+.icon-progress {
+  display: block;
+  padding: 10px;
 }
 .folder {
   padding: 0 !important;

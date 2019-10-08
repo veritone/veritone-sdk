@@ -1,12 +1,9 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from "react";
-import { bool, func, shape, arrayOf } from "prop-types";
+import { bool, func, shape, arrayOf, string } from "prop-types";
 import _ from 'lodash';
-import cx from "classnames";
-import CircularProgress from "@material-ui/core/CircularProgress";
 
 import Folder from "./Folder";
-import styles from "./styles.scss";
 
 export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item)) {
@@ -16,7 +13,9 @@ export const getAllChildId = (item, foldersData) => {
     return [item.id]
   }
   else {
-    return [item.id, ...item.childs.map(subitem => getAllChildId(foldersData.byId[subitem], foldersData))]
+    return [item.id, ...item.childs.map(subitem =>
+      getAllChildId(foldersData.byId[subitem], foldersData)
+    )]
   }
 }
 
@@ -25,14 +24,17 @@ export const getAllParentId = (item, folderDataFlatten) => {
     return []
   }
   else {
-    return [item.parentId, ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)]
+    return [
+      item.parentId,
+      ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)
+    ]
   }
 }
 
 function FolderTree({
   selectable,
-  loading,
   inSearching,
+  processingFolder,
   isEnableShowContent,
   foldersData,
   onChange,
@@ -61,13 +63,13 @@ function FolderTree({
       const childs = parentFolder.childs || [];
 
       if (selected[folderId]) {
-        const childsRemove = allChildId.reduce((acum, currentValue, currentIndex) => {
+        const childsRemove = allChildId.reduce((acum, currentValue) => {
           return {
             ...acum,
             [currentValue]: undefined
           }
         }, {});
-        const parentRemove = allParentId.reduce((acum, currentValue, currentIndex) => {
+        const parentRemove = allParentId.reduce((acum, currentValue) => {
           return {
             ...acum,
             [currentValue]: undefined
@@ -82,14 +84,13 @@ function FolderTree({
         const newSelected = _.pickBy(selectedFolder, _.identity);
         onChange({ ...newSelected } || {});
       } else {
-        const newSelected = allChildId.reduce((acum, currentValue, currentIndex) => {
+        const newSelected = allChildId.reduce((acum, currentValue) => {
           return {
             ...acum,
             [currentValue]: true
           }
         }, {});
-        const selectedIds = Object.keys({ ...selected, ...newSelected })
-          .map(item => parseInt(item));
+        const selectedIds = Object.keys({ ...selected, ...newSelected });
         const diff = _.difference(childs, selectedIds);
         if (diff.length === 0 && childs.length !== 0) {
           return onChangeSelectedFolder(parentFolder);
@@ -100,10 +101,6 @@ function FolderTree({
   }
 
   const dataForMapping = !inSearching ? foldersData.rootIds : foldersData.allId;
-
-  if (loading) {
-    return (<div className={cx(styles["loading"])}><CircularProgress /></div>);
-  }
   return (
     <div>
       {dataForMapping.map(folderId => {
@@ -126,6 +123,7 @@ function FolderTree({
               foldersData.byId[childId] || {})}
             folders={foldersData}
             inSearching={inSearching}
+            processingFolder={processingFolder}
           />
         );
       })}
@@ -135,7 +133,6 @@ function FolderTree({
 
 FolderTree.propTypes = {
   selectable: bool,
-  loading: bool,
   foldersData: shape(Object),
   selected: shape(Object),
   onChange: func,
@@ -143,7 +140,8 @@ FolderTree.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   isEnableShowContent: bool,
-  inSearching: bool
+  inSearching: bool,
+  processingFolder: arrayOf(string)
 };
 
 export default FolderTree;
