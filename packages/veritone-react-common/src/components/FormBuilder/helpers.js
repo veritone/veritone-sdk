@@ -1,5 +1,9 @@
 import _ from 'lodash';
 
+// errorChain function which get all data and configuration from form
+// it return a function which can get a function or an array of functions which
+// recieve data and settings and return error text.
+// error validation can be chained mean we can compose many validate functions
 export function errorChain({ data, settings }) {
   return function getError(funcs) {
     if (_.isFunction(funcs)) {
@@ -9,7 +13,7 @@ export function errorChain({ data, settings }) {
       for (let i = 0; i < funcs.length; i++) {
         const error = funcs[i]({ data, settings });
         if (!_.isEmpty(error)) {
-          return error;
+          return error; // Return first error
         }
       }
     }
