@@ -1,0 +1,82 @@
+.folder-item-container{
+  display: flex;
+  align-items: center;
+}
+.folder-tree-container {
+  width: 100%;
+}
+.folder-item{
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+  color: #555;
+}
+.selected{
+  color: #2196F3;
+}
+.folder-icon {
+  color: #F0C56A;
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+}
+.content-icon{
+  color: #555;
+  margin-right: 10px;
+  font-size: 25px;
+  line-height: inherit;
+}
+.expand-icon {
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
+  color: rgb(85, 85, 85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.loading {
+  text-align: center;
+  padding: 10px;
+}
+.icon-menu {
+  display: none;
+}
+.list-item {
+  &:hover .icon-menu {
+    display: block;
+  }
+}
+.icon-progress {
+  display: block;
+  padding: 10px;
+}
+.folder {
+  padding: 0 !important;
+  cursor: pointer;
+}
+.sub-folder {
+  display: block !important;
+  padding: 0 !important;
+  margin-left: 20px !important;
+}
+.highlighted {
+  background-color: rgba(0,0,0,0.07) !important;
+}
+.list-item-text {
+  width: 100%;
+  line-height: 15px;
+  vertical-align: middle;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-transform: none;
+  font-size: 13px !important;
+  font-family: Roboto;
+  padding-left: 5px;
+}
+.folder-list-item {
+  padding: 5px 0 !important;
+}
