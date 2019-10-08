@@ -52,12 +52,12 @@ const formDefinition = [
     instruction: 'Select your birthday'
   },
   {
-    label: 'Rating',
-    name: 'rating-123',
-    type: 'rating',
-    instruction: 'Rating',
-    min: 3,
-    max: 5
+    label: 'Number',
+    name: 'number-123',
+    type: 'number',
+    instruction: 'Input your age',
+    min: 18,
+    max: 23
   },
   {
     name: 'radio',
@@ -118,7 +118,7 @@ function FormWithInitialState() {
       {
         'textInput-1234': 'Hello world, this text is initialized',
         'select': 'option 1',
-        'rating-123': 4,
+        'number-123': 4,
         'checkBox-3456': ['option 1']
       }
     )
@@ -136,11 +136,11 @@ const validateObject = {
   'email': [validateEmpty, validateEmail],
   'textInput-1234': validateEmpty,
   'checkBox-3456': ({ data, settings: { name } }) => {
-    if(data[name].length === 0) {
-      return 'You should choose at lest one option';
+    if (data[name].length === 0) {
+      return 'Please select at least one option';
     }
   },
-  'rating-123': validateRange
+  'number-123': validateRange
 }
 
 function FormWithValidate() {
@@ -153,7 +153,7 @@ function FormWithValidate() {
       {
         'textInput-1234': 'Hello world, this text is initialized',
         'select': 'option 1',
-        'rating-123': 4
+        'number-123': 4
       }
     )
   );
