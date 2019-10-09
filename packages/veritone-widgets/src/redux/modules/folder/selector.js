@@ -18,6 +18,8 @@ export const selected = state => state.folderTree.selectedFolder;
 
 export const expandingFolderIds = state => state.folderTree.expandingFolderIds;
 
+export const config = state => state.folderTree.config;
+
 export const foldersDataSelector = createSelector(
     [folderData],
     foldersData => foldersData

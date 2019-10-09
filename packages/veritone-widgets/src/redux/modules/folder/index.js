@@ -1,8 +1,10 @@
 import { helpers } from 'veritone-redux-common';
 import _ from 'lodash';
+import { config } from './selector';
 const { createReducer } = helpers;
 
 export const INIT_ROOT_FOLDER = 'folder/INIT_ROOT_FOLDER';
+export const INIT_CONFIG = 'folder/INIT_CONFIG';
 export const INIT_ROOT_FOLDER_START = 'folder/INIT_ROOT_FOLDER_START';
 export const INIT_ROOT_FOLDER_SUCCESS = 'folder/INIT_ROOT_FOLDER_SUCCESS';
 export const INIT_ROOT_FOLDER_ERROR = 'folder/INIT_ROOT_FOLDER_ERROR';
@@ -24,6 +26,7 @@ export const SELECT_ALL_FOLDER = 'folder/SELECT_ALL_FOLDER';
 export const namespace = 'folderTree';
 
 const defaultFolderState = {
+  config: {},
   fetching: false,
   fetched: false,
   error: false,
@@ -41,9 +44,19 @@ const defaultFolderState = {
   }
 };
 
-export const initRootFolder = () => ({
-  type: INIT_ROOT_FOLDER
+export const initRootFolder = (config) => ({
+  type: INIT_ROOT_FOLDER,
+  payload: {
+    config
+  }
 });
+
+export const initConfig = (config) => ({
+  type: INIT_CONFIG,
+  payload: {
+    config
+  }
+})
 
 export const initRootFolderStart = () => ({
   type: INIT_ROOT_FOLDER_START
@@ -59,12 +72,10 @@ export const initRootFolderError = () => ({
   type: INIT_ROOT_FOLDER_ERROR
 });
 
-export const initFolder = (type, isEnableContent, isEnablePersonalFolder) => ({
+export const initFolder = config => ({
   type: INIT_FOLDER,
   payload: {
-    type,
-    isEnableContent,
-    isEnablePersonalFolder
+    config
   }
 });
 
@@ -151,6 +162,13 @@ export const selectAllFolder = () => ({
 });
 
 export default createReducer(defaultFolderState, {
+  [INIT_CONFIG]: (state, action) => ({
+    ...state,
+    config: {
+      ...state.config,
+      ...action.payload.config
+    }
+  }),
   [INIT_FOLDER_START]: (state, action) => ({
     ...state,
     fetching: true,

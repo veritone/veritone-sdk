@@ -14,6 +14,8 @@ import * as folderSelector from './selector';
 
 function* initFolder() {
   yield takeEvery(folderReducer.INIT_FOLDER, function* (action) {
+    const { config } = action.payload;
+    yield put(folderReducer.initConfig(config));
     yield put(folderReducer.initFolderStart());
     const rootFolderResponse = yield getRootFolder(action);
     if (_.isEmpty(rootFolderResponse)) {
@@ -41,7 +43,8 @@ function* initFolder() {
 }
 
 function* getRootFolder(action) {
-  const { type } = action.payload;
+  const { config } = action.payload;
+  const { type } = config;
   const initialOffset = 0;
   const query = `query rootFolders($type: RootFolderType){
     rootFolders(type: $type){
@@ -79,17 +82,12 @@ function* expandFolder() {
     if (_.includes(expandedFolder, folderId)) {
       return;
     }
-    // console.log(currentFolder);
     const folders = yield fetchMore(action)
     const folderReprocess = folders.map(folder => {
-      const childCounts = _.get(folder, 'childFolders.count', []);
       const childs = _.get(folder, 'childFolders.records', []);
       return {
-        id: folder.id,
-        name: folder.name,
-        contentType: 'folder',
+        ...folder,
         parentId: folder.parent.id,
-        hasContent: childCounts > 0,
         childs: childs.map(item => item.id)
       }
     });
@@ -99,16 +97,19 @@ function* expandFolder() {
 
 function* fetchMore(action) {
   const { folderId } = action.payload;
-  console.log('fetchmore');
+  const config = yield select(folderSelector.config);
+  const {
+    type,
+    isEnableShowContent
+  } = config;
   const initialOffset = 0;
   const pageSize = 30;
   let results = [];
-  const rootFolderIds = yield select(folderSelector.rootFolderIds);
-  // if (_.includes(rootFolderIds, folderId)) {
-  //   return [];
-  // }
+  let contentResult = [];
   yield put(folderReducer.fetchMoreStart(folderId));
-  const query = `query folder($id:ID!, $offset: Int, $limit: Int){
+  const childType = type === 'cms' ? 'childTDOs' : type === 'watchlist' ? 'childWatchlists' : 'childCollections';
+  const childContentType = isEnableShowContent ? (type === 'cms' ? 'tdo' : type === 'watchlist' ? 'watchlist' : 'collection') : '';
+  const queryFolder = `query folder($id:ID!, $offset: Int, $limit: Int){
     folder(id: $id){
       id
       name
@@ -126,36 +127,100 @@ function* fetchMore(action) {
           }
           childFolders{
             count
-          }  
+          }
+          ${isEnableShowContent ? `${childType}{
+            count
+          }` : ""}
+        }
+      }
+    }
+  }`
+
+  const queryContent = `query folder($id:ID!, $offset: Int, $limit: Int){
+    folder(id: $id){
+      id
+      name
+      parent{
+        id
+      }
+      ${childType}(offset: $offset, limit: $limit){
+        count
+        records{
+          id
+          name
         }
       }
     }
   }`
   function* getChildFolder(offset) {
     if (!Number.isInteger(parseInt(offset))) {
-      return yield put(folderReducer.initFolderError(error));
+      return yield put(folderReducer.initFolderError('Something wrong'));
     }
     const variables = {
       id: folderId,
-      limit: 30,
+      limit: pageSize,
       offset: offset
     }
-    const { error, response } = yield call(handleRequest, { query, variables });
+    const { error, response } = yield call(handleRequest, { query: queryFolder, variables });
     if (error) {
       yield put(folderReducer.initFolderError(error));
       return results;
     }
-    console.log('response', response);
-    const records = _.get(response, 'data.folder.childFolders.records', []);
     const count = _.get(response, 'data.folder.childFolders.count', 0);
-    results = results.concat(records);
+    const records = _.get(response, 'data.folder.childFolders.records', []);
+    const recordsReprocess = records.map(item => {
+      const childCount = _.get(item, ['childFolders', 'count'], 0);
+      const childContentCount = _.get(item, [childType, 'count'], 0)
+      return {
+        ...item,
+        hasContent: childCount > 0 || childContentCount > 0,
+        contentType: 'folder'
+      }
+    })
+    results = results.concat(recordsReprocess);
     if (count === pageSize) {
       return yield getChildFolder(offset + pageSize);
     } else {
       return results;
     }
   }
-  return yield getChildFolder(initialOffset);
+  function* getChildContent(offset) {
+    if (!isEnableShowContent) {
+      return [];
+    }
+    if (!Number.isInteger(parseInt(offset))) {
+      yield put(folderReducer.initFolderError('Something wrong'));
+      return [];
+    }
+    const variables = {
+      id: folderId,
+      limit: pageSize,
+      offset: offset
+    }
+    const { error, response } = yield call(handleRequest, { query: queryContent, variables });
+    if (error) {
+      yield put(folderReducer.initFolderError(error));
+      return contentResult;
+    }
+    const records = _.get(response, ['data', 'folder', childType, 'records'], []);
+    const recordsReprocess = records.map(item => ({
+      ...item,
+      contentType: childContentType,
+      parent: {
+        id: folderId
+      }
+    }));
+    const count = _.get(response, ['data', 'folder', childType, 'count'], 0);
+    contentResult = contentResult.concat(recordsReprocess);
+    if (count === pageSize) {
+      return yield getChildFolder(offset + pageSize);
+    } else {
+      return contentResult;
+    }
+  }
+  const childFolder = yield getChildFolder(initialOffset);
+  const childContent = yield getChildContent(initialOffset);
+  return [...childFolder, ...childContent];
 }
 
 export default function* root() {

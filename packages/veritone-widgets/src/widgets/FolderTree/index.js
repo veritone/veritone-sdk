@@ -15,48 +15,41 @@ import {
   FolderNullState,
   LoadingState
 } from 'veritone-react-common';
-import _ from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
-const folderActionDefault = [
-  {
-    id: 1,
-    type: 'move',
-    name: 'Move'
-  },
-  {
-    id: 2,
-    type: 'delete',
-    name: 'Delete'
-  },
-  {
-    id: 3,
-    type: 'edit',
-    name: 'Edit'
-  }
-]
 
 function FolderTreeWrapper({
   type = 'watchlist',
-  state,
+  isEnableShowContent = false,
+  isEnableSearch,
+  selectable = true,
+  onSelectMenuItem,
+  folderAction,
+  handleSelectedFoler,
   initFolder,
   expandFolder,
   foldersData,
   onSelectFolder,
-  onSelectMenuItem = _.noop,
-  selectable = true,
-  isEnableShowContent = false,
-  folderAction = folderActionDefault,
   selectedFolder = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
   errorStatus,
-  expandingFolderIds
+  expandingFolderIds,
 }) {
   useEffect(() => {
-    initFolder(type, false);
-  }, [])
+    const config = {
+      type,
+      isEnableShowContent,
+      selectable
+    }
+    initFolder(config);
+  }, []);
+
+  useEffect(() => {
+    handleSelectedFoler(selectedFolder);
+  }, [selectedFolder]);
+
   const onChange = selectedfolder => {
     onSelectFolder(selectedfolder);
   }
@@ -73,11 +66,13 @@ function FolderTreeWrapper({
     );
   }
 
-  if(fetchedFolderStatus && foldersData.allId.length === 0) {
+  if (fetchedFolderStatus && foldersData.allId.length === 0) {
     return (
       <div>
         <SearchBox />
-        <FolderNullState message={errorStatus ? 'Something wrong' : 'No content in this org'} />
+        <FolderNullState
+          message={errorStatus ? 'Something wrong' : 'No content in this org'}
+        />
       </div>
     )
   }
@@ -97,18 +92,19 @@ function FolderTreeWrapper({
         folderAction={folderAction}
         onMenuClick={onSelectMenuItem}
         processingFolder={expandingFolderIds}
+        isEnableShowRootFolder
       />
     </div>
   )
 }
 
 FolderTreeWrapper.propTypes = {
-  state: shape(Object),
   type: string,
   onSelectFolder: func,
   onSelectMenuItem: func,
   selectable: bool,
   isEnableShowContent: bool,
+  isEnableSearch: bool,
   folderAction: arrayOf(shape({
     id: number,
     type: string,
@@ -121,6 +117,7 @@ FolderTreeWrapper.propTypes = {
   fetchingFolderStatus: bool,
   fetchedFolderStatus: bool,
   errorStatus: bool,
+  handleSelectedFoler: func,
   expandingFolderIds: arrayOf(string)
 }
 
