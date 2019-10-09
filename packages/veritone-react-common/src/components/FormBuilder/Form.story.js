@@ -1,9 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Button from '@material-ui/core/Button';
-import _ from 'lodash';
 import Form from './Form';
 import { generateState, validateForm } from './utils';
+import { validateEmail, validateEmpty, validateRange } from './helpers';
 
 const formDefinition = [
   {
@@ -52,10 +52,12 @@ const formDefinition = [
     instruction: 'Select your birthday'
   },
   {
-    label: 'Rating',
-    name: 'rating-123',
-    type: 'rating',
-    instruction: 'Rating'
+    label: 'Number',
+    name: 'number-123',
+    type: 'number',
+    instruction: 'Input your age',
+    min: 18,
+    max: 23
   },
   {
     name: 'radio',
@@ -97,12 +99,6 @@ const formDefinition = [
   }
 ];
 
-const requiredErrors = {
-  'textInput-1234': 'Do not let this text empty',
-  'email': 'Email is required',
-  'checkBox-3456': 'You should select at least one'
-}
-
 
 function BasicForm() {
   const [formState, setFormState] = React.useState(generateState(formDefinition));
@@ -122,7 +118,7 @@ function FormWithInitialState() {
       {
         'textInput-1234': 'Hello world, this text is initialized',
         'select': 'option 1',
-        'rating-123': 4,
+        'number-123': 4,
         'checkBox-3456': ['option 1']
       }
     )
@@ -137,15 +133,14 @@ function FormWithInitialState() {
 }
 
 const validateObject = {
-  'email': (value) => {
-    const re = /.+@.+\..+/;
-    if (!value) {
-      return requiredErrors['email'];
+  'email': [validateEmpty, validateEmail],
+  'textInput-1234': validateEmpty,
+  'checkBox-3456': ({ data, settings: { name } }) => {
+    if (data[name].length === 0) {
+      return 'Please select at least one option';
     }
-    return re.test(String(value).toLowerCase()) ? '' : 'Not an email';
   },
-  'textInput-1234': (value) => value ? '' : requiredErrors['textInput-1234'],
-  'checkBox-3456': (value) => !_.isEmpty(value) ? '' : requiredErrors['checkBox-3456']
+  'number-123': validateRange
 }
 
 function FormWithValidate() {
@@ -158,7 +153,7 @@ function FormWithValidate() {
       {
         'textInput-1234': 'Hello world, this text is initialized',
         'select': 'option 1',
-        'rating-123': 4
+        'number-123': 4
       }
     )
   );
