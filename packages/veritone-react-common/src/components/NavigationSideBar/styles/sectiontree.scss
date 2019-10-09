@@ -27,10 +27,12 @@
     .leftIcon {
       margin-right: 15px;
       font-size: 20px;
+      display: flex;
     }
 
     .rightIcon {
       justify-self: flex-end;
+      display: flex;
     }
   }
 }
