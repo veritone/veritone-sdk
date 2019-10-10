@@ -1,8 +1,8 @@
 import { helpers } from 'veritone-redux-common';
 import _ from 'lodash';
-import { config } from './selector';
 const { createReducer } = helpers;
 
+export const INIT = 'folder/INIT';
 export const INIT_ROOT_FOLDER = 'folder/INIT_ROOT_FOLDER';
 export const INIT_CONFIG = 'folder/INIT_CONFIG';
 export const INIT_ROOT_FOLDER_START = 'folder/INIT_ROOT_FOLDER_START';
@@ -43,6 +43,13 @@ const defaultFolderState = {
     byId: {}
   }
 };
+
+export const init = config => ({
+  type: INIT,
+  payload: {
+    config
+  }
+})
 
 export const initRootFolder = (config) => ({
   type: INIT_ROOT_FOLDER,

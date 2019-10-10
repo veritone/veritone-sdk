@@ -23,6 +23,7 @@ function FolderTreeWrapper({
   type = 'watchlist',
   isEnableShowContent = false,
   isEnableSearch,
+  isEnableShowRootFolder,
   selectable = true,
   onSelectMenuItem,
   folderAction,
@@ -92,7 +93,7 @@ function FolderTreeWrapper({
         folderAction={folderAction}
         onMenuClick={onSelectMenuItem}
         processingFolder={expandingFolderIds}
-        isEnableShowRootFolder
+        isEnableShowRootFolder={isEnableShowRootFolder}
       />
     </div>
   )
@@ -105,6 +106,7 @@ FolderTreeWrapper.propTypes = {
   selectable: bool,
   isEnableShowContent: bool,
   isEnableSearch: bool,
+  isEnableShowRootFolder: bool,
   folderAction: arrayOf(shape({
     id: number,
     type: string,
@@ -131,10 +133,10 @@ const FolderTree = connect(
     expandingFolderIds: folderSelector.expandingFolderIdsSelector(state)
   }),
   {
-    initFolder: folderModule.initFolder,
     expandFolder: folderModule.fetchMore,
     onSelectFolder: folderModule.selectFolder,
-    onSelectAllFolder: folderModule.selectAllFolder
+    onSelectAllFolder: folderModule.selectAllFolder,
+    initFolder: folderModule.initFolder
   },
   null,
   { withRef: true }

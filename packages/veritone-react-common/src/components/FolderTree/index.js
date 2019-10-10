@@ -41,9 +41,8 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
   if (isEnableShowRootFolder) {
     return rootIds;
   }
-  return Object.values(folders.byId)
-    .filter(folder => _.includes(rootIds, folder.parentId))
-    .map(item => item.id);
+  const allChildId = rootIds.map(rootId => _.get(folders, ['byId', rootId, 'childs'], []));
+  return _.flatten(allChildId);
 }
 
 function FolderTree({

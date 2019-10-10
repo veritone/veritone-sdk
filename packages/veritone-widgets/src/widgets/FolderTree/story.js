@@ -27,6 +27,7 @@ storiesOf('FolderTree', module).add('Base', () => {
     isEnableShowContent: false,
     selectable: false,
     enableSearchbox: false,
+    isEnableShowRootFolder: true,
     folderAction: folderActionDefault,
     onSelectMenuItem: (type, item) => console.log(type, item),
     handleSelectedFoler: (selectedFolder) => console.log(selectedFolder),

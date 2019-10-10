@@ -6,7 +6,7 @@ import FolderTree from './index';
 
 function StoryComponent() {
   const foldersDataDefault = {
-    // rootIds: [1],
+    rootIds: [1, 100],
     allId: [1, 11, '121aasd', 3, 4, 5, 6, 7, 8, 9, 10],
     byId: {
       1: {

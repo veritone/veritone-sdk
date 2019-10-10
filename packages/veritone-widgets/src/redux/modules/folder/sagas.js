@@ -21,13 +21,15 @@ function* initFolder() {
     if (_.isEmpty(rootFolderResponse)) {
       return;
     }
-    // console.log(object)
     const rootFolders = _.get(rootFolderResponse, 'data.rootFolders', []);
     const rootFolderReprocess = rootFolders.map(rootFolder => {
       const childCounts = _.get(rootFolder, 'childFolders.count', []);
+      let folderName = _.includes(rootFolder.name, config.type) ?
+        (config.type === 'cms' ? 'My organization' : `Org ${config.type}`) :
+        `My ${config.type}`;
       return {
         id: rootFolder.id,
-        name: rootFolder.name,
+        name: folderName,
         contentType: 'folder',
         parentId: null,
         hasContent: childCounts > 0,
@@ -78,6 +80,8 @@ function* getRootFolder(action) {
 function* expandFolder() {
   yield takeEvery(folderReducer.FETCH_MORE, function* (action) {
     const { folderId } = action.payload;
+    const config = yield select(folderSelector.config);
+    const { selectable } = config;
     const expandedFolder = yield select(folderSelector.folderExpanded);
     if (_.includes(expandedFolder, folderId)) {
       return;
@@ -92,6 +96,18 @@ function* expandFolder() {
       }
     });
     yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
+    const folderChildId = folderReprocess.map(folder => folder.id);
+    const selected = yield select(folderSelector.selected);
+    if (selected[folderId] && selectable) {
+      const newSelected = {
+        ...selected,
+        ...folderChildId.reduce((accum, value) => ({
+          ...accum,
+          [value]: true
+        }), {})
+      }
+      yield put(folderReducer.selectFolder(newSelected));
+    }
   });
 }
 
