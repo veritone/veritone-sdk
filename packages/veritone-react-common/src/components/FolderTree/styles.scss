@@ -51,7 +51,7 @@
 }
 .icon-progress {
   display: block;
-  padding: 10px;
+  padding: 0 10px;
 }
 .folder {
   padding: 0 !important;
@@ -67,16 +67,17 @@
 }
 .list-item-text {
   width: 100%;
-  line-height: 15px;
-  vertical-align: middle;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  text-transform: none;
-  font-size: 13px !important;
-  font-family: Roboto;
-  padding-left: 5px;
+    line-height: 15px;
+    vertical-align: middle;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-transform: none;
+    font-size: 13px !important;
+    font-family: Roboto;
+    padding-left: 5px;
 }
+
 .folder-list-item {
   padding: 5px 0 !important;
 }

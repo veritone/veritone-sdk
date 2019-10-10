@@ -1,6 +1,15 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from "react";
-import { bool, func, shape, arrayOf, string } from "prop-types";
+import {
+  bool,
+  func,
+  shape,
+  arrayOf,
+  string,
+  oneOfType,
+  number
+}
+  from "prop-types";
 import _ from 'lodash';
 
 import Folder from "./Folder";
@@ -31,11 +40,25 @@ export const getAllParentId = (item, folderDataFlatten) => {
   }
 }
 
+export const getFolderIds = (folders, isEnableShowRootFolder) => {
+  const rootIds = _.get(folders, 'rootIds', []);
+  if (rootIds.length === 0) {
+    return Object.values(folders.byId)
+      .filter(folder => _.isNil(folder.parentId))
+      .map(item => item.id);
+  }
+  if (isEnableShowRootFolder) {
+    return rootIds;
+  }
+  const allChildId = rootIds.map(rootId => _.get(folders, ['byId', rootId, 'childs'], []));
+  return _.flatten(allChildId);
+}
+
 function FolderTree({
   selectable,
-  inSearching,
   processingFolder,
   isEnableShowContent,
+  isEnableShowRootFolder,
   foldersData,
   onChange,
   onExpand,
@@ -46,7 +69,8 @@ function FolderTree({
   const [opening, setopening] = useState([]);
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();
-    const newOpening = _.includes(opening, folderId) ? opening.filter(item => item !== folderId) : [...opening, folderId];
+    const newOpening =
+      _.includes(opening, folderId) ? opening.filter(item => item !== folderId) : [...opening, folderId];
     setopening(newOpening);
     onExpand(folderId);
   }
@@ -100,7 +124,8 @@ function FolderTree({
     }
   }
 
-  const dataForMapping = !inSearching ? foldersData.rootIds : foldersData.allId;
+  const rootIds = _.get(foldersData, 'rootIds', []);
+  const dataForMapping = getFolderIds(foldersData, isEnableShowRootFolder);
   return (
     <div>
       {dataForMapping.map(folderId => {
@@ -110,7 +135,7 @@ function FolderTree({
             key={folderId}
             folderAction={folderAction}
             onMenuClick={onMenuClick}
-            isRootFolder={!inSearching}
+            isRootFolder={_.includes(rootIds, folderId)}
             selectable={selectable}
             selected={selected}
             isEnableShowingContent={isEnableShowContent}
@@ -122,7 +147,6 @@ function FolderTree({
             childs={childs.map(childId =>
               foldersData.byId[childId] || {})}
             folders={foldersData}
-            inSearching={inSearching}
             processingFolder={processingFolder}
           />
         );
@@ -138,10 +162,10 @@ FolderTree.propTypes = {
   onChange: func,
   onExpand: func,
   folderAction: arrayOf(Object),
-  onMenuClick: func,
   isEnableShowContent: bool,
-  inSearching: bool,
-  processingFolder: arrayOf(string)
+  isEnableShowRootFolder: bool,
+  processingFolder: arrayOf(oneOfType[string, number]),
+  onMenuClick: func
 };
 
 export default FolderTree;

@@ -110,7 +110,7 @@ function Folder({
         {isProgressing && (
           <div className={cx(styles['icon-progress'])}>
             <CircularProgress
-              disableShrink
+              variant="indeterminate"
               size={20}
             />
           </div>

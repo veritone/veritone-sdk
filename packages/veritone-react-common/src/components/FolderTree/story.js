@@ -6,20 +6,20 @@ import FolderTree from './index';
 
 function StoryComponent() {
   const foldersDataDefault = {
-    rootIds: [1],
-    allId: [1, 11, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    rootIds: [1, 100],
+    allId: [1, 11, '121aasd', 3, 4, 5, 6, 7, 8, 9, 10],
     byId: {
       1: {
         id: 1,
         name: 'RootFolder',
         contentType: 'folder',
         hasContent: true,
-        childs: [2, 3, 4, 5, 6, 121, 122, 123],
-        subfolders: [2, 3, 4, 5, 6],
+        childs: ['121aasd', 3, 4, 5, 6, 121, 122, 123],
+        subfolders: ['121aasd', 3, 4, 5, 6],
         subcontents: [121, 122, 123]
       },
-      2: {
-        id: 2,
+      '121aasd': {
+        id: '121aasd',
         name: 'Folder 2',
         contentType: 'folder',
         hasContent: true,
@@ -178,7 +178,8 @@ function StoryComponent() {
     }
   }
   const selectable = true;
-  const isEnableShowContent = true;
+  const isEnableShowContent = false;
+  const processingFolder = [4];
   const folderAction = [
     {
       id: 1,
@@ -195,7 +196,7 @@ function StoryComponent() {
       type: 'edit',
       name: 'Edit'
     }
-  ]
+  ];
   const [selectedFolder, setSelectedFolder] = useState({});
   const [foldersData, setFoldersData] = useState(foldersDataDefault);
   const onMenuClick = (item, type) => {
@@ -247,6 +248,8 @@ function StoryComponent() {
       isEnableShowContent={isEnableShowContent}
       folderAction={folderAction}
       onMenuClick={onMenuClick}
+      processingFolder={processingFolder}
+      isEnableShowRootFolder={false}
     />
   )
 }
