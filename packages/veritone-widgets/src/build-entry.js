@@ -13,7 +13,7 @@ export OAuthLoginButton, {
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
 export filePickerReducer, * as filePickerModule from './redux/modules/filePicker';
 export filePickerSaga from './redux/modules/filePicker/filePickerSaga';
-export DataPicker, { DataPickerWidget } from './widgets/DataPicker';
+export DataPicker, { DataPickerWidget, DataPickerWidgetReact } from './widgets/DataPicker';
 export dataPickerReducer, * as dataPickerModule from './redux/modules/dataPicker';
 export dataPickerSaga from './redux/modules/dataPicker/dataPickerSaga';
 export { EngineSelectionWidget } from './widgets/EngineSelection';

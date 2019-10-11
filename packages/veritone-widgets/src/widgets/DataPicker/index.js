@@ -25,6 +25,7 @@ import * as dataPickerModule from '../../redux/modules/dataPicker';
 import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
+import useWidget from '../../shared/useWidget';
 
 import styles from './styles.scss';
 
@@ -134,19 +135,19 @@ class DataPicker extends React.Component {
         id: string.isRequired,
         type: oneOf(['folder', 'source', 'program', 'tdo']).isRequired,
         name: string,
-        startDateTime: string, 
+        startDateTime: string,
         stopDateTime: string,
         thumbnailUrl: string,
         sourceImageUrl: string,
         primaryAsset: shape({
-            name: string,
-            contentType: string.isRequired,
-            signedUri: string.isRequired
+          name: string,
+          contentType: string.isRequired,
+          signedUri: string.isRequired
         }),
         streams: arrayOf(
           shape({
-              uri: string.isRequired,
-              protocol: string.isRequired
+            uri: string.isRequired,
+            protocol: string.isRequired
           })
         ),
         createdDateTime: string.isRequired,
@@ -191,7 +192,7 @@ class DataPicker extends React.Component {
       enableStreams,
       enableUploads
     } = this.props;
-    id && pick && pick(id, { 
+    id && pick && pick(id, {
       enableFolders,
       enableStreams,
       enableUploads
@@ -231,7 +232,7 @@ class DataPicker extends React.Component {
     const { id, fetchPage, currentDirectoryLoadingState } = this.props;
     const { nodeOffset = 0, leafOffset = 0 } = currentDirectoryLoadingState;
     id
-      && ( nodeOffset >= 0 || leafOffset >= 0 )
+      && (nodeOffset >= 0 || leafOffset >= 0)
       && fetchPage
       && fetchPage(id);
   };
@@ -295,7 +296,7 @@ class DataPicker extends React.Component {
   };
 
   handleOnSearch = searchValue => {
-    const { id, setSearchValue} = this.props;
+    const { id, setSearchValue } = this.props;
     setSearchValue && setSearchValue(id, searchValue);
   };
 
@@ -363,7 +364,7 @@ class DataPicker extends React.Component {
             onSearch={this.handleOnSearch}
             onClear={this.handleOnClear} />
         </Dialog>
-        { this.props.renderButton &&
+        {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick })
         }
         <Snackbar
@@ -412,7 +413,7 @@ class DataPickerWidgetComponent extends React.Component {
   pickCallback = noop;
 
   pick = (callback = noop) => {
-    const { 
+    const {
       _widgetId,
       pick,
       enableFolders,
@@ -452,4 +453,5 @@ class DataPickerWidgetComponent extends React.Component {
 }
 
 const DataPickerWidget = widget(DataPickerWidgetComponent);
-export { DataPicker as default, DataPickerWidget };
+const DataPickerWidgetReact = useWidget(DataPickerWidgetComponent);
+export { DataPicker as default, DataPickerWidget, DataPickerWidgetReact };
