@@ -146,11 +146,6 @@ class ResponsiveDialog extends React.Component {
       range: selectedConfidenceRange
     })
   }
-
-  handleClickInfoIcon = () => {
-    window.open(helpUrl, '_blank');
-  }
-
   render() {
     const { boundingBoxes, step } = this.state;
     const { open, handleClose, searchByTag } = this.props;
@@ -166,12 +161,6 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style['title'])}>
               <div className={cx(style['title-text'])}>Advanced Options</div>
               <div>
-                <IconButton
-                  className={cx(style['advanced-icon-button'])}
-                  onClick={this.handleClickInfoIcon}
-                >
-                  <InfoOutlineIcon />
-                </IconButton>
                 <IconButton
                   className={cx(style['advanced-icon-button'])}
                   onClick={handleClose}
