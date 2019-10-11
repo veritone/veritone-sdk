@@ -56,6 +56,7 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
 
 function FolderTree({
   selectable,
+  defaultOpening,
   processingFolder,
   isEnableShowContent,
   isEnableShowRootFolder,
@@ -67,6 +68,9 @@ function FolderTree({
   onMenuClick
 }) {
   const [opening, setopening] = useState([]);
+  React.useEffect(() => {
+    setopening([...opening, ...defaultOpening]);
+  }, [defaultOpening])
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();
     const newOpening =
@@ -114,7 +118,13 @@ function FolderTree({
             [currentValue]: true
           }
         }, {});
-        const selectedIds = Object.keys({ ...selected, ...newSelected });
+        const selectedIds = Object.keys({ ...selected, ...newSelected })
+          .map(item => {
+            if (!isNaN(item)) {
+              return parseInt(item);
+            }
+            return item;
+          });;
         const diff = _.difference(childs, selectedIds);
         if (diff.length === 0 && childs.length !== 0) {
           return onChangeSelectedFolder(parentFolder);
@@ -165,6 +175,7 @@ FolderTree.propTypes = {
   isEnableShowContent: bool,
   isEnableShowRootFolder: bool,
   processingFolder: arrayOf(oneOfType[string, number]),
+  defaultOpening: arrayOf(oneOfType[string, number]),
   onMenuClick: func
 };
 

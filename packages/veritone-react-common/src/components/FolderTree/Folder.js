@@ -45,7 +45,12 @@ function Folder({
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
   const folderLabel = _.get(folder, 'name', 'My organization');
-  const selectedIds = Object.keys(selected);
+  const selectedIds = Object.keys(selected).map(item => {
+    if (!isNaN(item)) {
+      return parseInt(item);
+    }
+    return item;
+  });
   const isChecked = id => _.includes(selectedIds, id);
 
   const isIndeterminate = folderId => {
@@ -54,6 +59,8 @@ function Folder({
     const diff = _.difference(childs, selectedIds);
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
   };
+
+  console.log(selectedIds);
 
   const isProgressing = _.includes(processingFolder, folderId);
 

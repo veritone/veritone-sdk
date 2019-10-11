@@ -6,7 +6,7 @@ import FolderTree from './index';
 
 function StoryComponent() {
   const foldersDataDefault = {
-    rootIds: [1, 100],
+    rootIds: [1],
     allId: [1, 11, '121aasd', 3, 4, 5, 6, 7, 8, 9, 10],
     byId: {
       1: {
@@ -180,6 +180,7 @@ function StoryComponent() {
   const selectable = true;
   const isEnableShowContent = false;
   const processingFolder = [4];
+  const defaultOpening = [1];
   const folderAction = [
     {
       id: 1,
@@ -249,7 +250,8 @@ function StoryComponent() {
       folderAction={folderAction}
       onMenuClick={onMenuClick}
       processingFolder={processingFolder}
-      isEnableShowRootFolder={false}
+      isEnableShowRootFolder
+      defaultOpening={defaultOpening}
     />
   )
 }
