@@ -15,15 +15,23 @@ import * as folderSelector from './selector';
 function* initFolder() {
   yield takeEvery(folderReducer.INIT_FOLDER, function* (action) {
     const { config } = action.payload;
+    const childType = config.type === 'cms'
+      ? 'childTDOs'
+      : config.type === 'watchlist'
+        ? 'childWatchlists'
+        : 'childCollections';
     yield put(folderReducer.initConfig(config));
     yield put(folderReducer.initFolderStart());
     const rootFolderResponse = yield getRootFolder(action);
     if (_.isEmpty(rootFolderResponse)) {
       return;
     }
-    const rootFolders = _.get(rootFolderResponse, 'data.rootFolders', []);
+    const rootFolders = config.type !== 'watchlist'
+      ? [_.get(rootFolderResponse, ['data', 'rootFolders', 0], {})]
+      : _.get(rootFolderResponse, ['data', 'rootFolders'], []);
     const rootFolderReprocess = rootFolders.map(rootFolder => {
-      const childCounts = _.get(rootFolder, 'childFolders.count', []);
+      const childFolderCounts = _.get(rootFolder, 'childFolders.count', 0);
+      const childContentCounts = _.get(rootFolder, [childType, 'count'], 0);
       let folderName = _.includes(rootFolder.name, config.type) ?
         (config.type === 'cms' ? 'My organization' : `Org ${config.type}`) :
         `My ${config.type}`;
@@ -32,7 +40,7 @@ function* initFolder() {
         name: folderName,
         contentType: 'folder',
         parentId: null,
-        hasContent: childCounts > 0,
+        hasContent: childFolderCounts > 0 || childContentCounts > 0,
         childs: []
       }
     });
@@ -46,8 +54,9 @@ function* initFolder() {
 
 function* getRootFolder(action) {
   const { config } = action.payload;
-  const { type } = config;
+  const { type, isEnableShowContent } = config;
   const initialOffset = 0;
+  const childType = type === 'cms' ? 'childTDOs' : type === 'watchlist' ? 'childWatchlists' : 'childCollections';
   const query = `query rootFolders($type: RootFolderType){
     rootFolders(type: $type){
       id
@@ -55,6 +64,9 @@ function* getRootFolder(action) {
       childFolders{
         count
       }
+      ${isEnableShowContent ? `${childType}{
+        count
+      }` : ""}
     }
   }`;
 
@@ -86,7 +98,7 @@ function* expandFolder() {
     if (_.includes(expandedFolder, folderId)) {
       return;
     }
-    const folders = yield fetchMore(action)
+    const folders = yield fetchMore(action);
     const folderReprocess = folders.map(folder => {
       const childs = _.get(folder, 'childFolders.records', []);
       return {
@@ -239,9 +251,14 @@ function* fetchMore(action) {
   return [...childFolder, ...childContent];
 }
 
+function* searchFolder() {
+  yield takeEvery(folderReducer.INIT_FOLDER, function* (action) { });
+}
+
 export default function* root() {
   yield all([
     fork(initFolder),
-    fork(expandFolder)
+    fork(expandFolder),
+    fork(searchFolder)
   ])
 }

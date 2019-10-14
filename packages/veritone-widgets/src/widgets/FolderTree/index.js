@@ -24,6 +24,7 @@ function FolderTreeWrapper({
   isEnableShowContent = false,
   isEnableSearch,
   isEnableShowRootFolder,
+  subjectObservable,
   selectable = true,
   onSelectMenuItem,
   folderAction,
@@ -57,30 +58,25 @@ function FolderTreeWrapper({
   const onExpand = folderId => {
     expandFolder(folderId);
   }
-
-  if (fetchingFolderStatus) {
-    return (
-      <div>
-        <SearchBox />
-        <LoadingState />
-      </div>
-    );
+  const onSearch = (data) => {
+    console.log(data);
   }
 
-  if (fetchedFolderStatus && foldersData.allId.length === 0) {
-    return (
-      <div>
-        <SearchBox />
-        <FolderNullState
-          message={errorStatus ? 'Something wrong' : 'No content in this org'}
-        />
-      </div>
-    )
-  }
+  subjectObservable.subscribe({
+    next: v => console.log(`test something ......: ${v}`)
+  })
 
   return (
     <div>
-      <SearchBox />
+      {isEnableSearch && (
+        <SearchBox onSearch={onSearch} />
+      )}
+      {fetchingFolderStatus && <LoadingState />}
+      {fetchedFolderStatus && foldersData.allId.length === 0 && (
+        <FolderNullState
+          message={errorStatus ? 'Something wrong' : 'No content in this org'}
+        />
+      )}
       <Folder
         selectable={selectable}
         errorStatus={errorStatus}
@@ -120,7 +116,8 @@ FolderTreeWrapper.propTypes = {
   fetchedFolderStatus: bool,
   errorStatus: bool,
   handleSelectedFoler: func,
-  expandingFolderIds: arrayOf(string)
+  expandingFolderIds: arrayOf(string),
+  subjectObservable: shape(Object)
 }
 
 const FolderTree = connect(

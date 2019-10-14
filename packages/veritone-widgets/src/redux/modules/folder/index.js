@@ -38,6 +38,7 @@ const defaultFolderState = {
   selectedFolder: {},
   expandingFolderIds: [],
   expandedFolderIds: [],
+  searching: false,
   searchFolderData: {
     allId: [],
     byId: {}
