@@ -32,7 +32,7 @@ describe('Validate email helper', () => {
       data: { email: 'abc' },
       settings: { name: 'email' }
     }))
-      .toBe('Not an email')
+      .toBe('Please enter a valid email address')
   })
 
   it('Should not return error if is an email', () => {
@@ -50,7 +50,7 @@ describe('Validate range helper', () => {
       data: { number: 6 },
       settings: { max: 5, name: 'number' }
     }))
-      .toBe('number should be less than or equal to 5')
+      .toBe('Maximum number can be 5')
   })
 
   it('Should return an error if larger than max', () => {
@@ -58,15 +58,23 @@ describe('Validate range helper', () => {
       data: { number: 1 },
       settings: { min: 3, name: 'number' }
     }))
-      .toBe('number should be greater than or equal to 3')
+      .toBe('Minimum required number is 3')
   })
 
-  it('Should not return an error if in range', () => {
+  it('Should return an error if not in range', () => {
+    expect(formHelpers.validateRange({
+      data: { number: 2 },
+      settings: { min: 3, max: 5, name: 'number' }
+    }))
+      .toBe('number must be between 3 and 5')
+  })
+
+  it('Empty error if in range', () => {
     expect(formHelpers.validateRange({
       data: { number: 4 },
       settings: { min: 3, max: 5, name: 'number' }
     }))
-      .toBe(undefined)
+      .toBe('')
   })
 })
 
