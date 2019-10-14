@@ -5,7 +5,10 @@ import HTML5Backend from "react-dnd-html5-backend";
 import { useDrop } from 'react-dnd';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 import cx from 'classnames';
+import NullState from '../NullState';
 import DragLayer from './DragLayer';
 import Block, { blockTypes } from './FormBlocks';
 import formItems, { PreviewWrapper } from './FormItems';
@@ -57,10 +60,14 @@ function FormBuilderComponent({
   }, [addBlock, form]);
 
   const configurationOpen = form.filter(formItem => formItem.selected);
+  const settingOpen = configurationOpen.length > 0;
 
   return (
     <div className={cx(styles['form-builder'])}>
       <div className={cx(styles['form-blocks'])}>
+        <Typography className={cx(styles['form-blocks-title'])}>
+          Blocks
+        </Typography>
         <div className={styles['blocks-wrapper']}>
           {blockTypes.map(block => (
             <Block
@@ -87,6 +94,13 @@ function FormBuilderComponent({
         )}
       </div>
       <div className={styles['blocks-preview']}>
+        {
+          form.length > 0 && (
+            <Typography className={cx(styles['form-preview-title'])}>
+              Form preview
+            </Typography>
+          )
+        }
         <div ref={drop}>
           {form.map((block, index) => {
             const BlockItem = formItems[block.type];
@@ -106,15 +120,35 @@ function FormBuilderComponent({
             );
           })}
           {
-            <pre>
-              {JSON.stringify(generateSchema(form), null, 2)}
-            </pre>
+            form.length > 0 && (
+              <pre>
+                {JSON.stringify(generateSchema(form), null, 2)}
+              </pre>
+            )
+          }
+          {
+            form.length === 0 && (
+              <NullState
+                titleText="Begin by selecting block to your rignt"
+              >
+                <Link href="https://help.veritone.com/en/" target= "_blank">
+                  Need help? Click here to watch a turtorial
+                </Link>
+              </NullState>
+            )
           }
         </div>
       </div>
       <div className={styles['configuration-container']}>
         {
-          (configurationOpen.length > 0) && (
+          settingOpen && (
+            <Typography className={styles['form-configuration-title']}>
+              {`${configurationOpen[0].name} settings`}
+            </Typography>
+          )
+        }
+        {
+          settingOpen && (
             <FormConfiguration
               onChange={onUpdateForm}
               {...configurationOpen[0]}
