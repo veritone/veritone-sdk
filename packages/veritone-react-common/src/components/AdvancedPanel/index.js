@@ -15,7 +15,6 @@ import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
 const id = guid();
-const helpUrl = 'https://help.veritone.com/collections/1453304-veritone-essentials-discovery';
 class ResponsiveDialog extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
@@ -146,6 +145,7 @@ class ResponsiveDialog extends React.Component {
       range: selectedConfidenceRange
     })
   }
+
   render() {
     const { boundingBoxes, step } = this.state;
     const { open, handleClose, searchByTag } = this.props;
@@ -161,6 +161,12 @@ class ResponsiveDialog extends React.Component {
             <div className={cx(style['title'])}>
               <div className={cx(style['title-text'])}>Advanced Options</div>
               <div>
+                <IconButton
+                  className={cx(style['advanced-icon-button'])}
+                  data-veritone-element="advanced-search-info-btn"
+                >
+                  <InfoOutlineIcon />
+                </IconButton>
                 <IconButton
                   className={cx(style['advanced-icon-button'])}
                   onClick={handleClose}
