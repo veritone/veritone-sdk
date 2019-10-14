@@ -16,29 +16,29 @@ import Folder from "./Folder";
 
 export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item)) {
-    return []
+    return [];
   }
   if (_.isNil(item.childs) || _.isEmpty(item.childs)) {
-    return [item.id]
+    return [item.id];
   }
   else {
     return [item.id, ...item.childs.map(subitem =>
       getAllChildId(foldersData.byId[subitem], foldersData)
-    )]
+    )];
   }
-}
+};
 
 export const getAllParentId = (item, folderDataFlatten) => {
   if (_.isNil(item) || _.isNil(item.parentId)) {
-    return []
+    return [];
   }
   else {
     return [
       item.parentId,
       ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)
-    ]
+    ];
   }
-}
+};
 
 export const getFolderIds = (folders, isEnableShowRootFolder) => {
   const rootIds = _.get(folders, 'rootIds', []);

@@ -60,8 +60,6 @@ function Folder({
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
   };
 
-  console.log(selectedIds);
-
   const isProgressing = _.includes(processingFolder, folderId);
 
   const onChangeItem = folder => () => {
