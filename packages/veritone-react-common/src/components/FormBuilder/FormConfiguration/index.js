@@ -12,6 +12,7 @@ export default function Configuration({ type, onChange, ...data }) {
       {
         typeConfiguration[type].map(configurationType => {
           const ConfigurationComponent = configurationComponents[configurationType];
+          ConfigurationComponent.displayName = 'FormConfigurationItem';
           return (
             <ConfigurationComponent
               key={configurationType}

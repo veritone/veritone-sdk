@@ -22,6 +22,7 @@ export default function TextInput({ label, required, name, onChange, instruction
       value={value}
       onChange={handleChange}
       className={styles['form-item']}
+      name={name}
     />
   )
 }

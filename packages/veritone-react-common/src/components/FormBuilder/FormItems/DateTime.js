@@ -39,6 +39,7 @@ export default function DateTime({
         onChange={handleChange}
         helperText={error || instruction}
         className={styles['form-item']}
+        name={name}
       />
     </MuiPickersUtilsProvider>
   )

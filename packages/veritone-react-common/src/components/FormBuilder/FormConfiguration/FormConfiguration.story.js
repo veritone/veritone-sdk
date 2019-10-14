@@ -102,7 +102,7 @@ storiesOf('FormBuilder/FormConfiguration', module)
     <DndProvider backend={HTML5Backend}>
       <FormConfiguration
         type="select"
-        onChange={action('update rating')}
+        onChange={action('update select')}
         items={[
           {
             value: "option 1",

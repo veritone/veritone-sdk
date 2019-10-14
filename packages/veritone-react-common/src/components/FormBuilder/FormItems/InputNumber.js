@@ -1,20 +1,12 @@
 import React from 'react';
-import { bool, string, func } from 'prop-types';
+import { bool, string, func, number } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import styles from './styles.scss';
 
-export default function Paragraph({
-  label,
-  required,
-  name,
-  onChange,
-  instruction,
-  value,
-  error
-}) {
+export default function TextInput({ label, required, name, onChange, instruction, value, error }) {
   const handleChange = React.useCallback(
     (e) => {
-      onChange({ name, value: e.target.value })
+      onChange({ name, value: e.target.value})
     },
     [name, onChange],
   );
@@ -22,35 +14,34 @@ export default function Paragraph({
   return (
     <TextField
       fullWidth
-      label={label || name}
+      label={label}
       required={required}
       error={error.length > 0}
       helperText={error || instruction}
       variant="outlined"
       value={value}
       onChange={handleChange}
-      multiline
-      rows={4}
       className={styles['form-item']}
+      type="number"
       name={name}
     />
   )
 }
 
-Paragraph.propTypes = {
+TextInput.propTypes = {
   label: string,
   required: bool,
   name: string,
   onChange: func,
   instruction: string,
-  value: string,
+  value: number,
   error: string
 }
 
-Paragraph.defaultProps = {
-  label: 'Paragraph',
-  name: `paragraph-${Date.now()}`,
+TextInput.defaultProps = {
+  label: 'InputNumber',
+  name: `number-${Date.now()}`,
   onChange: () => { },
-  value: '',
+  value: 0,
   error: ''
 }

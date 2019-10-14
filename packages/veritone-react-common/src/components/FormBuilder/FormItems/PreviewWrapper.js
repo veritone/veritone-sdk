@@ -14,8 +14,8 @@ export default function PreviewWrapper({
   selected,
   children,
   index,
-  swapBlock,
   addBlock,
+  swapBlock,
   selectBlock,
   removeBlock
 }) {
@@ -29,8 +29,8 @@ export default function PreviewWrapper({
     swapBlock
   );
 
-  const handleSelect = React.useCallback(() => selectBlock(index), [index]);
-  const handleRemove = React.useCallback(() => removeBlock(index), [index]);
+  const handleSelect = React.useCallback(() => selectBlock(index), [index, selectBlock]);
+  const handleRemove = React.useCallback(() => removeBlock(index), [index, selectBlock]);
 
   return drop(
     preview(
@@ -67,8 +67,8 @@ PreviewWrapper.propTypes = {
   selected: bool,
   children: node,
   index: number,
-  swapBlock: func,
   addBlock: func,
+  swapBlock: func,
   selectBlock: func,
   removeBlock: func
 }
