@@ -140,5 +140,7 @@ Block.propTypes = {
 
 Block.defaultProps = {
   onCancel: noop,
-  onClick: noop
+  onClick: noop,
+  label: 'TextInput',
+  icon: <Title />
 }

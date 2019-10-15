@@ -15,6 +15,7 @@ export default function Form({ formDefinition, onChange, value, errors }) {
       {
         formDefinition.map(formItem => {
           const FormItem = formItems[formItem.type];
+          FormItem.displayName = 'FormItem';
           return (
             <FormItem
               key={formItem.name}

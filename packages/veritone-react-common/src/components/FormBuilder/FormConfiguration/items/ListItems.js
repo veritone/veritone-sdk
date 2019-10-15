@@ -8,59 +8,48 @@ import {
   DragHandleOutlined
 } from '@material-ui/icons';
 import useSortable from '../../hooks/useSortable';
+import * as blockUtils from '../../blockUtils';
 
 import styles from '../styles.scss';
 
 const type = "items"
 
-export default function ListItems({ value, onChange }) {
+export default function ListItems({ value, onChange, className }) {
   const swapBlock = React.useCallback((from, to) => {
     onChange({
-      name: type, value: value.map((valueBlock, index) => {
-        if (index === from) {
-          return value[to];
-        }
-        if (index === to) {
-          return value[from];
-        }
-        return valueBlock;
-      })
-    })
-  }, [value])
+      name: type,
+      value: blockUtils.swap({ from, to }, value)
+    });
+  }, [value, onChange])
 
   const addBlock = React.useCallback((index) => {
     onChange({
-      name: type, value: [
-        ...value.slice(0, index + 1),
-        {
-          value: `option-${(new Date()).getTime()}`,
-          id: (new Date()).getTime().toString()
-        },
-        ...value.slice(index + 1)
-      ]
+      name: type,
+      value: blockUtils.add(index + 1, value, {
+        value: `option-${(new Date()).getTime()}`,
+        id: (new Date()).getTime().toString()
+      })
     })
   }, [value, onChange]);
 
   const removeBlock = React.useCallback((index) => {
-    onChange({ name: type, value: value.filter((_, vIndex) => vIndex !== index) })
-  }, [value]);
+    if (value.length > 1) {
+      onChange({
+        name: type,
+        value: blockUtils.remove(index, value)
+      })
+    }
+  }, [value, onChange]);
 
   const updateBlock = React.useCallback((index, newValue) => {
     onChange({
-      name: type, value: value.map((blockValue, blockIndex) => {
-        if (blockIndex !== index) {
-          return blockValue;
-        }
-        return {
-          ...blockValue,
-          value: newValue
-        }
-      })
-    })
-  }, [value])
+      name: type,
+      value: blockUtils.update(index, value, { value: newValue })
+    });
+  }, [value, onChange])
 
   return (
-    <div className={styles['list-items-container']}>
+    <div className={className}>
       <label>Field Items</label>
       <div>
         {
@@ -85,7 +74,8 @@ ListItems.propTypes = {
   value: arrayOf(shape({
     id: string,
   })),
-  onChange: func
+  onChange: func,
+  className: string
 }
 
 ListItems.defaultProps = {

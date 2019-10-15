@@ -1,12 +1,12 @@
 import React from 'react';
-import { bool, func } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 import { noop } from 'lodash';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 const type = "required"
 
-export default function Required({ value, onChange }) {
+export default function Required({ value, onChange, className }) {
   const handleChange = React.useCallback(
     (e) => {
       onChange({name: type, value: e.target.checked})
@@ -16,6 +16,7 @@ export default function Required({ value, onChange }) {
 
   return (
     <FormControlLabel
+      className={className}
       control={
         <Checkbox
           color="primary"
@@ -30,7 +31,8 @@ export default function Required({ value, onChange }) {
 
 Required.propTypes = {
   value: bool,
-  onChange: func
+  onChange: func,
+  className: string
 }
 
 Required.defaultProps = {

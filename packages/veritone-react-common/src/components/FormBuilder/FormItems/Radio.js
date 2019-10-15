@@ -35,7 +35,7 @@ export default function Radio({
         className={styles.box}
       >
         {
-          label && <Typography component="legend">
+          label && <Typography component="legend" variant="caption">
             {label + `${required ? '*' : ''}`}
           </Typography>
         }
