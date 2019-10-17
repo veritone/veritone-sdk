@@ -54,8 +54,11 @@ export Notifier from './components/Notifier';
 export DataPicker from './components/DataPicker';
 export FolderTree from './components/FolderTree/index';
 export SearchBox from './components/FolderTree/Searchbox';
+export DeleteFolder from './components/FolderTree/Modals/DeleteFolder';
+export ModifyFolder from './components/FolderTree/Modals/ModifyFolder';
+export CreateFolder from './components/FolderTree/Modals/CreateFolder';
 export LoadingState from './components/FolderTree/LoadingState';
-export FolderNullState from './components/FolderTree/NullState'; 
+export FolderNullState from './components/FolderTree/NullState';
 export {
   SimpleSearchBarBase,
   SimpleSearchBarController,
