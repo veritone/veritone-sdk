@@ -8,11 +8,12 @@ import {
   string,
   oneOfType,
   number
-}
-  from "prop-types";
+} from "prop-types";
+import cx from 'classnames';
 import _ from 'lodash';
 
 import Folder from "./Folder";
+import styles from './styles.scss';
 
 export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item)) {
@@ -57,14 +58,14 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
 function FolderTree({
   selectable,
   defaultOpening,
-  processingFolder,
+  processingFolder = [],
   isEnableShowContent,
   isEnableShowRootFolder,
   foldersData,
   onChange,
   onExpand,
-  selected,
-  folderAction,
+  selected = {},
+  folderAction = [],
   onMenuClick
 }) {
   const [opening, setopening] = useState([]);
@@ -137,7 +138,7 @@ function FolderTree({
   const rootIds = _.get(foldersData, 'rootIds', []);
   const dataForMapping = getFolderIds(foldersData, isEnableShowRootFolder);
   return (
-    <div>
+    <div className={cx(styles['folder-tree-container'])}>
       {dataForMapping.map(folderId => {
         const childs = foldersData.byId[folderId].childs || [];
         return (

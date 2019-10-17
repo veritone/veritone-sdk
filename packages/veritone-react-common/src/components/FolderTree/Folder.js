@@ -120,14 +120,15 @@ function Folder({
             />
           </div>
         )}
-        <div className={cx(styles['icon-menu'])}>
-          <Menu
-            folderAction={folderAction}
-            folder={folder}
-            onMenuClick={onMenuClick}
-          />
-        </div>
-
+        {folderAction.length > 0 && (
+          <div className={cx(styles['icon-menu'])}>
+            <Menu
+              folderAction={folderAction}
+              folder={folder}
+              onMenuClick={onMenuClick}
+            />
+          </div>
+        )}
       </ListItem>
       <Collapse in={isOpening} style={{ padding: 0 }}>
         <List disablePadding className={cx(styles['sub-folder'])}>
