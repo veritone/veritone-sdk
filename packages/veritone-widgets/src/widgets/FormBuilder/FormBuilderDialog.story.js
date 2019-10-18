@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import FormBuider from './';
+import FormBuider from './FormBuilderDialog';
 
 const emptyForm = {
   name: 'New form',

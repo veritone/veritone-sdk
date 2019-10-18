@@ -155,6 +155,7 @@ export default function FormBuilderPage({
         showPublishForm && (
           <FormPublishModal
             onClose={togglePublishForm}
+            selectedLocations={selectedLocations}
           />
         )
       }
