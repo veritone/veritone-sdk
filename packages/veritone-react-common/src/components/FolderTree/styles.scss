@@ -1,3 +1,6 @@
+.folder-tree-container{
+  height: 100%;
+}
 .folder-item-container{
   display: flex;
   align-items: center;
@@ -79,6 +82,5 @@
 }
 
 .folder-list-item {
-  padding: 5px 0px 5px 0px !important;
+  padding: 5px 0 !important;
 }
-

@@ -1,35 +1,45 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from "react";
-import { bool, func, shape, arrayOf, string, oneOfType, number } from "prop-types";
+import {
+  bool,
+  func,
+  shape,
+  arrayOf,
+  string,
+  oneOfType,
+  number
+} from "prop-types";
+import cx from 'classnames';
 import _ from 'lodash';
 
 import Folder from "./Folder";
+import styles from './styles.scss';
 
 export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item)) {
-    return []
+    return [];
   }
   if (_.isNil(item.childs) || _.isEmpty(item.childs)) {
-    return [item.id]
+    return [item.id];
   }
   else {
     return [item.id, ...item.childs.map(subitem =>
       getAllChildId(foldersData.byId[subitem], foldersData)
-    )]
+    )];
   }
-}
+};
 
 export const getAllParentId = (item, folderDataFlatten) => {
   if (_.isNil(item) || _.isNil(item.parentId)) {
-    return []
+    return [];
   }
   else {
     return [
       item.parentId,
       ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)
-    ]
+    ];
   }
-}
+};
 
 export const getFolderIds = (folders, isEnableShowRootFolder) => {
   const rootIds = _.get(folders, 'rootIds', []);
@@ -47,17 +57,21 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
 
 function FolderTree({
   selectable,
-  processingFolder,
+  defaultOpening,
+  processingFolder = [],
   isEnableShowContent,
   isEnableShowRootFolder,
   foldersData,
   onChange,
   onExpand,
-  selected,
-  folderAction,
+  selected = {},
+  folderAction = [],
   onMenuClick
 }) {
   const [opening, setopening] = useState([]);
+  React.useEffect(() => {
+    setopening([...opening, ...defaultOpening]);
+  }, [defaultOpening])
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();
     const newOpening =
@@ -105,7 +119,13 @@ function FolderTree({
             [currentValue]: true
           }
         }, {});
-        const selectedIds = Object.keys({ ...selected, ...newSelected });
+        const selectedIds = Object.keys({ ...selected, ...newSelected })
+          .map(item => {
+            if (!isNaN(item)) {
+              return parseInt(item);
+            }
+            return item;
+          });;
         const diff = _.difference(childs, selectedIds);
         if (diff.length === 0 && childs.length !== 0) {
           return onChangeSelectedFolder(parentFolder);
@@ -118,7 +138,7 @@ function FolderTree({
   const rootIds = _.get(foldersData, 'rootIds', []);
   const dataForMapping = getFolderIds(foldersData, isEnableShowRootFolder);
   return (
-    <div>
+    <div className={cx(styles['folder-tree-container'])}>
       {dataForMapping.map(folderId => {
         const childs = foldersData.byId[folderId].childs || [];
         return (
@@ -156,6 +176,7 @@ FolderTree.propTypes = {
   isEnableShowContent: bool,
   isEnableShowRootFolder: bool,
   processingFolder: arrayOf(oneOfType[string, number]),
+  defaultOpening: arrayOf(oneOfType[string, number]),
   onMenuClick: func
 };
 

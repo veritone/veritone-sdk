@@ -1,95 +1,99 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import cx from 'classnames';
+import { get } from 'lodash';
+import { shape, bool, func } from 'prop-types';
+import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import styles from './styles.scss';
 
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-});
+export default function CreateFolder({
+  open,
+  folder = {},
+  handleClose,
+  handleSubmit,
+}) {
+  const [approvedText, setapprovedText] = React.useState('');
+  const isFolderWithContent = () => {
+    return get(folder, 'hasContent', false);
+  }
 
-const DialogTitle = withStyles(styles)(props => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
+  const getDialogTitle = () => {
+    if (isFolderWithContent()) {
+      return 'Delete Folder and Collection';
+    }
+    return 'Delete Folder';
+  }
 
-const DialogContent = withStyles(theme => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
+  const getContent = () => {
+    if (isFolderWithContent()) {
+      return 'You will delete this Folder and its collection(s). Performing this action will delete all infomation including folders and contents.';
+    }
+    return `You will delete "${folder.name}" and its contents. Would you like to continue?`
+  }
+  const onDelete = () => {
+    handleSubmit(folder);
+  }
 
-const DialogActions = withStyles(theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
-
-export default function CustomizedDialogs() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const onChaneDeleteField = e => {
+    const value = event.target.value;
+    setapprovedText(value);
+  }
 
   return (
     <div>
-      <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
-        Open dialog
-      </Button>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Modal title
+      <Dialog
+        fullWidth
+        maxWidth='sm'
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="create-folder"
+      >
+        <DialogTitle id="create-folder">
+          {getDialogTitle()}
         </DialogTitle>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
-          </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
-          </Typography>
+        <DialogContent className={cx(styles['dialog-content'])}>
+          <div className={cx(styles['action-new-field'])}>
+            {getContent()}
+          </div>
+          {isFolderWithContent() && (
+            <div className={cx(styles['folder-name-field'])}>
+              <div>
+                To continue, type <b>DELETE</b> in box to confirm.
+            </div>
+              <TextField
+                autoFocus
+                margin="dense"
+                onChange={onChaneDeleteField}
+                id="delele-confirm"
+                type="text"
+              />
+            </div>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Save changes
+            Cancel
           </Button>
+          <Button
+            disabled={isFolderWithContent() && approvedText !== 'DELETE'}
+            onClick={onDelete}
+            color="primary"
+          >
+            Submit
+          </Button >
         </DialogActions>
       </Dialog>
     </div>
   );
+}
+CreateFolder.propTypes = {
+  open: bool,
+  folder: shape(Object).isRequired,
+  handleClose: func,
+  handleSubmit: func,
 }

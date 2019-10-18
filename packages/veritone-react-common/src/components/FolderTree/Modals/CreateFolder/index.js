@@ -1,95 +1,102 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import cx from 'classnames';
+import { get } from 'lodash';
+import { shape, bool, func } from 'prop-types';
+import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import styles from './styles.scss';
 
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-});
-
-const DialogTitle = withStyles(styles)(props => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles(theme => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles(theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-}))(MuiDialogActions);
-
-export default function CustomizedDialogs() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
+export default function CreateFolder({ open, parentFolder, handleClose, handleSubmit }) {
+  const getContent = () => {
+    const parentFolderName = get(parentFolder, 'name', 'Root Folder');
+    return `Create folder within "${parentFolderName}"`
+  }
+  const [folderName, setFolderName] = React.useState('');
+  const [error, setError] = React.useState('');
+  
+  const onChange = event => {
+    const { value } = event.target;
+    setFolderName(value);
+    validate(value);
   };
-  const handleClose = () => {
-    setOpen(false);
-  };
+
+  const onCreate = () => {
+    validate(folderName);
+    if (error === '') {
+      handleSubmit(folderName);
+    }
+  }
+
+  React.useEffect(() => {
+    setFolderName('');
+    setError('');
+    return () => {
+      setFolderName('');
+      setError('');
+    };
+  }, [])
+
+  const validate = (folderNameToValid) => {
+    if (folderNameToValid.length === 0) {
+      return setError('Folder name must not be empty');
+    }
+    setError('');
+  }
 
   return (
     <div>
-      <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
-        Open dialog
-      </Button>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Modal title
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          </Typography>
-          <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
-          </Typography>
-          <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
-          </Typography>
+      <Dialog
+        fullWidth
+        maxWidth='sm'
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="create-folder"
+      >
+        <DialogTitle id="create-folder">Create Folder</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {getContent()}
+          </DialogContentText>
+          <div className={cx(styles['folder-name-field'])}>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="folder-name"
+              label="Folder Name"
+              type="text"
+              error={error.length !== 0}
+              helperText={error}
+              value={folderName}
+              onChange={onChange}
+              fullWidth
+            />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Save changes
+            Cancel
           </Button>
+          <Button
+            disabled={folderName === ''}
+            onClick={onCreate}
+            color="primary"
+          >
+            Create
+          </Button >
         </DialogActions>
       </Dialog>
     </div>
   );
+}
+CreateFolder.propTypes = {
+  open: bool,
+  parentFolder: shape(Object),
+  handleClose: func,
+  handleSubmit: func
 }

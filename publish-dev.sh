@@ -85,7 +85,9 @@ fi
 # All other cases
 yarn workspace $1 run build
 mkdir -p $packageDir/publish-dev-dist/dist
+mkdir -p $packageDir/publish-dev-dist/src
 cp -r $packageDir/dist/* $packageDir/publish-dev-dist/dist
+cp -r $packageDir/src/* $packageDir/publish-dev-dist/src
 cp $packageDir/package.json $packageDir/publish-dev-dist/package.json
 
 cd $packageDir/publish-dev-dist

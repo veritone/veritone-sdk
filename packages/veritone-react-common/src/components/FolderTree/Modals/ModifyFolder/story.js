@@ -1,10 +1,20 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import _ from 'lodash';
-import FolderTree from './index';
+import Dialog from './index';
 
 function StoryComponent() {
+  const parentFolder = {
+    id: 4,
+    name: 'Folder 4',
+    contentType: 'folder',
+    hasContent: true,
+    childs: [126],
+    parentId: 1,
+    subfolders: [],
+    subcontents: [126]
+  }
+
   const foldersDataDefault = {
     rootIds: [1],
     allId: [1, 11, '121aasd', 3, 4, 5, 6, 7, 8, 9, 10],
@@ -177,87 +187,63 @@ function StoryComponent() {
       }
     }
   }
-  const selectable = true;
-  const isEnableShowContent = false;
-  const processingFolder = [4];
-  const defaultOpening = [1];
-  const folderAction = [
-    {
-      id: 1,
-      type: 'move',
-      name: 'Move'
-    },
-    {
-      id: 2,
-      type: 'delete',
-      name: 'Delete'
-    },
-    {
-      id: 3,
-      type: 'edit',
-      name: 'Edit'
-    }
-  ];
-  const [selectedFolder, setSelectedFolder] = useState({});
-  const [foldersData, setFoldersData] = useState(foldersDataDefault);
-  const onMenuClick = (item, type) => {
-    console.log(item, type);
-  }
-  const onChange = selectedfolder => {
-    console.log(selectedfolder);
-    setSelectedFolder(selectedfolder);
-  }
-  const onExpand = folderId => {
-    if (_.includes(foldersData.rootIds, folderId)) {
-      return;
-    }
-    const dataAfterCallAPI = {
-      127: {
-        id: 127,
-        parentId: 6,
-        contentType: 'collection',
-        name: 'Content 7',
-      },
-    }
-    setFoldersData(foldersData => ({
-      ...foldersData,
-      allId: [...foldersData.allId, ...Object.keys(dataAfterCallAPI)],
-      byId: {
-        ...foldersData.byId,
-        ...dataAfterCallAPI
-      }
-    }))
-    if (selectedFolder[folderId]) {
-      const additionSelected = Object.keys(dataAfterCallAPI).reduce((accum, currentData) => {
-        return {
-          ...accum,
-          [currentData]: true
-        };
-      }, {})
-      setSelectedFolder({ ...selectedFolder, ...additionSelected })
-    }
+
+  const selected = {
+    3: true
   }
 
+  const currentFolder = {
+    id: 7,
+    name: 'Folder 7',
+    contentType: 'folder',
+    hasContent: true,
+    childs: [9, 128],
+    parentId: 3,
+    subfolders: [9],
+    subcontents: [128]
+  }
+
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = folderName => {
+    console.log('submit', folderName)
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const onExpand = item => {
+    console.log('onExpand', item);
+  };
+
   return (
-    <FolderTree
-      selectable={selectable}
-      loading={false}
-      selected={selectedFolder}
-      foldersData={foldersData}
-      onChange={onChange}
-      onExpand={onExpand}
-      isEnableShowContent={isEnableShowContent}
-      folderAction={folderAction}
-      onMenuClick={onMenuClick}
-      processingFolder={processingFolder}
-      isEnableShowRootFolder
-      defaultOpening={defaultOpening}
-    />
+    <div>
+      <Dialog
+        open={open}
+        parentFolder={parentFolder}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+        foldersData={foldersDataDefault}
+        onExpand={onExpand}
+        selected={selected}
+        defaultOpening={[1]}
+        currentFolder={currentFolder}
+      />
+      <button onClick={handleOpen}>
+        open
+    </button>
+    </div>
+
   )
 }
 
 storiesOf('FolderTree', module)
-  .add('new folder tree', () => {
+  .add('modify folder dialog', () => {
     return (
       <div style={{
         padding: 20,

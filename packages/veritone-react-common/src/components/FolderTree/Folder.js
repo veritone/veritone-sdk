@@ -45,7 +45,12 @@ function Folder({
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
   const folderLabel = _.get(folder, 'name', 'My organization');
-  const selectedIds = Object.keys(selected);
+  const selectedIds = Object.keys(selected).map(item => {
+    if (!isNaN(item)) {
+      return parseInt(item);
+    }
+    return item;
+  });
   const isChecked = id => _.includes(selectedIds, id);
 
   const isIndeterminate = folderId => {
@@ -115,14 +120,15 @@ function Folder({
             />
           </div>
         )}
-        <div className={cx(styles['icon-menu'])}>
-          <Menu
-            folderAction={folderAction}
-            folder={folder}
-            onMenuClick={onMenuClick}
-          />
-        </div>
-
+        {folderAction.length > 0 && (
+          <div className={cx(styles['icon-menu'])}>
+            <Menu
+              folderAction={folderAction}
+              folder={folder}
+              onMenuClick={onMenuClick}
+            />
+          </div>
+        )}
       </ListItem>
       <Collapse in={isOpening} style={{ padding: 0 }}>
         <List disablePadding className={cx(styles['sub-folder'])}>
