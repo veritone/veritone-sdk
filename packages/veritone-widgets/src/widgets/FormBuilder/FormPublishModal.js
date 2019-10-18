@@ -24,10 +24,8 @@ export default function FormPublishModal({
   selectedLocations,
   onClose,
   onChange,
-  open,
   onPublish
 }) {
-
   React.useEffect(() => {
     if (!(locationLoading || loactionLoaded)) {
       fetchLocations();
@@ -55,7 +53,10 @@ export default function FormPublishModal({
     .length;
 
   return (
-    <Dialog open={open}>
+    <Dialog
+      open
+      onClose={onClose}
+    >
       <DialogTitle className={styles.dialogTitle}>
         Publish Form
       </DialogTitle>
@@ -127,5 +128,6 @@ export default function FormPublishModal({
 
 FormPublishModal.defaultProps = {
   locations: [],
-  selectedLocations: {}
+  selectedLocations: {},
+  fetchLocations: () => { }
 }

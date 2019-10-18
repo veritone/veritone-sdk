@@ -59,3 +59,10 @@ export {
   SimpleSearchBar,
   EntitySearchTemplate
 } from './components/SimpleSearchBar/SimpleSearchBar';
+
+export {
+  Form,
+  FormBuilder,
+  formUtils,
+  formHelpers
+} from './components/FormBuilder';

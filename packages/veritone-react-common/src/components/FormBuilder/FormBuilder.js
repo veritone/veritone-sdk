@@ -1,5 +1,5 @@
 import React from 'react';
-import { shape, func, string, arrayOf } from 'prop-types';
+import { shape, func, string, arrayOf, objectOf } from 'prop-types';
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import { useDrop } from 'react-dnd';
@@ -31,7 +31,8 @@ function FormBuilderComponent({
   swapBlock,
   updateBlock,
   removeBlock,
-  selectBlock
+  selectBlock,
+  classes
 }) {
   const [isPreview, setIsPreview] = React.useState(false);
 
@@ -63,7 +64,7 @@ function FormBuilderComponent({
   const settingOpen = configurationOpen.length > 0;
 
   return (
-    <div className={cx(styles['form-builder'])}>
+    <div className={cx(styles['form-builder'], classes.container)}>
       <div className={cx(styles['form-blocks'])}>
         <Typography className={cx(styles['form-blocks-title'])}>
           Blocks
@@ -93,7 +94,7 @@ function FormBuilderComponent({
           />
         )}
       </div>
-      <div className={styles['blocks-preview']}>
+      <div className={cx(styles['blocks-preview'], classes.previewContainer)}>
         {
           form.length > 0 && (
             <Typography className={cx(styles['form-preview-title'])}>
@@ -101,7 +102,7 @@ function FormBuilderComponent({
             </Typography>
           )
         }
-        <div ref={drop}>
+        <div ref={drop} className={classes.previewContent}>
           {form.map((block, index) => {
             const BlockItem = formItems[block.type];
             return (
@@ -131,7 +132,7 @@ function FormBuilderComponent({
               <NullState
                 titleText="Begin by selecting block to your rignt"
               >
-                <Link href="https://help.veritone.com/en/" target= "_blank">
+                <Link href="https://help.veritone.com/en/" target="_blank">
                   Need help? Click here to watch a turtorial
                 </Link>
               </NullState>
@@ -174,6 +175,7 @@ FormBuilderComponent.propTypes = {
   removeBlock: func,
   selectBlock: func,
   updateBlock: func,
+  classes: objectOf(string)
 }
 
 FormBuilderComponent.defaultProps = {
@@ -182,12 +184,13 @@ FormBuilderComponent.defaultProps = {
   removeBlock: _.noop,
   selectBlock: _.noop,
   updateBlock: _.noop,
-  form: []
+  form: [],
+  classes: {}
 }
 
 const FormBuilderComponentMemo = React.memo(FormBuilderComponent, formEqual);
 
-function FormBuilder({ form, onChange }) {
+function FormBuilder({ form, onChange, ...remainProps }) {
   const addBlock = React.useCallback((index, type) => {
     const name = `${type}-${(new Date()).getTime()}`;
     const item = typeConfiguration[type]
@@ -225,6 +228,7 @@ function FormBuilder({ form, onChange }) {
         updateBlock={updateBlock}
         swapBlock={swapBlock}
         selectBlock={selectBlock}
+        {...remainProps}
       />
     </DndProvider>
   )
@@ -233,11 +237,13 @@ function FormBuilder({ form, onChange }) {
 FormBuilder.propTypes = {
   onChange: func,
   form: formPropType,
+  classes: objectOf(string)
 }
 
 FormBuilder.defaultProps = {
   onChange: _.noop,
-  form: []
+  form: [],
+  classes: {}
 }
 
 export default FormBuilder;
