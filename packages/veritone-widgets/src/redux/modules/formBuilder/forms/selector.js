@@ -19,10 +19,10 @@ export const formSelector = createSelector(
     ...remainState,
     forms: forms.allIds
       .filter(id => !forms.byId[id].isTemplate)
-      .map(id => wipForm[id] || forms.byId[id]),
+      .map(id => wipForm[id]),
     templates: forms.allIds
       .filter(id => forms.byId[id].isTemplate)
-      .map(id => wipForm[id] || forms.byId[id])
+      .map(id => wipForm[id])
   })
 )
 
@@ -30,8 +30,7 @@ export const makeFormSelectorById = (formId) => createSelector(
   local,
   (
     {
-      forms,
       wipForm,
     }
-  ) => wipForm[formId] || forms.byId[formId]
+  ) => wipForm[formId]
 )
