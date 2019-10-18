@@ -136,7 +136,7 @@ const FolderTree = connect(
     initFolder: folderModule.initFolder
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )(FolderTreeWrapper);
 
 const FolderTreeWidget = widget(FolderTree);

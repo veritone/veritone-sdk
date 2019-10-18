@@ -12,6 +12,9 @@ export OAuthLoginButton, {
 } from './widgets/OAuthLoginButton';
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
 export filePickerReducer, * as filePickerModule from './redux/modules/filePicker';
+
+export FolderTree, { FolderTreeWidget } from './widgets/FolderTree';
+export folderTreeReducer, * as folderTreeModule from './redux/modules/folder';
 export filePickerSaga from './redux/modules/filePicker/filePickerSaga';
 export DataPicker, { DataPickerWidget } from './widgets/DataPicker';
 export dataPickerReducer, * as dataPickerModule from './redux/modules/dataPicker';

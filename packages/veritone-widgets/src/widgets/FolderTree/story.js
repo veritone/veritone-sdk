@@ -29,8 +29,8 @@ function StoryComponent() {
   ]
   const subjectObservable = new Subject();
   const props = {
-    type: 'cms',
-    isEnableShowContent: true,
+    type: 'collection',
+    isEnableShowContent: false,
     selectable: false,
     enableSearchbox: false,
     isEnableShowRootFolder: true,

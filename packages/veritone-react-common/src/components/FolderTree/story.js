@@ -180,7 +180,7 @@ function StoryComponent() {
   const selectable = true;
   const isEnableShowContent = false;
   const processingFolder = [4];
-  const defaultOpening = [1];
+  const defaultOpening = [];
   const folderAction = [
     {
       id: 1,

@@ -57,7 +57,7 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
 
 function FolderTree({
   selectable,
-  defaultOpening,
+  defaultOpening = [],
   processingFolder = [],
   isEnableShowContent,
   isEnableShowRootFolder,
@@ -70,7 +70,9 @@ function FolderTree({
 }) {
   const [opening, setopening] = useState([]);
   React.useEffect(() => {
-    setopening([...opening, ...defaultOpening]);
+    if (defaultOpening.length > 0) {
+      setopening([...opening, ...defaultOpening]);
+    }
   }, [defaultOpening])
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();

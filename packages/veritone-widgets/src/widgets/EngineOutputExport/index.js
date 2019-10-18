@@ -44,7 +44,7 @@ const snackBarClasses = {
     closeSnackBar: engineOutputExportModule.closeSnackBar
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class EngineOutputExport extends Component {
   static propTypes = {
