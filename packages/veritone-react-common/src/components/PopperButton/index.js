@@ -85,8 +85,13 @@ function VuiNewButton({ actions }) {
                             className={cx([icon, styles['list-item-icon']])}
                           />
                         </ListItemIcon>
-                        <ListItemText className={cx(styles['list-item-text'])} inset>
-                          <span className={cx(styles['list-item-text'])}>{action.name}</span>
+                        <ListItemText
+                          className={cx(styles['list-item-text'])}
+                          inset
+                        >
+                          <span className={cx(styles['list-item-text'])}>
+                            {action.name}
+                          </span>
                         </ListItemText>
                       </MenuItem>
                     );

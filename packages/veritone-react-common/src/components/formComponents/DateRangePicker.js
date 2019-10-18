@@ -6,13 +6,11 @@ import InfiniteCalendar, {
   EVENT_TYPE
 } from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
-import {
-  differenceInHours,
-  startOfMonth,
-  endOfMonth,
-  endOfDay,
-  subYears
-} from 'date-fns';
+import differenceInHours from 'date-fns/differenceInHours'
+import startOfMonth from 'date-fns/startOfMonth'
+import endOfMonth from 'date-fns/endOfMonth'
+import endOfDay from 'date-fns/endOfDay'
+import subYears from 'date-fns/subYears'
 
 import { Interval } from '../../helpers/date';
 const RangedCalendar = withRange(Calendar);

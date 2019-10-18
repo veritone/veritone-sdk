@@ -10,7 +10,6 @@ import { snakeCase } from 'lodash';
 
 import * as mui from '@material-ui/core';
 import * as muiIcons from '@material-ui/icons';
-import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
 import sass from './rollup-postcss-sass-loader';
 
@@ -18,7 +17,6 @@ export default {
   input: 'src/index.js',
   external: [
     'classnames',
-    ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
     ...Object.keys(lodash).map(name => `lodash/${name}`),
     ...Object.keys(lodash).map(name => `lodash/fp/${name}`),
     ...Object.keys(muiIcons).map(name => `@material-ui/icons/${name}`),

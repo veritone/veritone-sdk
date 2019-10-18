@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {
   AppBar as LibAppBar,
   appBarHeight,
+  // eslint-disable-next-line import/named
   defaultAppBarZIndex
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';

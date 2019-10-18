@@ -1,5 +1,5 @@
-import { parse } from 'date-fns';
 import { truncate } from 'lodash';
+import parse from 'date-fns/parse';
 import format from 'date-fns/format';
 
 const fromUTCToLocal = inputTime => {

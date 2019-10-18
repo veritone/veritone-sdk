@@ -22,7 +22,7 @@
     "rxjs": "^6.5.3",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "veritone-react-common": "^8.0.3",
+    "veritone-react-common": "^9.0.0",
     "veritone-redux-common": "^3.7.0",
     "video-react": "~0.13.3"
   },
@@ -55,7 +55,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.3",
     "babel-plugin-add-react-displayname": "^0.0.5",
-    "babel-plugin-date-fns": "^0.1.0",
+    "babel-plugin-date-fns": "^0.2.1",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-lodash": "^3.3.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -110,7 +110,8 @@
       "jsx"
     ],
     "moduleDirectories": [
-      "node_modules"
+      "node_modules",
+      "../../node_modules"
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
