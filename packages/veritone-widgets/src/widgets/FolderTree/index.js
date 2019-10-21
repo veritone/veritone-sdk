@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   string,
   bool,
@@ -18,6 +18,11 @@ import {
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
+import {
+  DeleteFolder,
+  ModifyFolder,
+  CreateFolder
+} from 'veritone-react-common';
 
 function FolderTreeWrapper({
   type = 'watchlist',
@@ -38,7 +43,15 @@ function FolderTreeWrapper({
   fetchedFolderStatus,
   errorStatus,
   expandingFolderIds,
+  folderById,
+  rootFolderIds
 }) {
+
+  const [openNew, setOpeningNew] = useState(false);
+  const [openModify, setOpenModify] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [currentFolderForAction, setCurrentFolderForAction] = useState({});
+
   useEffect(() => {
     const config = {
       type,
@@ -52,22 +65,67 @@ function FolderTreeWrapper({
     handleSelectedFoler(selectedFolder);
   }, [selectedFolder]);
 
+  const onSelectMenu = (item, action) => {
+    setCurrentFolderForAction(item);
+    if (action === 'edit') {
+      setOpenModify(true);
+    }
+    if (action === 'delete') {
+      setOpenDelete(true);
+    }
+  }
+
   const onChange = selectedfolder => {
     onSelectFolder(selectedfolder);
-  }
+  };
+
   const onExpand = folderId => {
     expandFolder(folderId);
-  }
+  };
+
   const onSearch = (data) => {
-    console.log(data);
+  };
+
+  const handleSubmitNewFolder = (data) => {
+  };
+
+  const handleCloseNewFolder = () => {
+    setOpeningNew(false);
+  }
+
+  const handleSubmitModify = (data1, data2) => {
+  }
+
+  const handleCloseModify = () => {
+    setOpenModify(false);
+  }
+
+  const handleSubmitDeleteFolder = (data) => {
+  };
+
+  const handleCloseDeleteFolder = () => {
+    setOpenDelete(false);
+  }
+
+  const getFolderSeleted = () => {
+    const selectedFolderId = Object.keys(selectedFolder);
+    console.log(selectedFolderId);
+    const data = folderById(selectedFolderId[0]) || folderById(rootFolderIds[0]) || {};
+    return data;
+  }
+
+  const processEvent = event => {
+    setOpeningNew(true);
   }
 
   subjectObservable.subscribe({
-    next: v => console.log(`test something ......: ${v}`)
+    next: v => processEvent(v)
   })
 
   return (
-    <div>
+    <div style={{
+      width: '100%'
+    }}>
       {isEnableSearch && (
         <SearchBox onSearch={onSearch} />
       )}
@@ -87,9 +145,31 @@ function FolderTreeWrapper({
         onExpand={onExpand}
         isEnableShowContent={isEnableShowContent}
         folderAction={folderAction}
-        onMenuClick={onSelectMenuItem}
+        onMenuClick={onSelectMenu}
         processingFolder={expandingFolderIds}
         isEnableShowRootFolder={isEnableShowRootFolder}
+      />
+      <DeleteFolder
+        open={openDelete}
+        folder={currentFolderForAction}
+        handleClose={handleCloseDeleteFolder}
+        handleSubmit={handleSubmitDeleteFolder}
+      />
+      <ModifyFolder
+        open={openModify}
+        handleClose={handleCloseModify}
+        handleSubmit={handleSubmitModify}
+        foldersData={foldersData}
+        onExpand={onExpand}
+        selected={selectedFolder}
+        defaultOpening={rootFolderIds}
+        currentFolder={currentFolderForAction}
+      />
+      <CreateFolder
+        open={openNew}
+        parentFolder={getFolderSeleted() || {}}
+        handleClose={handleCloseNewFolder}
+        handleSubmit={handleSubmitNewFolder}
       />
     </div>
   )
@@ -117,7 +197,9 @@ FolderTreeWrapper.propTypes = {
   errorStatus: bool,
   handleSelectedFoler: func,
   expandingFolderIds: arrayOf(string),
-  subjectObservable: shape(Object)
+  subjectObservable: shape(Object),
+  folderById: func,
+  rootFolderIds: arrayOf(string)
 }
 
 const FolderTree = connect(
@@ -127,6 +209,8 @@ const FolderTree = connect(
     fetchedFolderStatus: folderSelector.folderFetchedStatus(state),
     errorStatus: folderSelector.folderErrorStatus(state),
     selectedFolder: folderSelector.selectedFolder(state),
+    folderById: folderSelector.folderById(state),
+    rootFolderIds: folderSelector.rootFolderIds(state),
     expandingFolderIds: folderSelector.expandingFolderIdsSelector(state)
   }),
   {

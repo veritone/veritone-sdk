@@ -1,12 +1,10 @@
 .folder-tree-container{
   height: 100%;
+  overflow: auto;
 }
 .folder-item-container{
   display: flex;
   align-items: center;
-}
-.folder-tree-container {
-  width: 100%;
 }
 .folder-item{
   margin-right: 10px;

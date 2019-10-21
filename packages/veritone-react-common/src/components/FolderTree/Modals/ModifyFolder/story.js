@@ -4,16 +4,6 @@ import { storiesOf } from '@storybook/react';
 import Dialog from './index';
 
 function StoryComponent() {
-  const parentFolder = {
-    id: 4,
-    name: 'Folder 4',
-    contentType: 'folder',
-    hasContent: true,
-    childs: [126],
-    parentId: 1,
-    subfolders: [],
-    subcontents: [126]
-  }
 
   const foldersDataDefault = {
     rootIds: [1],
@@ -225,7 +215,6 @@ function StoryComponent() {
     <div>
       <Dialog
         open={open}
-        parentFolder={parentFolder}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         foldersData={foldersDataDefault}

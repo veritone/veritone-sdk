@@ -13,13 +13,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import styles from './styles.scss';
 
 export default function CreateFolder({ open, parentFolder, handleClose, handleSubmit }) {
-  const getContent = () => {
-    const parentFolderName = get(parentFolder, 'name', 'Root Folder');
-    return `Create folder within "${parentFolderName}"`
-  }
+
   const [folderName, setFolderName] = React.useState('');
   const [error, setError] = React.useState('');
-  
+
+  React.useEffect(() => {
+    if (!open) {
+      setFolderName('');
+      setError('')
+    }
+  }, [open])
+
   const onChange = event => {
     const { value } = event.target;
     setFolderName(value);
@@ -31,7 +35,7 @@ export default function CreateFolder({ open, parentFolder, handleClose, handleSu
     if (error === '') {
       handleSubmit(folderName);
     }
-  }
+  };
 
   React.useEffect(() => {
     setFolderName('');
@@ -40,58 +44,61 @@ export default function CreateFolder({ open, parentFolder, handleClose, handleSu
       setFolderName('');
       setError('');
     };
-  }, [])
+  }, []);
 
   const validate = (folderNameToValid) => {
     if (folderNameToValid.length === 0) {
       return setError('Folder name must not be empty');
     }
     setError('');
-  }
+  };
+
+  const getContent = () => {
+    const parentFolderName = get(parentFolder, 'name', 'Root Folder');
+    return `Create folder within "${parentFolderName}"`
+  };
 
   return (
-    <div>
-      <Dialog
-        fullWidth
-        maxWidth='sm'
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="create-folder"
-      >
-        <DialogTitle id="create-folder">Create Folder</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {getContent()}
-          </DialogContentText>
-          <div className={cx(styles['folder-name-field'])}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="folder-name"
-              label="Folder Name"
-              type="text"
-              error={error.length !== 0}
-              helperText={error}
-              value={folderName}
-              onChange={onChange}
-              fullWidth
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
+    <Dialog
+      fullWidth
+      maxWidth='sm'
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="create-folder"
+    >
+      <DialogTitle id="create-folder">Create Folder</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {getContent()}
+        </DialogContentText>
+        <div className={cx(styles['folder-name-field'])}>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="folder-name"
+            label="Folder Name"
+            type="text"
+            error={error.length !== 0}
+            helperText={error}
+            value={folderName}
+            onChange={onChange}
+            fullWidth
+          />
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
           </Button>
-          <Button
-            disabled={folderName === ''}
-            onClick={onCreate}
-            color="primary"
-          >
-            Create
+        <Button
+          disabled={folderName === ''}
+          onClick={onCreate}
+          color="primary"
+        >
+          Create
           </Button >
-        </DialogActions>
-      </Dialog>
-    </div>
+      </DialogActions>
+    </Dialog>
   );
 }
 CreateFolder.propTypes = {

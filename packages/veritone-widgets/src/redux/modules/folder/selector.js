@@ -1,5 +1,25 @@
 import { createSelector } from 'reselect';
 
+//  const defaultFolderState = {
+//     config: {},
+//     fetching: false,
+//     fetched: false,
+//     error: false,
+//     foldersData: {
+//       rootIds: [],
+//       allId: [],
+//       byId: {}
+//     },
+//     selectedFolder: {},
+//     expandingFolderIds: [],
+//     expandedFolderIds: [],
+//     searching: false,
+//     searchFolderData: {
+//       allId: [],
+//       byId: {}
+//     }
+//   };
+
 export const folderData = (state) => state.folderTree.foldersData;
 
 export const folderFetching = state => state.folderTree.fetching;
@@ -10,7 +30,7 @@ export const folderError = state => state.folderTree.error;
 
 export const rootFolderIds = state => state.folderTree.foldersData.rootIds;
 
-export const folderById = state => folderId => state.folderTree.foldersData.byId[folderById];
+export const folderById = state => folderId => state.folderTree.foldersData.byId[folderId];
 
 export const folderExpanded = state => state.folderTree.expandedFolderIds;
 

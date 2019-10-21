@@ -8,7 +8,9 @@ import { Button } from '@material-ui/core';
 
 function StoryComponent() {
   const actionConfig = {
-
+    new: 'action/newfolder',
+    modify: 'action/modifyfolder',
+    delete: 'action/delete'
   }
   const folderActionDefault = [
     {
@@ -29,7 +31,8 @@ function StoryComponent() {
   ]
   const subjectObservable = new Subject();
   const props = {
-    type: 'collection',
+    type: 'cms',
+    actionConfig,
     isEnableShowContent: false,
     selectable: false,
     enableSearchbox: false,
@@ -43,10 +46,12 @@ function StoryComponent() {
 
   const onClickButton = () => {
     console.log('onClicknew');
-    subjectObservable.next('new folder');
+    subjectObservable.next(actionConfig.new);
   }
   return (
-    <div>
+    <div style={{
+      height: '100vh'
+    }}>
       <Button onClick={onClickButton}>New</Button>
       <BaseStory
         widget={FolderTreeWidget}

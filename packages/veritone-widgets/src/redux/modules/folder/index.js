@@ -1,29 +1,41 @@
 import { helpers } from 'veritone-redux-common';
 import _ from 'lodash';
 const { createReducer } = helpers;
-
-export const INIT = 'folder/INIT';
-export const INIT_ROOT_FOLDER = 'folder/INIT_ROOT_FOLDER';
-export const INIT_CONFIG = 'folder/INIT_CONFIG';
-export const INIT_ROOT_FOLDER_START = 'folder/INIT_ROOT_FOLDER_START';
-export const INIT_ROOT_FOLDER_SUCCESS = 'folder/INIT_ROOT_FOLDER_SUCCESS';
-export const INIT_ROOT_FOLDER_ERROR = 'folder/INIT_ROOT_FOLDER_ERROR';
-export const INIT_FOLDER = 'folder/INIT_FOLDER'
-export const INIT_FOLDER_START = 'folder/INIT_FOLDER_START';
-export const INIT_FOLDER_SUCCESS = 'folder/INIT_FOLDER_SUCCESS';
-export const INIT_FOLDER_ERROR = 'folder/INIT_FOLDER_ERROR';
-export const FETCH_MORE = 'folder/FETCH_MORE';
-export const FETCH_MORE_START = 'folder/FETCH_MORE_START';
-export const FETCH_MORE_SUCCESS = 'folder/FETCH_MORE_SUCCESS';
-export const FETCH_MORE_ERROR = 'folder/FETCH_MORE_ERROR';
-export const SEARCH_FOLDER = 'folder/SEARCH_FOLDER';
-export const SEARCH_START = 'folder/SEARCH_START';
-export const SEARCH_SUCCESS = 'folder/SEARCH_SUCCESS';
-export const SEARCH_ERROR = 'folder/SEARCH_ERROR';
-export const SELECT_FOLDER = 'folder/SELECT_FOLDER';
-export const SELECT_ALL_FOLDER = 'folder/SELECT_ALL_FOLDER';
-
 export const namespace = 'folderTree';
+
+export const INIT = `${namespace}/INIT`;
+export const INIT_ROOT_FOLDER = `${namespace}/INIT_ROOT_FOLDER`;
+export const INIT_CONFIG = `${namespace}/INIT_CONFIG`;
+export const INIT_ROOT_FOLDER_START = `${namespace}/INIT_ROOT_FOLDER_START`;
+export const INIT_ROOT_FOLDER_SUCCESS = `${namespace}/INIT_ROOT_FOLDER_SUCCESS`;
+export const INIT_ROOT_FOLDER_ERROR = `${namespace}/INIT_ROOT_FOLDER_ERROR`;
+export const INIT_FOLDER = `${namespace}/INIT_FOLDER`;
+export const INIT_FOLDER_START = `${namespace}/INIT_FOLDER_START`;
+export const INIT_FOLDER_SUCCESS = `${namespace}/INIT_FOLDER_SUCCESS`;
+export const INIT_FOLDER_ERROR = `${namespace}/INIT_FOLDER_ERROR`;
+export const FETCH_MORE = `${namespace}/FETCH_MORE`;
+export const FETCH_MORE_START = `${namespace}/FETCH_MORE_START`;
+export const FETCH_MORE_SUCCESS = `${namespace}/FETCH_MORE_SUCCESS`;
+export const FETCH_MORE_ERROR = `${namespace}/FETCH_MORE_ERROR`;
+export const SEARCH_FOLDER = `${namespace}/SEARCH_FOLDER`;
+export const SEARCH_START = `${namespace}/SEARCH_START`;
+export const SEARCH_SUCCESS = `${namespace}/SEARCH_SUCCESS`;
+export const SEARCH_ERROR = `${namespace}/SEARCH_ERROR`;
+export const SELECT_FOLDER = `${namespace}/SELECT_FOLDER`;
+export const SELECT_ALL_FOLDER = `${namespace}/SELECT_ALL_FOLDER`;
+export const CREATE_FOLDER = `${namespace}/CREATE_FOLDER`;
+export const CREATE_FOLDER_START = `${namespace}/CREATE_FOLDER`;
+export const CREATE_FOLDER_SUCCESS = `${namespace}/CREATE_FOLDER`;
+export const CREATE_FOLDER_ERROR = `${namespace}/CREATE_FOLDER`;
+export const DELETE_FOLDER = `${namespace}/DELETE_FOLDER`;
+export const DELETE_FOLDER_START = `${namespace}/DELETE_FOLDER`;
+export const DELETE_FOLDER_SUCCESS = `${namespace}/DELETE_FOLDER`;
+export const DELETE_FOLDER_ERROR = `${namespace}/DELETE_FOLDER`;
+export const MODIFY_FOLDER = `${namespace}/MODIFY_FOLDER`;
+export const MODIFY_FOLDER_START = `${namespace}/MODIFY_FOLDER`;
+export const MODIFY_FOLDER_SUCCESS = `${namespace}/MODIFY_FOLDER`;
+export const MODIFY_FOLDER_ERROR = `${namespace}/MODIFY_FOLDER`;
+
 
 const defaultFolderState = {
   config: {},
@@ -168,6 +180,22 @@ export const selectFolder = selected => ({
 export const selectAllFolder = () => ({
   type: SELECT_FOLDER
 });
+
+export const createFolder = () => ({
+  type: CREATE_FOLDER
+});
+
+export const createFolderStart = () => ({
+  type: CREATE_FOLDER_START
+});
+
+export const createFolderSuccess = () => ({
+  type: CREATE_FOLDER_SUCCESS
+});
+
+export const createFolderError = () => ({
+  type: CREATE_FOLDER_ERROR
+})
 
 export default createReducer(defaultFolderState, {
   [INIT_CONFIG]: (state, action) => ({
