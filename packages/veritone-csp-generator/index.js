@@ -149,18 +149,27 @@ const buildOrOperator = (conditions) => {
 
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    const params = {
-      operator: 'query_string',
-      field: 'logo-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
     if (isEmpty(modalState.advancedOptions)) {
-      return params;
+      return {
+        operator: 'query_string',
+        field: 'logo-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
     }
     else {
-      const conditions = [params, BoundingBoxGenerator(modalState, true), ConfidenceRangeGenerator(modalState, true)];
-      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
     }
   } else {
     if (isEmpty(modalState.advancedOptions)) {
@@ -190,18 +199,27 @@ const LogoConditionGenerator = modalState => {
 
 const ObjectConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    const params = {
-      operator: 'query_string',
-      field: 'object-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
     if (isEmpty(modalState.advancedOptions)) {
-      return params;
+      return {
+        operator: 'query_string',
+        field: 'object-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
     }
     else {
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
       const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
-      return buildAndOperator(conditions.filter(item => !isEmpty(item)));
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
     }
   } else {
     if (isEmpty(modalState.advancedOptions)) {
@@ -312,7 +330,7 @@ const TimeConditionGenerator = modalState => {
     const selectedIsoWeekdays = [];
     daysOfTheWeek.forEach(weekday => {
       if (modalState.search.selectedDays[weekday.isoWeekday - 1]) {
-        selectedIsoWeekdays.push(String(weekday.isoWeekday));
+        selectedIsoWeekdays.push(String(weekday.isoWeekday % 7));
       }
     });
     conditions.push({
