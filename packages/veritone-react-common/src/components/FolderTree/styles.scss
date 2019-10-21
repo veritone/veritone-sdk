@@ -1,12 +1,10 @@
 .folder-tree-container{
   height: 100%;
+  overflow: auto;
 }
 .folder-item-container{
   display: flex;
   align-items: center;
-}
-.folder-tree-container {
-  width: 100%;
 }
 .folder-item{
   margin-right: 10px;
@@ -48,6 +46,8 @@
   display: none;
 }
 .list-item {
+  padding: 5px 0 !important;
+  min-height: 42px;
   &:hover .icon-menu {
     display: block;
   }
@@ -79,8 +79,4 @@
     font-size: 13px !important;
     font-family: Roboto;
     padding-left: 5px;
-}
-
-.folder-list-item {
-  padding: 5px 0 !important;
 }

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import _ from 'lodash';
+import Searchbox from './Searchbox';
 import FolderTree from './index';
 
 function StoryComponent() {
@@ -177,7 +178,7 @@ function StoryComponent() {
       }
     }
   }
-  const selectable = true;
+  const selectable = false;
   const isEnableShowContent = false;
   const processingFolder = [4];
   const defaultOpening = [1];
@@ -239,20 +240,25 @@ function StoryComponent() {
   }
 
   return (
-    <FolderTree
-      selectable={selectable}
-      loading={false}
-      selected={selectedFolder}
-      foldersData={foldersData}
-      onChange={onChange}
-      onExpand={onExpand}
-      isEnableShowContent={isEnableShowContent}
-      folderAction={folderAction}
-      onMenuClick={onMenuClick}
-      processingFolder={processingFolder}
-      isEnableShowRootFolder
-      defaultOpening={defaultOpening}
-    />
+    <div style={{
+      height: "100%"
+    }}>
+      <Searchbox />
+      <FolderTree
+        selectable={selectable}
+        loading={false}
+        selected={selectedFolder}
+        foldersData={foldersData}
+        onChange={onChange}
+        onExpand={onExpand}
+        isEnableShowContent={isEnableShowContent}
+        folderAction={folderAction}
+        onMenuClick={onMenuClick}
+        processingFolder={processingFolder}
+        isEnableShowRootFolder
+        defaultOpening={defaultOpening}
+      />
+    </div>
   )
 }
 
@@ -262,7 +268,7 @@ storiesOf('FolderTree', module)
       <div style={{
         padding: 20,
         width: 500,
-        height: '100vh'
+        height: 300
       }}>
         <StoryComponent />
       </div>

@@ -81,7 +81,6 @@ function Folder({
         data-id={folderId}
         onClick={onChangeItem(folder)}
         className={cx({
-          [styles['folder-list-item']]: true,
           [styles['highlighted']]: _.includes(selectedIds, folderId) && !selectable,
           [styles['list-item']]: true
         })}
