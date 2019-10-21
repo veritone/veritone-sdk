@@ -28,6 +28,7 @@ export default function FormBuilderPage({
   fetchForm,
   form,
   loading,
+  loaded,
   onChange,
   open,
   onClose
@@ -62,11 +63,11 @@ export default function FormBuilderPage({
     setSelectedLocations(mapSelectedLocation(form.locations));
   }, form);
 
-  React.useEffect(() => {
-    if (id) {
-      fetchForm(id);
-    }
-  }, [id]);
+  // React.useEffect(() => {
+  //   if (id && !(loading || loaded)) {
+  //     fetchForm(id);
+  //   }
+  // }, [id]);
 
   return (
     <React.Fragment>
@@ -78,6 +79,7 @@ export default function FormBuilderPage({
         classes={{
           paper: styles.dialogScrollPaper
         }}
+        onClose={onClose}
         scroll="paper"
       >
         {
