@@ -1,0 +1,38 @@
+.rootContainer {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  width: 100%;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.templateContainer {
+  background: lightblue;
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+  width: 100%;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.blankTemplate {
+  height: 150px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid lightgray;
+  cursor: pointer;
+  background-color: lightgray;
+}
+
+.largeIcon {
+  font-size: 100px !important;
+  color: blue;
+}
+
+.formContainer {
+  margin-top: 20px;
+  padding: 16px 10px;
+  max-width: none !important;
+}
