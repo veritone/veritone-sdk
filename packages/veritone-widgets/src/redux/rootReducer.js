@@ -32,6 +32,11 @@ import engineOutputExportReducer, {
   namespace as engineOutputExportNamespace
 } from './modules/engineOutputExport';
 
+import {
+  formBuilderReducer,
+  namespace as formBuilderNamespace
+} from './modules/formBuilder';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -54,9 +59,10 @@ export const reducers = {
   [authNamespace]: authReducer,
   [appNamespace]: appReducer,
   [engineNamespace]: engineReducer,
+  [formBuilderNamespace]: formBuilderReducer,
   player: playerReducer,
   operation: operationReducer,
-  form: formReducer
+  form: formReducer,
 };
 
 export default function createReducer(asyncReducers) {

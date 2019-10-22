@@ -3,10 +3,15 @@ import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const namespace = 'forms';
+
 export const REQUEST_FORM = 'form builder/request form';
-export const REQUEST_FORM_START = 'form builder/equest form start';
+export const REQUEST_FORM_START = 'form builder/request form start';
 export const REQUEST_FORM_SUCCESS = 'form builder/request form success';
 export const REQUEST_FORM_ERROR = 'form builder/request form error';
+export const REQUEST_FORMS = 'form builder/request forms';
+export const REQUEST_FORMS_START = 'form builder/request forms start';
+export const REQUEST_FORMS_SUCCESS = 'form builder/request forms success';
+export const REQUEST_FORMS_ERROR = 'form builder/request forms error';
 export const UPDATE_FORM = 'form builder/update form';
 export const REQUEST_UPDATE_FORM = 'form builder/request update form';
 export const REQUEST_UPDATE_FORM_START = 'form builder/request update form start';
@@ -23,20 +28,53 @@ export const REQUEST_CREATE_FORM_ERROR = 'form builder/request create form error
 export const NEW_FORM = 'form builder/new form';
 export const RESET_FORM = 'form builder/reset form';
 
-export const requestForm = () => ({
-  type: REQUEST_FORM
+export const requestForm = (id) => ({
+  type: REQUEST_FORM,
+  payload: {
+    id
+  }
 })
 
-export const requestFormSuccess = (forms, hasMore) => ({
+export const requestFormStart = (id) => ({
+  type: REQUEST_FORM_START,
+  payload: {
+    id
+  }
+})
+
+export const requestFormSuccess = (form) => ({
   type: REQUEST_FORM_SUCCESS,
+  payload: {
+    form
+  }
+})
+
+export const requestFormError = (id, error) => ({
+  type: REQUEST_FORM_ERROR,
+  payload: {
+    id,
+    error
+  }
+})
+
+export const requestForms = () => ({
+  type: REQUEST_FORMS
+})
+
+export const requestFormsStart = () => ({
+  type: REQUEST_FORMS_START,
+})
+
+export const requestFormsSuccess = (forms, hasMore) => ({
+  type: REQUEST_FORMS_SUCCESS,
   payload: {
     forms,
     hasMore
   }
 })
 
-export const requestFormError = (error) => ({
-  type: REQUEST_FORM_ERROR,
+export const requestFormsError = (error) => ({
+  type: REQUEST_FORMS_ERROR,
   payload: {
     error
   }
@@ -143,15 +181,17 @@ export const resetForm = (formId) => ({
   }
 })
 
-export const newForm = () => ({
+export const newForm = (formId, formName) => ({
   type: NEW_FORM,
   payload: {
     form: {
-      name: 'New form',
-      id: `form-${Date.now()}`,
+      name: formName || 'New form',
+      id: formId,
       definition: [],
       isPublished: false,
       isTemplate: false,
+      locations: [],
+      isNew: true
     }
   }
 })
@@ -176,11 +216,11 @@ export const formReducer = createReducer(
     hasMore: true,
   },
   {
-    [REQUEST_FORM]: (state) => ({
+    [REQUEST_FORMS_START]: (state) => ({
       ...state,
       loading: true
     }),
-    [REQUEST_FORM_SUCCESS]: (state, action) => ({
+    [REQUEST_FORMS_SUCCESS]: (state, action) => ({
       ...state,
       loading: false,
       loaded: true,
@@ -200,13 +240,13 @@ export const formReducer = createReducer(
         ...makeFormMap(action.payload.forms)
       }
     }),
-    [REQUEST_FORM_ERROR]: (state, action) => ({
+    [REQUEST_FORMS_ERROR]: (state, action) => ({
       ...state,
       loading: false,
       loaded: true,
       ...action.paylod
     }),
-    [UPDATE_FORM]: (state, { payload: form }) => ({
+    [UPDATE_FORM]: (state, { payload: { form } }) => ({
       ...state,
       wipForm: {
         ...state.wipForm,

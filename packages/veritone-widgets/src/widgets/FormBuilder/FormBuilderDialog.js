@@ -23,18 +23,19 @@ function mapSelectedLocation(locations) {
   }), {});
 }
 
+
 export default function FormBuilderPage({
   id,
   fetchForm,
   form,
-  loading,
-  loaded,
+  formLocations,
+  fetchLocations,
   onChange,
   open,
   onClose
 }) {
+
   const [showDialogName, setShowDialogName] = React.useState(false);
-  const [formName, setFormName] = React.useState(form.name);
   const [tempFormName, setTempFormName] = React.useState(form.name);
   const [selectedLocations, setSelectedLocations] = React.useState(mapSelectedLocation(form.locations));
   const [showPublishForm, setShowPublishForm] = React.useState(false);
@@ -48,20 +49,31 @@ export default function FormBuilderPage({
   }, [setTempFormName])
 
   const updateFormName = React.useCallback(() => {
-    setFormName(tempFormName);
+    onChange({ ...form, name: tempFormName });
     setShowDialogName(false);
-  }, [setFormName, tempFormName]);
+  });
+
+  const updateFormDefinition = React.useCallback((formDefinition) => {
+    onChange({ ...form, definition: formDefinition });
+  })
+
+  const updateFormLocations = React.useCallback(() => {
+    onChange({
+      ...form,
+      locations: Object.keys(selectedLocations)
+        .filter(locationId => selectedLocations[locationId])
+    });
+  });
 
   const toggleFormDialogName = React.useCallback(() => {
     setShowDialogName(!showDialogName);
-    setTempFormName(formName);
-  }, [showDialogName, showDialogName, formName]);
+    setTempFormName(form.name);
+  }, [showDialogName, showDialogName]);
 
   React.useEffect(() => {
-    setFormName(form.name);
     setTempFormName(form.name);
     setSelectedLocations(mapSelectedLocation(form.locations));
-  }, form);
+  }, [form]);
 
   // React.useEffect(() => {
   //   if (id && !(loading || loaded)) {
@@ -83,13 +95,13 @@ export default function FormBuilderPage({
         scroll="paper"
       >
         {
-          loading ? (
+          form.loading ? (
             <CircularProgress className={styles.formLoading} />
           ) : (
               <React.Fragment>
                 <DialogTitle className={styles.dialogTitle} disableTypography>
                   <Box component="div" display="flex" alignItems="center">
-                    <Typography>{formName}</Typography>
+                    <Typography>{form.name}</Typography>
                     <Edit
                       className={styles.titleItem}
                       onClick={toggleFormDialogName}
@@ -125,7 +137,7 @@ export default function FormBuilderPage({
                 <div className={styles.dialogContent}>
                   <FormBuilder
                     form={form.definition}
-                    onChange={onChange}
+                    onChange={updateFormDefinition}
                     classes={{
                       previewContainer: styles.previewContainer,
                       previewContent: styles.previewContent
@@ -158,6 +170,10 @@ export default function FormBuilderPage({
           <FormPublishModal
             onClose={togglePublishForm}
             selectedLocations={selectedLocations}
+            fetchLocations={fetchLocations}
+            onChange={setSelectedLocations}
+            onPublish={updateFormLocations}
+            {...formLocations}
           />
         )
       }

@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { Lozenge } from 'veritone-react-common';
 
 import styles from './FormTable.scss';
 
@@ -28,6 +29,7 @@ export default function FormTable({
   const showMenu = React.useCallback((event) => {
     const { id } = event.currentTarget.dataset;
     setMenuAnchor(event.currentTarget);
+    event.stopPropagation();
     setRowId(id);
   }, []);
   const gotoForm = React.useCallback((event) => {
@@ -59,7 +61,7 @@ export default function FormTable({
         <TableBody>
           {
             forms.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-              .map(({ id, name, lastModified }) => (
+              .map(({ id, name, lastModified, isNew, isPublished }) => (
                 <TableRow
                   key={id}
                   onClick={gotoForm}
@@ -68,6 +70,9 @@ export default function FormTable({
                 >
                   <TableCell>
                     {name}
+                    {
+                      isNew ? <Lozenge>Not saved</Lozenge> : isPublished ? <Lozenge>Published</Lozenge> : <Lozenge>Draft</Lozenge>
+                    }
                   </TableCell>
                   <TableCell>
                     {lastModified}
@@ -83,7 +88,7 @@ export default function FormTable({
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TablePagination
+            {/* <TablePagination
               rowsPerPageOptions={[10, 20, 30]}
               colSpan={3}
               count={forms.length}
@@ -92,10 +97,11 @@ export default function FormTable({
               SelectProps={{
                 inputProps: { 'aria-label': 'rows per page' },
                 native: false,
+                variant: 'outlined'
               }}
               onChangeRowsPerPage={onChangeRowsPerPage}
               onChangePage={onChangePage}
-            />
+            /> */}
           </TableRow>
         </TableFooter>
       </Table>

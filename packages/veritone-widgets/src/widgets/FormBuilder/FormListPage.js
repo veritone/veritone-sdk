@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Add from '@material-ui/icons/Add'
@@ -10,21 +10,44 @@ import FormTable from './FormTable';
 import FormBuilderDialog from './FormBuilderDialog';
 import styles from './FormListPage.scss';
 
-export default function FormListPage({
+import {
+  connectFormBuilder,
+  connectFormTable,
+  connectFormListPage
+} from './connectHOCs';
+
+const ConnectedFormTable = connectFormTable(FormTable);
+const ConnectedFormBuilder = connectFormBuilder(FormBuilderDialog);
+
+function FormListPage({
   templates,
   forms,
   page,
   rowsPerPage,
   onChangePage,
   onChangeRowsPerPage,
+  fetchForm,
+  newForm
 }) {
   const [selectedForm, setSelectedForm] = React.useState(null);
   const closeFormDialog = React.useCallback(() => setSelectedForm(null));
   const openNewForm = React.useCallback(() => {
-    setSelectedForm('new');
-  })
+    const newFormId = `form-${Date.now()}`;
+    const newFormName = `New ${newFormId}`;
+    newForm(newFormId, newFormName);
+    setSelectedForm(newFormId);
+  });
   return (
     <React.Fragment>
+      {
+        Boolean(selectedForm) && (
+          <ConnectedFormBuilder
+            open
+            onClose={closeFormDialog}
+            id={selectedForm}
+          />
+        )
+      }
       <Container className={styles.rootContainer}>
         <Container className={cx(
           styles.templateContainer
@@ -47,9 +70,9 @@ export default function FormListPage({
               md={2}
               xs={2}
             >
-              <div className={styles.blankTemplate} onClick={openNewForm}>
+              <Container className={styles.blankTemplate} onClick={openNewForm}>
                 <Add className={styles.largeIcon} />
-              </div>
+              </Container>
               <Typography>Blank</Typography>
             </Grid>
             {
@@ -61,7 +84,7 @@ export default function FormListPage({
                   md={2}
                   xs={2}
                 >
-                  <div
+                  <Container
                     className={styles.blankTemplate}
                     onClick={setSelectedForm}
                   >
@@ -74,7 +97,7 @@ export default function FormListPage({
                       height: 'auto',
                       minHeight: 150,
                     }} />
-                  </div>
+                  </Container>
                   <Typography>{name}</Typography>
                 </Grid>
               ))
@@ -83,21 +106,14 @@ export default function FormListPage({
         </Container>
         <Container className={styles.formContainer}>
           <Typography className={styles.formTitle}>Your forms</Typography>
-          <FormTable
+          <ConnectedFormTable
             forms={forms}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onChangePage={onChangePage}
-            onChangeRowsPerPage={onChangeRowsPerPage}
             onEdit={setSelectedForm}
           // onDelete={}
           />
         </Container>
       </Container>
-      <FormBuilderDialog
-        open={Boolean(selectedForm)}
-        onClose={closeFormDialog}
-      />
+
     </React.Fragment>
   )
 }
@@ -106,3 +122,6 @@ FormListPage.defaultProps = {
   page: 0,
   rowsPerPage: 10
 }
+
+
+export default connectFormListPage(FormListPage);

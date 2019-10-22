@@ -19,7 +19,7 @@ import styles from './FormPublishModal.scss';
 export default function FormPublishModal({
   fetchLocations,
   locationLoading,
-  loactionLoaded,
+  locationLoaded,
   locations,
   selectedLocations,
   onClose,
@@ -27,7 +27,7 @@ export default function FormPublishModal({
   onPublish
 }) {
   React.useEffect(() => {
-    if (!(locationLoading || loactionLoaded)) {
+    if (!(locationLoading || locationLoaded)) {
       fetchLocations();
     }
   }, []);

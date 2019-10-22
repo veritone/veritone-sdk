@@ -7,7 +7,7 @@ export const local = createSelector(
   formBuilder => formBuilder[namespace]
 )
 
-export const formSelector = createSelector(
+export const formsSelector = createSelector(
   local,
   (
     {

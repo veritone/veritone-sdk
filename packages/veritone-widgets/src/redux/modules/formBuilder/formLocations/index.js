@@ -20,7 +20,7 @@ export const requestFormLocationsStart = () => ({
 export const requestFormLocationsSuccess = (formLocations) => ({
   type: REQUEST_FORM_LOCATIONS_SUCCESS,
   payload: {
-    formLocations
+    locations: formLocations
   }
 })
 
@@ -36,21 +36,23 @@ export const formLocationsReducer = createReducer(
     locations: [],
     locationLoading: false,
     locationLoaded: false
-  }, {
-  [REQUEST_FROM_LOCATIONS_START]: (state) => ({
-    ...state,
-    locationLoading: true
-  }),
-  [REQUEST_FORM_LOCATIONS_SUCCESS]: (state, action) => ({
-    ...state,
-    locationLoading: false,
-    loactionLoaded: true,
-    ...action.payload
-  }),
-  [REQUEST_FORM_LOCATIONS_ERROR]: (state, action) => ({
-    ...state,
-    locationLoading: false,
-    loactionLoaded: true,
-    ...action.payload
-  })
-})
+  },
+  {
+    [REQUEST_FROM_LOCATIONS_START]: (state) => ({
+      ...state,
+      locationLoading: true
+    }),
+    [REQUEST_FORM_LOCATIONS_SUCCESS]: (state, action) => ({
+      ...state,
+      locationLoading: false,
+      locationLoaded: true,
+      ...action.payload
+    }),
+    [REQUEST_FORM_LOCATIONS_ERROR]: (state, action) => ({
+      ...state,
+      locationLoading: false,
+      loactionLoaded: true,
+      ...action.payload
+    })
+  }
+);
