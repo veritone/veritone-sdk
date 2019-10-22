@@ -1,10 +1,13 @@
 import React from 'react';
+
+import { arrayOf, func, number, bool, string } from 'prop-types';
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
+// import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -76,8 +79,8 @@ export default function FormTable({
                       ) : isPublished ? (
                         <Lozenge>Published</Lozenge>
                       ) : (
-                        <Lozenge>Draft</Lozenge>
-                      )
+                            <Lozenge>Draft</Lozenge>
+                          )
                     }
                   </TableCell>
                   <TableCell>
@@ -125,9 +128,24 @@ export default function FormTable({
 
 const noop = () => { };
 
+FormTable.propTypes = {
+  onChangePage: func,
+  onChangeRowsPerPage: func,
+  onEdit: func,
+  onDelete: func,
+  forms: arrayOf({
+    id: string,
+    name: string,
+    isNew: bool,
+    isPublished: bool,
+  }),
+  isTemplate: bool,
+  page: number,
+  rowsPerPage: number
+}
+
 FormTable.defaultProps = {
-  onNextPage: noop,
-  onBackPage: noop,
+  onChangePage: noop,
   onChangeRowsPerPage: noop,
   onEdit: noop,
   onDelete: noop,
