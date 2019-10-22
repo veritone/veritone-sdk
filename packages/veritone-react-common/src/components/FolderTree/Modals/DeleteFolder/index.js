@@ -11,7 +11,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import styles from './styles.scss';
 
-export default function CreateFolder({
+export default function DeleteFolder({
   open,
   folder = {},
   handleClose,
@@ -76,13 +76,18 @@ export default function CreateFolder({
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button
+            onClick={handleClose}
+            color="primary"
+            className={cx(styles['button-styles'])}
+          >
             Cancel
           </Button>
           <Button
             disabled={isFolderWithContent() && approvedText !== 'DELETE'}
             onClick={onDelete}
             color="primary"
+            className={cx(styles['button-styles'])}
           >
             Submit
           </Button >
@@ -91,7 +96,7 @@ export default function CreateFolder({
     </div>
   );
 }
-CreateFolder.propTypes = {
+DeleteFolder.propTypes = {
   open: bool,
   folder: shape(Object).isRequired,
   handleClose: func,

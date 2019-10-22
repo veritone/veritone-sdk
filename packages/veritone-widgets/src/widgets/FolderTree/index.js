@@ -8,6 +8,7 @@ import {
   number,
   func
 } from 'prop-types';
+import { get } from 'lodash';
 import { connect } from 'react-redux';
 import {
   FolderTree as Folder,
@@ -21,8 +22,10 @@ import widget from '../../shared/widget';
 import {
   DeleteFolder,
   ModifyFolder,
-  CreateFolder
+  CreateFolder,
+  EditFolder
 } from 'veritone-react-common';
+import styles from './styles.scss';
 
 function FolderTreeWrapper({
   type = 'watchlist',
@@ -42,14 +45,18 @@ function FolderTreeWrapper({
   fetchingFolderStatus,
   fetchedFolderStatus,
   errorStatus,
-  expandingFolderIds,
+  processingFolder,
   folderById,
-  rootFolderIds
+  rootFolderIds,
+  createFolder,
+  deleteFolder,
+  editFolder
 }) {
 
   const [openNew, setOpeningNew] = useState(false);
   const [openModify, setOpenModify] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [currentFolderForAction, setCurrentFolderForAction] = useState({});
 
   useEffect(() => {
@@ -67,11 +74,18 @@ function FolderTreeWrapper({
 
   const onSelectMenu = (item, action) => {
     setCurrentFolderForAction(item);
-    if (action === 'edit') {
-      setOpenModify(true);
-    }
-    if (action === 'delete') {
-      setOpenDelete(true);
+    switch (action) {
+      case 'edit':
+        setOpenEdit(true);
+        break;
+      case 'delete':
+        setOpenDelete(true);
+        break;
+      case 'move': 
+        setOpenModify(true);
+        break;
+      default:
+        break;
     }
   }
 
@@ -85,22 +99,49 @@ function FolderTreeWrapper({
 
   const onSearch = (data) => {
   };
-
+  
+  //new folder
   const handleSubmitNewFolder = (data) => {
+    const parentFolder = getFolderSeleted();
+    const parentFolderId = get(parentFolder, 'id');
+    const folderName = data;
+    createFolder(folderName, parentFolderId);
+    handleCloseNewFolder();
   };
 
   const handleCloseNewFolder = () => {
     setOpeningNew(false);
   }
 
-  const handleSubmitModify = (data1, data2) => {
+  //modify folder
+  const handleSubmitModify = (selectedFolder, folderName) => {
+    const currentFolderId = currentFolderForAction.id;
+    const newParentId = Object.keys(selectedFolder)[0];
+    editFolder(currentFolderId, folderName, newParentId);
+    handleCloseModify();
   }
 
   const handleCloseModify = () => {
     setOpenModify(false);
   }
+  //edit folder
+  const handleCloseEditFolder = () => {
+    setOpenEdit(false);
+  }
 
+  const handleSubmitEditFolder = (folderName, currentEditFolder) => {
+    if (folderName === currentEditFolder.name) {
+      setOpenEdit(false);
+      return;
+    }
+    editFolder(currentEditFolder.id, folderName);
+    setOpenEdit(false);
+  }
+
+  //delete folder
   const handleSubmitDeleteFolder = (data) => {
+    deleteFolder(data.id);
+    handleCloseDeleteFolder();
   };
 
   const handleCloseDeleteFolder = () => {
@@ -109,7 +150,6 @@ function FolderTreeWrapper({
 
   const getFolderSeleted = () => {
     const selectedFolderId = Object.keys(selectedFolder);
-    console.log(selectedFolderId);
     const data = folderById(selectedFolderId[0]) || folderById(rootFolderIds[0]) || {};
     return data;
   }
@@ -123,9 +163,7 @@ function FolderTreeWrapper({
   })
 
   return (
-    <div style={{
-      width: '100%'
-    }}>
+    <div className={styles['container']}>
       {isEnableSearch && (
         <SearchBox onSearch={onSearch} />
       )}
@@ -146,7 +184,7 @@ function FolderTreeWrapper({
         isEnableShowContent={isEnableShowContent}
         folderAction={folderAction}
         onMenuClick={onSelectMenu}
-        processingFolder={expandingFolderIds}
+        processingFolder={processingFolder}
         isEnableShowRootFolder={isEnableShowRootFolder}
       />
       <DeleteFolder
@@ -170,6 +208,12 @@ function FolderTreeWrapper({
         parentFolder={getFolderSeleted() || {}}
         handleClose={handleCloseNewFolder}
         handleSubmit={handleSubmitNewFolder}
+      />
+      <EditFolder
+        open={openEdit}
+        currentFolder={currentFolderForAction}
+        handleClose={handleCloseEditFolder}
+        handleSubmit={handleSubmitEditFolder}
       />
     </div>
   )
@@ -196,10 +240,13 @@ FolderTreeWrapper.propTypes = {
   fetchedFolderStatus: bool,
   errorStatus: bool,
   handleSelectedFoler: func,
-  expandingFolderIds: arrayOf(string),
+  processingFolder: arrayOf(string),
   subjectObservable: shape(Object),
   folderById: func,
-  rootFolderIds: arrayOf(string)
+  rootFolderIds: arrayOf(string),
+  createFolder: func,
+  deleteFolder: func,
+  editFolder: func
 }
 
 const FolderTree = connect(
@@ -211,13 +258,16 @@ const FolderTree = connect(
     selectedFolder: folderSelector.selectedFolder(state),
     folderById: folderSelector.folderById(state),
     rootFolderIds: folderSelector.rootFolderIds(state),
-    expandingFolderIds: folderSelector.expandingFolderIdsSelector(state)
+    processingFolder: folderSelector.processingFolderSelector(state)
   }),
   {
     expandFolder: folderModule.fetchMore,
     onSelectFolder: folderModule.selectFolder,
     onSelectAllFolder: folderModule.selectAllFolder,
-    initFolder: folderModule.initFolder
+    initFolder: folderModule.initFolder,
+    createFolder: folderModule.createFolder,
+    deleteFolder: folderModule.deleteFolder,
+    editFolder: folderModule.modifyFolder
   },
   null,
   { forwardRef: true }

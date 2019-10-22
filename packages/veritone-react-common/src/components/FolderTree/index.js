@@ -143,6 +143,10 @@ function FolderTree({
     <div className={cx(styles['folder-tree-container'])}>
       {dataForMapping.map(folderId => {
         const childs = foldersData.byId[folderId].childs || [];
+        const folder = foldersData.byId[folderId];
+        if (_.isNil(folder)) {
+          return null;
+        }
         return (
           <Folder
             key={folderId}

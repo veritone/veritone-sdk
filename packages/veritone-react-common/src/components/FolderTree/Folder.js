@@ -81,7 +81,6 @@ function Folder({
         data-id={folderId}
         onClick={onChangeItem(folder)}
         className={cx({
-          [styles['folder-list-item']]: true,
           [styles['highlighted']]: _.includes(selectedIds, folderId) && !selectable,
           [styles['list-item']]: true
         })}
@@ -178,7 +177,7 @@ Folder.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   searchingStatus: bool,
-  processingFolder: arrayOf(string)
+  processingFolder: arrayOf(oneOfType[string, number])
 }
 
 export default Folder;

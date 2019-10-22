@@ -24,17 +24,17 @@ export const SEARCH_ERROR = `${namespace}/SEARCH_ERROR`;
 export const SELECT_FOLDER = `${namespace}/SELECT_FOLDER`;
 export const SELECT_ALL_FOLDER = `${namespace}/SELECT_ALL_FOLDER`;
 export const CREATE_FOLDER = `${namespace}/CREATE_FOLDER`;
-export const CREATE_FOLDER_START = `${namespace}/CREATE_FOLDER`;
-export const CREATE_FOLDER_SUCCESS = `${namespace}/CREATE_FOLDER`;
-export const CREATE_FOLDER_ERROR = `${namespace}/CREATE_FOLDER`;
+export const CREATE_FOLDER_START = `${namespace}/CREATE_FOLDER_START`;
+export const CREATE_FOLDER_SUCCESS = `${namespace}/CREATE_FOLDER_SUCCESS`;
+export const CREATE_FOLDER_ERROR = `${namespace}/CREATE_FOLDER_ERROR`;
 export const DELETE_FOLDER = `${namespace}/DELETE_FOLDER`;
-export const DELETE_FOLDER_START = `${namespace}/DELETE_FOLDER`;
-export const DELETE_FOLDER_SUCCESS = `${namespace}/DELETE_FOLDER`;
-export const DELETE_FOLDER_ERROR = `${namespace}/DELETE_FOLDER`;
+export const DELETE_FOLDER_START = `${namespace}/DELETE_FOLDER_START`;
+export const DELETE_FOLDER_SUCCESS = `${namespace}/DELETE_FOLDER_SUCCESS`;
+export const DELETE_FOLDER_ERROR = `${namespace}/DELETE_FOLDER_ERROR`;
 export const MODIFY_FOLDER = `${namespace}/MODIFY_FOLDER`;
-export const MODIFY_FOLDER_START = `${namespace}/MODIFY_FOLDER`;
-export const MODIFY_FOLDER_SUCCESS = `${namespace}/MODIFY_FOLDER`;
-export const MODIFY_FOLDER_ERROR = `${namespace}/MODIFY_FOLDER`;
+export const MODIFY_FOLDER_START = `${namespace}/MODIFY_FOLDER_START`;
+export const MODIFY_FOLDER_SUCCESS = `${namespace}/MODIFY_FOLDER_SUCCESS`;
+export const MODIFY_FOLDER_ERROR = `${namespace}/MODIFY_FOLDER_ERROR`;
 
 
 const defaultFolderState = {
@@ -48,7 +48,7 @@ const defaultFolderState = {
     byId: {}
   },
   selectedFolder: {},
-  expandingFolderIds: [],
+  processingFolder: [],
   expandedFolderIds: [],
   searching: false,
   searchFolderData: {
@@ -115,10 +115,11 @@ export const initFolderError = () => ({
   type: INIT_FOLDER_ERROR
 });
 
-export const fetchMore = (folderId) => ({
+export const fetchMore = (folderId, isReload = false) => ({
   type: FETCH_MORE,
   payload: {
-    folderId
+    folderId,
+    isReload
   }
 });
 
@@ -181,8 +182,12 @@ export const selectAllFolder = () => ({
   type: SELECT_FOLDER
 });
 
-export const createFolder = () => ({
-  type: CREATE_FOLDER
+export const createFolder = (folderName, parentFolderId) => ({
+  type: CREATE_FOLDER,
+  payload: {
+    name: folderName,
+    parentId: parentFolderId
+  }
 });
 
 export const createFolderStart = () => ({
@@ -195,7 +200,65 @@ export const createFolderSuccess = () => ({
 
 export const createFolderError = () => ({
   type: CREATE_FOLDER_ERROR
-})
+});
+
+export const deleteFolder = folderId => ({
+  type: DELETE_FOLDER,
+  payload: {
+    folderId
+  }
+});
+
+export const deleteFolderStart = folderId => ({
+  type: DELETE_FOLDER_START,
+  payload: {
+    folderId
+  }
+});
+
+export const deleteFolderSuccess = folderId => ({
+  type: DELETE_FOLDER_SUCCESS,
+  payload: {
+    folderId
+  }
+});
+
+export const deleteFolderError = folderId => ({
+  type: DELETE_FOLDER_ERROR,
+  payload: {
+    folderId
+  }
+});
+
+export const modifyFolder = (folderId, folderName, parentId) => ({
+  type: MODIFY_FOLDER,
+  payload: {
+    folderId,
+    folderName,
+    parentId
+  }
+});
+
+export const modifyFolderStart = folderId => ({
+  type: MODIFY_FOLDER_START,
+  payload: {
+    folderId
+  }
+});
+
+export const modifyFolderSuccess = folder => ({
+  type: MODIFY_FOLDER_SUCCESS,
+  payload: {
+    folder
+  }
+});
+
+export const modifyFolderError = folderId => ({
+  type: MODIFY_FOLDER_ERROR,
+  payload: {
+    folderId
+  }
+});
 
 export default createReducer(defaultFolderState, {
   [INIT_CONFIG]: (state, action) => ({
@@ -239,7 +302,7 @@ export default createReducer(defaultFolderState, {
   }),
   [FETCH_MORE_START]: (state, action) => ({
     ...state,
-    expandingFolderIds: [...state.expandingFolderIds, action.payload.folderId]
+    processingFolder: [...state.processingFolder, action.payload.folderId]
   }),
   [FETCH_MORE_SUCCESS]: (state, action) => {
     const { folders, folderId } = action.payload;
@@ -249,8 +312,8 @@ export default createReducer(defaultFolderState, {
     }), {})
     return {
       ...state,
-      expandingFolderIds: [
-        ...state.expandingFolderIds.filter(item => item !== folderId)
+      processingFolder: [
+        ...state.processingFolder.filter(item => item !== folderId)
       ],
       expandedFolderIds: [...state.expandedFolderIds, folderId],
       foldersData: {
@@ -318,7 +381,60 @@ export default createReducer(defaultFolderState, {
     fetching: false,
     fetched: true,
     error: true
-  })
+  }),
+  [DELETE_FOLDER_START]: (state, action) => ({
+    ...state,
+    processingFolder: [...state.processingFolder, action.payload.folderId]
+  }),
+  [DELETE_FOLDER_ERROR]: (state, action) => ({
+    ...state,
+    processingFolder: [
+      ...state.processingFolder.filter(item => item !== action.payload.folderId)
+    ]
+  }),
+  [DELETE_FOLDER_SUCCESS]: (state, action) => {
+    return {
+      ...state,
+      processingFolder: [
+        ...state.processingFolder.filter(item => item !== action.payload.folderId)
+      ],
+      foldersData: {
+        ...state.foldersData,
+        allId: [...state.foldersData.allId.filter(item => item !== action.payload.folderId)],
+        byId: _.omit(state.foldersData.byId, action.payload.folderId)
+      }
+    }
+  },
+  [MODIFY_FOLDER_START]: (state, action) => ({
+    ...state,
+    processingFolder: [...state.processingFolder, action.payload.folderId]
+  }),
+  [MODIFY_FOLDER_ERROR]: (state, action) => ({
+    ...state,
+    processingFolder: [
+      ...state.processingFolder.filter(item => item !== action.payload.folderId)
+    ]
+  }),
+  [MODIFY_FOLDER_SUCCESS]: (state, action) => {
+    const { folder } = action.payload;
+    const folderId = folder.id;
+    return {
+      ...state,
+      processingFolder: [
+        ...state.processingFolder.filter(item => item !== folderId)
+      ],
+      foldersData: {
+        ...state.foldersData,
+        byId: {
+          ...state.foldersData.byId,
+          [folderId]: {
+            ...state.foldersData.byId[folderId],
+            ...folder
+          }
+        }
+      }
+    }
+  }
 });
 
 

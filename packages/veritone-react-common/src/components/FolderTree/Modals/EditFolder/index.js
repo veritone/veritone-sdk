@@ -2,31 +2,23 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import cx from 'classnames';
-import _ from 'lodash';
 import { get, isNil } from 'lodash';
 import { shape, bool, func, arrayOf, number, string, oneOfType } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { Card } from '@material-ui/core';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import FolderTree from '../../index';
 import styles from './styles.scss';
 
 export default function ModifyFolder({
   open,
   currentFolder = {},
   handleClose,
-  handleSubmit,
-  foldersData,
-  onExpand,
-  defaultOpening = [],
-  handerClickNewFolder
+  handleSubmit
 }) {
   const [folderName, setFolderName] = React.useState('');
   const [error, setError] = React.useState('');
-  const [selectedFolder, setSelectedFolder] = React.useState({});
   React.useEffect(() => {
     if (!isNil(currentFolder)) {
       const folderName = get(currentFolder, 'name');
@@ -37,7 +29,7 @@ export default function ModifyFolder({
       setFolderName('');
     };
   }, [currentFolder]);
-
+  
   React.useEffect(() => {
     setFolderName('');
     setError('');
@@ -53,14 +45,10 @@ export default function ModifyFolder({
     validate(value);
   };
 
-  const onSelectFolder = folders => {
-    setSelectedFolder(folders);
-  };
-
   const onUpdate = () => {
     validate(folderName);
     if (error === '') {
-      handleSubmit(selectedFolder, folderName);
+      handleSubmit(folderName, currentFolder);
     }
   };
 
@@ -70,18 +58,6 @@ export default function ModifyFolder({
     }
     setError('');
   };
-
-  const foldersDataReprocess = () => {
-    return {
-      ...foldersData,
-      allId: [...foldersData.allId.filter(item => item !== currentFolder.id)],
-      byId: _.omit(foldersData.byId, currentFolder.id)
-    }
-  };
-
-  const handlerNewFolder = () => {
-    handerClickNewFolder(selectedFolder);
-  }
 
 
   return (
@@ -93,7 +69,7 @@ export default function ModifyFolder({
         onClose={handleClose}
         aria-labelledby="create-folder"
       >
-        <DialogTitle id="create-folder">Modify Folder</DialogTitle>
+        <DialogTitle id="create-folder">Edit Folder</DialogTitle>
         <DialogContent className={cx(styles['dialog-content'])}>
           <div className={cx(styles['folder-name-field'])}>
             <TextField
@@ -109,29 +85,6 @@ export default function ModifyFolder({
               fullWidth
             />
           </div>
-          <div className={cx(styles['action-new-field'])}>
-            <div>Choose a Folder</div>
-            <Button
-              color="primary"
-              className={cx(styles['button-styles'])}
-              onClick={handlerNewFolder}
-            >
-              NEW FOLDER
-            </Button>
-          </div>
-          <Card className={cx(styles['folder-tree-card'])}>
-            <FolderTree
-              selectable={false}
-              loading={false}
-              foldersData={foldersDataReprocess()}
-              onChange={onSelectFolder}
-              onExpand={onExpand}
-              isEnableShowContent={false}
-              isEnableShowRootFolder
-              selected={selectedFolder}
-              defaultOpening={defaultOpening}
-            />
-          </Card>
         </DialogContent>
         <DialogActions>
           <Button
@@ -142,7 +95,7 @@ export default function ModifyFolder({
             Cancel
           </Button>
           <Button
-            disabled={folderName === '' || _.isEmpty(selectedFolder)}
+            disabled={folderName === ''}
             className={cx(styles['button-styles'])}
             onClick={onUpdate}
             color="primary"

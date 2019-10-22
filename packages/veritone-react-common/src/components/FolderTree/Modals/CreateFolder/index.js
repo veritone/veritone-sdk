@@ -87,13 +87,18 @@ export default function CreateFolder({ open, parentFolder, handleClose, handleSu
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button
+          onClick={handleClose}
+          color="primary"
+          className={cx(styles['button-styles'])}
+        >
           Cancel
-          </Button>
+        </Button>
         <Button
           disabled={folderName === ''}
           onClick={onCreate}
           color="primary"
+          className={cx(styles['button-styles'])}
         >
           Create
           </Button >

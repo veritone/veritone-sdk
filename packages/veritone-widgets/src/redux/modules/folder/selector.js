@@ -11,7 +11,7 @@ import { createSelector } from 'reselect';
 //       byId: {}
 //     },
 //     selectedFolder: {},
-//     expandingFolderIds: [],
+//     processingFolder: [],
 //     expandedFolderIds: [],
 //     searching: false,
 //     searchFolderData: {
@@ -36,7 +36,7 @@ export const folderExpanded = state => state.folderTree.expandedFolderIds;
 
 export const selected = state => state.folderTree.selectedFolder;
 
-export const expandingFolderIds = state => state.folderTree.expandingFolderIds;
+export const processingFolder = state => state.folderTree.processingFolder;
 
 export const config = state => state.folderTree.config;
 
@@ -65,7 +65,7 @@ export const selectedFolder = createSelector(
     selected => selected
 );
 
-export const expandingFolderIdsSelector = createSelector(
-    [expandingFolderIds],
-    expandingFolderIds => expandingFolderIds
+export const processingFolderSelector = createSelector(
+    [processingFolder],
+    processingFolder => processingFolder
 )
