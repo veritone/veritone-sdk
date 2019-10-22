@@ -1,4 +1,5 @@
 import React from 'react';
+import { func, bool, objectOf, arrayOf, string } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -124,6 +125,17 @@ export default function FormPublishModal({
       </DialogActions>
     </Dialog>
   )
+}
+
+FormPublishModal.propTypes = {
+  locations: arrayOf(string),
+  selectedLocations: objectOf(bool),
+  fetchLocations: func,
+  locationLoading: bool,
+  locationLoaded: bool,
+  onClose: func,
+  onChange: func,
+  onPublish: func
 }
 
 FormPublishModal.defaultProps = {
