@@ -53,7 +53,7 @@ export default function FormTable({
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{isTemplate ? 'Template': 'Form'} name</TableCell>
+            <TableCell>{isTemplate ? 'Template' : 'Form'} name</TableCell>
             <TableCell>Last modified</TableCell>
             <TableCell />
           </TableRow>
@@ -71,7 +71,13 @@ export default function FormTable({
                   <TableCell>
                     {name}
                     {
-                      isNew ? <Lozenge>Not saved</Lozenge> : isPublished ? <Lozenge>Published</Lozenge> : <Lozenge>Draft</Lozenge>
+                      isNew ? (
+                        <Lozenge backgroundColor="red">Not saved</Lozenge>
+                      ) : isPublished ? (
+                        <Lozenge>Published</Lozenge>
+                      ) : (
+                        <Lozenge>Draft</Lozenge>
+                      )
                     }
                   </TableCell>
                   <TableCell>

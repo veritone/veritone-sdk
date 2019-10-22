@@ -23,6 +23,7 @@ export {
   requestDeleteForm,
   newForm,
   updateForm,
+  requestForms
 } from './forms';
 
 export {

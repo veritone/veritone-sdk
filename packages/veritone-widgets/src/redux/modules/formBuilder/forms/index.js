@@ -294,7 +294,7 @@ export const formReducer = createReducer(
           ...state.forms.byId,
           [form.id]: form
         },
-        allIds: [...state.forms.allIds, form.id]
+        allIds: [form.id, ...state.forms.allIds]
       },
       wipForm: {
         ...state.wipForm,

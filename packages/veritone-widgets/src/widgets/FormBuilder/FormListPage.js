@@ -22,8 +22,8 @@ const ConnectedFormBuilder = connectFormBuilder(FormBuilderDialog);
 function FormListPage({
   templates,
   forms,
-  page,
-  rowsPerPage,
+  loading,
+  loaded,
   onChangePage,
   onChangeRowsPerPage,
   fetchForm,
@@ -37,6 +37,17 @@ function FormListPage({
     newForm(newFormId, newFormName);
     setSelectedForm(newFormId);
   });
+
+  React.useEffect(() => {
+    if (!(loading || loaded)) {
+      fetchForm();
+    }
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <React.Fragment>
       {
@@ -84,20 +95,15 @@ function FormListPage({
                   md={2}
                   xs={2}
                 >
-                  <Container
-                    className={styles.blankTemplate}
-                    onClick={setSelectedForm}
-                  >
-                    <img style={{
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      width: '100%',
-                      height: 'auto',
-                      minHeight: 150,
-                    }} />
-                  </Container>
+                  <div style={{
+                    backgroundImage: `url(${imageUrl})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    width: '100%',
+                    height: 'auto',
+                    minHeight: 150,
+                  }} />
                   <Typography>{name}</Typography>
                 </Grid>
               ))

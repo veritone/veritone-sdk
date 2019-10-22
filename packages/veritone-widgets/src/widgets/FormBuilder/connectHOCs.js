@@ -27,7 +27,7 @@ export const connectTemplateTable = connect(
 export const connectFormListPage = connect(
   (state) => formBuilderModules.formsSelector(state),
   {
-    fetchForm: formBuilderModules.requestForm,
+    fetchForm: formBuilderModules.requestForms,
     newForm: formBuilderModules.newForm,
   }
 )
