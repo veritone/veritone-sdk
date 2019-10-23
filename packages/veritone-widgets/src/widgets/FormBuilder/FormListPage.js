@@ -94,6 +94,8 @@ function FormListPage({
                   lg={2}
                   md={2}
                   xs={2}
+                  data-id={id}
+                  onClick={setSelectedForm}
                 >
                   <div style={{
                     backgroundImage: `url(${imageUrl})`,
