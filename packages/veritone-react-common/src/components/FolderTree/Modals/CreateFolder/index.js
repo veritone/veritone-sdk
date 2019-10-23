@@ -12,18 +12,21 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import styles from './styles.scss';
 
-export default function CreateFolder({ open, parentFolder, handleClose, handleSubmit }) {
-
+export default function CreateFolder({
+  open,
+  parentFolder,
+  handleClose,
+  handleSubmit
+}) {
   const [folderName, setFolderName] = React.useState('');
+  console.log(parentFolder);
   const [error, setError] = React.useState('');
-
   React.useEffect(() => {
     if (!open) {
       setFolderName('');
       setError('')
     }
   }, [open])
-
   const onChange = event => {
     const { value } = event.target;
     setFolderName(value);
@@ -33,7 +36,7 @@ export default function CreateFolder({ open, parentFolder, handleClose, handleSu
   const onCreate = () => {
     validate(folderName);
     if (error === '') {
-      handleSubmit(folderName);
+      handleSubmit(folderName, parentFolder.id);
     }
   };
 

@@ -112,8 +112,4 @@ ModifyFolder.propTypes = {
   currentFolder: shape(Object),
   handleClose: func,
   handleSubmit: func,
-  foldersData: shape(Object),
-  onExpand: func,
-  handerClickNewFolder: func,
-  defaultOpening: arrayOf(oneOfType[number, string])
 }

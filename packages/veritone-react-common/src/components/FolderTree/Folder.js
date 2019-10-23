@@ -115,11 +115,11 @@ function Folder({
           <div className={cx(styles['icon-progress'])}>
             <CircularProgress
               variant="indeterminate"
-              size={20}
+              size={18}
             />
           </div>
         )}
-        {folderAction.length > 0 && (
+        {folderAction.length > 0 && !isRootFolder && (
           <div className={cx(styles['icon-menu'])}>
             <Menu
               folderAction={folderAction}
@@ -134,6 +134,9 @@ function Folder({
           {
             childs.map(child => {
               const nestedChilds = child.childs || [];
+              if (_.isEmpty(child)) {
+                return null;
+              }
               return (
                 <Folder
                   key={child.id}
@@ -165,7 +168,7 @@ function Folder({
 
 Folder.propTypes = {
   childs: arrayOf(Object),
-  opening: arrayOf(oneOfType([number, string])),
+  opening: arrayOf(Object),
   folders: shape(Object),
   folder: shape(Object),
   selected: shape(Object),
@@ -177,7 +180,7 @@ Folder.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   searchingStatus: bool,
-  processingFolder: arrayOf(oneOfType[string, number])
+  processingFolder: arrayOf(Object)
 }
 
 export default Folder;

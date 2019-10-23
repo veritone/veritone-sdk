@@ -43,7 +43,7 @@ export default function* initFolder() {
     const rootFolderId = rootFolders.map(folder => folder.id);
     yield put(folderReducer.initFolderSuccess(rootFolderReprocess, rootFolderId));
     yield all(rootFolderId.map(rootFolderId => {
-      return put(folderReducer.fetchMore(rootFolderId));
+      return put(folderReducer.fetchMore(rootFolderId, true));
     }));
   });
 }

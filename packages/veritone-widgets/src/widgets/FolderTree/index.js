@@ -8,7 +8,6 @@ import {
   number,
   func
 } from 'prop-types';
-import { get } from 'lodash';
 import { connect } from 'react-redux';
 import {
   FolderTree as Folder,
@@ -16,6 +15,7 @@ import {
   FolderNullState,
   LoadingState
 } from 'veritone-react-common';
+import { isEmpty, isNil } from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
@@ -37,10 +37,11 @@ function FolderTreeWrapper({
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
+  folderSelectedFromApp,
   initFolder,
   expandFolder,
   foldersData,
-  onSelectFolder,
+  onSelectFolder = {},
   selectedFolder = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
@@ -53,11 +54,13 @@ function FolderTreeWrapper({
   editFolder
 }) {
 
-  const [openNew, setOpeningNew] = useState(false);
+  const [openNew, setOpenNew] = useState(false);
   const [openModify, setOpenModify] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [fromNewButton, setStatus] = useState(false);
   const [currentFolderForAction, setCurrentFolderForAction] = useState({});
+  const [selectedInModify, setSelectedInModify] = useState({});
 
   useEffect(() => {
     const config = {
@@ -72,6 +75,12 @@ function FolderTreeWrapper({
     handleSelectedFoler(selectedFolder);
   }, [selectedFolder]);
 
+  useEffect(() => {
+    if (!isEmpty(folderSelectedFromApp) && !isNil(folderSelectedFromApp)) {
+      onSelectFolder(folderSelectedFromApp)
+    }
+  }, [folderSelectedFromApp]);
+
   const onSelectMenu = (item, action) => {
     setCurrentFolderForAction(item);
     switch (action) {
@@ -81,7 +90,7 @@ function FolderTreeWrapper({
       case 'delete':
         setOpenDelete(true);
         break;
-      case 'move': 
+      case 'move':
         setOpenModify(true);
         break;
       default:
@@ -99,25 +108,23 @@ function FolderTreeWrapper({
 
   const onSearch = (data) => {
   };
-  
+
   //new folder
-  const handleSubmitNewFolder = (data) => {
-    const parentFolder = getFolderSeleted();
-    const parentFolderId = get(parentFolder, 'id');
-    const folderName = data;
-    createFolder(folderName, parentFolderId);
+  const handleSubmitNewFolder = (data, parentId) => {
+    createFolder(data, parentId);
     handleCloseNewFolder();
   };
 
   const handleCloseNewFolder = () => {
-    setOpeningNew(false);
+    setOpenNew(false);
+    setStatus(false);
   }
 
   //modify folder
   const handleSubmitModify = (selectedFolder, folderName) => {
     const currentFolderId = currentFolderForAction.id;
     const newParentId = Object.keys(selectedFolder)[0];
-    editFolder(currentFolderId, folderName, newParentId);
+    editFolder(currentFolderId, folderName, false, true, newParentId);
     handleCloseModify();
   }
 
@@ -134,7 +141,7 @@ function FolderTreeWrapper({
       setOpenEdit(false);
       return;
     }
-    editFolder(currentEditFolder.id, folderName);
+    editFolder(currentEditFolder.id, folderName, true, false);
     setOpenEdit(false);
   }
 
@@ -148,14 +155,31 @@ function FolderTreeWrapper({
     setOpenDelete(false);
   }
 
-  const getFolderSeleted = () => {
+  const getFolderSeleted = (selectedFolder) => {
     const selectedFolderId = Object.keys(selectedFolder);
     const data = folderById(selectedFolderId[0]) || folderById(rootFolderIds[0]) || {};
     return data;
   }
 
+  const newParentFolder = () => {
+    return fromNewButton
+      ? getFolderSeleted(selectedInModify)
+      : getFolderSeleted(selectedFolder)
+      || {}
+  }
+
+  const handerClickNewFolder = selectedfolder => {
+    const setData = async () => {
+      await setStatus(true);
+      await setSelectedInModify(selectedfolder);
+      await setOpenNew(true);
+    }
+    setData();
+  }
+
   const processEvent = event => {
-    setOpeningNew(true);
+    setStatus(false);
+    setOpenNew(true);
   }
 
   subjectObservable.subscribe({
@@ -202,10 +226,11 @@ function FolderTreeWrapper({
         selected={selectedFolder}
         defaultOpening={rootFolderIds}
         currentFolder={currentFolderForAction}
+        handerClickNewFolder={handerClickNewFolder}
       />
       <CreateFolder
         open={openNew}
-        parentFolder={getFolderSeleted() || {}}
+        parentFolder={newParentFolder()}
         handleClose={handleCloseNewFolder}
         handleSubmit={handleSubmitNewFolder}
       />
@@ -232,6 +257,7 @@ FolderTreeWrapper.propTypes = {
     type: string,
     name: string
   })),
+  folderSelectedFromApp: shape(Object),
   foldersData: shape(Object),
   selectedFolder: shape(Object),
   initFolder: func,

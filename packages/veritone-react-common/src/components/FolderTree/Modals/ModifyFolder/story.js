@@ -222,6 +222,7 @@ function StoryComponent() {
         selected={selected}
         defaultOpening={[1]}
         currentFolder={currentFolder}
+        processingFolder={[]}
       />
       <button onClick={handleOpen}>
         open

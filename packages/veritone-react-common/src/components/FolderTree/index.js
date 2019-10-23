@@ -5,9 +5,6 @@ import {
   func,
   shape,
   arrayOf,
-  string,
-  oneOfType,
-  number
 } from "prop-types";
 import cx from 'classnames';
 import _ from 'lodash';
@@ -79,7 +76,7 @@ function FolderTree({
     const newOpening =
       _.includes(opening, folderId) ? opening.filter(item => item !== folderId) : [...opening, folderId];
     setopening(newOpening);
-    onExpand(folderId);
+    !_.includes(opening, folderId) && onExpand(folderId);
   }
   const onChangeSelectedFolder = folder => {
     if (!selectable) {
@@ -181,8 +178,8 @@ FolderTree.propTypes = {
   folderAction: arrayOf(Object),
   isEnableShowContent: bool,
   isEnableShowRootFolder: bool,
-  processingFolder: arrayOf(oneOfType[string, number]),
-  defaultOpening: arrayOf(oneOfType[string, number]),
+  processingFolder: arrayOf(Object),
+  defaultOpening: arrayOf(Object),
   onMenuClick: func
 };
 

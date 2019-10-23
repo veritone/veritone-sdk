@@ -177,9 +177,9 @@ function StoryComponent() {
       }
     }
   }
-  const selectable = true;
+  const selectable = false;
   const isEnableShowContent = false;
-  const processingFolder = [4];
+  const processingFolder = [1, 4];
   const defaultOpening = [];
   const folderAction = [
     {

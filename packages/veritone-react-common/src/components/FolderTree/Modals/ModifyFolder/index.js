@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import cx from 'classnames';
 import _ from 'lodash';
 import { get, isNil } from 'lodash';
-import { shape, bool, func, arrayOf, number, string, oneOfType } from 'prop-types';
+import { shape, bool, func, arrayOf } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,12 +16,14 @@ import styles from './styles.scss';
 
 export default function ModifyFolder({
   open,
+  isEnableEditName = false,
   currentFolder = {},
   handleClose,
   handleSubmit,
   foldersData,
   onExpand,
   defaultOpening = [],
+  processingFolder = [],
   handerClickNewFolder
 }) {
   const [folderName, setFolderName] = React.useState('');
@@ -95,20 +97,24 @@ export default function ModifyFolder({
       >
         <DialogTitle id="create-folder">Modify Folder</DialogTitle>
         <DialogContent className={cx(styles['dialog-content'])}>
-          <div className={cx(styles['folder-name-field'])}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="folder-name"
-              label="Folder Name"
-              type="text"
-              error={error.length !== 0}
-              helperText={error}
-              value={folderName}
-              onChange={onChange}
-              fullWidth
-            />
-          </div>
+          {
+            isEnableEditName && (
+              <div className={cx(styles['folder-name-field'])}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="folder-name"
+                  label="Folder Name"
+                  type="text"
+                  error={error.length !== 0}
+                  helperText={error}
+                  value={folderName}
+                  onChange={onChange}
+                  fullWidth
+                />
+              </div>
+            )
+          }
           <div className={cx(styles['action-new-field'])}>
             <div>Choose a Folder</div>
             <Button
@@ -130,6 +136,7 @@ export default function ModifyFolder({
               isEnableShowRootFolder
               selected={selectedFolder}
               defaultOpening={defaultOpening}
+              processingFolder={processingFolder}
             />
           </Card>
         </DialogContent>
@@ -156,11 +163,13 @@ export default function ModifyFolder({
 }
 ModifyFolder.propTypes = {
   open: bool,
+  isEnableEditName: bool,
   currentFolder: shape(Object),
   handleClose: func,
   handleSubmit: func,
   foldersData: shape(Object),
   onExpand: func,
   handerClickNewFolder: func,
-  defaultOpening: arrayOf(oneOfType[number, string])
+  defaultOpening: arrayOf(Object),
+  processingFolder: arrayOf(Object)
 }

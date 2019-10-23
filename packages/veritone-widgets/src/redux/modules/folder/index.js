@@ -31,10 +31,10 @@ export const DELETE_FOLDER = `${namespace}/DELETE_FOLDER`;
 export const DELETE_FOLDER_START = `${namespace}/DELETE_FOLDER_START`;
 export const DELETE_FOLDER_SUCCESS = `${namespace}/DELETE_FOLDER_SUCCESS`;
 export const DELETE_FOLDER_ERROR = `${namespace}/DELETE_FOLDER_ERROR`;
-export const MODIFY_FOLDER = `${namespace}/MODIFY_FOLDER`;
-export const MODIFY_FOLDER_START = `${namespace}/MODIFY_FOLDER_START`;
-export const MODIFY_FOLDER_SUCCESS = `${namespace}/MODIFY_FOLDER_SUCCESS`;
-export const MODIFY_FOLDER_ERROR = `${namespace}/MODIFY_FOLDER_ERROR`;
+export const EDIT_FOLDER = `${namespace}/EDIT_FOLDER`;
+export const EDIT_FOLDER_START = `${namespace}/EDIT_FOLDER_START`;
+export const EDIT_FOLDER_SUCCESS = `${namespace}/EDIT_FOLDER_SUCCESS`;
+export const EDIT_FOLDER_ERROR = `${namespace}/EDIT_FOLDER_ERROR`;
 
 
 const defaultFolderState = {
@@ -230,31 +230,33 @@ export const deleteFolderError = folderId => ({
   }
 });
 
-export const modifyFolder = (folderId, folderName, parentId) => ({
-  type: MODIFY_FOLDER,
+export const modifyFolder = (folderId, folderName, isEditName, isMoveFolder, parentId) => ({
+  type: EDIT_FOLDER,
   payload: {
     folderId,
     folderName,
+    isEditName,
+    isMoveFolder,
     parentId
   }
 });
 
 export const modifyFolderStart = folderId => ({
-  type: MODIFY_FOLDER_START,
+  type: EDIT_FOLDER_START,
   payload: {
     folderId
   }
 });
 
 export const modifyFolderSuccess = folder => ({
-  type: MODIFY_FOLDER_SUCCESS,
+  type: EDIT_FOLDER_SUCCESS,
   payload: {
     folder
   }
 });
 
 export const modifyFolderError = folderId => ({
-  type: MODIFY_FOLDER_ERROR,
+  type: EDIT_FOLDER_ERROR,
   payload: {
     folderId
   }
@@ -405,17 +407,17 @@ export default createReducer(defaultFolderState, {
       }
     }
   },
-  [MODIFY_FOLDER_START]: (state, action) => ({
+  [EDIT_FOLDER_START]: (state, action) => ({
     ...state,
     processingFolder: [...state.processingFolder, action.payload.folderId]
   }),
-  [MODIFY_FOLDER_ERROR]: (state, action) => ({
+  [EDIT_FOLDER_ERROR]: (state, action) => ({
     ...state,
     processingFolder: [
       ...state.processingFolder.filter(item => item !== action.payload.folderId)
     ]
   }),
-  [MODIFY_FOLDER_SUCCESS]: (state, action) => {
+  [EDIT_FOLDER_SUCCESS]: (state, action) => {
     const { folder } = action.payload;
     const folderId = folder.id;
     return {

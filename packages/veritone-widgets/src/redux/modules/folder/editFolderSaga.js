@@ -9,14 +9,17 @@ import { handleRequest } from './helper';
 import * as folderReducer from './index';
 import * as folderSelector from './selector';
 export default function* modifyFolderSaga() {
-  yield takeEvery(folderReducer.MODIFY_FOLDER, modifyFolder);
+  yield takeEvery(folderReducer.EDIT_FOLDER, modifyFolder);
 }
 function* modifyFolder(action) {
   const {
     folderId,
     folderName,
+    isEditName,
+    isMoveFolder,
     parentId
   } = action.payload;
+  let folder;
   yield put(folderReducer.modifyFolderStart(folderId));
   const { type: rootFolderType } = yield select(folderSelector.config);
   const queryFolder = `query folder($id:ID!){
@@ -45,7 +48,8 @@ function* modifyFolder(action) {
     treeObjectId, parent: oldParent,
     orderIndex: prevOrderIndex
   } = get(response, 'data.folder', {});
-  const updateNameQuery = `
+  if (isEditName) {
+    const updateNameQuery = `
     mutation updateFolder($id: ID!, $name: String!){
       updateFolder(input: {
         id: $id,
@@ -60,29 +64,24 @@ function* modifyFolder(action) {
       }
     }
   `
-  const variables = {
-    name: folderName,
-    id: treeObjectId
+    const variables = {
+      name: folderName,
+      id: treeObjectId
+    }
+    const {
+      error: errorEditName,
+      response: responseEditName
+    } = yield call(handleRequest, {
+      query: updateNameQuery,
+      variables
+    });
+    if (errorEditName) {
+      yield put(folderReducer.modifyFolderError(folderId));
+    }
+    folder = get(responseEditName, 'data.updateFolder', {});
+
   }
-  const {
-    error: errorEditName,
-    response: responseEditName
-  } = yield call(handleRequest, {
-    query: updateNameQuery,
-    variables
-  });
-  if (errorEditName) {
-    yield put(folderReducer.modifyFolderError(folderId));
-  }
-  if (!parentId) {
-    const folder = get(responseEditName, 'data.updateFolder', {});
-    yield put(folderReducer.modifyFolderSuccess({
-      id: folder.id,
-      name: folder.name
-    }));
-    yield put(folderReducer.fetchMore(oldParent.id, true));
-  }
-  else {
+  if (isMoveFolder) {
     const newParentVariables = {
       id: parentId
     }
@@ -141,7 +140,7 @@ function* modifyFolder(action) {
     if (moveError) {
       return yield put(folderReducer.modifyFolderError(folderId));
     }
-    const folder = get(moveRespone, 'data.moveFolder', {});
+     folder = get(moveRespone, 'data.moveFolder', {});
     yield put(folderReducer.modifyFolderSuccess({
       id: folder.id,
       name: folder.name
@@ -149,4 +148,9 @@ function* modifyFolder(action) {
     yield put(folderReducer.fetchMore(oldParent.id, true));
     yield put(folderReducer.fetchMore(parentId, true));
   }
+  yield put(folderReducer.modifyFolderSuccess({
+    id: folder.id,
+    name: folder.name
+  }));
+  yield put(folderReducer.fetchMore(oldParent.id, true));
 }

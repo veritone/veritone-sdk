@@ -13,11 +13,11 @@ export default function* expandFolder() {
   yield takeEvery(folderReducer.FETCH_MORE, function* (action) {
     const { folderId, isReload } = action.payload;
     const config = yield select(folderSelector.config);
-    const { selectable } = config;
-    const expandedFolder = yield select(folderSelector.folderExpanded);
-    if (_.includes(expandedFolder, folderId) && !isReload) {
+    const rootFolderIds = yield select(folderSelector.rootFolderIds);
+    if (_.includes(rootFolderIds, folderId) && !isReload) {
       return;
     }
+    const { selectable } = config;
     const folders = yield fetchMore(action);
     const folderReprocess = folders.map(folder => {
       const childs = _.get(folder, 'childFolders.records', []);
