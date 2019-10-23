@@ -2,8 +2,9 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import cx from 'classnames';
+import _ from 'lodash';
 import { get, isNil } from 'lodash';
-import { shape, bool, func, arrayOf, number, string, oneOfType } from 'prop-types';
+import { shape, bool, func, arrayOf } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,15 +14,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FolderTree from '../../index';
 import styles from './styles.scss';
 
-export default function CreateFolder({
+export default function ModifyFolder({
   open,
+  isEnableEditName = false,
   currentFolder = {},
   handleClose,
   handleSubmit,
   foldersData,
   onExpand,
   defaultOpening = [],
-  selected = {}
+  processingFolder = [],
+  handerClickNewFolder
 }) {
   const [folderName, setFolderName] = React.useState('');
   const [error, setError] = React.useState('');
@@ -30,36 +33,12 @@ export default function CreateFolder({
     if (!isNil(currentFolder)) {
       const folderName = get(currentFolder, 'name');
       setFolderName(folderName);
+      setError('');
     }
     return () => {
       setFolderName('');
     };
   }, [currentFolder]);
-
-  React.useEffect(() => {
-    if (!isNil(selected)) {
-      setSelectedFolder(selected);
-    }
-    return () => {
-      setSelectedFolder('');
-    };
-  }, [selected])
-  const onChange = event => {
-    const { value } = event.target;
-    setFolderName(value);
-    validate(value);
-  };
-
-  const onSelectFolder = folders => {
-    setSelectedFolder(folders);
-  }
-
-  const onUpdate = () => {
-    validate(folderName);
-    if (error === '') {
-      handleSubmit(selectedFolder, folderName);
-    }
-  }
 
   React.useEffect(() => {
     setFolderName('');
@@ -68,14 +47,44 @@ export default function CreateFolder({
       setFolderName('');
       setError('');
     };
-  }, [])
+  }, []);
+
+  const onChange = event => {
+    const { value } = event.target;
+    setFolderName(value);
+    validate(value);
+  };
+
+  const onSelectFolder = folders => {
+    setSelectedFolder(folders);
+  };
+
+  const onUpdate = () => {
+    validate(folderName);
+    if (error === '') {
+      handleSubmit(selectedFolder, folderName);
+    }
+  };
 
   const validate = (folderNameToValid) => {
     if (folderNameToValid.length === 0) {
       return setError('Folder name must not be empty');
     }
     setError('');
+  };
+
+  const foldersDataReprocess = () => {
+    return {
+      ...foldersData,
+      allId: [...foldersData.allId.filter(item => item !== currentFolder.id)],
+      byId: _.omit(foldersData.byId, currentFolder.id)
+    }
+  };
+
+  const handlerNewFolder = () => {
+    handerClickNewFolder(selectedFolder);
   }
+
 
   return (
     <div>
@@ -88,47 +97,62 @@ export default function CreateFolder({
       >
         <DialogTitle id="create-folder">Modify Folder</DialogTitle>
         <DialogContent className={cx(styles['dialog-content'])}>
-          <div className={cx(styles['folder-name-field'])}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="folder-name"
-              label="Folder Name"
-              type="text"
-              error={error.length !== 0}
-              helperText={error}
-              value={folderName}
-              onChange={onChange}
-              fullWidth
-            />
-          </div>
+          {
+            isEnableEditName && (
+              <div className={cx(styles['folder-name-field'])}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="folder-name"
+                  label="Folder Name"
+                  type="text"
+                  error={error.length !== 0}
+                  helperText={error}
+                  value={folderName}
+                  onChange={onChange}
+                  fullWidth
+                />
+              </div>
+            )
+          }
           <div className={cx(styles['action-new-field'])}>
             <div>Choose a Folder</div>
-            <Button color="primary" variant="outlined">NEW FOLDER</Button>
+            <Button
+              color="primary"
+              className={cx(styles['button-styles'])}
+              onClick={handlerNewFolder}
+            >
+              NEW FOLDER
+            </Button>
           </div>
           <Card className={cx(styles['folder-tree-card'])}>
             <FolderTree
               selectable={false}
               loading={false}
-              foldersData={foldersData}
+              foldersData={foldersDataReprocess()}
               onChange={onSelectFolder}
               onExpand={onExpand}
               isEnableShowContent={false}
               isEnableShowRootFolder
               selected={selectedFolder}
               defaultOpening={defaultOpening}
+              processingFolder={processingFolder}
             />
           </Card>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button
+            className={cx(styles['button-styles'])}
+            onClick={handleClose}
+            color="primary"
+          >
             Cancel
           </Button>
           <Button
-            disabled={folderName === ''}
+            disabled={folderName === '' || _.isEmpty(selectedFolder)}
+            className={cx(styles['button-styles'])}
             onClick={onUpdate}
             color="primary"
-            variant="contained"
           >
             Submit
           </Button >
@@ -137,13 +161,15 @@ export default function CreateFolder({
     </div>
   );
 }
-CreateFolder.propTypes = {
+ModifyFolder.propTypes = {
   open: bool,
+  isEnableEditName: bool,
   currentFolder: shape(Object),
   handleClose: func,
   handleSubmit: func,
   foldersData: shape(Object),
   onExpand: func,
-  selected: shape(Object),
-  defaultOpening: arrayOf(oneOfType[number, string])
+  handerClickNewFolder: func,
+  defaultOpening: arrayOf(Object),
+  processingFolder: arrayOf(Object)
 }
