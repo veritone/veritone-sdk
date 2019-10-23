@@ -5,9 +5,6 @@ import {
   func,
   shape,
   arrayOf,
-  string,
-  oneOfType,
-  number
 } from "prop-types";
 import cx from 'classnames';
 import _ from 'lodash';
@@ -57,7 +54,7 @@ export const getFolderIds = (folders, isEnableShowRootFolder) => {
 
 function FolderTree({
   selectable,
-  defaultOpening,
+  defaultOpening = [],
   processingFolder = [],
   isEnableShowContent,
   isEnableShowRootFolder,
@@ -70,14 +67,16 @@ function FolderTree({
 }) {
   const [opening, setopening] = useState([]);
   React.useEffect(() => {
-    setopening([...opening, ...defaultOpening]);
+    if (defaultOpening.length > 0) {
+      setopening([...opening, ...defaultOpening]);
+    }
   }, [defaultOpening])
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();
     const newOpening =
       _.includes(opening, folderId) ? opening.filter(item => item !== folderId) : [...opening, folderId];
     setopening(newOpening);
-    onExpand(folderId);
+    !_.includes(opening, folderId) && onExpand(folderId);
   }
   const onChangeSelectedFolder = folder => {
     if (!selectable) {
@@ -141,6 +140,10 @@ function FolderTree({
     <div className={cx(styles['folder-tree-container'])}>
       {dataForMapping.map(folderId => {
         const childs = foldersData.byId[folderId].childs || [];
+        const folder = foldersData.byId[folderId];
+        if (_.isNil(folder)) {
+          return null;
+        }
         return (
           <Folder
             key={folderId}
@@ -175,8 +178,8 @@ FolderTree.propTypes = {
   folderAction: arrayOf(Object),
   isEnableShowContent: bool,
   isEnableShowRootFolder: bool,
-  processingFolder: arrayOf(oneOfType[string, number]),
-  defaultOpening: arrayOf(oneOfType[string, number]),
+  processingFolder: arrayOf(Object),
+  defaultOpening: arrayOf(Object),
   onMenuClick: func
 };
 
