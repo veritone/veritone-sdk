@@ -19,7 +19,6 @@ export default function CreateFolder({
   handleSubmit
 }) {
   const [folderName, setFolderName] = React.useState('');
-  console.log(parentFolder);
   const [error, setError] = React.useState('');
   React.useEffect(() => {
     if (!open) {

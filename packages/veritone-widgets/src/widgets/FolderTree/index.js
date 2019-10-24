@@ -15,7 +15,7 @@ import {
   FolderNullState,
   LoadingState
 } from 'veritone-react-common';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty, isNil, flattenDeep } from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
@@ -27,6 +27,29 @@ import {
 } from 'veritone-react-common';
 import styles from './styles.scss';
 
+export const getAllParentId = (item, folderDataFlatten) => {
+  if (isEmpty(item) || isNil(item)) {
+    return [];
+  }
+  else {
+    if (isNil(item.parentId)) {
+      return [{
+        id: item.id,
+        name: item.name
+      }];
+    }
+    else {
+      return [
+        {
+          id: item.id,
+          name: item.name
+        },
+        ...getAllParentId(folderDataFlatten.byId[item.parentId], folderDataFlatten)
+      ];
+    }
+  }
+};
+
 function FolderTreeWrapper({
   type = 'watchlist',
   isEnableShowContent = false,
@@ -37,11 +60,10 @@ function FolderTreeWrapper({
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
-  folderSelectedFromApp,
   initFolder,
   expandFolder,
   foldersData,
-  onSelectFolder = {},
+  onSelectFolder,
   selectedFolder = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
@@ -61,6 +83,8 @@ function FolderTreeWrapper({
   const [fromNewButton, setStatus] = useState(false);
   const [currentFolderForAction, setCurrentFolderForAction] = useState({});
   const [selectedInModify, setSelectedInModify] = useState({});
+  const [defaultOpening, setDefaultOpening] = useState([]);
+  const [folderSelectedFromApp, setFolderSelectedFromApp] = useState();
 
   useEffect(() => {
     const config = {
@@ -72,14 +96,48 @@ function FolderTreeWrapper({
   }, []);
 
   useEffect(() => {
-    handleSelectedFoler(selectedFolder);
+    if (!isEmpty(foldersData) && !isNil(foldersData)) {
+      setDefaultOpening(foldersData.rootIds);
+      const rootFolder = foldersData.rootFolderIds[0];
+      onSelectFolder({
+        [rootFolder]: true
+      })
+    }
+  }, [foldersData]);
+
+  useEffect(() => {
+    const pathList = getPathList(selectedFolder);
+    handleSelectedFoler({
+      selectedFolder,
+      pathList
+    });
   }, [selectedFolder]);
 
   useEffect(() => {
     if (!isEmpty(folderSelectedFromApp) && !isNil(folderSelectedFromApp)) {
-      onSelectFolder(folderSelectedFromApp)
+      onSelectFolder(folderSelectedFromApp);
+      const pathList = getPathList(folderSelectedFromApp);
+      setDefaultOpening(pathList.map(item => item.id));
     }
   }, [folderSelectedFromApp]);
+
+  useEffect(() => {
+    subjectObservable.subscribe({
+      next: v => processEvent(v)
+    })
+    return () => {
+      subjectObservable.unsubscribe();
+    };
+  }, [])
+
+  const getPathList = (selectedFolder) => {
+    if (selectable) {
+      return [];
+    }
+    const folderId = Object.keys(selectedFolder);
+    const folder = folderById(folderId[0]);
+    return flattenDeep(getAllParentId(folder, foldersData)).reverse();
+  };
 
   const onSelectMenu = (item, action) => {
     setCurrentFolderForAction(item);
@@ -178,13 +236,24 @@ function FolderTreeWrapper({
   }
 
   const processEvent = event => {
-    setStatus(false);
-    setOpenNew(true);
+    const eventKey = event.split(' ')[0];
+    const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : "";
+    switch (eventKey) {
+      case 'action/newfolder':
+        setStatus(false);
+        setOpenNew(true);
+        break;
+      case 'action/select':
+        setFolderSelectedFromApp({
+          [eventPayload]: true
+        });
+        break;
+      default:
+        break;
+    }
+
   }
 
-  subjectObservable.subscribe({
-    next: v => processEvent(v)
-  })
 
   return (
     <div className={styles['container']}>
@@ -209,6 +278,7 @@ function FolderTreeWrapper({
         folderAction={folderAction}
         onMenuClick={onSelectMenu}
         processingFolder={processingFolder}
+        defaultOpening={defaultOpening}
         isEnableShowRootFolder={isEnableShowRootFolder}
       />
       <DeleteFolder
@@ -284,7 +354,7 @@ const FolderTree = connect(
     selectedFolder: folderSelector.selectedFolder(state),
     folderById: folderSelector.folderById(state),
     rootFolderIds: folderSelector.rootFolderIds(state),
-    processingFolder: folderSelector.processingFolderSelector(state)
+    processingFolder: folderSelector.processingFolderSelector(state),
   }),
   {
     expandFolder: folderModule.fetchMore,

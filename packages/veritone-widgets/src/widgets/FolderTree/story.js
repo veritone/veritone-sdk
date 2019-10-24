@@ -7,10 +7,12 @@ import { FolderTreeWidget } from './';
 import { Button } from '@material-ui/core';
 
 function StoryComponent() {
+  const [selected, setSelected] = React.useState({});
   const actionConfig = {
     new: 'action/newfolder',
     modify: 'action/modifyfolder',
-    delete: 'action/delete'
+    delete: 'action/delete',
+    select: 'action/select'
   }
   const folderActionDefault = [
     {
@@ -38,6 +40,7 @@ function StoryComponent() {
     enableSearchbox: false,
     isEnableShowRootFolder: true,
     folderAction: folderActionDefault,
+    folderSelectedFromApp: selected,
     subjectObservable: subjectObservable,
     onSelectMenuItem: (type, item) => console.log(type, item),
     handleSelectedFoler: (selectedFolder) => console.log(selectedFolder),
@@ -48,11 +51,15 @@ function StoryComponent() {
     console.log('onClicknew');
     subjectObservable.next(actionConfig.new);
   }
+  const onSelectPathList = () => {
+    subjectObservable.next(`${actionConfig.select} 96b52061-cd01-435a-a7dc-c1d44bfd3e24`);
+  }
   return (
     <div style={{
       height: '100vh'
     }}>
       <Button onClick={onClickButton}>New</Button>
+      <Button onClick={onSelectPathList}>Pathlist</Button>
       <BaseStory
         widget={FolderTreeWidget}
         widgetProps={{ ...props, title: 'AppBar Widget' }}
