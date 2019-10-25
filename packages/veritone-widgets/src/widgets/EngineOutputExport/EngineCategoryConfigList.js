@@ -35,7 +35,7 @@ import styles from './styles.scss';
     setHasSpeakerData: engineOutputExportModule.setHasSpeakerData
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 export default class EngineCategoryConfigList extends Component {
   static propTypes = {

@@ -82,8 +82,8 @@ class _VeritoneApp {
     if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
       console.warn(
         `Warning: the following widget looks like it's wrapped with a
-         @connect decorator, but the withRef option is not set to true.
-         { withRef: true } should be set as the fourth argument to @connect`
+         @connect decorator, but the forwardRef option is not set to true.
+         { forwardRef: true } should be set as the fourth argument to @connect`
       );
       console.warn(widget);
 

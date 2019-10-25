@@ -51,6 +51,7 @@ const defaultFolderState = {
   processingFolder: [],
   expandedFolderIds: [],
   searching: false,
+  currentSearchValue: '',
   searchFolderData: {
     allId: [],
     byId: {}
@@ -350,7 +351,9 @@ export default createReducer(defaultFolderState, {
   }),
   [SEARCH_START]: (state, action) => ({
     ...state,
+    currentSearchValue: action.payload.searchValue,
     fetching: true,
+    searching: true,
     fetched: false,
     error: false
   }),
@@ -360,17 +363,23 @@ export default createReducer(defaultFolderState, {
       ...state,
       fetching: false,
       fetched: true,
+      searching: false,
       searchFolderData: {
         ...state.searchFolderData,
         allId: [...state.searchFolderData.allId, searchValue],
         byId: {
           ...state.searchFolderData.byId,
           [searchValue]: {
+            rootIds: [],
             allId: [...folders.map(item => item.id)],
             byId: {
               ...folders.reduce((accum, currentFolder) => ({
                 ...accum,
-                [currentFolder.id]: currentFolder
+                [currentFolder.id]: {
+                  ...currentFolder,
+                  parentId: null,
+                  hasContent: false
+                }
               }), {})
             }
           }
@@ -382,6 +391,7 @@ export default createReducer(defaultFolderState, {
     ...state,
     fetching: false,
     fetched: true,
+    searching: false,
     error: true
   }),
   [DELETE_FOLDER_START]: (state, action) => ({
