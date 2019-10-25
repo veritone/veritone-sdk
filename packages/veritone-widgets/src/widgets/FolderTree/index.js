@@ -73,7 +73,8 @@ function FolderTreeWrapper({
   rootFolderIds,
   createFolder,
   deleteFolder,
-  editFolder
+  editFolder,
+  searchFolder
 }) {
 
   const [openNew, setOpenNew] = useState(false);
@@ -96,14 +97,16 @@ function FolderTreeWrapper({
   }, []);
 
   useEffect(() => {
-    if (!isEmpty(foldersData) && !isNil(foldersData)) {
+    if (!isEmpty(foldersData.byId) && !isNil(foldersData.byId)) {
       setDefaultOpening(foldersData.rootIds);
-      const rootFolder = foldersData.rootFolderIds[0];
-      onSelectFolder({
-        [rootFolder]: true
-      })
+      const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
+      if (isEmpty(selectedFolder)) {
+        onSelectFolder({
+          [rootFolder]: true
+        })
+      }
     }
-  }, [foldersData]);
+  }, [foldersData, selectedFolder]);
 
   useEffect(() => {
     const pathList = getPathList(selectedFolder);
@@ -164,7 +167,9 @@ function FolderTreeWrapper({
     expandFolder(folderId);
   };
 
+  //search folder
   const onSearch = (data) => {
+    searchFolder(data);
   };
 
   //new folder
@@ -327,7 +332,6 @@ FolderTreeWrapper.propTypes = {
     type: string,
     name: string
   })),
-  folderSelectedFromApp: shape(Object),
   foldersData: shape(Object),
   selectedFolder: shape(Object),
   initFolder: func,
@@ -342,7 +346,8 @@ FolderTreeWrapper.propTypes = {
   rootFolderIds: arrayOf(string),
   createFolder: func,
   deleteFolder: func,
-  editFolder: func
+  editFolder: func,
+  searchFolder: func
 }
 
 const FolderTree = connect(
@@ -363,7 +368,8 @@ const FolderTree = connect(
     initFolder: folderModule.initFolder,
     createFolder: folderModule.createFolder,
     deleteFolder: folderModule.deleteFolder,
-    editFolder: folderModule.modifyFolder
+    editFolder: folderModule.modifyFolder,
+    searchFolder: folderModule.searchFolder
   },
   null,
   { forwardRef: true }

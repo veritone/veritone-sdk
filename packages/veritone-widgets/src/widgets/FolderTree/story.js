@@ -7,7 +7,7 @@ import { FolderTreeWidget } from './';
 import { Button } from '@material-ui/core';
 
 function StoryComponent() {
-  const [selected, setSelected] = React.useState({});
+  const [selected] = React.useState({});
   const actionConfig = {
     new: 'action/newfolder',
     modify: 'action/modifyfolder',
@@ -37,7 +37,7 @@ function StoryComponent() {
     actionConfig,
     isEnableShowContent: false,
     selectable: false,
-    enableSearchbox: false,
+    isEnableSearch: true,
     isEnableShowRootFolder: true,
     folderAction: folderActionDefault,
     folderSelectedFromApp: selected,
@@ -45,7 +45,6 @@ function StoryComponent() {
     onSelectMenuItem: (type, item) => console.log(type, item),
     handleSelectedFoler: (selectedFolder) => console.log(selectedFolder),
   };
-
 
   const onClickButton = () => {
     console.log('onClicknew');
