@@ -1,0 +1,41 @@
+.container {
+  z-index: 1000;
+}
+.popper-custom {
+  z-index: 1000;
+}
+.new-button {
+  width: 200px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  background-color: #2196F3 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149) !important;
+}
+.new-button:hover{
+  background-color: #1976d2 !important;
+  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.302), 0 4px 8px 3px rgba(60,64,67,0.149) !important;
+}
+.new-text {
+  color: #FFF;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  margin-left: 8px;
+}
+.arrow-icon {
+  position: absolute !important;
+  right: 8px !important;
+}
+
+.list-item-text {
+  padding: 0 !important;
+  color: rgba(0,0,0,0.87);	
+  font-family: Roboto;	
+  font-size: 15px;	
+  line-height: 18px;
+}
+.list-item-icon {
+  font-size: 20px;
+}
