@@ -24,6 +24,10 @@ import styles from './styles.scss';
   Required parameters:
     onPick: (items) => { ... Logic to handle what you picked ... }
     enableFolders/enableUploads: bool (at least one of these are required)
+    
+    EITHER:
+    open: bool (controlled component)
+    renderButton
 
   Example usage:
   widget = new veritoneWidgets.DataPickerWidget({
@@ -33,7 +37,8 @@ import styles from './styles.scss';
       console.log(items);
     }
   });
-  widget.pick();
+  widget.pick(); // open Picker
+  widget.cancel(); // close Picker
 */
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
@@ -41,7 +46,7 @@ import styles from './styles.scss';
 @connect(
   (state, { id }) => ({
     // General State
-    openState: dataPickerModule.isOpen(state, id),
+    internalState: dataPickerModule.isOpen(state, id),
     pathList: dataPickerModule.currentPath(state, id),
     availablePickerTypes: dataPickerModule.availablePickerTypes(state, id),
     currentPickerType: dataPickerModule.currentPickerType(state, id),
@@ -85,7 +90,7 @@ class DataPicker extends React.Component {
     id: string.isRequired,
     fullScreen: bool,
     open: bool,
-    openState: bool,
+    internalState: bool,
     pick: func,
     onPick: func.isRequired,
     endPick: func.isRequired,
@@ -164,7 +169,6 @@ class DataPicker extends React.Component {
   };
 
   static defaultProps = {
-    open: false,
     onPickCancelled: noop,
     availablePickerTypes: [],
     currentDirectoryLoadingState: {
@@ -305,18 +309,21 @@ class DataPicker extends React.Component {
       width = 1
     } = this.props;
     const { showError, errorMsg } = this.state;
+    const { open, internalState, fullScreen } = this.props;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
-    const dimensionOverride = this.props.fullScreen
+    const dimensionOverride = fullScreen
       ? {}
       : {
           height,
           width
         };
+
+    const openState = open === undefined ? internalState : open;
     return (
       <Fragment>
         <Dialog
-          open={this.props.open || this.props.openState}
-          fullScreen={this.props.fullScreen}
+          open={openState}
+          fullScreen={fullScreen}
           classes={{ paper: styles.dataPickerPaper }}
           PaperProps={{ style: dimensionOverride }}
         >
