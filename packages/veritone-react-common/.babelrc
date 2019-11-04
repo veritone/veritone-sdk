@@ -1,15 +1,99 @@
 {
-  "presets": ["es2016", "env", "react"],
-  "plugins": [
-    "add-react-displayname",
-    "transform-export-extensions",
-    "transform-decorators-legacy",
-    "transform-class-properties",
-    "transform-object-rest-spread",
-    "lodash",
-    ["transform-runtime", {
-      "polyfill": false,
-      "regenerator": true
-    }]
-  ]
+  "env": {
+    "test": {
+      "presets": ["env", "react"],
+      "plugins": [
+        [
+          "module-resolver",
+          {
+            "root": "./src",
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components",
+              "reduxModules": "./src/redux/modules"
+            }
+          }
+        ],
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]
+    },
+    "production-es": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 5%"]
+            }
+          }
+        ],
+        "react",
+        "es2016"
+      ],
+      "plugins": [
+        "external-helpers",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components",
+              "reduxModules": "./src/redux/modules"
+            }
+          }
+        ],
+        "add-react-displayname",
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "transform-runtime",
+        "lodash",
+        "date-fns"
+      ]
+    },
+    "production-cjs": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 0.5%"]
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
+        "external-helpers",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components",
+              "reduxModules": "./src/redux/modules"
+            }
+          }
+        ],
+        "add-react-displayname",
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "transform-runtime",
+        "lodash",
+        "date-fns"
+      ]
+    }
+  }
 }

@@ -15,10 +15,15 @@ import RangeSelect from '../RangeSelect';
 import style from './styles.scss';
 
 const id = guid();
-class ResponsiveDialog extends React.Component {
+
+class AdvancedPanel extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
-    handleClose: PropTypes.func
+    searchByTag: PropTypes.string.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    handleReset: PropTypes.func.isRequired,
+    advancedOptions: PropTypes.shape(Object),
+    onAddAdvancedSearchParams: PropTypes.func.isRequired
   };
 
   state = {
@@ -156,6 +161,7 @@ class ResponsiveDialog extends React.Component {
           open={open}
           onClose={handleClose}
           aria-labelledby="advanced-search-panel"
+          data-veritone-component="advanced-search-panel"
         >
           <div id="advanced-search-panel">
             <div className={cx(style['title'])}>
@@ -237,4 +243,8 @@ class ResponsiveDialog extends React.Component {
   }
 }
 
-export default ResponsiveDialog;
+export {
+  AdvancedPanel
+}
+
+export default AdvancedPanel;

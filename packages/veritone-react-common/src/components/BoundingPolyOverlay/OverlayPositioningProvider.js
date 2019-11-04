@@ -113,3 +113,7 @@ export default class OverlayPositioningProvider extends React.Component {
     );
   }
 }
+
+export {
+  OverlayPositioningProvider
+}

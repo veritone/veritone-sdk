@@ -221,4 +221,9 @@ SearchAutocompleteContainer.defaultProps = {
   cancel: () => console.log('You clicked cancel')
 };
 
+export {
+  SearchAutocompleteContainer,
+  SearchAutocompleteDownshift
+}
+
 export default SearchAutocompleteContainer;
