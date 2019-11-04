@@ -1,7 +1,7 @@
 import React from 'react';
 import { arrayOf, func, object, string, oneOf } from 'prop-types';
 import cx from 'classnames';
-import { get, uniq } from 'lodash';
+import { get, uniq, isEmpty, isEqual, sortBy, includes } from 'lodash';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeWhile";
 import { fromEvent } from 'rxjs/observable/fromEvent';
@@ -124,10 +124,13 @@ class SearchBarContainer extends React.Component {
     const { modalId } = this.state.openModal;
     const boundingPoly = get(advancedOptions, [modalId, 'boundingPoly']);
     const range = get(advancedOptions, [modalId, 'range']);
-    if (boundingPoly && boundingPoly.length && range) {
+    if (!isEmpty(boundingPoly) && (!isEmpty(range) && !isEqual(sortBy(range), sortBy([0, 100])))) {
       return 2;
     }
-    if (boundingPoly || range) {
+    if ((isEmpty(boundingPoly) && (!isEmpty(range) && !isEqual(sortBy(range), sortBy([0, 100]))))) {
+      return 1
+    }
+    if (!isEmpty(boundingPoly) && (isEmpty(range) || isEqual(sortBy(range), sortBy([0, 100])))) {
       return 1
     }
     return null;
@@ -141,7 +144,6 @@ class SearchBarContainer extends React.Component {
     } else if (event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 1) {
       event.preventDefault();
       this.toggleGrouping();
-
     }
   }
 
@@ -309,6 +311,24 @@ class SearchBarContainer extends React.Component {
   };
 
   simpleRemovePill = (searchParameterId, searchParameters) => {
+    const paramsContentTypes = searchParameters.map(param => param.conditionType);
+    const {
+      advancedEnableIds,
+      advancedOptions
+    } = this.state;
+    advancedEnableIds.forEach(id => {
+      const newAdvancedEnableIds = advancedEnableIds.filter(item => item !== id)
+      if(!includes(paramsContentTypes, id)){
+        this.setState(state => ({
+          ...state,
+          advancedEnableIds: newAdvancedEnableIds,
+          advancedOptions: {
+            ...advancedOptions,
+            [id]: undefined
+          }
+        }))
+      }
+    })
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
     let previousParameter = searchParameters[index - 1];
     let newSearchParameters = null;
@@ -488,7 +508,7 @@ class SearchBarContainer extends React.Component {
         ...customMenuActions,
       ]
     } else {
-      if (this.props.searchParameters && this.props.searchParameters.length > 0) {
+      if (this.props.searchParameters && this.props.isEditor && this.props.searchParameters.length > 0) {
         customMenuActions = [
           { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
           { label: 'Save Search Profile', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } },
@@ -583,7 +603,6 @@ class SearchBarContainer extends React.Component {
 
   menuEditPill = () => {
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
-    console.log(selectedPill);
     this.openPill(selectedPill);
     this.setState({
       menuAnchorEl: null
@@ -663,11 +682,6 @@ class SearchBarContainer extends React.Component {
       if (!newSearchParameterValue) {
         return;
       }
-
-      if(newSearchParameterValue && this.state.disableAdvancedSearch){
-        return;
-      }
-
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
@@ -732,9 +746,10 @@ class SearchBarContainer extends React.Component {
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
+    const { isAdvancedSearchEnabled } = this.props;
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
-      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }} data-veritone-component={`search_bar_${this._id}`}>
+      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
         <SearchBar
           onSearch={this.props.onSearch}
           color={this.props.color}
@@ -752,6 +767,7 @@ class SearchBarContainer extends React.Component {
           openMenu={this.handleMenuOpen}
           openMenuExtraActions={this.openMenuExtraActions}
           resetSearchParameters={this.resetSearchParameters}
+          disabledSavedSearch={this.props.disabledSavedSearch}
         />
         <Menu
           open={Boolean(this.state.menuAnchorEl)}
@@ -839,10 +855,10 @@ class SearchBarContainer extends React.Component {
                 ) : null}
               </CardContent>
               <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
-                {(openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
+                {isAdvancedSearchEnabled && (openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
                   <div className={cx(styles["advancedButton"])}>
                     <Button disabled={this.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
-                    {this.getBadgeLength ? <div className={cx(styles["customBadge"])}>
+                    {this.getBadgeLength && !this.disableAdvancedSearch ? <div className={cx(styles["customBadge"])}>
                       {this.getBadgeLength}
                     </div> : null}
                   </div>
@@ -863,14 +879,14 @@ class SearchBarContainer extends React.Component {
                 </Button>
               </CardActions>
             </Card>
-            <AdvancedPanel
+            {isAdvancedSearchEnabled && <AdvancedPanel
               open={this.state.openAdvancedPanel}
               handleClose={this.handleCloseAdvanced}
               handleReset={this.handleResetAdvanced}
               advancedOptions={this.getAdvancedOptions}
               onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
               searchByTag={openModal.dataTag}
-            />
+            />}
           </Popover>
         ) : null}
 

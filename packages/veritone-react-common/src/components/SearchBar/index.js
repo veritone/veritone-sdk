@@ -33,7 +33,7 @@ const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 const GhostInput = ({showGhost, onFocus}) => (
   <span onClick={onFocus} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1">
-    { showGhost ? <Typography color="textSecondary" variant="subheading">Search</Typography> : null }
+    { showGhost ? <Typography color="textSecondary" variant="subheading">Search Veritone</Typography> : null }
   </span>
 )
 

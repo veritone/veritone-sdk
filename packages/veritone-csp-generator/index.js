@@ -21,7 +21,7 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  if(modalState && modalState.includeSpecialCharacters) {
+  if (modalState && modalState.includeSpecialCharacters) {
     const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
     query.highlight = "true";
     return query;
@@ -34,7 +34,7 @@ const RecognizedTextConditionGenerator = modalState => {
 
 const StructuredDataGenerator = modalState => {
   if (modalState.type === 'string') {
-    if(modalState.operator === 'contains' || modalState.operator === 'not_contains') {
+    if (modalState.operator === 'contains' || modalState.operator === 'not_contains') {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
@@ -49,15 +49,15 @@ const StructuredDataGenerator = modalState => {
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
     }
-  } else if (modalState.type === 'dateTime' || modalState.type === 'integer' || modalState.type ==='number') {
-    if(modalState.operator === 'is' || modalState.operator === 'is_not') {
+  } else if (modalState.type === 'dateTime' || modalState.type === 'integer' || modalState.type === 'number') {
+    if (modalState.operator === 'is' || modalState.operator === 'is_not') {
       return {
         operator: 'query_string',
         field: modalState.field,
         value: modalState.value1,
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
-    } else if(modalState.operator === 'range') {
+    } else if (modalState.operator === 'range') {
       return {
         operator: 'range',
         field: modalState.field,
@@ -89,39 +89,161 @@ const StructuredDataGenerator = modalState => {
   }
 }
 
+function isEmpty(obj) {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+  return JSON.stringify(obj) === JSON.stringify({});
+}
+
+const getCoordinatesFromBounding = (boundingPoly) => {
+  return boundingPoly.reduce((accumulator, currentItem, currentIndex) => {
+    if (currentIndex % 2 === 1) {
+      return accumulator;
+    }
+    return [...accumulator, [currentItem.x, currentItem.y]]
+  }, []);
+}
+
+const BoundingBoxGenerator = (modalState) => {
+  const boundingPoly = modalState.advancedOptions.boundingPoly || [];
+  if (!boundingPoly.length) {
+    return {};
+  }
+  return {
+    operator: "bounding_box",
+    field: "boundingBox",
+    relation: "within", // within | intersects | disjoint
+    coordinates: getCoordinatesFromBounding(boundingPoly)
+  }
+}
+
+const ConfidenceRangeGenerator = (modalState) => {
+  const range = modalState.advancedOptions.range || [];
+  if (!range.length || (range[0] === 0 && range[1] === 100)) {
+    return {};
+  }
+  return {
+    operator: "range",
+    field: "confidence",
+    gte: range[0] / 100,
+    lt: range[1] / 100
+  }
+}
+
+const buildAndOperator = (conditions) => {
+  return {
+    operator: 'and',
+    conditions: conditions
+  };
+}
+
+const buildOrOperator = (conditions) => {
+  return {
+    operator: 'or',
+    conditions: conditions
+  };
+}
+
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    return {
-      operator: 'query_string',
-      field: 'logo-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'query_string',
+        field: 'logo-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   } else {
-    return {
-      operator: 'term',
-      field: 'logo-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'term',
+        field: 'logo-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      }
+    }
+    else {
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   }
 };
 
 const ObjectConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    return {
-      operator: 'query_string',
-      field: 'object-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'query_string',
+        field: 'object-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   } else {
-    return {
-      operator: 'term',
-      field: 'object-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'term',
+        field: 'object-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   }
 };
 
@@ -142,18 +264,18 @@ const TagConditionGenerator = modalState => {
   return {
     operator: 'query_object',
     field: 'tags',
+    not: modalState.exclude === true,
     query: {
       operator: 'term',
       field: 'tags.value',
       value: modalState.id,
-      dotNotation: true,
-      not: modalState.exclude === true
+      dotNotation: true
     }
   };
 };
 
 const TimeConditionGenerator = modalState => {
-  const dayPartTimeToMinutes = function(hourMinuteTime) {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
       typeof hourMinuteTime !== 'string' ||
@@ -208,7 +330,7 @@ const TimeConditionGenerator = modalState => {
     const selectedIsoWeekdays = [];
     daysOfTheWeek.forEach(weekday => {
       if (modalState.search.selectedDays[weekday.isoWeekday - 1]) {
-        selectedIsoWeekdays.push(String(weekday.isoWeekday));
+        selectedIsoWeekdays.push(String(weekday.isoWeekday % 7));
       }
     });
     conditions.push({
@@ -226,20 +348,6 @@ const TimeConditionGenerator = modalState => {
 
 
 const V2QueryStringParser = (field, queryString) => {
-  function buildOrOperator(conditions) {
-    return {
-      operator: 'or',
-      conditions: conditions
-    };
-  }
-
-  function buildAndOperator(conditions) {
-    return {
-      operator: 'and',
-      conditions: conditions
-    };
-  }
-
   function buildQueryStringOperator(field, queryText, highlight, analyzer) {
     var op = {
       operator: 'query_string',
@@ -436,7 +544,7 @@ const engineCategoryMapping = {
   'tag-search-id': TagConditionGenerator,
   'time-search-id': TimeConditionGenerator,
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator,
-  'sdo-search-id' : StructuredDataGenerator
+  'sdo-search-id': StructuredDataGenerator
 };
 
 const engineCategoryMetadataMapping = {
@@ -460,7 +568,7 @@ const convertJoinOperator = joinOperator => {
 };
 
 const cspToPartialQuery = csp => {
-  if(csp && csp.engineCategoryId) {
+  if (csp && csp.engineCategoryId) {
     return generateQueryCondition(csp);
   } else {
     const joinOperator = getJoinOperator(csp);
@@ -475,8 +583,8 @@ const cspToPartialQuery = csp => {
 
 const generateQueryCondition = node => {
   if (node
-      && node.engineCategoryId
-      && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
+    && node.engineCategoryId
+    && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
   ) {
     const newCondition = engineCategoryMapping[node.engineCategoryId](node.state);
     return newCondition;
@@ -495,9 +603,9 @@ const dedupeArray = arr => {
 
 const selectMetadataFromCsp = csp => {
   let metadataKeys = [];
-  if(csp && csp.engineCategoryId) {
+  if (csp && csp.engineCategoryId) {
     const metadataKey = csp.engineCategoryId === 'sdo-search-id' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
-    if(metadataKey) {
+    if (metadataKey) {
       metadataKeys.push(metadataKey);
     }
   } else {
@@ -505,7 +613,7 @@ const selectMetadataFromCsp = csp => {
     const conditions = csp[joinOperator];
     conditions.forEach(condition => {
       const subMetadataKeys = selectMetadataFromCsp(condition);
-      if(Array.isArray(subMetadataKeys)) {
+      if (Array.isArray(subMetadataKeys)) {
         metadataKeys = metadataKeys.concat(subMetadataKeys);
       }
     });

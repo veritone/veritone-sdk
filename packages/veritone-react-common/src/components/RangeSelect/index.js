@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { func, arrayOf, number } from 'prop-types';
 import { Range, getTrackBackground } from 'react-range';
 import cx from 'classnames';
@@ -62,7 +62,7 @@ export default class RangeSelect extends Component {
       <div
         className={styles.rangeInput}
       >
-        <div className={cx(styles["value-min"])}>
+        <div className={cx(styles['value-min'])}>
           {selectedConfidenceRange[0].toFixed(0)}
         </div>
         <Range
@@ -74,7 +74,7 @@ export default class RangeSelect extends Component {
           renderThumb={this.renderThumb}
           renderTrack={this.renderTrack}
         />
-        <div className={cx(styles["value-max"])}>
+        <div className={cx(styles['value-max'])}>
           {selectedConfidenceRange[1].toFixed(0)}
         </div>
       </div>

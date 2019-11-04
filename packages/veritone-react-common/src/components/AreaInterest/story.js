@@ -7,7 +7,7 @@ export default class Story extends Component {
 
     state = {
         defaultAoI: {
-            id: "test id",
+            id: 'test id',
             boundingPoly: [
                 { x: 0, y: 0 },
                 { x: 1, y: 0 },
@@ -18,11 +18,11 @@ export default class Story extends Component {
     }
 
     onEditAoI = () => {
-        console.log("this.onEditAoI");
+        console.log('this.onEditAoI');
     }
 
     onRemoveAoI = () => {
-        console.log("this.onRemoveAoI");
+        console.log('this.onRemoveAoI');
     }
     render() {
         return (
