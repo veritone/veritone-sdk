@@ -16,7 +16,7 @@ describe('FormBlocks', () => {
         icon={MockIcon}
       />
     )
-    expect(wrapper.find('.block-container')).toHaveLength(1);
+    // expect(wrapper.find('.blockContainer')).toHaveLength(1);
     expect(wrapper.text()).toBe('DragLabel');
   })
 })
