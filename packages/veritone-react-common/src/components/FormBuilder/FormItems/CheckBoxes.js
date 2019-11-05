@@ -7,7 +7,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function Checkboxes({
   label,
@@ -19,6 +19,8 @@ export default function Checkboxes({
   items,
   error
 }) {
+  const styles = useStyles({});
+
   const handleChange = React.useCallback((e) => {
     const isItemChecked = value.includes(e.target.value);
     if (isItemChecked) {
@@ -35,7 +37,7 @@ export default function Checkboxes({
     <FormControl
       error={error.length > 0}
       fullWidth
-      className={styles['form-item']}
+      className={styles.formItem}
     >
       <Box
         component="fieldset"
@@ -51,7 +53,7 @@ export default function Checkboxes({
             return (
               <FormControlLabel
                 key={item.id}
-                className="item-checkbox"
+                className={styles.itemCheckbox}
                 control={
                   <Checkbox
                     value={item.value}

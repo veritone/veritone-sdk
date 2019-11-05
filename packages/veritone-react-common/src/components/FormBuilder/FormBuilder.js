@@ -19,7 +19,7 @@ import { generateSchema } from './utils';
 import * as blockUtils from './blockUtils';
 import typeConfiguration, { initData } from './typeConfiguration';
 
-import styles from './styles.scss';
+import useStyles from './FormBuilder.style.js';
 
 function formEqual({ form }, { form: nextForm }) {
   return _.isEqual(form, nextForm);
@@ -32,8 +32,12 @@ function FormBuilderComponent({
   updateBlock,
   removeBlock,
   selectBlock,
-  classes
+  classes,
+  helpLink
 }) {
+
+  const styles = useStyles({});
+
   const [isPreview, setIsPreview] = React.useState(false);
 
   const [, drop] = useDrop({
@@ -64,12 +68,12 @@ function FormBuilderComponent({
   const settingOpen = configurationOpen.length > 0;
 
   return (
-    <div className={cx(styles['form-builder'], classes.container)}>
-      <div className={cx(styles['form-blocks'])}>
-        <Typography className={cx(styles['form-blocks-title'])}>
+    <div className={cx(styles.formBuilder, classes.container)}>
+      <div className={cx(styles.formBlocks)}>
+        <Typography className={cx(styles.formBlocksTitle)}>
           Blocks
         </Typography>
-        <div className={styles['blocks-wrapper']}>
+        <div className={styles.blocksWrapper}>
           {blockTypes.map(block => (
             <Block
               key={block.type}
@@ -94,10 +98,10 @@ function FormBuilderComponent({
           />
         )}
       </div>
-      <div className={cx(styles['blocks-preview'], classes.previewContainer)}>
+      <div className={cx(styles.blocksPreview, classes.previewContainer)}>
         {
           form.length > 0 && (
-            <Typography className={cx(styles['form-preview-title'])}>
+            <Typography className={cx(styles.formPreviewTitle)}>
               Form preview
             </Typography>
           )
@@ -130,9 +134,9 @@ function FormBuilderComponent({
           {
             form.length === 0 && (
               <NullState
-                titleText="Begin by selecting block to your rignt"
+                titleText="Begin by selecting block to your right"
               >
-                <Link href="https://help.veritone.com/en/" target="_blank">
+                <Link href={helpLink} target="_blank">
                   Need help? Click here to watch a turtorial
                 </Link>
               </NullState>
@@ -140,10 +144,10 @@ function FormBuilderComponent({
           }
         </div>
       </div>
-      <div className={styles['configuration-container']}>
+      <div className={styles.configurationContainer}>
         {
           settingOpen && (
-            <Typography className={styles['form-configuration-title']}>
+            <Typography className={styles.formConfigurationTitle}>
               {`${configurationOpen[0].name} settings`}
             </Typography>
           )
@@ -175,7 +179,8 @@ FormBuilderComponent.propTypes = {
   removeBlock: func,
   selectBlock: func,
   updateBlock: func,
-  classes: objectOf(string)
+  classes: objectOf(string),
+  helpLink: string,
 }
 
 FormBuilderComponent.defaultProps = {
@@ -185,7 +190,8 @@ FormBuilderComponent.defaultProps = {
   selectBlock: _.noop,
   updateBlock: _.noop,
   form: [],
-  classes: {}
+  classes: {},
+  helpLink: 'https://help.veritone.com/en/'
 }
 
 const FormBuilderComponentMemo = React.memo(FormBuilderComponent, formEqual);
