@@ -1,13 +1,5 @@
 import React, { Fragment } from 'react';
-import {
-  string,
-  bool,
-  oneOf,
-  arrayOf,
-  shape,
-  number,
-  func
-} from 'prop-types';
+import { string, bool, oneOf, arrayOf, shape, number, func } from 'prop-types';
 import { noop, get } from 'lodash';
 
 import { connect } from 'react-redux';
@@ -32,6 +24,10 @@ import styles from './styles.scss';
   Required parameters:
     onPick: (items) => { ... Logic to handle what you picked ... }
     enableFolders/enableUploads: bool (at least one of these are required)
+    
+    EITHER:
+    open: bool (controlled component)
+    renderButton
 
   Example usage:
   widget = new veritoneWidgets.DataPickerWidget({
@@ -41,7 +37,8 @@ import styles from './styles.scss';
       console.log(items);
     }
   });
-  widget.pick();
+  widget.pick(); // open Picker
+  widget.cancel(); // close Picker
 */
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
@@ -49,12 +46,15 @@ import styles from './styles.scss';
 @connect(
   (state, { id }) => ({
     // General State
-    open: dataPickerModule.isOpen(state, id),
+    internalState: dataPickerModule.isOpen(state, id),
     pathList: dataPickerModule.currentPath(state, id),
     availablePickerTypes: dataPickerModule.availablePickerTypes(state, id),
     currentPickerType: dataPickerModule.currentPickerType(state, id),
     itemRefs: dataPickerModule.currentDirectoryItems(state, id),
-    currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(state, id),
+    currentDirectoryLoadingState: dataPickerModule.currentDirectoryLoadingState(
+      state,
+      id
+    ),
     getItemByTypeAndId: dataPickerModule.getItemByTypeAndId(state),
 
     // Upload State
@@ -88,7 +88,9 @@ import styles from './styles.scss';
 class DataPicker extends React.Component {
   static propTypes = {
     id: string.isRequired,
+    fullScreen: bool,
     open: bool,
+    internalState: bool,
     pick: func,
     onPick: func.isRequired,
     endPick: func.isRequired,
@@ -119,7 +121,7 @@ class DataPicker extends React.Component {
     ).isRequired,
     sortCriteria: arrayOf(
       shape({
-        field: string,                  // Default 'name'
+        field: string, // Default 'name'
         direction: oneOf(['asc', 'desc']) // Default 'asc'
       })
     ),
@@ -134,19 +136,19 @@ class DataPicker extends React.Component {
         id: string.isRequired,
         type: oneOf(['folder', 'source', 'program', 'tdo']).isRequired,
         name: string,
-        startDateTime: string, 
+        startDateTime: string,
         stopDateTime: string,
         thumbnailUrl: string,
         sourceImageUrl: string,
         primaryAsset: shape({
-            name: string,
-            contentType: string.isRequired,
-            signedUri: string.isRequired
+          name: string,
+          contentType: string.isRequired,
+          signedUri: string.isRequired
         }),
         streams: arrayOf(
           shape({
-              uri: string.isRequired,
-              protocol: string.isRequired
+            uri: string.isRequired,
+            protocol: string.isRequired
           })
         ),
         createdDateTime: string.isRequired,
@@ -167,7 +169,6 @@ class DataPicker extends React.Component {
   };
 
   static defaultProps = {
-    open: false,
     onPickCancelled: noop,
     availablePickerTypes: [],
     currentDirectoryLoadingState: {
@@ -191,20 +192,17 @@ class DataPicker extends React.Component {
       enableStreams,
       enableUploads
     } = this.props;
-    id && pick && pick(id, { 
-      enableFolders,
-      enableStreams,
-      enableUploads
-    });
+    id &&
+      pick &&
+      pick(id, {
+        enableFolders,
+        enableStreams,
+        enableUploads
+      });
   };
 
   handleOnPick = (pickedRefs = []) => {
-    const {
-      id,
-      onPick,
-      getItemByTypeAndId,
-      endPick
-    } = this.props;
+    const { id, onPick, getItemByTypeAndId, endPick } = this.props;
     const items = pickedRefs.map(ref => getItemByTypeAndId(ref.type, ref.id));
     if (items.length && onPick) {
       onPick(items);
@@ -213,11 +211,7 @@ class DataPicker extends React.Component {
   };
 
   handleOnCancel = () => {
-    const {
-      id,
-      abortRequest,
-      endPick
-    } = this.props;
+    const { id, abortRequest, endPick } = this.props;
     id && endPick && endPick(id);
     id && abortRequest && abortRequest(id);
   };
@@ -230,19 +224,19 @@ class DataPicker extends React.Component {
   triggerPagination = () => {
     const { id, fetchPage, currentDirectoryLoadingState } = this.props;
     const { nodeOffset = 0, leafOffset = 0 } = currentDirectoryLoadingState;
-    id
-      && ( nodeOffset >= 0 || leafOffset >= 0 )
-      && fetchPage
-      && fetchPage(id);
+    id && (nodeOffset >= 0 || leafOffset >= 0) && fetchPage && fetchPage(id);
   };
 
   handleNodeSelection = (selectedNodes = []) => {
     const { id, selectNode, fetchPage } = this.props;
     // Don't do anything if mixed types are present
-    const mixedSelection = Object.keys(selectedNodes.reduce((acc, node) => {
-      acc[node.type] = true;
-      return acc;
-    }, {})).length > 1;
+    const mixedSelection =
+      Object.keys(
+        selectedNodes.reduce((acc, node) => {
+          acc[node.type] = true;
+          return acc;
+        }, {})
+      ).length > 1;
     if (mixedSelection || !selectedNodes.length) {
       return;
     }
@@ -263,29 +257,17 @@ class DataPicker extends React.Component {
   };
 
   handleUploadToTDO = (uploadedFiles = []) => {
-    const {
-      id,
-      onPick,
-      uploadToTDO
-    } = this.props;
+    const { id, onPick, uploadToTDO } = this.props;
     uploadToTDO && uploadToTDO(id, uploadedFiles, onPick);
   };
 
   handleRetryDone = () => {
-    const {
-      id,
-      onPick,
-      retryDone
-    } = this.props;
+    const { id, onPick, retryDone } = this.props;
     retryDone && retryDone(id, onPick);
   };
 
   handleRetry = () => {
-    const {
-      id,
-      retryRequest,
-      onPick
-    } = this.props;
+    const { id, retryRequest, onPick } = this.props;
     retryRequest && retryRequest(id, onPick);
   };
 
@@ -295,52 +277,53 @@ class DataPicker extends React.Component {
   };
 
   handleOnSearch = searchValue => {
-    const { id, setSearchValue} = this.props;
+    const { id, setSearchValue } = this.props;
     setSearchValue && setSearchValue(id, searchValue);
   };
 
   handleOnClear = () => {
     const { clearSearch } = this.props;
     clearSearch && clearSearch();
-  }
+  };
 
   handleShowErrorMsg = errorMsg => () => {
     this.setState({
       showError: true,
       errorMsg
     });
-  }
+  };
 
   handleCloseErrorMsg = () => {
     this.setState({
       showError: false,
       errorMsg: ''
     });
-  }
+  };
 
   render() {
     const {
       currentDirectoryLoadingState,
       itemRefs,
       getItemByTypeAndId,
-      height,
-      width
+      height = 1,
+      width = 1
     } = this.props;
-    const {
-      showError,
-      errorMsg
-    } = this.state;
+    const { showError, errorMsg } = this.state;
+    const { open, internalState, fullScreen } = this.props;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
-    const isFullScreen = !height && !width;
-    const dimensionOverride = isFullScreen ? {} : {
-      height,
-      width
-    };
+    const dimensionOverride = fullScreen
+      ? {}
+      : {
+          height,
+          width
+        };
+
+    const openState = open === undefined ? internalState : open;
     return (
       <Fragment>
         <Dialog
-          open={this.props.open}
-          fullScreen={isFullScreen}
+          open={openState}
+          fullScreen={fullScreen}
           classes={{ paper: styles.dataPickerPaper }}
           PaperProps={{ style: dimensionOverride }}
         >
@@ -361,11 +344,11 @@ class DataPicker extends React.Component {
             onSelectItem={this.handleNodeSelection}
             onCrumbClick={this.handleCrumbSelection}
             onSearch={this.handleOnSearch}
-            onClear={this.handleOnClear} />
+            onClear={this.handleOnClear}
+          />
         </Dialog>
-        { this.props.renderButton &&
-          this.props.renderButton({ handlePickFiles: this.handlePick })
-        }
+        {this.props.renderButton &&
+          this.props.renderButton({ handlePickFiles: this.handlePick })}
         <Snackbar
           anchorOrigin={{
             vertical: 'bottom',
@@ -379,7 +362,7 @@ class DataPicker extends React.Component {
             className={styles['data-picker-error-snack']}
             message={errorMsg}
             action={[
-              <IconButton key='close-btn' onClick={this.handleCloseErrorMsg}>
+              <IconButton key="close-btn" onClick={this.handleCloseErrorMsg}>
                 <CloseIcon />
               </IconButton>
             ]}
@@ -412,7 +395,7 @@ class DataPickerWidgetComponent extends React.Component {
   pickCallback = noop;
 
   pick = (callback = noop) => {
-    const { 
+    const {
       _widgetId,
       pick,
       enableFolders,
@@ -420,12 +403,13 @@ class DataPickerWidgetComponent extends React.Component {
       enableUploads
     } = this.props;
     this.pickCallback = callback;
-    pick && pick(_widgetId, {
-      enableFolders,
-      enableStreams,
-      enableUploads
-    });
-  }
+    pick &&
+      pick(_widgetId, {
+        enableFolders,
+        enableStreams,
+        enableUploads
+      });
+  };
 
   cancel = () => {
     this.props.endPick(this.props._widgetId);
@@ -438,7 +422,7 @@ class DataPickerWidgetComponent extends React.Component {
 
   onPick = items => {
     this.pickCallback && this.pickCallback(items);
-  }
+  };
 
   render() {
     return (
