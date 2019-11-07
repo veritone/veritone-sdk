@@ -4,9 +4,6 @@ import {
   arrayOf,
   bool,
   shape,
-  string,
-  oneOfType,
-  number,
   func
 } from "prop-types";
 import cx from "classnames";
