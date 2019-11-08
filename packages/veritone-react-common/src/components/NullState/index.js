@@ -1,14 +1,16 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { string, func, shape, node } from 'prop-types';
+import { string, func, shape, node, bool } from 'prop-types';
 
 import styles from './styles.scss';
 
-const NullState = ({ imgProps, titleText, btnProps, children }) => {
+const NullState = ({ imgProps, titleText, btnProps, children, inWidgets }) => {
   const { src, alt, ...restProps } = imgProps;
+  const containerClassName = inWidgets ?
+    styles.inWidgetView : styles.nullStateView;
 
   return (
-    <div className={styles.nullStateView}>
+    <div className={containerClassName}>
       {imgProps && <img src={src} alt={alt} {...restProps} />}
       {titleText && <div className={styles.titleText}>{titleText}</div>}
       {children}
@@ -36,7 +38,8 @@ NullState.propTypes = {
     onClick: func.isRequired,
     text: string.isRequired
   }),
-  children: node
+  children: node,
+  inWidgets: bool
 };
 
 export default NullState;

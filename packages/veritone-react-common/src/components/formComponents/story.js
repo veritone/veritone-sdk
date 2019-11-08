@@ -377,7 +377,7 @@ storiesOf('Form Components', module)
             component={DateTimePicker}
             name="dateTimeTimezone"
             clearable
-            showTimezone
+            timeZone
           />
         </StoryForm>
       </Provider>
