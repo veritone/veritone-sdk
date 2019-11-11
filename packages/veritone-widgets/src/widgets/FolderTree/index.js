@@ -64,6 +64,8 @@ function FolderTreeWrapper({
   expandFolder,
   foldersData,
   onSelectFolder,
+  onSelectAllFolder,
+  initialStatus,
   selectedFolder = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
@@ -78,6 +80,7 @@ function FolderTreeWrapper({
 }) {
 
   const [openNew, setOpenNew] = useState(false);
+  const [config, setConfig] = useState({});
   const [openModify, setOpenModify] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -93,20 +96,28 @@ function FolderTreeWrapper({
       isEnableShowContent,
       selectable
     }
+    setConfig(config);
     initFolder(config);
   }, []);
 
   useEffect(() => {
     if (!isEmpty(foldersData.byId) && !isNil(foldersData.byId)) {
       setDefaultOpening(foldersData.rootIds);
+    }
+  }, [foldersData, selectedFolder]);
+
+  useEffect(() => {
+    if (initialStatus && isEmpty(selectedFolder)) {
       const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
-      if (isEmpty(selectedFolder)) {
+      if (config.type !== 'watchlist') {
         onSelectFolder({
           [rootFolder]: true
         })
+      } else {
+        onSelectAllFolder();
       }
     }
-  }, [foldersData, selectedFolder]);
+  }, [initialStatus]);
 
   useEffect(() => {
     const pathList = getPathList(selectedFolder);
@@ -347,7 +358,9 @@ FolderTreeWrapper.propTypes = {
   createFolder: func,
   deleteFolder: func,
   editFolder: func,
-  searchFolder: func
+  searchFolder: func,
+  onSelectAllFolder: func,
+  initialStatus: bool
 }
 
 const FolderTree = connect(
@@ -360,12 +373,13 @@ const FolderTree = connect(
     folderById: folderSelector.folderById(state),
     rootFolderIds: folderSelector.rootFolderIds(state),
     processingFolder: folderSelector.processingFolderSelector(state),
+    initialStatus: folderSelector.getInitialStatus(state)
   }),
   {
     expandFolder: folderModule.fetchMore,
     onSelectFolder: folderModule.selectFolder,
     onSelectAllFolder: folderModule.selectAllFolder,
-    initFolder: folderModule.initFolder,
+    initFolder: folderModule.initRootFolder,
     createFolder: folderModule.createFolder,
     deleteFolder: folderModule.deleteFolder,
     editFolder: folderModule.modifyFolder,

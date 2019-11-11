@@ -24,6 +24,8 @@ export const searchValue = state => state.folderTree.currentSearchValue;
 
 export const searchData = state => state.folderTree.searchFolderData;
 
+export const initialSuccess = state => state.folderTree.initialSuccess;
+
 export const foldersDataSelector = createSelector(
     [folderData, searchValue, searchData],
     (foldersData, searchValue, searchData) => {
@@ -57,4 +59,9 @@ export const selectedFolder = createSelector(
 export const processingFolderSelector = createSelector(
     [processingFolder],
     processingFolder => processingFolder
+)
+
+export const getInitialStatus = createSelector(
+    [initialSuccess],
+    initialSuccess => initialSuccess
 )
