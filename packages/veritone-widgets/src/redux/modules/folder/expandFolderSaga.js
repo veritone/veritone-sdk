@@ -55,12 +55,8 @@ function* fetchMore(action) {
   let results = [];
   let contentResult = [];
   yield put(folderReducer.fetchMoreStart(folderId));
-  const childType = type === 'cms'
-    ? 'childTDOs'
-    : type === 'watchlist' ? 'childWatchlists' : 'childCollections';
-  const childContentType = isEnableShowContent
-    ? (type === 'cms' ? 'tdo' : type === 'watchlist' ? 'watchlist' : 'collection')
-    : '';
+  const childType = folderReducer.folderType[type].childsType;
+  const childContentType = isEnableShowContent ? folderReducer.folderType[type].childs : '';
   const queryFolder = `query folder($id:ID!, $offset: Int, $limit: Int){
       folder(id: $id){
         id

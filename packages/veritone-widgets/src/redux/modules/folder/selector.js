@@ -1,26 +1,6 @@
 import { createSelector } from 'reselect';
 
-//  const defaultFolderState = {
-//     config: {},
-//     fetching: false,
-//     fetched: false,
-//     error: false,
-//     foldersData: {
-//       rootIds: [],
-//       allId: [],
-//       byId: {}
-//     },
-//     selectedFolder: {},
-//     processingFolder: [],
-//     expandedFolderIds: [],
-//     searching: false,
-//     searchFolderData: {
-//       allId: [],
-//       byId: {}
-//     }
-//   };
-
-export const folderData = (state) => state.folderTree.foldersData;
+export const folderData = state => state.folderTree.foldersData;
 
 export const folderFetching = state => state.folderTree.fetching;
 
@@ -40,9 +20,20 @@ export const processingFolder = state => state.folderTree.processingFolder;
 
 export const config = state => state.folderTree.config;
 
+export const searchValue = state => state.folderTree.currentSearchValue;
+
+export const searchData = state => state.folderTree.searchFolderData;
+
+export const initialSuccess = state => state.folderTree.initialSuccess;
+
 export const foldersDataSelector = createSelector(
-    [folderData],
-    foldersData => foldersData
+    [folderData, searchValue, searchData],
+    (foldersData, searchValue, searchData) => {
+        if (searchValue !== '') {
+            return searchData.byId[searchValue]
+        }
+        return foldersData
+    }
 );
 
 export const folderFetchingStatus = createSelector(
@@ -68,4 +59,9 @@ export const selectedFolder = createSelector(
 export const processingFolderSelector = createSelector(
     [processingFolder],
     processingFolder => processingFolder
+)
+
+export const getInitialStatus = createSelector(
+    [initialSuccess],
+    initialSuccess => initialSuccess
 )

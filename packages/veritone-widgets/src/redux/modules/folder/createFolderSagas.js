@@ -4,6 +4,7 @@ import {
   put,
   select
 } from 'redux-saga/effects';
+import get from 'lodash/get';
 import { handleRequest } from './helper';
 import * as folderReducer from './index';
 import * as folderSelector from './selector';
@@ -36,9 +37,12 @@ function* createFolder(action) {
     rootFolderType,
     description: ''
   }
-  const { error } = yield call(handleRequest, { query, variables });
+  const { error, response } = yield call(handleRequest, { query, variables });
   if (error) {
     yield put(folderReducer.createFolderError());
   }
-  return yield put(folderReducer.fetchMore(parentId, true));
+  const newFolderId = get(response, 'data.createFolder.id');
+  yield put(folderReducer.initFolder(newFolderId));
+  yield put(folderReducer.initFolder(parentId));
+  return put(folderReducer.createFolderSuccess());
 }

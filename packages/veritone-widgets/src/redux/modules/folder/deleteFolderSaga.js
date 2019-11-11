@@ -58,6 +58,6 @@ function* deleteFolder(action) {
   if (errorDelete) {
     yield put(folderReducer.deleteFolderError(folderId));
   }
-  yield put(folderReducer.fetchMore(parent.id, true));
+  yield put(folderReducer.initFolder(parent.id));
   return yield put(folderReducer.deleteFolderSuccess(folderId));
 }

@@ -19,7 +19,7 @@ import widget from '../../shared/widget';
   }),
   { requestOAuthGrant, requestOAuthGrantImplicit },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class OAuthLoginButton extends React.Component {
   static propTypes = {
