@@ -4,9 +4,6 @@ import {
   arrayOf,
   bool,
   shape,
-  string,
-  oneOfType,
-  number,
   func
 } from "prop-types";
 import cx from "classnames";
@@ -51,12 +48,18 @@ function Folder({
     }
     return item;
   });
-  const isChecked = id => _.includes(selectedIds, id);
+  const isChecked = id => _.includes(selectedIds, !isNaN(id) ? parseInt(id) : id);
 
   const isIndeterminate = folderId => {
     const folder = folders.byId[folderId];
     const childs = _.flattenDeep(getAllChildId(folder, folders));
-    const diff = _.difference(childs, selectedIds);
+    const childsReprocess = childs.map(item => {
+      if (!isNaN(item)) {
+        return parseInt(item);
+      }
+      return item;
+    })
+    const diff = _.difference(childsReprocess, selectedIds);
     return diff.length > 0 && childs.length !== 0 && diff.length < childs.length;
   };
 
