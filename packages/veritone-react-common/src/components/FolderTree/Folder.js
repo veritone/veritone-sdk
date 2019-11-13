@@ -4,7 +4,8 @@ import {
   arrayOf,
   bool,
   shape,
-  func
+  func,
+  number
 } from "prop-types";
 import cx from "classnames";
 import _ from "lodash";
@@ -37,7 +38,8 @@ function Folder({
   folderAction,
   onMenuClick,
   searchingStatus,
-  processingFolder
+  processingFolder,
+  level
 }) {
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
@@ -88,6 +90,7 @@ function Folder({
           [styles['list-item']]: true
         })}
       >
+        <div style={{ minWidth: level * 15, width: level * 15 }} />
         {!searchingStatus && (
           <ExpandIcon
             onExpand={onExpand}
@@ -118,7 +121,7 @@ function Folder({
           <div className={cx(styles['icon-progress'])}>
             <CircularProgress
               variant="indeterminate"
-              size={18}
+              size={16}
             />
           </div>
         )}
@@ -133,7 +136,7 @@ function Folder({
         )}
       </ListItem>
       <Collapse in={isOpening} style={{ padding: 0 }}>
-        <List disablePadding className={cx(styles['sub-folder'])}>
+        <List disablePadding>
           {
             childs.map(child => {
               const nestedChilds = child.childs || [];
@@ -159,6 +162,7 @@ function Folder({
                   onMenuClick={onMenuClick}
                   searchingStatus={searchingStatus}
                   processingFolder={processingFolder}
+                  level={level + 1}
                 />
               );
             })
@@ -183,7 +187,8 @@ Folder.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   searchingStatus: bool,
-  processingFolder: arrayOf(Object)
+  processingFolder: arrayOf(Object),
+  level: number
 }
 
 export default Folder;
