@@ -19,8 +19,8 @@ export default function ExpandIcon({ folder, opening, onExpand }) {
   if (folder.contentType !== 'folder' || !folder.hasContent) {
     return (
       <div style={{
-        width: 30,
-        minWidth: 30
+        width: 20,
+        minWidth: 20
       }}
       />
     )
