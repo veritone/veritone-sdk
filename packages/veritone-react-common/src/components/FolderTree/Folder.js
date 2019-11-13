@@ -82,7 +82,6 @@ function Folder({
   return (
     <List className={cx(styles['folder'])}>
       <ListItem
-        button
         data-id={folderId}
         onClick={onChangeItem(folder)}
         className={cx({
