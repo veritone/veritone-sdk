@@ -33,12 +33,13 @@ function StoryComponent() {
   ]
   const subjectObservable = new Subject();
   const props = {
-    type: 'watchlist',
+    type: 'collection',
     actionConfig,
-    isEnableShowContent: true,
-    selectable: true,
+    isEnableShowContent: false,
+    selectable: false,
     isEnableSearch: true,
     isEnableShowRootFolder: true,
+    isEnableSelectRoot: true,
     folderAction: folderActionDefault,
     folderSelectedFromApp: selected,
     subjectObservable: subjectObservable,

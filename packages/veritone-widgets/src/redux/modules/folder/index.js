@@ -10,17 +10,23 @@ export const namespace = 'folderTree';
 
 export const folderType = {
   cms: {
+    orgFolderName: 'My Organization',
+    ownerFolderName: 'My Folder',
     rootFolderType: 'cms',
     childs: 'tdo',
     childsType: 'childTDOs'
   },
-  watchlist:{
+  watchlist: {
+    orgFolderName: 'Shared Watchlist',
+    ownerFolderName: 'My Watchlist',
     rootFolderType: 'watchlist',
     child: 'watchlist',
     childsType: 'childWatchlists'
   },
-  collection:{
-    rootFolderType: 'collection',
+  collection: {
+    orgFolderName: 'Org Collection',
+    ownerFolderName: 'My Collection',
+    rootFolderType: 'collection ',
     child: 'collection',
     childsType: 'childCollections'
   }
@@ -348,6 +354,12 @@ export default createReducer(defaultFolderState, {
     const parentId = folder.parentId;
     const allIdNew = includes(state.foldersData.allId, folderId)
       ? [...state.foldersData.allId] : [...state.foldersData.allId, folderId]
+    const newParent = parentId ? {
+      [parentId]: {
+        ...state.foldersData.byId[parentId],
+        childs: uniq([...state.foldersData.byId[parentId].childs, folderId])
+      }
+    } : {}
     return {
       ...state,
       fetching: false,
@@ -362,10 +374,7 @@ export default createReducer(defaultFolderState, {
             ...state.foldersData.byId[folderId],
             ...folder
           },
-          [parentId]: {
-            ...state.foldersData.byId[parentId],
-            childs: uniq([...state.foldersData.byId[parentId].childs, folderId])
-          }
+          ...newParent
         }
       }
     }

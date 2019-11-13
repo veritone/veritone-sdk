@@ -54,6 +54,7 @@ function FolderTreeWrapper({
   type = 'watchlist',
   isEnableShowContent = false,
   isEnableSearch,
+  isEnableSelectRoot,
   isEnableShowRootFolder,
   subjectObservable,
   selectable = true,
@@ -107,14 +108,16 @@ function FolderTreeWrapper({
   }, [foldersData, selectedFolder]);
 
   useEffect(() => {
-    if (initialStatus && isEmpty(selectedFolder)) {
-      const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
-      if (config.type !== 'watchlist') {
-        onSelectFolder({
-          [rootFolder]: true
-        })
-      } else {
-        onSelectAllFolder();
+    if (isEnableSelectRoot) {
+      if (initialStatus && isEmpty(selectedFolder)) {
+        const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
+        if (config.type !== 'watchlist') {
+          onSelectFolder({
+            [rootFolder]: true
+          })
+        } else {
+          onSelectAllFolder();
+        }
       }
     }
   }, [initialStatus]);
@@ -338,6 +341,7 @@ FolderTreeWrapper.propTypes = {
   isEnableShowContent: bool,
   isEnableSearch: bool,
   isEnableShowRootFolder: bool,
+  isEnableSelectRoot: bool,
   folderAction: arrayOf(shape({
     id: number,
     type: string,

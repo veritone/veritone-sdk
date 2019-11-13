@@ -19,11 +19,7 @@ export default function* initFolder() {
 
 function* initRootFolderSagas(action) {
   const { config } = action.payload;
-  const childType = config.type === 'cms'
-    ? 'childTDOs'
-    : config.type === 'watchlist'
-      ? 'childWatchlists'
-      : 'childCollections';
+  const childType = folderReducer.folderType[config.type].childsType;
   yield put(folderReducer.initConfig(config));
   yield put(folderReducer.initRootFolderStart());
   const rootFolderResponse = yield getRootFolder(action);
@@ -37,8 +33,8 @@ function* initRootFolderSagas(action) {
     const childFolderCounts = _.get(rootFolder, 'childFolders.count', 0);
     const childContentCounts = _.get(rootFolder, [childType, 'count'], 0);
     let folderName = _.includes(rootFolder.name, config.type) ?
-      (config.type === 'cms' ? 'My organization' : `Org ${config.type}`) :
-      `My ${config.type}`;
+      folderReducer.folderType[config.type].orgFolderName :
+      folderReducer.folderType[config.type].ownerFolderName;
     return {
       id: rootFolder.id,
       name: folderName,
@@ -59,7 +55,7 @@ function* getRootFolder(action) {
   const { config } = action.payload;
   const { type, isEnableShowContent } = config;
   const initialOffset = 0;
-  const childType = type === 'cms' ? 'childTDOs' : type === 'watchlist' ? 'childWatchlists' : 'childCollections';
+  const childType = folderReducer.folderType[config.type].childsType;
   const query = `query rootFolders($type: RootFolderType){
       rootFolders(type: $type){
         id
@@ -95,7 +91,8 @@ function* getRootFolder(action) {
 function* initFolderSagas(action) {
   const { type, isEnableShowContent } = yield select(folderSelector.config);
   const { folderId } = action.payload;
-  const childType = type === 'cms' ? 'childTDOs' : type === 'watchlist' ? 'childWatchlists' : 'childCollections';
+  const rootFolderIds = yield select(folderSelector.rootFolderIds);
+  const childType = folderReducer.folderType[type].childsType;
   const query = `query folder($id: ID!){
       folder(id: $id){
         id
@@ -119,6 +116,7 @@ function* initFolderSagas(action) {
     yield put(folderReducer.initFolderError(folderId));
     return {};
   }
+  const rootName = folderReducer.folderType[type].orgFolderName
   const folder = _.get(response, 'data.folder', {});
   const childFolderCounts = _.get(folder, 'childFolders.count', 0);
   const childContentCounts = _.get(folder, [childType, 'count'], 0);
@@ -126,7 +124,8 @@ function* initFolderSagas(action) {
     ...folder,
     contentType: 'folder',
     parentId: folder.parent ? folder.parent.id : null,
-    hasContent: childFolderCounts > 0 || childContentCounts > 0
+    hasContent: childFolderCounts > 0 || childContentCounts > 0,
+    name: _.includes(rootFolderIds, folderId) ? rootName : folder.name
   }
   yield put(folderReducer.initFolderSuccess(folderReprocess));
 }
