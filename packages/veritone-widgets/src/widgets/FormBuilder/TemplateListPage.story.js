@@ -8,19 +8,22 @@ export const templates = [
     id: '1',
     name: 'Notification',
     imageUrl: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    isTemplate: true
+    isTemplate: true,
+    lastModified: '2019-01-25T01:18:09.254Z'
   },
   {
     id: '2',
     name: 'Nielsen Data Per Order',
     imageUrl: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    isTemplate: true
+    isTemplate: true,
+    lastModified: '2019-01-25T01:18:09.254Z'
   },
   {
     id: '3',
     name: 'Veritone Transcription Benchmark Results',
     imageUrl: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    isTemplate: true
+    isTemplate: true,
+    lastModified: '2019-01-25T01:18:09.254Z'
   }
 ]
 
@@ -29,6 +32,6 @@ storiesOf('FormBuilder/TemplateList', module)
     <TemplateListPage
       templates={templates}
       page={0}
-      rowsPerpage={5}
+      rowsPerPage={5}
     />
   ))

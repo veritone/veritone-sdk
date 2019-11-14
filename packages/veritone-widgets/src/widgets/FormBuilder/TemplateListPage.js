@@ -13,6 +13,7 @@ export default function TemplateListPage({
   onChangePage,
   onChangeRowsPerPage
 }) {
+  console.log(templates)
   return (
     <Container>
       <Typography>
