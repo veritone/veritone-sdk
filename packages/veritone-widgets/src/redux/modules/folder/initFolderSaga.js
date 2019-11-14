@@ -20,31 +20,40 @@ export default function* initFolder() {
 function* initRootFolderSagas(action) {
   const { config } = action.payload;
   const childType = folderReducer.folderType[config.type].childsType;
-  yield put(folderReducer.initConfig(config));
+  const isEnableOrgFolder = _.includes(config.showingType, 'org');
+  const isEnableOwnerFolder = _.includes(config.showingType, 'owner');
+  yield put(folderReducer.initConfig({
+    ...config,
+    isEnableOrgFolder,
+    isEnableOwnerFolder
+  }));
   yield put(folderReducer.initRootFolderStart());
   const rootFolderResponse = yield getRootFolder(action);
   if (_.isEmpty(rootFolderResponse)) {
     return;
   }
-  const rootFolders = config.type !== 'watchlist'
-    ? [_.get(rootFolderResponse, ['data', 'rootFolders', 0], {})]
-    : _.get(rootFolderResponse, ['data', 'rootFolders'], []);
-  const rootFolderReprocess = rootFolders.map(rootFolder => {
-    const childFolderCounts = _.get(rootFolder, 'childFolders.count', 0);
-    const childContentCounts = _.get(rootFolder, [childType, 'count'], 0);
-    let folderName = _.includes(rootFolder.name, config.type) ?
-      folderReducer.folderType[config.type].orgFolderName :
-      folderReducer.folderType[config.type].ownerFolderName;
-    return {
-      id: rootFolder.id,
-      name: folderName,
-      contentType: 'folder',
-      parentId: null,
-      hasContent: childFolderCounts > 0 || childContentCounts > 0,
-      childs: []
-    }
-  });
-  const rootFolderId = rootFolders.map(folder => folder.id);
+  const orgRootFolder = isEnableOrgFolder
+    ? [_.get(rootFolderResponse, ['data', 'rootFolders', 0], {})] : [];
+  const ownerRootFolder = isEnableOwnerFolder
+    ? [_.get(rootFolderResponse, ['data', 'rootFolders', 1], {})] : [];
+
+  const rootFolderReprocess = [...orgRootFolder, ...ownerRootFolder]
+    .map(rootFolder => {
+      const childFolderCounts = _.get(rootFolder, 'childFolders.count', 0);
+      const childContentCounts = _.get(rootFolder, [childType, 'count'], 0);
+      let folderName = _.includes(rootFolder.name, config.type) ?
+        folderReducer.folderType[config.type].orgFolderName :
+        folderReducer.folderType[config.type].ownerFolderName;
+      return {
+        id: rootFolder.id,
+        name: folderName,
+        contentType: 'folder',
+        parentId: null,
+        hasContent: childFolderCounts > 0 || childContentCounts > 0,
+        childs: []
+      }
+    });
+  const rootFolderId = [...orgRootFolder, ...ownerRootFolder].map(folder => folder.id);
   yield all(rootFolderId.map(rootFolderId => {
     return put(folderReducer.fetchMore(rootFolderId, true));
   }));

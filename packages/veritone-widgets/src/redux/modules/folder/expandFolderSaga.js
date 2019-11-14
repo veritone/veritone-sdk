@@ -27,6 +27,7 @@ export default function* expandFolder() {
         childs: childs.map(item => item.id)
       }
     });
+    console.log(folderReprocess);
     yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
     const folderChildId = folderReprocess.map(folder => folder.id);
     const selected = yield select(folderSelector.selected);

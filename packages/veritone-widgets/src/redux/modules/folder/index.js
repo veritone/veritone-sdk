@@ -257,10 +257,11 @@ export const deleteFolderStart = folderId => ({
   }
 });
 
-export const deleteFolderSuccess = folderId => ({
+export const deleteFolderSuccess = (folderId, parentId) => ({
   type: DELETE_FOLDER_SUCCESS,
   payload: {
-    folderId
+    folderId,
+    parentId
   }
 });
 
@@ -395,6 +396,9 @@ export default createReducer(defaultFolderState, {
       ...accum,
       [currentFolder.id]: currentFolder
     }), {});
+    const folderChilds = [...folders.map(item => item.id)];
+    console.log(state.foldersData.byId[folderId]);
+    console.log(folderChilds);
     return {
       ...state,
       processingFolder: [
@@ -411,7 +415,8 @@ export default createReducer(defaultFolderState, {
           ...state.foldersData.byId,
           [folderId]: {
             ...state.foldersData.byId[folderId],
-            childs: uniq([...get(state, ['foldersData', 'byId', folderId, 'childs']), ...folders.map(item => item.id)])
+            childs: folderChilds,
+            hasContent: folderChilds.length > 0
           },
           ...folderByIds
         }
@@ -493,15 +498,22 @@ export default createReducer(defaultFolderState, {
     ]
   }),
   [DELETE_FOLDER_SUCCESS]: (state, action) => {
+    const { folderId, parentId } = action.payload;
     return {
       ...state,
       processingFolder: [
-        ...state.processingFolder.filter(item => item !== action.payload.folderId)
+        ...state.processingFolder.filter(item => item !== folderId)
       ],
       foldersData: {
         ...state.foldersData,
-        allId: [...state.foldersData.allId.filter(item => item !== action.payload.folderId)],
-        byId: omit(state.foldersData.byId, action.payload.folderId)
+        allId: [...state.foldersData.allId.filter(item => item !== folderId)],
+        byId: {
+          ...omit(state.foldersData.byId, folderId),
+          [parentId]: {
+            ...state.foldersData.byId[parentId],
+            childs: [...state.foldersData.byId[parentId].childs.filter(child => child !== folderId)]
+          }
+        }
       }
     }
   },

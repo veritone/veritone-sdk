@@ -58,6 +58,7 @@ function FolderTreeWrapper({
   isEnableShowRootFolder,
   subjectObservable,
   selectable = true,
+  showingType = ['org'],
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
@@ -95,7 +96,8 @@ function FolderTreeWrapper({
     const config = {
       type,
       isEnableShowContent,
-      selectable
+      selectable,
+      showingType
     }
     setConfig(config);
     initFolder(config);
@@ -342,6 +344,7 @@ FolderTreeWrapper.propTypes = {
   isEnableSearch: bool,
   isEnableShowRootFolder: bool,
   isEnableSelectRoot: bool,
+  showingType: arrayOf(string).isRequired,
   folderAction: arrayOf(shape({
     id: number,
     type: string,
