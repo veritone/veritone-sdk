@@ -16,7 +16,7 @@ import Divider from '@material-ui/core/Divider';
 import { FormBuilder } from 'veritone-react-common';
 import FormPublishModal from './FormPublishModal';
 
-import styles from './styles.scss';
+import useStyles from './FormBuilderDialog.style.js';
 
 function mapSelectedLocation(locations) {
   return locations.reduce((selectedLocations, { id }) => ({
@@ -53,6 +53,7 @@ export default function FormBuilderPage({
   });
 
   const updateFormDefinition = React.useCallback((formDefinition) => {
+    console.log(formDefinition)
     onChange({ ...form, definition: formDefinition });
   })
 
@@ -73,6 +74,8 @@ export default function FormBuilderPage({
     setTempFormName(form.name);
     setSelectedLocations(mapSelectedLocation(form.locations));
   }, [form]);
+
+  const styles = useStyles({});
 
   // React.useEffect(() => {
   //   if (id && !(loading || loaded)) {

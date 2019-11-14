@@ -66,11 +66,7 @@ const templateForm = {
 
 function BaseStory({ initialForm, ...props }) {
   const [form, setForm] = React.useState(initialForm);
-  const onChangeFormDefinition = React.useCallback((formDefintion) => setForm({
-    ...form,
-    definition: formDefintion
-  }));
-  return <FormBuider form={form} onChange={onChangeFormDefinition} {...props} />
+  return <FormBuider form={form} onChange={setForm} {...props} />
 }
 
 storiesOf('FormBuilder/FormBuilderPage', module)
