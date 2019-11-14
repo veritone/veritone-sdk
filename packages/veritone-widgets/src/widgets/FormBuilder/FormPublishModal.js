@@ -15,7 +15,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import styles from './FormPublishModal.scss';
+import useStyles from './FormPublishModal.style.js';
 
 export default function FormPublishModal({
   fetchLocations,
@@ -48,6 +48,8 @@ export default function FormPublishModal({
       [id]: checked
     }), {}))
   }, [selectedLocations, onChange]);
+
+  const styles = useStyles({});
 
   const numberSelectedLocations = Object.keys(selectedLocations)
     .filter(id => selectedLocations[id])
