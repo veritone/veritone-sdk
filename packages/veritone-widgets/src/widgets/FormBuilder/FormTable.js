@@ -15,7 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Lozenge } from 'veritone-react-common';
 
-import styles from './FormTable.scss';
+import useStyles from './FormTable.style.js';
 
 export default function FormTable({
   forms,
@@ -50,6 +50,8 @@ export default function FormTable({
     onDelete(rowId);
     setMenuAnchor(null);
   });
+
+  const styles = useStyles({});
 
   return (
     <React.Fragment>
