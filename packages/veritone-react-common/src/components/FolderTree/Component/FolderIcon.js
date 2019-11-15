@@ -29,7 +29,9 @@ export default function FolderIcon({
       ])} />
     )
   }
-  const folderIcon = (isOpening || (_.includes(highlightedIds, folderId) && !selectable))
+  const folderIcon = (
+    (isOpening && folder.childs && folder.childs.length > 0)
+    || (_.includes(highlightedIds, folderId) && !selectable))
     ? 'icon-open-folder'
     : folder.hasContent ? 'icon-full-folder' : 'icon-empty-folder'
   switch (folder.contentType) {

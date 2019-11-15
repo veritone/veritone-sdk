@@ -87,6 +87,7 @@ function FolderTreeWrapper({
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [fromNewButton, setStatus] = useState(false);
+  const [modifyFromAction, setModifyFromAction] = useState(false);
   const [currentFolderForAction, setCurrentFolderForAction] = useState({});
   const [selectedInModify, setSelectedInModify] = useState({});
   const [defaultOpening, setDefaultOpening] = useState([]);
@@ -169,6 +170,7 @@ function FolderTreeWrapper({
         break;
       case 'move':
         setOpenModify(true);
+        setModifyFromAction(true)
         break;
       default:
         break;
@@ -256,13 +258,23 @@ function FolderTreeWrapper({
     setData();
   }
 
+  const handlerOpenFolder = () => {
+    if(!selectable) {
+      setStatus(false);
+      setOpenNew(true);
+    } else {
+      setOpenModify(true);
+      setModifyFromAction(false);
+      setStatus(false);
+    }
+  }
+
   const processEvent = event => {
     const eventKey = event.split(' ')[0];
     const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : "";
     switch (eventKey) {
       case 'action/newfolder':
-        setStatus(false);
-        setOpenNew(true);
+        handlerOpenFolder();
         break;
       case 'action/select':
         setFolderSelectedFromApp({
@@ -310,6 +322,8 @@ function FolderTreeWrapper({
       />
       <ModifyFolder
         open={openModify}
+        isEnableEditName={!modifyFromAction}
+        isNewFolder={!modifyFromAction}
         handleClose={handleCloseModify}
         handleSubmit={handleSubmitModify}
         foldersData={foldersData}

@@ -1,5 +1,4 @@
 import { helpers } from 'veritone-redux-common';
-import get from 'lodash/get';
 import omit from 'lodash/omit';
 import uniq from 'lodash/uniq';
 import includes from 'lodash/includes';
@@ -24,7 +23,7 @@ export const folderType = {
     childsType: 'childWatchlists'
   },
   collection: {
-    orgFolderName: 'Org Collection',
+    orgFolderName: 'Shared Collection',
     ownerFolderName: 'My Collection',
     rootFolderType: 'collection ',
     child: 'collection',
@@ -397,8 +396,6 @@ export default createReducer(defaultFolderState, {
       [currentFolder.id]: currentFolder
     }), {});
     const folderChilds = [...folders.map(item => item.id)];
-    console.log(state.foldersData.byId[folderId]);
-    console.log(folderChilds);
     return {
       ...state,
       processingFolder: [

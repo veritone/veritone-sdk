@@ -6,8 +6,11 @@ import {
   put,
   select
 } from 'redux-saga/effects';
-import _ from 'lodash';
+import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
 import { handleRequest } from './helper';
+import { fetchMore } from './expandFolderSaga';
 import * as folderSelector from './selector';
 import * as folderReducer from './index';
 export default function* initFolder() {
@@ -20,8 +23,8 @@ export default function* initFolder() {
 function* initRootFolderSagas(action) {
   const { config } = action.payload;
   const childType = folderReducer.folderType[config.type].childsType;
-  const isEnableOrgFolder = _.includes(config.showingType, 'org');
-  const isEnableOwnerFolder = _.includes(config.showingType, 'owner');
+  const isEnableOrgFolder = includes(config.showingType, 'org');
+  const isEnableOwnerFolder = includes(config.showingType, 'owner');
   yield put(folderReducer.initConfig({
     ...config,
     isEnableOrgFolder,
@@ -29,19 +32,19 @@ function* initRootFolderSagas(action) {
   }));
   yield put(folderReducer.initRootFolderStart());
   const rootFolderResponse = yield getRootFolder(action);
-  if (_.isEmpty(rootFolderResponse)) {
+  if (isEmpty(rootFolderResponse)) {
     return;
   }
   const orgRootFolder = isEnableOrgFolder
-    ? [_.get(rootFolderResponse, ['data', 'rootFolders', 0], {})] : [];
+    ? [get(rootFolderResponse, ['data', 'rootFolders', 0], {})] : [];
   const ownerRootFolder = isEnableOwnerFolder
-    ? [_.get(rootFolderResponse, ['data', 'rootFolders', 1], {})] : [];
+    ? [get(rootFolderResponse, ['data', 'rootFolders', 1], {})] : [];
 
   const rootFolderReprocess = [...orgRootFolder, ...ownerRootFolder]
     .map(rootFolder => {
-      const childFolderCounts = _.get(rootFolder, 'childFolders.count', 0);
-      const childContentCounts = _.get(rootFolder, [childType, 'count'], 0);
-      let folderName = _.includes(rootFolder.name, config.type) ?
+      const childFolderCounts = get(rootFolder, 'childFolders.count', 0);
+      const childContentCounts = get(rootFolder, [childType, 'count'], 0);
+      let folderName = includes(rootFolder.name, config.type) ?
         folderReducer.folderType[config.type].orgFolderName :
         folderReducer.folderType[config.type].ownerFolderName;
       return {
@@ -126,15 +129,17 @@ function* initFolderSagas(action) {
     return {};
   }
   const rootName = folderReducer.folderType[type].orgFolderName
-  const folder = _.get(response, 'data.folder', {});
-  const childFolderCounts = _.get(folder, 'childFolders.count', 0);
-  const childContentCounts = _.get(folder, [childType, 'count'], 0);
+  const folder = get(response, 'data.folder', {});
+  const childFolderCounts = get(folder, 'childFolders.count', 0);
+  const childContentCounts = get(folder, [childType, 'count'], 0);
+  const childsList = yield fetchMore(action);
   const folderReprocess = {
     ...folder,
     contentType: 'folder',
     parentId: folder.parent ? folder.parent.id : null,
     hasContent: childFolderCounts > 0 || childContentCounts > 0,
-    name: _.includes(rootFolderIds, folderId) ? rootName : folder.name
+    name: includes(rootFolderIds, folderId) ? rootName : folder.name,
+    childs: childsList.map(item => item.id)
   }
   yield put(folderReducer.initFolderSuccess(folderReprocess));
 }
