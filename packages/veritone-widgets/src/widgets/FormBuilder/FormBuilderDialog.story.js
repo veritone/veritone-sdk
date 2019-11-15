@@ -1,4 +1,5 @@
 import React from 'react';
+import { shape, string, arrayOf } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import FormBuider from './FormBuilderDialog';
@@ -57,16 +58,24 @@ const registeredForm = {
   dataRegistryId: 'fake-data-registry-id'
 }
 
-const templateForm = {
-  ...registeredForm,
-  dataRegistryId: null,
-  isTemplate: true
-}
-
-
 function BaseStory({ initialForm, ...props }) {
   const [form, setForm] = React.useState(initialForm);
   return <FormBuider form={form} onChange={setForm} {...props} />
+}
+
+BaseStory.propTypes = {
+  initialForm: shape({
+    name: string,
+    definition: arrayOf(shape({
+      name: string,
+      type: string
+    })),
+    locations: arrayOf(shape({
+      id: string,
+      name: string
+    })),
+    dataRegistryId: string
+  })
 }
 
 storiesOf('FormBuilder/FormBuilderPage', module)

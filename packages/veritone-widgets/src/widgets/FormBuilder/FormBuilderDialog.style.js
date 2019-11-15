@@ -1,29 +1,24 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-export default makeStyles(_ => createStyles({
-
+export default makeStyles(theme => createStyles({
   dialog: {
     'max-height': '100%'
   },
-
   dialogScrollPaper: {
     'justify-content': 'center'
   },
-
   dialogTitle: {
     'display': 'flex',
     'justify-content': 'space-between',
     'border-bottom': '1px solid #DADCDF',
-    'padding': '12px 20px',
+    'padding': theme.spacing(1, 2),
   },
-
   dialogContent: {
-    'padding': '16px 20px 0 20px',
+    'padding': `${theme.spacing(2)}px ${theme.spacing(3)}px 0 ${theme.spacing(3)}px`,
     'height': 'calc(100% - 70px)',
   },
-
   titleItem: {
-    'margin-left': '10px !important',
+    'margin-left': `${theme.spacing(1)}px !important`,
     'cursor': 'pointer',
   },
   previewContainer: {
@@ -38,7 +33,7 @@ export default makeStyles(_ => createStyles({
     'align-self': 'center'
   },
   formName: {
-    'margin': '24px !important',
+    'margin': `${theme.spacing(3)}px !important`,
     'width': '500px !important',
   }
 }))
