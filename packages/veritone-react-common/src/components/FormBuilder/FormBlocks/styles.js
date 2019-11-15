@@ -20,11 +20,10 @@ export default makeStyles(_ =>
       'align-items': 'center',
 
       '& > p': {
-        margin: 0,
+        'margin': 0,
       }
-    }
-
-    , dragPreviewContainer: {
+    },
+    dragPreviewContainer: {
       'padding-left': '16px',
       'height': '60px',
       'width': '200px',
@@ -34,14 +33,12 @@ export default makeStyles(_ =>
       'display': 'flex',
       'justify-items': 'center',
       'align-items': 'center',
-    }
-
-    , blockText: {
+    },
+    blockText: {
       'margin-top': '8px'
-    }
-
-    , previewText: {
+    },
+    previewText: {
       'margin-left': '8px'
     }
   })
-)
+);
