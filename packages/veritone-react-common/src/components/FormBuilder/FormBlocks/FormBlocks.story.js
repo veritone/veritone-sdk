@@ -10,7 +10,7 @@ storiesOf('FormBuilder/FormBlocks', module)
   .add('Display all blocks', () => (
     <DndProvider backend={HTML5Backend}>
       <DragLayer />
-      <div className="blocks-wrapper">
+      <div>
         {blockTypes.map(block => (
           <Block key={block.type} {...block} removeBlock={action('removeBlock')} />
         ))}

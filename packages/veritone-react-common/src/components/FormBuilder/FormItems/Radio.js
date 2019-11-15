@@ -7,7 +7,7 @@ import Box from '@material-ui/core/Box';
 import MaterialRadio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 
 export default function Radio({
@@ -24,11 +24,14 @@ export default function Radio({
     (e) => onChange({ name, value: e.target.value }),
     [name, onChange, value]
   );
+
+  const styles = useStyles({});
+
   return (
     <FormControl
       error={error.length > 0}
       fullWidth
-      className={styles['form-item']}
+      className={styles.formItem}
     >
       <Box
         component="fieldset"
