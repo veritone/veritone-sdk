@@ -53,7 +53,6 @@ export default function FormBuilderPage({
   });
 
   const updateFormDefinition = React.useCallback((formDefinition) => {
-    console.log(formDefinition)
     onChange({ ...form, definition: formDefinition });
   })
 
@@ -76,12 +75,6 @@ export default function FormBuilderPage({
   }, [form]);
 
   const styles = useStyles({});
-
-  // React.useEffect(() => {
-  //   if (id && !(loading || loaded)) {
-  //     fetchForm(id);
-  //   }
-  // }, [id]);
 
   return (
     <React.Fragment>

@@ -26,26 +26,19 @@ export default makeStyles(_ => createStyles({
     'margin-left': '10px !important',
     'cursor': 'pointer',
   },
-
   previewContainer: {
     'height': '100%'
   },
-
   previewContent: {
     'height': 'calc(100% - 45px)',
-    'overflow': 'auto',
     'overflow': '-moz-scrollbars-none',
-
     '&:-webkit-scrollbar': { width: '0 !important' }
   },
-
   formLoading: {
     'align-self': 'center'
   },
-
   formName: {
     'margin': '24px !important',
     'width': '500px !important',
   }
-
 }))
