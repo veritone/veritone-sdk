@@ -211,15 +211,19 @@ export const searchFolderError = searchValue => ({
   }
 });
 
-export const selectFolder = selected => ({
+export const selectFolder = (workSpace, selected) => ({
   type: SELECT_FOLDER,
   payload: {
+    workSpace,
     selected
   }
 });
 
-export const selectAllFolder = () => ({
-  type: SELECT_ALL_FOLDER
+export const selectAllFolder = workSpace => ({
+  type: SELECT_ALL_FOLDER,
+  payload: {
+    workSpace
+  }
 });
 
 export const createFolder = (folderName, parentFolderId) => ({
@@ -426,17 +430,25 @@ export default createReducer(defaultFolderState, {
       ...state.processingFolder.filter(item => item !== action.payload.folderId)
     ]
   }),
-  [SELECT_FOLDER]: (state, action) => ({
-    ...state,
-    selectedFolder: action.payload.selected
-  }),
+  [SELECT_FOLDER]: (state, action) => {
+    const { selected, workSpace } = action.payload;
+    return {
+      ...state,
+      selectedFolder: {
+        ...state.selectedFolder,
+        [workSpace]: selected
+      }
+    }
+  },
   [SELECT_ALL_FOLDER]: (state, action) => ({
     ...state,
     selectedFolder: {
-      ...state.foldersData.allId.reduce((accum, currentFolderId) => ({
+      ...state.searchFolder,
+      [action.payload.workSpace]: state.foldersData.allId.reduce((accum, currentFolderId) => ({
         ...accum,
         [currentFolderId]: true
       }), {})
+
     }
   }),
   [SEARCH_START]: (state, action) => ({

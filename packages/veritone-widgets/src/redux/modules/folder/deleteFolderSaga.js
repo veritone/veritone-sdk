@@ -18,7 +18,7 @@ function* deleteFolder(action) {
   yield put(folderReducer.deleteFolderStart(folderId));
   const foldersData = yield select(folderSelector.folderData);
   const folderSelected = yield select(folderSelector.selected);
-  const { selectable } = yield select(folderSelector.config);
+  const { selectable, workSpace } = yield select(folderSelector.config);
   const rootIds = yield select(folderSelector.rootFolderIds);
   const folder = get(foldersData, ['byId', folderId], {});
   if (folder.hasContent) {
@@ -65,12 +65,12 @@ function* deleteFolder(action) {
   yield put(folderReducer.initFolder(parent.id));
   if (folderSelected[folderId]) {
     if (!selectable) {
-      yield put(folderReducer.selectFolder({
+      yield put(folderReducer.selectFolder(workSpace, {
         [rootIds[0]]: true
       }))
     } else {
       const newSelected = omit(folderSelected, [folderId]);
-      yield put(folderReducer.selectFolder(newSelected));
+      yield put(folderReducer.selectFolder(workSpace, newSelected));
     }
   }
 

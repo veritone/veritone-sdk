@@ -20,10 +20,10 @@ export default function* expandFolder() {
     if (includes(rootFolderIds, folderId) && !isReload) {
       return;
     }
-    if(includes(expandedFolder, folderId)){
+    if (includes(expandedFolder, folderId)) {
       return yield put(folderReducer.initFolder(folderId));
     }
-    const { selectable } = config;
+    const { selectable, workSpace } = config;
     yield put(folderReducer.fetchMoreStart(folderId));
     const folders = yield fetchMore(action);
     const folderReprocess = folders.map(folder => {
@@ -37,15 +37,15 @@ export default function* expandFolder() {
     yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
     const folderChildId = folderReprocess.map(folder => folder.id);
     const selected = yield select(folderSelector.selected);
-    if (selected[folderId] && selectable) {
+    if (get(selected, [workSpace, folderId]) && selectable) {
       const newSelected = {
-        ...selected,
+        ...get(selected, [workSpace], {}),
         ...folderChildId.reduce((accum, value) => ({
           ...accum,
           [value]: true
         }), {})
       }
-      yield put(folderReducer.selectFolder(newSelected));
+      yield put(folderReducer.selectFolder(workSpace, newSelected));
     }
   });
 }
