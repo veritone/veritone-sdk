@@ -1,5 +1,5 @@
 import React from 'react';
-import { shape, func, string, arrayOf } from 'prop-types';
+import { shape, func, string, arrayOf, objectOf } from 'prop-types';
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import { useDrop } from 'react-dnd';
@@ -19,7 +19,7 @@ import { generateSchema } from './utils';
 import * as blockUtils from './blockUtils';
 import typeConfiguration, { initData } from './typeConfiguration';
 
-import styles from './styles.scss';
+import useStyles from './FormBuilder.style.js';
 
 function formEqual({ form }, { form: nextForm }) {
   return _.isEqual(form, nextForm);
@@ -31,8 +31,13 @@ function FormBuilderComponent({
   swapBlock,
   updateBlock,
   removeBlock,
-  selectBlock
+  selectBlock,
+  classes,
+  helpLink
 }) {
+
+  const styles = useStyles({});
+
   const [isPreview, setIsPreview] = React.useState(false);
 
   const [, drop] = useDrop({
@@ -63,12 +68,12 @@ function FormBuilderComponent({
   const settingOpen = configurationOpen.length > 0;
 
   return (
-    <div className={cx(styles['form-builder'])}>
-      <div className={cx(styles['form-blocks'])}>
-        <Typography className={cx(styles['form-blocks-title'])}>
+    <div className={cx(styles.formBuilder, classes.container)}>
+      <div className={cx(styles.formBlocks)}>
+        <Typography className={cx(styles.formBlocksTitle)}>
           Blocks
         </Typography>
-        <div className={styles['blocks-wrapper']}>
+        <div className={styles.blocksWrapper}>
           {blockTypes.map(block => (
             <Block
               key={block.type}
@@ -93,15 +98,15 @@ function FormBuilderComponent({
           />
         )}
       </div>
-      <div className={styles['blocks-preview']}>
+      <div className={cx(styles.blocksPreview, classes.previewContainer)}>
         {
           form.length > 0 && (
-            <Typography className={cx(styles['form-preview-title'])}>
+            <Typography className={cx(styles.formPreviewTitle)}>
               Form preview
             </Typography>
           )
         }
-        <div ref={drop}>
+        <div ref={drop} className={classes.previewContent}>
           {form.map((block, index) => {
             const BlockItem = formItems[block.type];
             return (
@@ -129,9 +134,9 @@ function FormBuilderComponent({
           {
             form.length === 0 && (
               <NullState
-                titleText="Begin by selecting block to your rignt"
+                titleText="Begin by selecting block to your right"
               >
-                <Link href="https://help.veritone.com/en/" target= "_blank">
+                <Link href={helpLink} target="_blank">
                   Need help? Click here to watch a turtorial
                 </Link>
               </NullState>
@@ -139,10 +144,10 @@ function FormBuilderComponent({
           }
         </div>
       </div>
-      <div className={styles['configuration-container']}>
+      <div className={styles.configurationContainer}>
         {
           settingOpen && (
-            <Typography className={styles['form-configuration-title']}>
+            <Typography className={styles.formConfigurationTitle}>
               {`${configurationOpen[0].name} settings`}
             </Typography>
           )
@@ -174,6 +179,8 @@ FormBuilderComponent.propTypes = {
   removeBlock: func,
   selectBlock: func,
   updateBlock: func,
+  classes: objectOf(string),
+  helpLink: string,
 }
 
 FormBuilderComponent.defaultProps = {
@@ -182,12 +189,14 @@ FormBuilderComponent.defaultProps = {
   removeBlock: _.noop,
   selectBlock: _.noop,
   updateBlock: _.noop,
-  form: []
+  form: [],
+  classes: {},
+  helpLink: 'https://help.veritone.com/en/'
 }
 
 const FormBuilderComponentMemo = React.memo(FormBuilderComponent, formEqual);
 
-function FormBuilder({ form, onChange }) {
+function FormBuilder({ form, onChange, ...remainProps }) {
   const addBlock = React.useCallback((index, type) => {
     const name = `${type}-${(new Date()).getTime()}`;
     const item = typeConfiguration[type]
@@ -225,6 +234,7 @@ function FormBuilder({ form, onChange }) {
         updateBlock={updateBlock}
         swapBlock={swapBlock}
         selectBlock={selectBlock}
+        {...remainProps}
       />
     </DndProvider>
   )
@@ -233,11 +243,13 @@ function FormBuilder({ form, onChange }) {
 FormBuilder.propTypes = {
   onChange: func,
   form: formPropType,
+  classes: objectOf(string)
 }
 
 FormBuilder.defaultProps = {
   onChange: _.noop,
-  form: []
+  form: [],
+  classes: {}
 }
 
 export default FormBuilder;

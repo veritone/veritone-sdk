@@ -10,7 +10,7 @@ import {
 import useSortable from '../../hooks/useSortable';
 import * as blockUtils from '../../blockUtils';
 
-import styles from '../styles.scss';
+import useStyles from '../styles.js';
 
 const type = "items"
 
@@ -92,6 +92,7 @@ const Item = function Item({
   updateBlock
 }) {
   const dropRef = React.createRef();
+  const styles = useStyles({});
 
   const [
     { isDragging },
@@ -111,7 +112,7 @@ const Item = function Item({
   return drop(preview(
     <div
       ref={dropRef}
-      className={styles['item-container']}
+      className={styles.itemContainer}
       style={(isDragging) ? { opacity: 0 } : {}}
     >
       <TextField
@@ -122,15 +123,15 @@ const Item = function Item({
         fullWidth
       />
       <div ref={drag}>
-        <DragHandleOutlined className={styles['preview-icon']} />
+        <DragHandleOutlined className={styles.previewIcon} />
       </div>
       <AddCircleOutline
         onClick={handleAdd}
-        className={styles['preview-icon']}
+        className={styles.previewIcon}
       />
       <DeleteOutlined
         onClick={handleRemove}
-        className={styles['preview-icon']}
+        className={styles.previewIcon}
       />
     </div>
   ))
