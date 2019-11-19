@@ -4,7 +4,7 @@ import { mount } from 'enzyme';
 
 import Block from './';
 
-const MockIcon = <div  />
+const MockIcon = <div  />;
 
 describe('FormBlocks', () => {
   it('Should render a FormBlocks', () => {
@@ -16,7 +16,6 @@ describe('FormBlocks', () => {
         icon={MockIcon}
       />
     )
-    expect(wrapper.find('.block-container')).toHaveLength(1);
     expect(wrapper.text()).toBe('DragLabel');
   })
-})
+});

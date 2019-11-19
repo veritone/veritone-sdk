@@ -4,9 +4,10 @@ import { noop } from 'lodash';
 import typeConfiguration from '../typeConfiguration';
 import configurationComponents from './items';
 
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function Configuration({ type, onChange, ...data }) {
+  const styles = useStyles({});
   return (
     <div>
       {
@@ -18,7 +19,7 @@ export default function Configuration({ type, onChange, ...data }) {
               key={configurationType}
               value={data[configurationType]}
               onChange={onChange}
-              className={styles['configuration-item']}
+              className={styles.configurationItem}
               {...data}
             />);
         })
