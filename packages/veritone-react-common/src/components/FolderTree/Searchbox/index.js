@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 import cx from 'classnames';
 import { func, string } from 'prop-types';
-import InputBase from "@material-ui/core/InputBase";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
 
 import styles from './styles.scss';
 
 export default function Searchbox({
   onSearch,
-  placeholder = "Search"
+  placeholder = 'Search'
 }) {
   const inputRef = React.createRef();
   const [focusing, setFocusing] = React.useState(false);
@@ -40,7 +40,7 @@ export default function Searchbox({
         inputRef={inputRef}
         className={cx(styles['input'])}
         placeholder={placeholder}
-        inputProps={{ "aria-label": "Search-input" }}
+        inputProps={{ 'aria-label': 'Search-input' }}
         onKeyDown={handleKeyDown}
       />
       <IconButton

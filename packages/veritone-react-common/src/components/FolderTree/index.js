@@ -1,15 +1,15 @@
 /* eslint-disable react/jsx-no-bind */
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   bool,
   func,
   shape,
   arrayOf,
-} from "prop-types";
+} from 'prop-types';
 import cx from 'classnames';
 import _ from 'lodash';
 
-import Folder from "./Folder";
+import Folder from './Folder';
 import styles from './styles.scss';
 
 export const getAllChildId = (item, foldersData) => {
@@ -162,6 +162,7 @@ function FolderTree({
               foldersData.byId[childId] || {})}
             folders={foldersData}
             processingFolder={processingFolder}
+            level={0}
           />
         );
       })}

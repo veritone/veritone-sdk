@@ -1,13 +1,14 @@
 /* eslint-disable react/jsx-no-bind */
-import React from "react";
+import React from 'react';
 import {
   arrayOf,
   bool,
   shape,
-  func
-} from "prop-types";
-import cx from "classnames";
-import _ from "lodash";
+  func,
+  number
+} from 'prop-types';
+import cx from 'classnames';
+import _ from 'lodash';
 import {
   Collapse,
   List,
@@ -15,7 +16,7 @@ import {
   ListItemText,
   Checkbox,
   CircularProgress
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 import ExpandIcon from './Component/ExpandIcon';
 import FolderIcon from './Component/FolderIcon';
@@ -37,7 +38,8 @@ function Folder({
   folderAction,
   onMenuClick,
   searchingStatus,
-  processingFolder
+  processingFolder,
+  level
 }) {
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
@@ -80,7 +82,6 @@ function Folder({
   return (
     <List className={cx(styles['folder'])}>
       <ListItem
-        button
         data-id={folderId}
         onClick={onChangeItem(folder)}
         className={cx({
@@ -88,6 +89,7 @@ function Folder({
           [styles['list-item']]: true
         })}
       >
+        <div style={{ minWidth: level * 15, width: level * 15 }} />
         {!searchingStatus && (
           <ExpandIcon
             onExpand={onExpand}
@@ -118,7 +120,7 @@ function Folder({
           <div className={cx(styles['icon-progress'])}>
             <CircularProgress
               variant="indeterminate"
-              size={18}
+              size={16}
             />
           </div>
         )}
@@ -133,7 +135,7 @@ function Folder({
         )}
       </ListItem>
       <Collapse in={isOpening} style={{ padding: 0 }}>
-        <List disablePadding className={cx(styles['sub-folder'])}>
+        <List disablePadding>
           {
             childs.map(child => {
               const nestedChilds = child.childs || [];
@@ -159,6 +161,7 @@ function Folder({
                   onMenuClick={onMenuClick}
                   searchingStatus={searchingStatus}
                   processingFolder={processingFolder}
+                  level={level + 1}
                 />
               );
             })
@@ -183,7 +186,8 @@ Folder.propTypes = {
   folderAction: arrayOf(Object),
   onMenuClick: func,
   searchingStatus: bool,
-  processingFolder: arrayOf(Object)
+  processingFolder: arrayOf(Object),
+  level: number
 }
 
 export default Folder;
