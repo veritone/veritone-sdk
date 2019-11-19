@@ -29,7 +29,7 @@ export default function ModifyFolder({
       setFolderName('');
     };
   }, [currentFolder]);
-  
+
   React.useEffect(() => {
     setFolderName('');
     setError('');
