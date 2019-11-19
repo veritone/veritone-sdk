@@ -5,7 +5,9 @@ import {
   put,
   select
 } from 'redux-saga/effects';
-import _ from 'lodash';
+import includes from 'lodash/includes';
+import get from 'lodash/get';
+import orderBy from 'lodash/orderBy';
 import { handleRequest } from './helper';
 import * as folderReducer from './index';
 import * as folderSelector from './selector';
@@ -14,13 +16,18 @@ export default function* expandFolder() {
     const { folderId, isReload } = action.payload;
     const config = yield select(folderSelector.config);
     const rootFolderIds = yield select(folderSelector.rootFolderIds);
-    if (_.includes(rootFolderIds, folderId) && !isReload) {
+    const expandedFolder = yield select(folderSelector.folderExpanded);
+    if (includes(rootFolderIds, folderId) && !isReload) {
       return;
     }
-    const { selectable } = config;
+    if (includes(expandedFolder, folderId)) {
+      return yield put(folderReducer.initFolder(folderId));
+    }
+    const { selectable, workSpace } = config;
+    yield put(folderReducer.fetchMoreStart(folderId));
     const folders = yield fetchMore(action);
     const folderReprocess = folders.map(folder => {
-      const childs = _.get(folder, 'childFolders.records', []);
+      const childs = get(folder, 'childFolders.records', []);
       return {
         ...folder,
         parentId: folder.parent.id,
@@ -30,20 +37,19 @@ export default function* expandFolder() {
     yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
     const folderChildId = folderReprocess.map(folder => folder.id);
     const selected = yield select(folderSelector.selected);
-    if (selected[folderId] && selectable) {
+    if (get(selected, [workSpace, folderId]) && selectable) {
       const newSelected = {
-        ...selected,
+        ...get(selected, [workSpace], {}),
         ...folderChildId.reduce((accum, value) => ({
           ...accum,
           [value]: true
         }), {})
       }
-      yield put(folderReducer.selectFolder(newSelected));
+      yield put(folderReducer.selectFolder(workSpace, newSelected));
     }
   });
 }
-
-function* fetchMore(action) {
+export function* fetchMore(action) {
   const { folderId } = action.payload;
   const config = yield select(folderSelector.config);
   const {
@@ -54,7 +60,6 @@ function* fetchMore(action) {
   const pageSize = 30;
   let results = [];
   let contentResult = [];
-  yield put(folderReducer.fetchMoreStart(folderId));
   const childType = folderReducer.folderType[type].childsType;
   const childContentType = isEnableShowContent ? folderReducer.folderType[type].childs : '';
   const queryFolder = `query folder($id:ID!, $offset: Int, $limit: Int){
@@ -64,6 +69,7 @@ function* fetchMore(action) {
         parent{
           id
         }
+        orderIndex
         childFolders(offset: $offset, limit: $limit){
           count
           records{
@@ -73,6 +79,7 @@ function* fetchMore(action) {
             parent {
               id
             }
+            orderIndex
             childFolders{
               count
             }
@@ -114,11 +121,11 @@ function* fetchMore(action) {
       yield put(folderReducer.initFolderError(error));
       return results;
     }
-    const count = _.get(response, 'data.folder.childFolders.count', 0);
-    const records = _.get(response, 'data.folder.childFolders.records', []);
+    const count = get(response, 'data.folder.childFolders.count', 0);
+    const records = get(response, 'data.folder.childFolders.records', []);
     const recordsReprocess = records.map(item => {
-      const childCount = _.get(item, ['childFolders', 'count'], 0);
-      const childContentCount = _.get(item, [childType, 'count'], 0)
+      const childCount = get(item, ['childFolders', 'count'], 0);
+      const childContentCount = get(item, [childType, 'count'], 0)
       return {
         ...item,
         hasContent: childCount > 0 || childContentCount > 0,
@@ -150,7 +157,7 @@ function* fetchMore(action) {
       yield put(folderReducer.initFolderError(error));
       return contentResult;
     }
-    const records = _.get(response, ['data', 'folder', childType, 'records'], []);
+    const records = get(response, ['data', 'folder', childType, 'records'], []);
     const recordsReprocess = records.map(item => ({
       ...item,
       contentType: childContentType,
@@ -158,7 +165,7 @@ function* fetchMore(action) {
         id: folderId
       }
     }));
-    const count = _.get(response, ['data', 'folder', childType, 'count'], 0);
+    const count = get(response, ['data', 'folder', childType, 'count'], 0);
     contentResult = contentResult.concat(recordsReprocess);
     if (count === pageSize) {
       return yield getChildFolder(offset + pageSize);
@@ -167,6 +174,8 @@ function* fetchMore(action) {
     }
   }
   const childFolder = yield getChildFolder(initialOffset);
+  const childFolderSorted = orderBy(childFolder, [folder => folder.name.toLowerCase(), 'orderIndex'], ['asc', 'asc']);
   const childContent = yield getChildContent(initialOffset);
-  return [...childFolder, ...childContent];
+  const childContentSorted = orderBy(childContent, [content => content.name.toLowerCase()], ['asc']);
+  return [...childFolderSorted, ...childContentSorted];
 }

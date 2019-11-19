@@ -1,5 +1,4 @@
 import { helpers } from 'veritone-redux-common';
-import get from 'lodash/get';
 import omit from 'lodash/omit';
 import uniq from 'lodash/uniq';
 import includes from 'lodash/includes';
@@ -10,17 +9,23 @@ export const namespace = 'folderTree';
 
 export const folderType = {
   cms: {
+    orgFolderName: 'My Organization',
+    ownerFolderName: 'My Folder',
     rootFolderType: 'cms',
     childs: 'tdo',
     childsType: 'childTDOs'
   },
-  watchlist:{
+  watchlist: {
+    orgFolderName: 'Shared Watchlist',
+    ownerFolderName: 'My Watchlist',
     rootFolderType: 'watchlist',
     child: 'watchlist',
     childsType: 'childWatchlists'
   },
-  collection:{
-    rootFolderType: 'collection',
+  collection: {
+    orgFolderName: 'Shared Collection',
+    ownerFolderName: 'My Collection',
+    rootFolderType: 'collection ',
     child: 'collection',
     childsType: 'childCollections'
   }
@@ -206,15 +211,19 @@ export const searchFolderError = searchValue => ({
   }
 });
 
-export const selectFolder = selected => ({
+export const selectFolder = (workSpace, selected) => ({
   type: SELECT_FOLDER,
   payload: {
+    workSpace,
     selected
   }
 });
 
-export const selectAllFolder = () => ({
-  type: SELECT_ALL_FOLDER
+export const selectAllFolder = workSpace => ({
+  type: SELECT_ALL_FOLDER,
+  payload: {
+    workSpace
+  }
 });
 
 export const createFolder = (folderName, parentFolderId) => ({
@@ -251,10 +260,11 @@ export const deleteFolderStart = folderId => ({
   }
 });
 
-export const deleteFolderSuccess = folderId => ({
+export const deleteFolderSuccess = (folderId, parentId) => ({
   type: DELETE_FOLDER_SUCCESS,
   payload: {
-    folderId
+    folderId,
+    parentId
   }
 });
 
@@ -348,6 +358,12 @@ export default createReducer(defaultFolderState, {
     const parentId = folder.parentId;
     const allIdNew = includes(state.foldersData.allId, folderId)
       ? [...state.foldersData.allId] : [...state.foldersData.allId, folderId]
+    const newParent = parentId ? {
+      [parentId]: {
+        ...state.foldersData.byId[parentId],
+        childs: uniq([...state.foldersData.byId[parentId].childs, folderId])
+      }
+    } : {}
     return {
       ...state,
       fetching: false,
@@ -362,10 +378,7 @@ export default createReducer(defaultFolderState, {
             ...state.foldersData.byId[folderId],
             ...folder
           },
-          [parentId]: {
-            ...state.foldersData.byId[parentId],
-            childs: uniq([...state.foldersData.byId[parentId].childs, folderId])
-          }
+          ...newParent
         }
       }
     }
@@ -386,6 +399,7 @@ export default createReducer(defaultFolderState, {
       ...accum,
       [currentFolder.id]: currentFolder
     }), {});
+    const folderChilds = [...folders.map(item => item.id)];
     return {
       ...state,
       processingFolder: [
@@ -402,7 +416,8 @@ export default createReducer(defaultFolderState, {
           ...state.foldersData.byId,
           [folderId]: {
             ...state.foldersData.byId[folderId],
-            childs: uniq([...get(state, ['foldersData', 'byId', folderId, 'childs']), ...folders.map(item => item.id)])
+            childs: folderChilds,
+            hasContent: folderChilds.length > 0
           },
           ...folderByIds
         }
@@ -415,17 +430,25 @@ export default createReducer(defaultFolderState, {
       ...state.processingFolder.filter(item => item !== action.payload.folderId)
     ]
   }),
-  [SELECT_FOLDER]: (state, action) => ({
-    ...state,
-    selectedFolder: action.payload.selected
-  }),
+  [SELECT_FOLDER]: (state, action) => {
+    const { selected, workSpace } = action.payload;
+    return {
+      ...state,
+      selectedFolder: {
+        ...state.selectedFolder,
+        [workSpace]: selected
+      }
+    }
+  },
   [SELECT_ALL_FOLDER]: (state, action) => ({
     ...state,
     selectedFolder: {
-      ...state.foldersData.allId.reduce((accum, currentFolderId) => ({
+      ...state.searchFolder,
+      [action.payload.workSpace]: state.foldersData.allId.reduce((accum, currentFolderId) => ({
         ...accum,
         [currentFolderId]: true
       }), {})
+
     }
   }),
   [SEARCH_START]: (state, action) => ({
@@ -484,15 +507,22 @@ export default createReducer(defaultFolderState, {
     ]
   }),
   [DELETE_FOLDER_SUCCESS]: (state, action) => {
+    const { folderId, parentId } = action.payload;
     return {
       ...state,
       processingFolder: [
-        ...state.processingFolder.filter(item => item !== action.payload.folderId)
+        ...state.processingFolder.filter(item => item !== folderId)
       ],
       foldersData: {
         ...state.foldersData,
-        allId: [...state.foldersData.allId.filter(item => item !== action.payload.folderId)],
-        byId: omit(state.foldersData.byId, action.payload.folderId)
+        allId: [...state.foldersData.allId.filter(item => item !== folderId)],
+        byId: {
+          ...omit(state.foldersData.byId, folderId),
+          [parentId]: {
+            ...state.foldersData.byId[parentId],
+            childs: [...state.foldersData.byId[parentId].childs.filter(child => child !== folderId)]
+          }
+        }
       }
     }
   },
@@ -527,5 +557,3 @@ export default createReducer(defaultFolderState, {
     }
   }
 });
-
-
