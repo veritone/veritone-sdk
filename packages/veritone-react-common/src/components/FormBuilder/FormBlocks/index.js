@@ -14,7 +14,7 @@ import EditAttributesIcon from '@material-ui/icons/EditAttributes';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { form } from '../configuration';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export const blockTypes = [
   {
@@ -73,10 +73,11 @@ export const blockMaps = blockTypes.reduce((blocks, { type, label, icon }) => ({
 }), {});
 
 export function BlockPreview({ type }) {
+  const styles = useStyles({});
   return (
-    <div className={styles['drag-preview-container']}>
+    <div className={styles.dragPreviewContainer}>
       {blockMaps[type].icon}
-      <Typography className={styles['preview-text']}>{blockMaps[type].label}</Typography>
+      <Typography className={styles.previewText}>{blockMaps[type].label}</Typography>
     </div>
   )
 }
@@ -86,6 +87,7 @@ BlockPreview.propTypes = {
 }
 
 export default function Block({ type, label, icon, onCancel, onClick }) {
+  const styles = useStyles({});
   const [{ opacity }, drag, preview] = useDrag({
     item: {
       id: type,
@@ -116,13 +118,13 @@ export default function Block({ type, label, icon, onCancel, onClick }) {
     <div
       ref={drag}
       style={{ opacity }}
-      className={styles['block-container']}
+      className={styles.blockContainer}
       onClick={onBlockClick}
     >
       {icon}
       <Typography
         variant="caption"
-        className={styles['block-text']}
+        className={styles.blockText}
       >
         {label}
       </Typography>
@@ -140,5 +142,7 @@ Block.propTypes = {
 
 Block.defaultProps = {
   onCancel: noop,
-  onClick: noop
+  onClick: noop,
+  label: 'TextInput',
+  icon: <Title />
 }

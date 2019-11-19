@@ -7,15 +7,15 @@ import Delete from '@material-ui/icons/Delete';
 import cx from 'classnames';
 import { form } from '../configuration';
 import useSortable from '../hooks/useSortable';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 
 export default function PreviewWrapper({
   selected,
   children,
   index,
-  swapBlock,
   addBlock,
+  swapBlock,
   selectBlock,
   removeBlock
 }) {
@@ -29,23 +29,25 @@ export default function PreviewWrapper({
     swapBlock
   );
 
-  const handleSelect = React.useCallback(() => selectBlock(index), [index]);
-  const handleRemove = React.useCallback(() => removeBlock(index), [index]);
+  const styles = useStyles({});
+
+  const handleSelect = React.useCallback(() => selectBlock(index), [index, selectBlock]);
+  const handleRemove = React.useCallback(() => removeBlock(index), [index, selectBlock]);
 
   return drop(
     preview(
       <div
         ref={dropRef}
         className={cx(
-          styles['preview-container'],
+          styles.previewContainer,
           {
-            [styles['preview-container--selected']]: selected
+            [styles.previewContainerSelected]: selected
           }
         )}
         style={isDragging || isHovered ? { opacity: 0, height: 60 } : {}}
       >
-        <div className={styles['preview-content']}>{children}</div>
-        <div className={styles['preview-action']}>
+        <div className={styles.previewContent}>{children}</div>
+        <div className={styles.previewAction}>
           <div ref={drag}>
             <IconButton>
               <DragHandle />
@@ -67,8 +69,8 @@ PreviewWrapper.propTypes = {
   selected: bool,
   children: node,
   index: number,
-  swapBlock: func,
   addBlock: func,
+  swapBlock: func,
   selectBlock: func,
   removeBlock: func
 }

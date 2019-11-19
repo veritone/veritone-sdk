@@ -21,7 +21,7 @@
     "redux-thunk": "^2.2.0",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "veritone-react-common": "^8.0.3",
+    "veritone-react-common": "^9.0.0",
     "veritone-redux-common": "^3.7.0",
     "video-react": "~0.13.3"
   },
@@ -109,7 +109,8 @@
       "jsx"
     ],
     "moduleDirectories": [
-      "node_modules"
+      "node_modules",
+      "../../node_modules"
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",

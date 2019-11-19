@@ -69,7 +69,8 @@ const mapSchema = {
   paragraph: stringSchema,
   checkBox: arraySchema,
   switch: booleanSchema,
-  select: enumSchema
+  select: enumSchema,
+  number: ratingSchema,
 }
 
 export const formDefaultValue = {
@@ -82,7 +83,8 @@ export const formDefaultValue = {
   ip: '',
   geoPoint: '',
   select: '',
-  paragraph: ''
+  paragraph: '',
+  number: 0,
 }
 
 export function generateSchema(formDefinition) {

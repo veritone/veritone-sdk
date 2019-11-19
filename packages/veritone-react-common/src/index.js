@@ -56,6 +56,7 @@ export FolderTree from './components/FolderTree/index';
 export SearchBox from './components/FolderTree/Searchbox';
 export LoadingState from './components/FolderTree/LoadingState';
 export FolderNullState from './components/FolderTree/NullState'; 
+export SubAppbar from './components/SubAppbar';
 export {
   SimpleSearchBarBase,
   SimpleSearchBarController,
@@ -63,3 +64,10 @@ export {
   SimpleSearchBar,
   EntitySearchTemplate
 } from './components/SimpleSearchBar/SimpleSearchBar';
+
+export {
+  Form,
+  FormBuilder,
+  formUtils,
+  formHelpers
+} from './components/FormBuilder';
