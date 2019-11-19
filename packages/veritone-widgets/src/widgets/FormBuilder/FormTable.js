@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { arrayOf, func, number, bool, string } from 'prop-types';
+import { arrayOf, func, number, bool, string, shape } from 'prop-types';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -135,12 +135,12 @@ FormTable.propTypes = {
   onChangeRowsPerPage: func,
   onEdit: func,
   onDelete: func,
-  forms: arrayOf({
+  forms: arrayOf(shape({
     id: string,
     name: string,
     isNew: bool,
     isPublished: bool,
-  }),
+  })),
   isTemplate: bool,
   page: number,
   rowsPerPage: number
