@@ -4,7 +4,8 @@ import {
   put,
   select
 } from 'redux-saga/effects';
-import { get } from 'lodash';
+import get from 'lodash/get';
+import omit from 'lodash/omit';
 import { handleRequest } from './helper';
 import * as folderReducer from './index';
 import * as folderSelector from './selector';
@@ -16,9 +17,12 @@ function* deleteFolder(action) {
   const { folderId } = action.payload;
   yield put(folderReducer.deleteFolderStart(folderId));
   const foldersData = yield select(folderSelector.folderData);
+  const folderSelected = yield select(folderSelector.selected);
+  const { selectable, workSpace } = yield select(folderSelector.config);
+  const rootIds = yield select(folderSelector.rootFolderIds);
   const folder = get(foldersData, ['byId', folderId], {});
   if (folder.hasContent) {
-    //for improving
+    //TODO improving
   }
   const queryFolder = `query folder($id:ID!){
     folder(id: $id){
@@ -58,6 +62,17 @@ function* deleteFolder(action) {
   if (errorDelete) {
     yield put(folderReducer.deleteFolderError(folderId));
   }
-  yield put(folderReducer.fetchMore(parent.id, true));
-  return yield put(folderReducer.deleteFolderSuccess(folderId));
+  yield put(folderReducer.initFolder(parent.id));
+  if (folderSelected[folderId]) {
+    if (!selectable) {
+      yield put(folderReducer.selectFolder(workSpace, {
+        [rootIds[0]]: true
+      }))
+    } else {
+      const newSelected = omit(folderSelected, [folderId]);
+      yield put(folderReducer.selectFolder(workSpace, newSelected));
+    }
+  }
+
+  return yield put(folderReducer.deleteFolderSuccess(folderId, parent.id));
 }

@@ -22,6 +22,7 @@ function* modifyFolder(action) {
   let folder;
   yield put(folderReducer.modifyFolderStart(folderId));
   const { type: rootFolderType } = yield select(folderSelector.config);
+  //get tree object and parent tree object
   const queryFolder = `query folder($id:ID!){
     folder(id: $id){
       id
@@ -45,9 +46,11 @@ function* modifyFolder(action) {
     return yield put(folderReducer.deleteFolderError(folderId));
   }
   const {
-    treeObjectId, parent: oldParent,
+    treeObjectId,
+    parent: oldParent,
     orderIndex: prevOrderIndex
   } = get(response, 'data.folder', {});
+  //edit name
   if (isEditName) {
     const updateNameQuery = `
     mutation updateFolder($id: ID!, $name: String!){
@@ -79,8 +82,12 @@ function* modifyFolder(action) {
       yield put(folderReducer.modifyFolderError(folderId));
     }
     folder = get(responseEditName, 'data.updateFolder', {});
-
+    yield put(folderReducer.modifyFolderSuccess({
+      id: folder.id,
+      name: folder.name
+    }));
   }
+  //move folder
   if (isMoveFolder) {
     const newParentVariables = {
       id: parentId
@@ -140,7 +147,7 @@ function* modifyFolder(action) {
     if (moveError) {
       return yield put(folderReducer.modifyFolderError(folderId));
     }
-     folder = get(moveRespone, 'data.moveFolder', {});
+    folder = get(moveRespone, 'data.moveFolder', {});
     yield put(folderReducer.modifyFolderSuccess({
       id: folder.id,
       name: folder.name
@@ -148,9 +155,5 @@ function* modifyFolder(action) {
     yield put(folderReducer.fetchMore(oldParent.id, true));
     yield put(folderReducer.fetchMore(parentId, true));
   }
-  yield put(folderReducer.modifyFolderSuccess({
-    id: folder.id,
-    name: folder.name
-  }));
   yield put(folderReducer.fetchMore(oldParent.id, true));
 }

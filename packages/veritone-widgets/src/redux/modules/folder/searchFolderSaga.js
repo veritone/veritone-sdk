@@ -4,7 +4,8 @@ import {
   put,
   select
 } from 'redux-saga/effects';
-import _ from 'lodash';
+import includes from 'lodash/includes';
+import toLower from 'lodash/toLower';
 import * as folderReducer from './index';
 import * as folderSelector from './selector';
 export default function* searchFolder() {
@@ -16,7 +17,7 @@ export default function* searchFolder() {
     const foldersData = yield select(folderSelector.folderData);
     const folderDataLocal = Object.values(foldersData.byId);
     const folderSearched = folderDataLocal.filter(item =>
-      _.includes(_.toLower(item.name), _.toLower(searchValue)));
+      includes(toLower(item.name), toLower(searchValue)));
     yield put(folderReducer.searchFolderSuccess(searchValue, folderSearched));
   });
 }

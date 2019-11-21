@@ -16,6 +16,7 @@ import styles from './styles.scss';
 
 export default function ModifyFolder({
   open,
+  isNewFolder = false,
   isEnableEditName = false,
   currentFolder = {},
   handleClose,
@@ -95,7 +96,9 @@ export default function ModifyFolder({
         onClose={handleClose}
         aria-labelledby="create-folder"
       >
-        <DialogTitle id="create-folder">Modify Folder</DialogTitle>
+        <DialogTitle id="create-folder">
+          {isNewFolder ? 'New Folder' : 'Move Folder'}
+        </DialogTitle>
         <DialogContent className={cx(styles['dialog-content'])}>
           {
             isEnableEditName && (
@@ -117,13 +120,15 @@ export default function ModifyFolder({
           }
           <div className={cx(styles['action-new-field'])}>
             <div>Choose a Folder</div>
-            <Button
-              color="primary"
-              className={cx(styles['button-styles'])}
-              onClick={handlerNewFolder}
-            >
-              NEW FOLDER
-            </Button>
+            {!isNewFolder && (
+              <Button
+                color="primary"
+                className={cx(styles['button-styles'])}
+                onClick={handlerNewFolder}
+              >
+                NEW FOLDER
+              </Button>
+            )}
           </div>
           <Card className={cx(styles['folder-tree-card'])}>
             <FolderTree
@@ -164,6 +169,7 @@ export default function ModifyFolder({
 ModifyFolder.propTypes = {
   open: bool,
   isEnableEditName: bool,
+  isNewFolder: bool,
   currentFolder: shape(Object),
   handleClose: func,
   handleSubmit: func,

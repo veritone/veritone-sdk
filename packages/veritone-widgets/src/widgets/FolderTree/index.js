@@ -15,7 +15,7 @@ import {
   FolderNullState,
   LoadingState
 } from 'veritone-react-common';
-import { isEmpty, isNil, flattenDeep } from 'lodash';
+import { isEmpty, isNil, flattenDeep, get } from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
@@ -52,11 +52,14 @@ export const getAllParentId = (item, folderDataFlatten) => {
 
 function FolderTreeWrapper({
   type = 'watchlist',
+  workSpace = 'folderTree',
   isEnableShowContent = false,
   isEnableSearch,
+  isEnableSelectRoot,
   isEnableShowRootFolder,
   subjectObservable,
   selectable = true,
+  showingType = ['org'],
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
@@ -64,7 +67,9 @@ function FolderTreeWrapper({
   expandFolder,
   foldersData,
   onSelectFolder,
-  selectedFolder = {},
+  onSelectAllFolder,
+  initialStatus,
+  selectedFolders = {},
   fetchingFolderStatus,
   fetchedFolderStatus,
   errorStatus,
@@ -78,35 +83,59 @@ function FolderTreeWrapper({
 }) {
 
   const [openNew, setOpenNew] = useState(false);
+  const [selectedFolder, setSelected] = useState({});
   const [openModify, setOpenModify] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [fromNewButton, setStatus] = useState(false);
+  const [modifyFromAction, setModifyFromAction] = useState(false);
   const [currentFolderForAction, setCurrentFolderForAction] = useState({});
   const [selectedInModify, setSelectedInModify] = useState({});
   const [defaultOpening, setDefaultOpening] = useState([]);
   const [folderSelectedFromApp, setFolderSelectedFromApp] = useState();
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    if (initialStatus && !isEmpty(selectedFolders)) {
+      const selectedWithSpace = get(selectedFolders, [workSpace], {});
+      setSelected(selectedWithSpace);
+    }
+  }, [selectedFolders])
 
   useEffect(() => {
     const config = {
       type,
       isEnableShowContent,
-      selectable
+      selectable,
+      showingType,
+      workSpace
     }
-    initFolder(config);
+    if (!initialStatus) {
+      initFolder(config);
+    }
   }, []);
 
   useEffect(() => {
     if (!isEmpty(foldersData.byId) && !isNil(foldersData.byId)) {
       setDefaultOpening(foldersData.rootIds);
-      const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
-      if (isEmpty(selectedFolder)) {
-        onSelectFolder({
-          [rootFolder]: true
-        })
+    }
+  }, [foldersData]);
+
+  useEffect(() => {
+    if (isEnableSelectRoot) {
+      if (initialStatus && isEmpty(selectedFolder)) {
+        console.log(selectedFolder);
+        const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
+        if (!selectable) {
+          onSelectFolder(workSpace, {
+            [rootFolder]: true
+          })
+        } else {
+          onSelectAllFolder(workSpace);
+        }
       }
     }
-  }, [foldersData, selectedFolder]);
+  }, [initialStatus]);
 
   useEffect(() => {
     const pathList = getPathList(selectedFolder);
@@ -118,20 +147,25 @@ function FolderTreeWrapper({
 
   useEffect(() => {
     if (!isEmpty(folderSelectedFromApp) && !isNil(folderSelectedFromApp)) {
-      onSelectFolder(folderSelectedFromApp);
+      onSelectFolder(workSpace, folderSelectedFromApp);
       const pathList = getPathList(folderSelectedFromApp);
       setDefaultOpening(pathList.map(item => item.id));
     }
   }, [folderSelectedFromApp]);
 
   useEffect(() => {
-    subjectObservable.subscribe({
-      next: v => processEvent(v)
-    })
+    let subscription;
+    if (!subscribed) {
+      subscription = subjectObservable.subscribe({
+        next: v => processEvent(v)
+      });
+      setSubscribed(true);
+    }
     return () => {
-      subjectObservable.unsubscribe();
+      subscription.unsubscribe();
+      setSubscribed(false);
     };
-  }, [])
+  }, [subjectObservable])
 
   const getPathList = (selectedFolder) => {
     if (selectable) {
@@ -153,6 +187,7 @@ function FolderTreeWrapper({
         break;
       case 'move':
         setOpenModify(true);
+        setModifyFromAction(true)
         break;
       default:
         break;
@@ -160,7 +195,7 @@ function FolderTreeWrapper({
   }
 
   const onChange = selectedfolder => {
-    onSelectFolder(selectedfolder);
+    onSelectFolder(workSpace, selectedfolder);
   };
 
   const onExpand = folderId => {
@@ -240,13 +275,23 @@ function FolderTreeWrapper({
     setData();
   }
 
+  const handlerOpenFolder = () => {
+    if (!selectable) {
+      setStatus(false);
+      setOpenNew(true);
+    } else {
+      setOpenModify(true);
+      setModifyFromAction(false);
+      setStatus(false);
+    }
+  }
+
   const processEvent = event => {
     const eventKey = event.split(' ')[0];
     const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : "";
     switch (eventKey) {
       case 'action/newfolder':
-        setStatus(false);
-        setOpenNew(true);
+        handlerOpenFolder();
         break;
       case 'action/select':
         setFolderSelectedFromApp({
@@ -294,6 +339,8 @@ function FolderTreeWrapper({
       />
       <ModifyFolder
         open={openModify}
+        isEnableEditName={!modifyFromAction}
+        isNewFolder={!modifyFromAction}
         handleClose={handleCloseModify}
         handleSubmit={handleSubmitModify}
         foldersData={foldersData}
@@ -321,19 +368,22 @@ function FolderTreeWrapper({
 
 FolderTreeWrapper.propTypes = {
   type: string,
+  workSpace: string,
   onSelectFolder: func,
   onSelectMenuItem: func,
   selectable: bool,
   isEnableShowContent: bool,
   isEnableSearch: bool,
   isEnableShowRootFolder: bool,
+  isEnableSelectRoot: bool,
+  showingType: arrayOf(string).isRequired,
   folderAction: arrayOf(shape({
     id: number,
     type: string,
     name: string
   })),
   foldersData: shape(Object),
-  selectedFolder: shape(Object),
+  selectedFolders: shape(Object),
   initFolder: func,
   expandFolder: func,
   fetchingFolderStatus: bool,
@@ -347,7 +397,9 @@ FolderTreeWrapper.propTypes = {
   createFolder: func,
   deleteFolder: func,
   editFolder: func,
-  searchFolder: func
+  searchFolder: func,
+  onSelectAllFolder: func,
+  initialStatus: bool
 }
 
 const FolderTree = connect(
@@ -356,16 +408,17 @@ const FolderTree = connect(
     fetchingFolderStatus: folderSelector.folderFetchingStatus(state),
     fetchedFolderStatus: folderSelector.folderFetchedStatus(state),
     errorStatus: folderSelector.folderErrorStatus(state),
-    selectedFolder: folderSelector.selectedFolder(state),
+    selectedFolders: folderSelector.selectedFolder(state),
     folderById: folderSelector.folderById(state),
     rootFolderIds: folderSelector.rootFolderIds(state),
     processingFolder: folderSelector.processingFolderSelector(state),
+    initialStatus: folderSelector.getInitialStatus(state)
   }),
   {
     expandFolder: folderModule.fetchMore,
     onSelectFolder: folderModule.selectFolder,
     onSelectAllFolder: folderModule.selectAllFolder,
-    initFolder: folderModule.initFolder,
+    initFolder: folderModule.initRootFolder,
     createFolder: folderModule.createFolder,
     deleteFolder: folderModule.deleteFolder,
     editFolder: folderModule.modifyFolder,

@@ -1,27 +1,26 @@
-.folder-tree-container{
+.folder-tree-container {
   height: 100%;
   overflow: auto;
 }
-.folder-item-container{
+.folder-item-container {
   display: flex;
   align-items: center;
 }
-.folder-item{
+.folder-item {
   margin-right: 10px;
   font-size: 25px;
   line-height: inherit;
   color: #555;
 }
-.selected{
-  color: #2196F3;
+.selected {
+  color: #2196f3;
 }
 .folder-icon {
-  color: #F0C56A;
-  margin-right: 10px;
+  color: #f0c56a;
   font-size: 25px;
   line-height: inherit;
 }
-.content-icon{
+.content-icon {
   color: #555;
   margin-right: 10px;
   font-size: 25px;
@@ -35,8 +34,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 5px;
-  margin-left: 5px;
 }
 .loading {
   text-align: center;
@@ -52,9 +49,12 @@
     display: block;
   }
 }
+.list-item:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
 .icon-progress {
   display: block;
-  padding: 0 10px;
+  padding: 0 5px;
 }
 .folder {
   padding: 0 !important;
@@ -66,17 +66,17 @@
   margin-left: 20px !important;
 }
 .highlighted {
-  background-color: rgba(0,0,0,0.07) !important;
+  background-color: rgba(0, 0, 0, 0.07) !important;
 }
 .list-item-text {
   width: 100%;
-    line-height: 15px;
-    vertical-align: middle;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    text-transform: none;
-    font-size: 13px !important;
-    font-family: Roboto;
-    padding-left: 5px;
+  line-height: 15px;
+  vertical-align: middle;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-transform: none;
+  font-size: 13px !important;
+  font-family: Roboto;
+  padding-left: 5px;
 }

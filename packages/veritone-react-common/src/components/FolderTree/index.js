@@ -162,6 +162,7 @@ function FolderTree({
               foldersData.byId[childId] || {})}
             folders={foldersData}
             processingFolder={processingFolder}
+            level={0}
           />
         );
       })}

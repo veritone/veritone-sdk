@@ -33,12 +33,14 @@ function StoryComponent() {
   ]
   const subjectObservable = new Subject();
   const props = {
-    type: 'cms',
+    type: 'collection',
     actionConfig,
     isEnableShowContent: false,
     selectable: false,
     isEnableSearch: true,
     isEnableShowRootFolder: true,
+    showingType: ['org'],
+    isEnableSelectRoot: true,
     folderAction: folderActionDefault,
     folderSelectedFromApp: selected,
     subjectObservable: subjectObservable,
@@ -55,15 +57,29 @@ function StoryComponent() {
   }
   return (
     <div style={{
-      height: '100vh'
+      display: 'flex',
+      justifyContent: 'space-between'
     }}>
-      <Button onClick={onClickButton}>New</Button>
-      <Button onClick={onSelectPathList}>Pathlist</Button>
-      <BaseStory
-        widget={FolderTreeWidget}
-        widgetProps={{ ...props, title: 'AppBar Widget' }}
-      />
+      <div style={{
+        height: '100vh'
+      }}>
+        <Button onClick={onClickButton}>New</Button>
+        <Button onClick={onSelectPathList}>Pathlist</Button>
+        <BaseStory
+          widget={FolderTreeWidget}
+          widgetProps={{ ...props, title: 'AppBar Widget', workSpace: 'a'}}
+        />
+      </div>
+      <div style={{
+        height: '100vh'
+      }}>
+        <BaseStory
+          widget={FolderTreeWidget}
+          widgetProps={{ ...props, title: 'AppBar Widget',  workSpace: 'b' }}
+        />
+      </div>
     </div>
+
   )
 }
 

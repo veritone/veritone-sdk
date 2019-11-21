@@ -29,7 +29,7 @@ export default function FolderMenu({
   return (
     <div>
       <IconButton
-        className={cx(styles['menu-button'])}
+        className={cx(styles['folder-menu-button'])}
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
@@ -37,7 +37,7 @@ export default function FolderMenu({
         <MoreVertIcon style={{ fontSize: 20 }} />
       </IconButton>
       <Menu
-        id="simple-menu"
+        id="folder-tree-menu"
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}

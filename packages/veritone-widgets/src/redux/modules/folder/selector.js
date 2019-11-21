@@ -24,37 +24,46 @@ export const searchValue = state => state.folderTree.currentSearchValue;
 
 export const searchData = state => state.folderTree.searchFolderData;
 
+export const initialSuccess = state => state.folderTree.initialSuccess;
+
 export const foldersDataSelector = createSelector(
-    [folderData, searchValue, searchData],
-    (foldersData, searchValue, searchData) => {
-        if (searchValue !== '') {
-            return searchData.byId[searchValue]
-        }
-        return foldersData
+  [folderData, searchValue, searchData],
+  (foldersData, searchValue, searchData) => {
+    if (searchValue !== '') {
+      return searchData.byId[searchValue]
     }
+    return foldersData
+  }
 );
 
 export const folderFetchingStatus = createSelector(
-    [folderFetching],
-    folderFetching => folderFetching
+  [folderFetching],
+  folderFetching => folderFetching
 );
 
 export const folderFetchedStatus = createSelector(
-    [folderFetched],
-    folderFetched => folderFetched
+  [folderFetched],
+  folderFetched => folderFetched
 );
 
 export const folderErrorStatus = createSelector(
-    [folderError],
-    folderError => folderError
+  [folderError],
+  folderError => folderError
 );
 
 export const selectedFolder = createSelector(
-    [selected],
-    selected => selected
+  [selected],
+  (selected) => {
+    return selected;
+  }
 );
 
 export const processingFolderSelector = createSelector(
-    [processingFolder],
-    processingFolder => processingFolder
+  [processingFolder],
+  processingFolder => processingFolder
+)
+
+export const getInitialStatus = createSelector(
+  [initialSuccess],
+  initialSuccess => initialSuccess
 )
