@@ -12,6 +12,7 @@ import * as SENTIMENT_SCHEMA from '../schemas/vtn-standard/sentiment/sentiment.j
 import * as SUMMARY_SCHEMA from '../schemas/vtn-standard/summary/summary.json';
 import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
 import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
+import * as ANOMALY_SCHEMA from '../schemas/vtn-standard/anomaly/anomaly.json';
 
 /**
  * Generates a function that will validate vtn-standard for a validation contract
@@ -102,6 +103,7 @@ const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
 const verifySentiment = generateValidationContractValidator(SENTIMENT_SCHEMA);
 const verifySummary = generateValidationContractValidator(SUMMARY_SCHEMA);
 const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
+const verifyAnomaly = generateValidationContractValidator(ANOMALY_SCHEMA);
 const verifyTranscript = generateValidationContractValidator(
   TRANSCRIPT_SCHEMA,
   [
@@ -122,7 +124,8 @@ const VALIDATORS = {
   sentiment: verifySentiment,
   summary: verifySummary,
   text: verifyText,
-  transcript: verifyTranscript
+  transcript: verifyTranscript,
+  anomaly: verifyAnomaly
 };
 
 export {
@@ -135,5 +138,6 @@ export {
   verifyObject,
   verifySentiment,
   verifyText,
-  verifyTranscript
+  verifyTranscript,
+  verifyAnomaly
 };
