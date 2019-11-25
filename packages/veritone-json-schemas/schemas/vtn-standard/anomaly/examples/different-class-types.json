@@ -5,7 +5,7 @@
         "type": "anomaly",
         "objectCategory": [
           {
-            "class": "anomaly",
+            "class": "positive-anomaly",
             "@id": "12345",
             "confidence": 0.875
           }
@@ -19,7 +19,7 @@
             "type": "anomaly",
             "objectCategory": [
                 {
-                "class": "anomaly",
+                "class": "negative-anomaly",
                 "@id": "12345",
                 "confidence": 0.468
                 }
