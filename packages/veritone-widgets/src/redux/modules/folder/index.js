@@ -63,7 +63,10 @@ export const EDIT_FOLDER = `${namespace}/EDIT_FOLDER`;
 export const EDIT_FOLDER_START = `${namespace}/EDIT_FOLDER_START`;
 export const EDIT_FOLDER_SUCCESS = `${namespace}/EDIT_FOLDER_SUCCESS`;
 export const EDIT_FOLDER_ERROR = `${namespace}/EDIT_FOLDER_ERROR`;
-
+export const INIT_FOLDER_FROM_APP = `${namespace}/INIT_FOLDER_FROM_APP`;
+export const INIT_FOLDER_FROM_APP_START = `${namespace}/INIT_FOLDER_FROM_APP_START`;
+export const INIT_FOLDER_FROM_APP_SUCCESS = `${namespace}/INIT_FOLDER_FROM_APP_SUCCESS`;
+export const INIT_FOLDER_FROM_APP_ERROR = `${namespace}/INIT_FOLDER_FROM_APP_ERROR`;
 
 const defaultFolderState = {
   config: {},
@@ -246,10 +249,11 @@ export const createFolderError = () => ({
   type: CREATE_FOLDER_ERROR
 });
 
-export const deleteFolder = folderId => ({
+export const deleteFolder = (folderId, workSpace) => ({
   type: DELETE_FOLDER,
   payload: {
-    folderId
+    folderId,
+    workSpace
   }
 });
 
@@ -306,6 +310,34 @@ export const modifyFolderError = folderId => ({
     folderId
   }
 });
+
+export const initFolderFromApp = folderId => ({
+  type: INIT_FOLDER_FROM_APP,
+  payload: {
+    folderId
+  }
+});
+
+export const initFolderFromAppStart = folderId => ({
+  type: INIT_FOLDER_FROM_APP_START,
+  payload: {
+    folderId
+  }
+});
+
+export const initFolderFromAppSuccess = folderId => ({
+  type: INIT_FOLDER_FROM_APP_SUCCESS,
+  payload: {
+    folderId
+  }
+});
+
+export const initFolderFromAppError = folderId => ({
+  type: INIT_FOLDER_FROM_APP_ERROR,
+  payload: {
+    folderId
+  }
+})
 
 export default createReducer(defaultFolderState, {
   [INIT_CONFIG]: (state, action) => ({

@@ -9,14 +9,16 @@ import {
 import includes from 'lodash/includes';
 import isEmpty from 'lodash/isEmpty';
 import get from 'lodash/get';
+import uniq from 'lodash/uniq';
 import { handleRequest } from './helper';
-import { fetchMore } from './expandFolderSaga';
+import { fetchMore, expandFolderInFunction } from './expandFolderSaga';
 import * as folderSelector from './selector';
 import * as folderReducer from './index';
 export default function* initFolder() {
   yield all([
     takeEvery(folderReducer.INIT_ROOT_FOLDER, initRootFolderSagas),
-    takeEvery(folderReducer.INIT_FOLDER, initFolderSagas)
+    takeEvery(folderReducer.INIT_FOLDER, initFolderSagas),
+    takeEvery(folderReducer.INIT_FOLDER_FROM_APP, initFolderFromApp),
   ])
 }
 
@@ -48,6 +50,7 @@ function* initRootFolderSagas(action) {
         folderReducer.folderType[config.type].orgFolderName :
         folderReducer.folderType[config.type].ownerFolderName;
       return {
+        ...rootFolder,
         id: rootFolder.id,
         name: folderName,
         contentType: 'folder',
@@ -71,7 +74,8 @@ function* getRootFolder(action) {
   const query = `query rootFolders($type: RootFolderType){
       rootFolders(type: $type){
         id
-        name    
+        name
+        treeObjectId
         childFolders{
           count
         }
@@ -101,14 +105,19 @@ function* getRootFolder(action) {
 }
 
 function* initFolderSagas(action) {
-  const { type, isEnableShowContent } = yield select(folderSelector.config);
   const { folderId } = action.payload;
+  return yield initFolderFn(folderId);
+}
+
+function* initFolderFn(folderId) {
+  const { type, isEnableShowContent } = yield select(folderSelector.config);
   const rootFolderIds = yield select(folderSelector.rootFolderIds);
   const childType = folderReducer.folderType[type].childsType;
   const query = `query folder($id: ID!){
       folder(id: $id){
         id
         name
+        treeObjectId
         parent{
           id
         }
@@ -132,7 +141,7 @@ function* initFolderSagas(action) {
   const folder = get(response, 'data.folder', {});
   const childFolderCounts = get(folder, 'childFolders.count', 0);
   const childContentCounts = get(folder, [childType, 'count'], 0);
-  const childsList = yield fetchMore(action);
+  const childsList = yield fetchMore(folderId);
   const folderReprocess = {
     ...folder,
     contentType: 'folder',
@@ -142,4 +151,41 @@ function* initFolderSagas(action) {
     childs: childsList.map(item => item.id)
   }
   yield put(folderReducer.initFolderSuccess(folderReprocess));
+}
+
+function* initFolderFromApp(action) {
+  const { folderId } = action.payload;
+  const { selectable, workSpace } = yield select(folderSelector.config);
+  const folderExpanded = yield select(folderSelector.folderExpanded);
+  yield put(folderReducer.initFolderFromAppStart(folderId));
+  const data = yield initAllParent(folderId);
+  const folderFromRoot = uniq(data.reverse().filter(item => !includes(folderExpanded, item)));
+  for (const folderIdForInit of folderFromRoot) {
+    yield expandFolderInFunction(folderIdForInit, selectable, workSpace);
+  }
+}
+
+function* initAllParent(folderId) {
+  const query = `query folder($id: ID!){
+    folder(id: $id){
+      id
+      name
+      parent{
+        id
+      }
+    }
+  }`;
+  const variables = {
+    id: folderId
+  }
+  const { error, response } = yield call(handleRequest, { query, variables });
+  if (error) {
+    yield put(folderReducer.initFolderFromAppError(folderId));
+  }
+  const parentId = get(response, 'data.folder.parent.id');
+  if (parentId) {
+    const expand = yield initAllParent(parentId);
+    return [parentId, ...expand];
+  }
+  return [];
 }
