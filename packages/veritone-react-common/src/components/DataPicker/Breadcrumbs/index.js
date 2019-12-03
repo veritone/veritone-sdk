@@ -19,7 +19,8 @@ export default class Breadcrumbs extends React.Component {
     maxItems: number,
     seperator: oneOfType([string, node]),
     onCrumbClick: func.isRequired,
-    isStream: bool
+    isStream: bool,
+    defaultValue: string
   }
 
   static defaultProps = {
@@ -58,6 +59,7 @@ export default class Breadcrumbs extends React.Component {
       maxItems,
       seperator,
       isStream,
+      defaultValue = 'My File'
     } = this.props;
 
     const { anchorEl } = this.state;
@@ -79,7 +81,7 @@ export default class Breadcrumbs extends React.Component {
             icon={icon}
             index={0}
             key={'root'}
-            name={pathList.length ? '' : 'My Files'}
+            name={pathList.length ? '' : defaultValue}
             onClick={this.onCrumbClick}
           />
         </React.Fragment>

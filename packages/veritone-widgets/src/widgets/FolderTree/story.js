@@ -17,7 +17,8 @@ function StoryComponent() {
     modify: 'action/modifyfolder',
     delete: 'action/delete',
     select: 'action/select',
-    initWithSelect: 'action/initselect'
+    initWithSelect: 'action/initselect',
+    unSelectCurrent: 'action/unSelectCurrent'
   }
   const folderActionDefault = [
     {
@@ -41,7 +42,7 @@ function StoryComponent() {
     type: 'collection',
     actionConfig,
     isEnableShowContent: false,
-    selectable: true,
+    selectable: false,
     isEnableSearch: true,
     isEnableShowRootFolder: true,
     showingType: ['org'],
@@ -51,6 +52,7 @@ function StoryComponent() {
     subjectObservable: subjectObservable,
     onSelectMenuItem: (type, item) => console.log(type, item),
     handleSelectedFoler: (selectedFolder) => console.log(selectedFolder),
+    initSuccess: (data) => console.log(data)
   };
 
   const onClickButton = () => {

@@ -7,14 +7,14 @@ import BreadCrums from '../DataPicker/Breadcrumbs'
 
 import styles from './styles.scss';
 
-function SubAppbar({actions, pathList, onCrumbClick }) {
+function SubAppbar({actions, pathList, onCrumbClick, defaultValue }) {
   return (
     <div className={cx(styles['subappbar-container'])}>
       <div className={cx(styles['button-container-react'])}>
         <PopperButon actions={actions} />
       </div>
       <div className={cx(styles['breadcrumb-container-subappbar'])}>
-        <BreadCrums onCrumbClick={onCrumbClick} pathList={pathList} />
+        <BreadCrums onCrumbClick={onCrumbClick} pathList={pathList} defaultValue={defaultValue}/>
       </div>
     </div>
   )
@@ -24,13 +24,14 @@ SubAppbar.propTypes = {
     id: PropTypes.number,
     name: PropTypes.string,
     icon: PropTypes.string,
-    actionClick: PropTypes.func
+    actionClick: PropTypes.func,
   })),
   pathList: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string
   })),
-  onCrumbClick: PropTypes.func
+  onCrumbClick: PropTypes.func,
+  defaultValue: PropTypes.string
 }
 
 export default SubAppbar;

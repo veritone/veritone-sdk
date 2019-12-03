@@ -67,6 +67,7 @@ function FolderTreeWrapper({
   expandFolder,
   foldersData,
   onSelectFolder,
+  initSuccess,
   onSelectAllFolder,
   initialStatus,
   selectedFolders = {},
@@ -80,7 +81,10 @@ function FolderTreeWrapper({
   deleteFolder,
   editFolder,
   searchFolder,
-  initFolderFromApp
+  initFolderFromApp,
+  unSelectFolder,
+  unSelectAllFolder,
+  unSelectCurrentFolder
 }) {
 
   const [openNew, setOpenNew] = useState(false);
@@ -141,18 +145,23 @@ function FolderTreeWrapper({
   useEffect(() => {
     if (initialStatus && folderInitFromApp) {
       initFolderFromApp(folderInitFromApp);
-      onSelectFolder(workSpace,
-        {
-          [folderInitFromApp]: true
-        }
-      );
     }
   }, [initialStatus, folderInitFromApp]);
 
   useEffect(() => {
+    if (initialStatus) {
+      initSuccess({
+        foldersData
+      });
+    }
+  }, [initialStatus])
+
+  useEffect(() => {
     const folder = get(foldersData, ['byId', folderInitFromApp]);
     if (folderInitFromApp && initialStatus && !isNil(folder)) {
-      const parentId = getAllParentId(folder, foldersData).map(item => item.id);
+      const parentId = getAllParentId(folder, foldersData)
+        .map(item => item.id)
+        .filter(item => item !== folderInitFromApp);
       setDefaultOpening(parentId);
     }
   }, [initialStatus, foldersData, folderInitFromApp]);
@@ -313,6 +322,10 @@ function FolderTreeWrapper({
     setFolderInitFromApp(folderId);
   }
 
+  const unSelectCurentFolderWrapper = () => {
+    unSelectCurrentFolder(workSpace);
+  }
+
   const processEvent = event => {
     const eventKey = event.split(' ')[0];
     const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : "";
@@ -327,6 +340,9 @@ function FolderTreeWrapper({
         break;
       case 'action/initselect':
         initFolderSelectedFromApp(eventPayload);
+        break;
+      case 'action/unSelectCurrent':
+        unSelectCurentFolderWrapper();
         break;
       default:
         break;
@@ -428,7 +444,11 @@ FolderTreeWrapper.propTypes = {
   searchFolder: func,
   onSelectAllFolder: func,
   initialStatus: bool,
-  initFolderFromApp: func
+  initFolderFromApp: func,
+  initSuccess: func,
+  unSelectFolder: func,
+  unSelectCurrentFolder: func,
+  unSelectAllFolder: func
 }
 
 const FolderTree = connect(
@@ -452,7 +472,10 @@ const FolderTree = connect(
     deleteFolder: folderModule.deleteFolder,
     editFolder: folderModule.modifyFolder,
     searchFolder: folderModule.searchFolder,
-    initFolderFromApp: folderModule.initFolderFromApp
+    initFolderFromApp: folderModule.initFolderFromApp,
+    unSelectAllFolder: folderModule.unSelectAllFolder,
+    unSelectCurrentFolder: folderModule.unSelectCurrentFolder,
+    unSelectFolder: folderModule.unSelectFolder
   },
   null,
   { forwardRef: true }

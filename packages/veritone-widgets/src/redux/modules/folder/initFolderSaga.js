@@ -163,6 +163,13 @@ function* initFolderFromApp(action) {
   for (const folderIdForInit of folderFromRoot) {
     yield expandFolderInFunction(folderIdForInit, selectable, workSpace);
   }
+  if (selectable) {
+    yield put(folderReducer.selectAllFolder(workSpace));
+  } else {
+    yield put(folderReducer.selectFolder(workSpace, {
+      [folderId]: true
+    }));
+  }
 }
 
 function* initAllParent(folderId) {

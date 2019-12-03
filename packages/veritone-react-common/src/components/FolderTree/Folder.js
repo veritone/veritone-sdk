@@ -107,6 +107,7 @@ function Folder({
         )}
         <FolderIcon
           folder={folder}
+          isEnableShowingContent={isEnableShowingContent}
           highlightedIds={selectedIds}
           isRootFolder={isRootFolder}
           isOpening={isOpening}
