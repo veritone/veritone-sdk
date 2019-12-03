@@ -67,6 +67,7 @@ function FolderTreeWrapper({
   expandFolder,
   foldersData,
   onSelectFolder,
+  initSuccess,
   onSelectAllFolder,
   initialStatus,
   selectedFolders = {},
@@ -79,7 +80,11 @@ function FolderTreeWrapper({
   createFolder,
   deleteFolder,
   editFolder,
-  searchFolder
+  searchFolder,
+  initFolderFromApp,
+  unSelectFolder,
+  unSelectAllFolder,
+  unSelectCurrentFolder
 }) {
 
   const [openNew, setOpenNew] = useState(false);
@@ -94,6 +99,7 @@ function FolderTreeWrapper({
   const [defaultOpening, setDefaultOpening] = useState([]);
   const [folderSelectedFromApp, setFolderSelectedFromApp] = useState();
   const [subscribed, setSubscribed] = useState(false);
+  const [folderInitFromApp, setFolderInitFromApp] = useState();
 
   useEffect(() => {
     if (initialStatus && !isEmpty(selectedFolders)) {
@@ -124,7 +130,6 @@ function FolderTreeWrapper({
   useEffect(() => {
     if (isEnableSelectRoot) {
       if (initialStatus && isEmpty(selectedFolder)) {
-        console.log(selectedFolder);
         const rootFolder = foldersData.rootIds.length ? foldersData.rootIds[0] : [];
         if (!selectable) {
           onSelectFolder(workSpace, {
@@ -138,9 +143,36 @@ function FolderTreeWrapper({
   }, [initialStatus]);
 
   useEffect(() => {
-    const pathList = getPathList(selectedFolder);
+    if (initialStatus && folderInitFromApp) {
+      initFolderFromApp(folderInitFromApp);
+    }
+  }, [initialStatus, folderInitFromApp]);
+
+  useEffect(() => {
+    if (initialStatus) {
+      initSuccess({
+        foldersData
+      });
+    }
+  }, [initialStatus])
+
+  useEffect(() => {
+    const folder = get(foldersData, ['byId', folderInitFromApp]);
+    if (folderInitFromApp && initialStatus && !isNil(folder)) {
+      const parentId = getAllParentId(folder, foldersData)
+        .map(item => item.id)
+        .filter(item => item !== folderInitFromApp);
+      setDefaultOpening(parentId);
+    }
+  }, [initialStatus, foldersData, folderInitFromApp]);
+
+  useEffect(() => {
+    const pathList = !selectable ? getPathList(selectedFolder) : [];
+    const selectedFolderId = Object.keys(selectedFolder);
+    const folder = !selectable ? get(foldersData, ['byId', selectedFolderId[0]]) : {}
     handleSelectedFoler({
       selectedFolder,
+      folder,
       pathList
     });
   }, [selectedFolder]);
@@ -245,7 +277,7 @@ function FolderTreeWrapper({
 
   //delete folder
   const handleSubmitDeleteFolder = (data) => {
-    deleteFolder(data.id);
+    deleteFolder(data.id, workSpace);
     handleCloseDeleteFolder();
   };
 
@@ -286,6 +318,14 @@ function FolderTreeWrapper({
     }
   }
 
+  const initFolderSelectedFromApp = folderId => {
+    setFolderInitFromApp(folderId);
+  }
+
+  const unSelectCurentFolderWrapper = () => {
+    unSelectCurrentFolder(workSpace);
+  }
+
   const processEvent = event => {
     const eventKey = event.split(' ')[0];
     const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : "";
@@ -298,12 +338,16 @@ function FolderTreeWrapper({
           [eventPayload]: true
         });
         break;
+      case 'action/initselect':
+        initFolderSelectedFromApp(eventPayload);
+        break;
+      case 'action/unSelectCurrent':
+        unSelectCurentFolderWrapper();
+        break;
       default:
         break;
     }
-
   }
-
 
   return (
     <div className={styles['container']}>
@@ -399,7 +443,12 @@ FolderTreeWrapper.propTypes = {
   editFolder: func,
   searchFolder: func,
   onSelectAllFolder: func,
-  initialStatus: bool
+  initialStatus: bool,
+  initFolderFromApp: func,
+  initSuccess: func,
+  unSelectFolder: func,
+  unSelectCurrentFolder: func,
+  unSelectAllFolder: func
 }
 
 const FolderTree = connect(
@@ -422,7 +471,11 @@ const FolderTree = connect(
     createFolder: folderModule.createFolder,
     deleteFolder: folderModule.deleteFolder,
     editFolder: folderModule.modifyFolder,
-    searchFolder: folderModule.searchFolder
+    searchFolder: folderModule.searchFolder,
+    initFolderFromApp: folderModule.initFolderFromApp,
+    unSelectAllFolder: folderModule.unSelectAllFolder,
+    unSelectCurrentFolder: folderModule.unSelectCurrentFolder,
+    unSelectFolder: folderModule.unSelectFolder
   },
   null,
   { forwardRef: true }

@@ -63,7 +63,13 @@ export const EDIT_FOLDER = `${namespace}/EDIT_FOLDER`;
 export const EDIT_FOLDER_START = `${namespace}/EDIT_FOLDER_START`;
 export const EDIT_FOLDER_SUCCESS = `${namespace}/EDIT_FOLDER_SUCCESS`;
 export const EDIT_FOLDER_ERROR = `${namespace}/EDIT_FOLDER_ERROR`;
-
+export const INIT_FOLDER_FROM_APP = `${namespace}/INIT_FOLDER_FROM_APP`;
+export const INIT_FOLDER_FROM_APP_START = `${namespace}/INIT_FOLDER_FROM_APP_START`;
+export const INIT_FOLDER_FROM_APP_SUCCESS = `${namespace}/INIT_FOLDER_FROM_APP_SUCCESS`;
+export const INIT_FOLDER_FROM_APP_ERROR = `${namespace}/INIT_FOLDER_FROM_APP_ERROR`;
+export const UNSELECT_FOLDER = `${namespace}/UNSELECT_FOLDER`;
+export const UNSELECT_ALL_FOLDER = `${namespace}/UNSELECT_ALL_FOLDER`;
+export const UNSELECT_CURRENT_FOLDER = `${namespace}/UNSELECT_CURRENT_FOLDER`;
 
 const defaultFolderState = {
   config: {},
@@ -246,10 +252,11 @@ export const createFolderError = () => ({
   type: CREATE_FOLDER_ERROR
 });
 
-export const deleteFolder = folderId => ({
+export const deleteFolder = (folderId, workSpace) => ({
   type: DELETE_FOLDER,
   payload: {
-    folderId
+    folderId,
+    workSpace
   }
 });
 
@@ -306,6 +313,53 @@ export const modifyFolderError = folderId => ({
     folderId
   }
 });
+
+export const initFolderFromApp = folderId => ({
+  type: INIT_FOLDER_FROM_APP,
+  payload: {
+    folderId
+  }
+});
+
+export const initFolderFromAppStart = folderId => ({
+  type: INIT_FOLDER_FROM_APP_START,
+  payload: {
+    folderId
+  }
+});
+
+export const initFolderFromAppSuccess = folderId => ({
+  type: INIT_FOLDER_FROM_APP_SUCCESS,
+  payload: {
+    folderId
+  }
+});
+
+export const unSelectFolder = (folderId, workSpace) => ({
+  type: UNSELECT_FOLDER,
+  payload: {
+    folderId,
+    workSpace
+  }
+});
+
+export const unSelectAllFolder = () => ({
+  type: UNSELECT_ALL_FOLDER
+})
+
+export const unSelectCurrentFolder = (workSpace) => ({
+  type: UNSELECT_CURRENT_FOLDER,
+  payload: {
+    workSpace
+  }
+})
+
+export const initFolderFromAppError = folderId => ({
+  type: INIT_FOLDER_FROM_APP_ERROR,
+  payload: {
+    folderId
+  }
+})
 
 export default createReducer(defaultFolderState, {
   [INIT_CONFIG]: (state, action) => ({
@@ -553,6 +607,31 @@ export default createReducer(defaultFolderState, {
             ...folder
           }
         }
+      }
+    }
+  },
+  [UNSELECT_ALL_FOLDER]: (state, action) => ({
+    ...state,
+    selectedFolder: {}
+  }),
+  [UNSELECT_FOLDER]: (state, action) => {
+    const { workSpace, folderId } = action.payload;
+    const selected = state.selectedFolder[workSpace];
+    return {
+      ...state,
+      selectedFolder: {
+        ...state.selectedFolder,
+        [workSpace]: { ...omit(selected, folderId) }
+      }
+    }
+  },
+  [UNSELECT_CURRENT_FOLDER]: (state, action) => {
+    const { workSpace } = action.payload;
+    return {
+      ...state,
+      searchFolder: {
+        ...state.selectedFolder,
+        [workSpace]: {}
       }
     }
   }

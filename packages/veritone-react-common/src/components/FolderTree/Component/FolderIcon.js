@@ -16,7 +16,8 @@ export default function FolderIcon({
   highlightedIds,
   isRootFolder,
   isOpening,
-  selectable
+  selectable,
+  isEnableShowingContent
 }) {
   const folderId = _.get(folder, 'id');
   if (isRootFolder) {
@@ -33,7 +34,7 @@ export default function FolderIcon({
     (isOpening && folder.childs && folder.childs.length > 0)
     || (_.includes(highlightedIds, folderId) && !selectable))
     ? 'icon-open-folder'
-    : folder.hasContent ? 'icon-full-folder' : 'icon-empty-folder'
+    : (folder.hasContent && isEnableShowingContent) ? 'icon-full-folder' : 'icon-empty-folder'
   switch (folder.contentType) {
     case 'folder':
       return (
@@ -74,4 +75,5 @@ FolderIcon.propTypes = {
   isRootFolder: bool,
   isOpening: bool,
   selectable: bool,
+  isEnableShowingContent: bool
 }
