@@ -9,7 +9,6 @@ import { Button } from '@material-ui/core';
 function StoryComponent() {
   const [selected] = React.useState({});
   React.useEffect(() => {
-    console.log('qqqqqqqqqqqqqqqqqqqqqqqq');
     onInitWithSelect();
   }, []);
   const actionConfig = {
@@ -66,6 +65,9 @@ function StoryComponent() {
     console.log('123345566');
     subjectObservable.next(`${actionConfig.initWithSelect} 116be391-fa95-45a0-8912-acda4c8f9387`);
   }
+  const onUnSelectFolder = () => {
+    subjectObservable.next(actionConfig.unSelectCurrent);
+  }
   return (
     <div style={{
       display: 'flex',
@@ -78,6 +80,7 @@ function StoryComponent() {
         <Button onClick={onClickButton}>New</Button>
         <Button onClick={onSelectPathList}>Pathlist</Button>
         <Button onClick={onInitWithSelect}>Init Folder</Button>
+        <Button onClick={onUnSelectFolder}>Unselect Current</Button>
         <BaseStory
           widget={FolderTreeWidget}
           widgetProps={{ ...props, title: 'AppBar Widget', workSpace: 'a' }}
