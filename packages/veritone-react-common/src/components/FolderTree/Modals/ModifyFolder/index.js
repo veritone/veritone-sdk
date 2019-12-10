@@ -130,7 +130,7 @@ export default function ModifyFolder({
               </Button>
             )}
           </div>
-          <Card className={cx(styles['folder-tree-card'])}>
+          <div className={cx(styles['folder-tree-card'])}>
             <FolderTree
               selectable={false}
               loading={false}
@@ -143,7 +143,7 @@ export default function ModifyFolder({
               defaultOpening={defaultOpening}
               processingFolder={processingFolder}
             />
-          </Card>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button
