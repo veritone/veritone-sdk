@@ -48,9 +48,8 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
       const after = group.afterGroup;
 
       searchParameters.push(
-        <span className={getGroupStyling({ before, after, level })}>
+        <span   key={searchParameter.id} className={getGroupStyling({ before, after, level })}>
           <SearchParameters
-            key={searchParameter.id}
             level={1 + level}
             parameters={parameters.slice(1 + i, group.endOfGroup)}
             disableTooltip={disableTooltip}
@@ -72,10 +71,10 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
           title={full}
           placement="bottom"
           disableHoverListener={disableTooltip}
+          key={searchParameter.id}
         >
           <div className={styles['tooltipContainer']}>
             <SearchPill
-              key={searchParameter.id}
               label={abbreviation}
               exclude={exclude}
               engineCategoryIcon={engine.iconClass}
