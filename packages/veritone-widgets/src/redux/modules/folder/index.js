@@ -629,7 +629,7 @@ export default createReducer(defaultFolderState, {
     const { workSpace } = action.payload;
     return {
       ...state,
-      searchFolder: {
+      selectedFolder: {
         ...state.selectedFolder,
         [workSpace]: {}
       }
