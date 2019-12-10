@@ -31,7 +31,6 @@ export default function* expandFolder() {
 export function* expandFolderInFunction(folderId, workSpace, selectable) {
   yield put(folderReducer.fetchMoreStart(folderId));
   const folders = yield fetchMore(folderId);
-  console.log(folders);
   const folderReprocess = folders.map(folder => {
     const childs = get(folder, 'childFolders.records', []);
     return {
