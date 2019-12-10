@@ -48,7 +48,7 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
       const after = group.afterGroup;
 
       searchParameters.push(
-        <span   key={searchParameter.id} className={getGroupStyling({ before, after, level })}>
+        <span key={searchParameter.id} className={getGroupStyling({ before, after, level })}>
           <SearchParameters
             level={1 + level}
             parameters={parameters.slice(1 + i, group.endOfGroup)}

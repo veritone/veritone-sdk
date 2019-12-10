@@ -6,9 +6,9 @@ import format from 'date-fns/format'
 import isDate from 'date-fns/isDate'
 import TextField from '@material-ui/core/TextField';
 import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
+import parseISO from 'date-fns/parseISO';
 
 import styles from './styles/dateTimePicker.scss';
-import parseISO from 'date-fns/parseISO';
 
 export default class DateTimePicker extends React.Component {
   static propTypes = {
