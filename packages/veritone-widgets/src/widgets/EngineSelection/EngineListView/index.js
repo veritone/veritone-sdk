@@ -157,7 +157,7 @@ export default class EngineListView extends React.Component {
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
-              fullWidth
+              variant="fullWidth"
             >
               <Tab
                 classes={{ selected: styles.tab }}

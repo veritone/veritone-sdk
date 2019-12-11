@@ -50,14 +50,14 @@ class SelectionInfoPanel extends React.PureComponent {
     return (
       <Paper elevation={4} style={{ height: '100%', minHeight: '300px' }}>
         <div className={styles.pickerTitle}>
-          <Typography variant="h5">
-            Selected Engines{' '}
-            <Typography
-              variant="subtitle1"
-              style={{ display: 'inline-block' }}
-            >
-              {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
-            </Typography>
+          <Typography variant="h5" style={{ marginRight: 5 }}>
+            Selected Engines
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            style={{ lineHeight: 2.1 }}
+          >
+            {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
           </Typography>
         </div>
         <List>
