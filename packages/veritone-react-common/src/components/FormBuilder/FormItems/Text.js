@@ -1,7 +1,7 @@
 import React from 'react';
 import { bool, string, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function TextInput({ label, required, name, onChange, instruction, value, error }) {
   const handleChange = React.useCallback(
@@ -10,6 +10,8 @@ export default function TextInput({ label, required, name, onChange, instruction
     },
     [name, onChange],
   );
+
+  const styles = useStyles({});
 
   return (
     <TextField
@@ -21,7 +23,8 @@ export default function TextInput({ label, required, name, onChange, instruction
       variant="outlined"
       value={value}
       onChange={handleChange}
-      className={styles['form-item']}
+      className={styles.formItem}
+      name={name}
     />
   )
 }

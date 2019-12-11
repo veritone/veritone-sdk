@@ -59,7 +59,8 @@ export ModifyFolder from './components/FolderTree/Modals/ModifyFolder';
 export CreateFolder from './components/FolderTree/Modals/CreateFolder';
 export EditFolder from './components/FolderTree/Modals/EditFolder';
 export LoadingState from './components/FolderTree/LoadingState';
-export FolderNullState from './components/FolderTree/NullState';
+export FolderNullState from './components/FolderTree/NullState'; 
+export SubAppbar from './components/SubAppbar';
 export {
   SimpleSearchBarBase,
   SimpleSearchBarController,
@@ -67,3 +68,10 @@ export {
   SimpleSearchBar,
   EntitySearchTemplate
 } from './components/SimpleSearchBar/SimpleSearchBar';
+
+export {
+  Form,
+  FormBuilder,
+  formUtils,
+  formHelpers
+} from './components/FormBuilder';

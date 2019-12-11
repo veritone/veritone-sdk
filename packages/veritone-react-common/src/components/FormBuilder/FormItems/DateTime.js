@@ -6,7 +6,7 @@ import {
   DatePicker,
   DateTimePicker
 } from '@material-ui/pickers';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function DateTime({
   enableTimeOption,
@@ -25,6 +25,8 @@ export default function DateTime({
     [name, onChange]
   );
 
+  const styles = useStyles({});
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <TimePicker
@@ -38,7 +40,8 @@ export default function DateTime({
         format={dateFormat}
         onChange={handleChange}
         helperText={error || instruction}
-        className={styles['form-item']}
+        className={styles.formItem}
+        name={name}
       />
     </MuiPickersUtilsProvider>
   )

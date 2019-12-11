@@ -4,7 +4,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import MuiSwitch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function Switch({
   label,
@@ -20,11 +20,13 @@ export default function Switch({
     [name, onChange]
   );
 
+  const styles = useStyles({});
+
   return (
     <FormControl
       fullWidth
       error={error.length > 0}
-      className={styles['form-item']}
+      className={styles.formItem}
       required={required}
     >
       <FormControlLabel
@@ -33,6 +35,7 @@ export default function Switch({
             checked={value}
             onChange={handleChange}
             color="primary"
+            name={name}
           />
         }
         label={label}

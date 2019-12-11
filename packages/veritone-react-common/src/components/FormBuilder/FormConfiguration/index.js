@@ -4,20 +4,22 @@ import { noop } from 'lodash';
 import typeConfiguration from '../typeConfiguration';
 import configurationComponents from './items';
 
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function Configuration({ type, onChange, ...data }) {
+  const styles = useStyles({});
   return (
     <div>
       {
         typeConfiguration[type].map(configurationType => {
           const ConfigurationComponent = configurationComponents[configurationType];
+          ConfigurationComponent.displayName = 'FormConfigurationItem';
           return (
             <ConfigurationComponent
               key={configurationType}
               value={data[configurationType]}
               onChange={onChange}
-              className={styles['configuration-item']}
+              className={styles.configurationItem}
               {...data}
             />);
         })

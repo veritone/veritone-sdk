@@ -1,4 +1,4 @@
-export default {
+const typeConfiguration = {
   textInput: ['name', 'label', 'instruction', 'required'],
   paragraph: ['name', 'label', 'instruction', 'required'],
   radio: ['name', 'label', 'items', 'instruction', 'required'],
@@ -21,3 +21,22 @@ export const initData = {
   min: 0,
   max: 5
 }
+
+export const addBlock = ({type, name}, form) => {
+  return [
+    ...form,
+    typeConfiguration[type]
+      .slice(1)
+      .reduce((data, type) => ({
+        ...data,
+        [type]: initData[type]
+      }), { type, name })
+  ];
+}
+
+export const removeBlock = (index, form) => {
+  return form.filter((_, formIndex) => formIndex !== index);
+}
+
+
+export default typeConfiguration;

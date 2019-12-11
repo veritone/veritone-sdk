@@ -133,7 +133,8 @@
         "keyword",
         "text",
         "namedEntity",
-        "barcode"
+        "barcode",
+        "anomaly"
       ]
     },
     "objectResult": {
@@ -310,7 +311,8 @@
         "sentiment",
         "summary",
         "text",
-        "transcript"
+        "transcript",
+        "anomaly"
       ]
     },
     "page": {
