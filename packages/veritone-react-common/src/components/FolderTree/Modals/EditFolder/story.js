@@ -222,6 +222,7 @@ function StoryComponent() {
         selected={selected}
         defaultOpening={[1]}
         currentFolder={currentFolder}
+        processingFolder={[]}
       />
       <button onClick={handleOpen}>
         open
@@ -232,7 +233,7 @@ function StoryComponent() {
 }
 
 storiesOf('FolderTree', module)
-  .add('edit folder dialog', () => {
+  .add('modify folder dialog', () => {
     return (
       <div style={{
         padding: 20,

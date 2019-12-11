@@ -21,7 +21,6 @@ import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
 import {
   DeleteFolder,
-  ModifyFolder,
   CreateFolder,
   EditFolder
 } from 'veritone-react-common';
@@ -213,6 +212,7 @@ function FolderTreeWrapper({
     switch (action) {
       case 'edit':
         setOpenEdit(true);
+        setOpenModify(true);
         break;
       case 'delete':
         setOpenDelete(true);
@@ -248,33 +248,25 @@ function FolderTreeWrapper({
   const handleCloseNewFolder = () => {
     setOpenNew(false);
     setStatus(false);
-  }
+  };
 
   //modify folder
-  const handleSubmitModify = (selectedFolder, folderName) => {
+  const handleSubmitModify = (selectedFolder = {}, folderName) => {
     const currentFolderId = currentFolderForAction.id;
     const newParentId = Object.keys(selectedFolder)[0];
-    editFolder(currentFolderId, folderName, false, true, newParentId);
+    if (openEdit) {
+      editFolder(currentFolderId, folderName, true, false);
+    } else {
+      editFolder(currentFolderId, folderName, false, true, newParentId);
+    }
     handleCloseModify();
-  }
+  };
 
   const handleCloseModify = () => {
     setOpenModify(false);
-  }
-  //edit folder
-  const handleCloseEditFolder = () => {
     setOpenEdit(false);
-  }
-
-  const handleSubmitEditFolder = (folderName, currentEditFolder) => {
-    if (folderName === currentEditFolder.name) {
-      setOpenEdit(false);
-      return;
-    }
-    editFolder(currentEditFolder.id, folderName, true, false);
-    setOpenEdit(false);
-  }
-
+  };
+  
   //delete folder
   const handleSubmitDeleteFolder = (data) => {
     deleteFolder(data.id, workSpace);
@@ -283,20 +275,20 @@ function FolderTreeWrapper({
 
   const handleCloseDeleteFolder = () => {
     setOpenDelete(false);
-  }
+  };
 
   const getFolderSeleted = (selectedFolder) => {
     const selectedFolderId = Object.keys(selectedFolder);
     const data = folderById(selectedFolderId[0]) || folderById(rootFolderIds[0]) || {};
     return data;
-  }
+  };
 
   const newParentFolder = () => {
     return fromNewButton
       ? getFolderSeleted(selectedInModify)
       : getFolderSeleted(selectedFolder)
       || {}
-  }
+  };
 
   const handerClickNewFolder = selectedfolder => {
     const setData = async () => {
@@ -305,7 +297,7 @@ function FolderTreeWrapper({
       await setOpenNew(true);
     }
     setData();
-  }
+  };
 
   const handlerOpenFolder = () => {
     if (!selectable) {
@@ -316,15 +308,15 @@ function FolderTreeWrapper({
       setModifyFromAction(false);
       setStatus(false);
     }
-  }
+  };
 
   const initFolderSelectedFromApp = folderId => {
     setFolderInitFromApp(folderId);
-  }
+  };
 
   const unSelectCurentFolderWrapper = () => {
     unSelectCurrentFolder(workSpace);
-  }
+  };
 
   const processEvent = event => {
     const eventKey = event.split(' ')[0];
@@ -347,7 +339,18 @@ function FolderTreeWrapper({
       default:
         break;
     }
-  }
+  };
+
+  const getModifyType = () => {
+    if (openEdit) {
+      return 3;
+    }
+    if (openModify && modifyFromAction) {
+      return 2;
+    }
+    return 1;
+  };
+
 
   return (
     <div className={styles['container']}>
@@ -381,10 +384,12 @@ function FolderTreeWrapper({
         handleClose={handleCloseDeleteFolder}
         handleSubmit={handleSubmitDeleteFolder}
       />
-      <ModifyFolder
+      <EditFolder
         open={openModify}
-        isEnableEditName={!modifyFromAction}
-        isNewFolder={!modifyFromAction}
+        type={getModifyType()}
+        isEnableEditName={!modifyFromAction || openEdit}
+        isEnableEditFolder={!openEdit}
+        isNewFolder={!modifyFromAction && !openEdit}
         handleClose={handleCloseModify}
         handleSubmit={handleSubmitModify}
         foldersData={foldersData}
@@ -399,12 +404,6 @@ function FolderTreeWrapper({
         parentFolder={newParentFolder()}
         handleClose={handleCloseNewFolder}
         handleSubmit={handleSubmitNewFolder}
-      />
-      <EditFolder
-        open={openEdit}
-        currentFolder={currentFolderForAction}
-        handleClose={handleCloseEditFolder}
-        handleSubmit={handleSubmitEditFolder}
       />
     </div>
   )

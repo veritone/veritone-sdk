@@ -41,7 +41,7 @@ function StoryComponent() {
     type: 'collection',
     actionConfig,
     isEnableShowContent: false,
-    selectable: false,
+    selectable: true,
     isEnableSearch: true,
     isEnableShowRootFolder: true,
     showingType: ['org'],
