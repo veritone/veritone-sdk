@@ -1,9 +1,9 @@
 import DeleteFolder from './DeleteFolder';
-import ModifyFolder from './DeleteFolder';
+import EditFolder from './EditFolder';
 import CreateFolder from './CreateFolder';
 
 export {
     DeleteFolder,
-    ModifyFolder,
+    EditFolder,
     CreateFolder
 }
