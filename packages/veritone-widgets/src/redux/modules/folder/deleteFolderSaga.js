@@ -14,15 +14,15 @@ export default function* deleteFolderSaga() {
 }
 
 function* deleteFolder(action) {
-  const { folderId } = action.payload;
+  const { folderId, workSpace } = action.payload;
   yield put(folderReducer.deleteFolderStart(folderId));
   const foldersData = yield select(folderSelector.folderData);
   const folderSelected = yield select(folderSelector.selected);
-  const { selectable, workSpace } = yield select(folderSelector.config);
+  const { selectable } = yield select(folderSelector.config);
   const rootIds = yield select(folderSelector.rootFolderIds);
   const folder = get(foldersData, ['byId', folderId], {});
   if (folder.hasContent) {
-    // TODO improving
+    //TODO improving
   }
   const queryFolder = `query folder($id:ID!){
     folder(id: $id){
@@ -63,7 +63,7 @@ function* deleteFolder(action) {
     yield put(folderReducer.deleteFolderError(folderId));
   }
   yield put(folderReducer.initFolder(parent.id));
-  if (folderSelected[folderId]) {
+  if (get(folderSelected, [workSpace, folderId])) {
     if (!selectable) {
       yield put(folderReducer.selectFolder(workSpace, {
         [rootIds[0]]: true
@@ -73,5 +73,6 @@ function* deleteFolder(action) {
       yield put(folderReducer.selectFolder(workSpace, newSelected));
     }
   }
+
   return yield put(folderReducer.deleteFolderSuccess(folderId, parent.id));
 }

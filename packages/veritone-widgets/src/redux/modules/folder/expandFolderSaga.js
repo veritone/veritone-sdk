@@ -24,33 +24,36 @@ export default function* expandFolder() {
       return yield put(folderReducer.initFolder(folderId));
     }
     const { selectable, workSpace } = config;
-    yield put(folderReducer.fetchMoreStart(folderId));
-    const folders = yield fetchMore(action);
-    const folderReprocess = folders.map(folder => {
-      const childs = get(folder, 'childFolders.records', []);
-      return {
-        ...folder,
-        parentId: folder.parent.id,
-        childs: childs.map(item => item.id)
-      }
-    });
-    yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
-    const folderChildId = folderReprocess.map(folder => folder.id);
-    const selected = yield select(folderSelector.selected);
-    if (get(selected, [workSpace, folderId]) && selectable) {
-      const newSelected = {
-        ...get(selected, [workSpace], {}),
-        ...folderChildId.reduce((accum, value) => ({
-          ...accum,
-          [value]: true
-        }), {})
-      }
-      yield put(folderReducer.selectFolder(workSpace, newSelected));
-    }
+    return yield expandFolderInFunction(folderId, workSpace, selectable);
   });
 }
-export function* fetchMore(action) {
-  const { folderId } = action.payload;
+
+export function* expandFolderInFunction(folderId, workSpace, selectable) {
+  yield put(folderReducer.fetchMoreStart(folderId));
+  const folders = yield fetchMore(folderId);
+  const folderReprocess = folders.map(folder => {
+    const childs = get(folder, 'childFolders.records', []);
+    return {
+      ...folder,
+      parentId: folder.parent.id,
+      childs: childs.map(item => item.id)
+    }
+  });
+  yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
+  const folderChildId = folderReprocess.map(folder => folder.id);
+  const selected = yield select(folderSelector.selected);
+  if (get(selected, [workSpace, folderId]) && selectable) {
+    const newSelected = {
+      ...get(selected, [workSpace], {}),
+      ...folderChildId.reduce((accum, value) => ({
+        ...accum,
+        [value]: true
+      }), {})
+    }
+    yield put(folderReducer.selectFolder(workSpace, newSelected));
+  }
+}
+export function* fetchMore(folderId) {
   const config = yield select(folderSelector.config);
   const {
     type,
@@ -70,12 +73,14 @@ export function* fetchMore(action) {
           id
         }
         orderIndex
+        treeObjectId
         childFolders(offset: $offset, limit: $limit){
           count
           records{
             id
             name
             typeId
+            treeObjectId
             parent {
               id
             }
@@ -95,6 +100,7 @@ export function* fetchMore(action) {
       folder(id: $id){
         id
         name
+        treeObjectId
         parent{
           id
         }
@@ -103,6 +109,7 @@ export function* fetchMore(action) {
           records{
             id
             name
+            treeObjectId
           }
         }
       }

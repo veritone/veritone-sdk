@@ -8,12 +8,17 @@ import { Button } from '@material-ui/core';
 
 function StoryComponent() {
   const [selected] = React.useState({});
+  React.useEffect(() => {
+    onInitWithSelect();
+  }, []);
   const actionConfig = {
     new: 'action/newfolder',
     modify: 'action/modifyfolder',
     delete: 'action/delete',
-    select: 'action/select'
-  }
+    select: 'action/select',
+    initWithSelect: 'action/initselect',
+    unSelectCurrent: 'action/unSelectCurrent'
+  };
   const folderActionDefault = [
     {
       id: 1,
@@ -36,16 +41,17 @@ function StoryComponent() {
     type: 'collection',
     actionConfig,
     isEnableShowContent: false,
-    selectable: false,
+    selectable: true,
     isEnableSearch: true,
     isEnableShowRootFolder: true,
-    showingType: ['org'], // ['org', 'owner']
+    showingType: ['org'],
     isEnableSelectRoot: true,
     folderAction: folderActionDefault,
     folderSelectedFromApp: selected,
     subjectObservable: subjectObservable,
     onSelectMenuItem: (type, item) => console.log(type, item),
     handleSelectedFoler: (selectedFolder) => console.log(selectedFolder),
+    initSuccess: (data) => console.log(data)
   };
 
   const onClickButton = () => {
@@ -55,27 +61,29 @@ function StoryComponent() {
   const onSelectPathList = () => {
     subjectObservable.next(`${actionConfig.select} 96b52061-cd01-435a-a7dc-c1d44bfd3e24`);
   }
+  const onInitWithSelect = () => {
+    console.log('123345566');
+    subjectObservable.next(`${actionConfig.initWithSelect} 116be391-fa95-45a0-8912-acda4c8f9387`);
+  }
+  const onUnSelectFolder = () => {
+    subjectObservable.next(actionConfig.unSelectCurrent);
+  }
   return (
     <div style={{
       display: 'flex',
       justifyContent: 'space-between'
     }}>
       <div style={{
-        height: '100vh'
+        height: '100vh',
+        width: '100%'
       }}>
         <Button onClick={onClickButton}>New</Button>
         <Button onClick={onSelectPathList}>Pathlist</Button>
+        <Button onClick={onInitWithSelect}>Init Folder</Button>
+        <Button onClick={onUnSelectFolder}>Unselect Current</Button>
         <BaseStory
           widget={FolderTreeWidget}
-          widgetProps={{ ...props, title: 'AppBar Widget', workSpace: 'a'}}
-        />
-      </div>
-      <div style={{
-        height: '100vh'
-      }}>
-        <BaseStory
-          widget={FolderTreeWidget}
-          widgetProps={{ ...props, title: 'AppBar Widget',  workSpace: 'b' }}
+          widgetProps={{ ...props, title: 'AppBar Widget', workSpace: 'a' }}
         />
       </div>
     </div>
