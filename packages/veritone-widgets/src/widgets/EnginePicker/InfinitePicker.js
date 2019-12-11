@@ -128,8 +128,8 @@ class InfiniteTablePicker extends React.Component {
   debouncedScroll = debounce((evt, id) => {
     if (
       evt.target.scrollHeight -
-        evt.target.scrollTop -
-        this.props.infiniteScrollMargin <
+      evt.target.scrollTop -
+      this.props.infiniteScrollMargin <
       evt.target.clientHeight
     ) {
       this.props.fetchMore({
@@ -183,19 +183,21 @@ class InfiniteTablePicker extends React.Component {
           <div className={styles.tableContainer} onScroll={this.handleScroll}>
             <Table className={styles.table}>
               <TableHead className={styles.infiniteScrollHeader}>
-                {this.props.columns.map(column => (
-                  <TableCell
-                    key={`header_${column.name}`}
-                    style={{
-                      width: column.width,
-                      paddingRight: '8px',
-                      minWidth: column.width,
-                      paddingLeft: column.paddingLeft
-                    }}
-                  >
-                    <Typography variant="subtitle1">{column.name}</Typography>
-                  </TableCell>
-                ))}
+                <TableRow>
+                  {this.props.columns.map(column => (
+                    <TableCell
+                      key={`header_${column.name}`}
+                      style={{
+                        width: column.width,
+                        paddingRight: '8px',
+                        minWidth: column.width,
+                        paddingLeft: column.paddingLeft
+                      }}
+                    >
+                      <Typography variant="subtitle1">{column.name}</Typography>
+                    </TableCell>
+                  ))}
+                </TableRow>
               </TableHead>
               <TableBody className={styles.infiniteScrollContainer}>
                 {this.props.loadingFailed && (
@@ -238,20 +240,20 @@ class InfiniteTablePicker extends React.Component {
                           />
                         </TableCell>
                       ) : (
-                        <TableCell
-                          style={{ minWidth: this.props.columns[0].width }}
-                        >
-                          <Checkbox
-                            disabled={this.isSelectionDisabled(row.id)}
-                            value={row.id}
-                            checked={
-                              this.props.selected &&
-                              row.id in this.props.selected
-                            }
-                            onChange={this.getToggleSelectionHandler(row.id)}
-                          />
-                        </TableCell>
-                      )}
+                          <TableCell
+                            style={{ minWidth: this.props.columns[0].width }}
+                          >
+                            <Checkbox
+                              disabled={this.isSelectionDisabled(row.id)}
+                              value={row.id}
+                              checked={
+                                this.props.selected &&
+                                row.id in this.props.selected
+                              }
+                              onChange={this.getToggleSelectionHandler(row.id)}
+                            />
+                          </TableCell>
+                        )}
                       {this.props.renderRow(row)}
                     </TableRow>
                   ))}
