@@ -4,7 +4,6 @@ import {
   startCase,
   camelCase,
   omit,
-  partial,
   without,
   intersection,
   difference
@@ -78,6 +77,7 @@ export default class MenuColumn extends React.Component {
   }
 
   renderMenuCell = (actions = [], data, ...rest) => {
+    const self = this;
     const allActions =
       this.props.transformActions(this.props.actions, data) ||
       difference(
@@ -87,6 +87,14 @@ export default class MenuColumn extends React.Component {
         ],
         this.props.excludeActions
       );
+
+      function handleClickMenuItem(event){
+        event.persist();
+        const action = event.target.getAttribute('data-action');
+        if(action){
+          self.handleClick(action, data, ...rest);
+        }
+      }
 
     return (
       allActions.length > 0 && (
@@ -114,7 +122,8 @@ export default class MenuColumn extends React.Component {
                 ) : (
                   <MenuItem
                     key={s}
-                    onClick={partial(this.handleClick, s, data, ...rest)}
+                    onClick={handleClickMenuItem}
+                    data-action={s}
                   >
                     {startCase(camelCase(this.props.transformLabel(s)))}
                   </MenuItem>
