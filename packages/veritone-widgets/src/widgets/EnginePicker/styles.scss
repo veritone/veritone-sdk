@@ -42,7 +42,6 @@
 .infiniteScrollHeader {
   width: 100% !important;
   display: block !important;
-  // height: 2em;
   margin-bottom: 1px;
 }
 
@@ -73,7 +72,6 @@
 
 .table {
   width: 100%;
-  // height: calc(100% - 1px);
 }
 
 .alignRight {
@@ -83,4 +81,12 @@
 
 .selected {
   background-color: rgba(33, 150, 243, 0.6);
+}
+
+.textSpace {
+  margin-right: 0.1em !important;
+}
+
+.textLineHeight {
+  line-height: 2.1 !important;
 }
