@@ -87,7 +87,6 @@ function StoryComponent() {
         />
       </div>
     </div>
-
   )
 }
 

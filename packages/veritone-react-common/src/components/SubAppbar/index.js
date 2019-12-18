@@ -7,15 +7,32 @@ import BreadCrums from '../DataPicker/Breadcrumbs'
 
 import styles from './styles.scss';
 
-function SubAppbar({actions, pathList, onCrumbClick, defaultValue }) {
+function SubAppbar({
+  isEnableShowButton = true,
+  isEnableShowBreardCrums = true,
+  actions,
+  pathList,
+  onCrumbClick,
+  defaultValue,
+  maxItems = 5
+}) {
   return (
     <div className={cx(styles['subappbar-container'])}>
-      <div className={cx(styles['button-container-react'])}>
-        <PopperButon actions={actions} />
-      </div>
-      <div className={cx(styles['breadcrumb-container-subappbar'])}>
-        <BreadCrums onCrumbClick={onCrumbClick} pathList={pathList} defaultValue={defaultValue}/>
-      </div>
+      {isEnableShowButton && (
+        <div className={cx(styles['button-container-react'])}>
+          <PopperButon actions={actions} />
+        </div>
+      )}
+      {isEnableShowBreardCrums && (
+        <div className={cx(styles['breadcrumb-container-subappbar'])}>
+          <BreadCrums
+            maxItems={maxItems}
+            onCrumbClick={onCrumbClick}
+            pathList={pathList}
+            defaultValue={defaultValue}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -31,7 +48,10 @@ SubAppbar.propTypes = {
     name: PropTypes.string
   })),
   onCrumbClick: PropTypes.func,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.string,
+  maxItems: PropTypes.number,
+  isEnableShowButton: PropTypes.bool,
+  isEnableShowBreardCrums: PropTypes.bool
 }
 
 export default SubAppbar;

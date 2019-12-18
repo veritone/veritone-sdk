@@ -11,13 +11,13 @@ storiesOf('DataPicker', module)
       { id: 'first', name: 'Parent' },
       { id: 'second', name: 'Child' },
       { id: 'third', name: 'GrandChild' },
-      { id: 'fourth', name: 'Super GrandChild' },
     ]
     return (
       <Breadcrumbs
         pathList={pathList}
         onCrumbClick={action('onCrumbClick')}
         isStream={boolean('isStream', false)}
+        maxItems={3}
       />
     );
   })

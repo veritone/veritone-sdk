@@ -70,14 +70,14 @@ function FolderTree({
     if (defaultOpening.length > 0) {
       setopening([...opening, ...defaultOpening]);
     }
-  }, [defaultOpening])
+  }, [defaultOpening]);
   const handleOpenFolder = folderId => event => {
     event.stopPropagation();
     const newOpening =
       _.includes(opening, folderId) ? opening.filter(item => item !== folderId) : [...opening, folderId];
     setopening(newOpening);
     !_.includes(opening, folderId) && onExpand(folderId);
-  }
+  };
   const onChangeSelectedFolder = folder => {
     if (!selectable) {
       onChange({
