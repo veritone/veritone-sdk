@@ -6,7 +6,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-redux": "^5.0.6",
+    "react-redux": "^7.1.3",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.16.0",
     "veritone-functional-permissions": "^1.0.1",
@@ -88,6 +88,6 @@
     ]
   },
   "peerDependencies": {
-    "redux": "^4.0.0"
+    "redux": "^4.0.4"
   }
 }
