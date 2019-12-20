@@ -61,7 +61,22 @@ export default {
       // modulesOnly: true
     }),
     commonjs({
-      include: ['../../node_modules/**', 'node_modules/**', '../**']
+      include: ['../../node_modules/**', 'node_modules/**', '../**'],
+      exclude: [
+        'node_modules/process-es6/**'
+      ],
+      namedExports: {
+        '../../node_modules/react-is/index.js': [
+          'isElement',
+          'isValidElementType',
+          'ForwardRef'
+        ],
+        '../../node_modules/redux-form/node_modules/react-is/index.js': [
+          'isElement',
+          'isValidElementType',
+          'ForwardRef'
+        ]
+      }
     }),
 
     postcss({

@@ -367,7 +367,7 @@ const mockNotifications = {
       description1:
         'Long Description Goes Here, Long Description Goes Here, Long Description Goes Here',
       description2:
-        'Long & Small Description Goes Here, Long & Small Description Goes Here, Long & Small Description Goes Here',
+        'Long \'& Small Description Goes Here, Long \'& Small Description Goes Here, Long \'& Small Description Goes Here',
       onRemoveClick: action()
     },
     {
