@@ -5,10 +5,10 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func, number } from 'prop-types';
-
+import { string, func, number, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notifierPropTypes = {
@@ -21,10 +21,10 @@ export const notifierPropTypes = {
   notifications: notificationListPropTypes,
   totalNotification: number,
   showNotifications: func,
-  hideNotification: func
+  hideNotification: func,
+  classes: shape({any}),
 };
-
-export default class Notifier extends React.Component {
+class Notifier extends React.Component {
   static propTypes = notifierPropTypes;
 
   static defaultProps = {
@@ -62,7 +62,8 @@ export default class Notifier extends React.Component {
       notifications,
       totalNotification,
       showNotifications,
-      hideNotification
+      hideNotification,
+      classes
     } = this.props;
 
 
@@ -70,9 +71,9 @@ export default class Notifier extends React.Component {
     const numNotifications = (totalNotification || totalNotification === 0) ? totalNotification : notifications.length || 0;
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
-      <div className={classNames(styles.notification)}>
+      <div className={classNames(classes.notification)}>
         <Tooltip title={tooltipTitle || ''}>
-          <span className={styles.toolTipWrapper}>
+          <span className={classes.toolTipWrapper}>
             <IconButton
               onClick={showNotifications ? showNotifications : this.showNotifications}
               disabled={notifications.length === 0}
@@ -83,7 +84,7 @@ export default class Notifier extends React.Component {
                   <Badge
                     color="primary"
                     badgeContent={numNotifications}
-                    classes={{ badge: styles.badge }}
+                    classes={{ badge: classes.badge }}
                   >
                     <NotificationIcon htmlColor="white" />
                   </Badge>
@@ -107,18 +108,18 @@ export default class Notifier extends React.Component {
             horizontal: 'center',
           }}
           onClose={hideNotification ? hideNotification : this.hideNotification}
-          className={classNames(styles.popover)}
+          className={classNames(classes.popover)}
         >
-          <div className={classNames(styles.notificationWindow)}>
-            <div className={classNames(styles.header)} style={{ backgroundColor: headerBackgroundColor }}>
-              <div className={classNames(styles.label)}>{headerText}</div>
-              <div className={classNames(styles.chip)}>{numNotifications}</div>
-              <IconButton className={classNames(styles.controls)} onClick={hideNotification ? hideNotification : this.hideNotification}>
+          <div className={classNames(classes.notificationWindow)}>
+            <div className={classNames(classes.header)} style={{ backgroundColor: headerBackgroundColor }}>
+              <div className={classNames(classes.label)}>{headerText}</div>
+              <div className={classNames(classes.chip)}>{numNotifications}</div>
+              <IconButton className={classNames(classes.controls)} onClick={hideNotification ? hideNotification : this.hideNotification}>
                 <KeyboardArrowUpIcon htmlColor="white" />
               </IconButton>
             </div>
 
-            <div className={classNames(styles.body)} style={{ backgroundColor: bodyBackgroundColor }}>
+            <div className={classNames(classes.body)} style={{ backgroundColor: bodyBackgroundColor }}>
               <NotificationList notifications={displayEntries} />
             </div>
           </div>
@@ -127,3 +128,5 @@ export default class Notifier extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Notifier);

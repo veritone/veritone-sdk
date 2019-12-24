@@ -8,6 +8,7 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import Info from '@material-ui/icons/Info';
 import Warning from '@material-ui/icons/Warning';
 import green from '@material-ui/core/colors/green';
+import { makeStyles } from '@material-ui/styles';
 
 import FileUploader from '../../FilePicker/FileUploader';
 import FileList from '../../FilePicker/FileList';
@@ -15,7 +16,9 @@ import FilePickerHeader from '../../FilePicker/FilePickerHeader';
 import FileProgressList from '../../FilePicker/FileProgressList';
 import FilePickerFooter from '../../FilePicker/FilePickerFooter';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const UploadViewContainer = ({
   accept,
@@ -39,6 +42,7 @@ const UploadViewContainer = ({
   onRemoveFile,
   isFullScreen
 }) => {
+  const classes = useStyles();
   const completeStatus = {
     [uploadSuccess]: 'success',
     [uploadWarning]: 'warning',
@@ -56,12 +60,12 @@ const UploadViewContainer = ({
   ) || (uploadedFiles && !uploadedFiles.length);
 
   return (
-    <div className={styles['uploader-container']} style={containerStyle}>
-      <div className={styles['uploader-content']}>
+    <div className={classes['uploaderContainer']} style={containerStyle}>
+      <div className={classes['uploaderContent']}>
         {
           uploadPickerState === 'selecting'
             ? (
-              <div className={styles['uploader-upload-area']}>
+              <div className={classes['uploaderUploadArea']}>
                 <DndProvider backend={HTML}>
                   <FileUploader
                     acceptedFileTypes={accept}
@@ -78,14 +82,14 @@ const UploadViewContainer = ({
                 )}
               </div>
             ) : (
-              <div className={styles['uploader-file-list']}>
+              <div className={classes['uploaderFileList']}>
                 <div>
                   <FilePickerHeader
                     title={completeStatus ? `Upload ${completeStatus}` : 'Uploading'}
                     titleIcon={icon}
                     message={uploadStatusMsg}
                     hideTabs />
-                  <div className={styles['upload-progress-container']}>
+                  <div className={classes['uploadProgressContainer']}>
                     <FileProgressList
                       percentByFiles={percentByFiles}
                       handleAbort={handleAbort}
@@ -98,7 +102,7 @@ const UploadViewContainer = ({
                   && percentByFiles && !!percentByFiles.length
                   && (
                     <div
-                      className={styles['uploader-retry-button-container']}
+                      className={classes['uploaderRetryButtonContainer']}
                       data-veritone-element="picker-retry-controls"
                     >
                       <Button

@@ -5,13 +5,14 @@ import { DndProvider } from 'react-dnd';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
-import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { string, arrayOf, oneOfType, number, bool, func, shape, any } from 'prop-types';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
-import styles from './styles.scss';
+import styles from './styles';
 import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
 
 class FilePicker extends Component {
@@ -26,7 +27,8 @@ class FilePicker extends Component {
     maxFiles: number,
     title: string,
     tooManyFilesErrorMessage: func,
-    oneFileOnlyErrorMessage: string
+    oneFileOnlyErrorMessage: string,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -147,13 +149,14 @@ class FilePicker extends Component {
       ? [this.props.accept]
       : this.props.accept
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
+    const { classes } = this.props;
 
     return (
       <DndProvider backend={HTML}>
         <Paper
           classes={
             this.props.onRequestClose && {
-              root: styles.filePickerPaperOverride
+              root: classes.filePickerPaperOverride
             }
           }
           style={{
@@ -164,8 +167,8 @@ class FilePicker extends Component {
           <div
             className={
               this.props.onRequestClose
-                ? styles.filePicker
-                : styles.filePickerNonModal
+                ? classes.filePicker
+                : classes.filePickerNonModal
             }
             style={{
               height: '100%'
@@ -191,7 +194,7 @@ class FilePicker extends Component {
               )}
 
             {this.state.selectedTab === 'upload' && (
-              <div className={styles.filePickerBody}>
+              <div className={classes.filePickerBody}>
                 <FileUploader
                   useFlatStyle={!this.props.onRequestClose}
                   onFilesSelected={this.handleFilesSelected}
@@ -209,14 +212,14 @@ class FilePicker extends Component {
             )}
 
             {this.state.selectedTab === 'by-url' && (
-              <div className={styles.filePickerBody}>
+              <div className={classes.filePickerBody}>
                 <UrlUploader
                   onUpload={this.handleFilesSelected}
                   acceptedFileTypes={acceptedFileTypes}
                 />
               </div>
             )}
-            <div className={styles.errorMessage}>{this.state.errorMessage}</div>
+            <div className={classes.errorMessage}>{this.state.errorMessage}</div>
             {this.props.onRequestClose && (
               <FilePickerFooter
                 onCancel={this.handleCloseModal}
@@ -231,4 +234,4 @@ class FilePicker extends Component {
   }
 }
 
-export default FilePicker;
+export default withStyles(styles)(FilePicker);

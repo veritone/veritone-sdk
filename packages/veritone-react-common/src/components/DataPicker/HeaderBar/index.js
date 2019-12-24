@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, shape, func, string, oneOf, bool } from 'prop-types';
+import { arrayOf, shape, func, string, oneOf, bool, any } from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Popover from '@material-ui/core/Popover';
@@ -12,11 +12,11 @@ import IconButton from '@material-ui/core/IconButton';
 // import ViewModule from '@material-ui/icons/ViewModule';
 // import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import cx from 'classnames';
+import { withStyles } from '@material-ui/styles';
 
 import Breadcrumbs from '../Breadcrumbs';
 // import SearchInput from '../SearchInput';
-import styles from './styles.scss';
-
+import styles from './styles';
 
 class HeaderBar extends React.Component {
 
@@ -62,31 +62,32 @@ class HeaderBar extends React.Component {
       pathList,
       currentPickerType,
       toggleMediaInfoPanel,
-      showMediaInfoPanel
+      showMediaInfoPanel,
+      classes
     } = this.props;
     const { anchorEl } = this.state;
     return (
-      <div className={styles.root}>
+      <div className={classes.root}>
         <AppBar
           position="static"
           color="default"
-          className={styles['headerBar']}
+          className={classes['headerBar']}
         >
-          <Toolbar className={styles.header}>
+          <Toolbar className={classes.header}>
             <Breadcrumbs
               pathList={pathList}
               onCrumbClick={onCrumbClick}
-              isStream={currentPickerType==='stream'}
+              isStream={currentPickerType === 'stream'}
             />
-            { currentPickerType !== 'upload' && (<div style={{ flexGrow: 1 }} />)}
-            { currentPickerType !== 'upload' && (
-              <div 
+            {currentPickerType !== 'upload' && (<div style={{ flexGrow: 1 }} />)}
+            {currentPickerType !== 'upload' && (
+              <div
                 id="media-info-toggle"
                 className={cx(
-                  styles['button-group'],
-                  styles.icon,
-                  { [styles.disabled]: currentPickerType === 'upload' }
-                  )
+                  classes['buttonGroup'],
+                  classes.icon,
+                  { [classes.disabled]: currentPickerType === 'upload' }
+                )
                 }
               >
                 {
@@ -94,9 +95,9 @@ class HeaderBar extends React.Component {
                   //   onClear={onClear}
                   //   onSearch={onSearch}
                   // />
-                  // <div className={styles.spacer} />
-                  // <div className={cx(styles.divider, styles.icon)} />
-                  // <div className={styles.spacer} />
+                  // <div className={classes.spacer} />
+                  // <div className={cx(classes.divider, classes.icon)} />
+                  // <div className={classes.spacer} />
                   // <Sort onClick={this.onOpenSort} />
                   // <ArrowDropDown onClick={this.onOpenSort} />
                   // {
@@ -161,7 +162,8 @@ HeaderBar.propTypes = {
   onSort: func,
   currentPickerType: oneOf(['folder', 'stream', 'upload']),
   toggleMediaInfoPanel: func,
-  showMediaInfoPanel: bool
+  showMediaInfoPanel: bool,
+  classes: shape({ any })
 };
 
 HeaderBar.defaultProps = {
@@ -172,4 +174,4 @@ HeaderBar.defaultProps = {
   ],
 }
 
-export default HeaderBar;
+export default withStyles(styles)(HeaderBar);

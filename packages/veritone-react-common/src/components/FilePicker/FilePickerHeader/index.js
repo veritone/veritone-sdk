@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
-import { string, func, bool, number, node } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { string, func, bool, number, node, shape, any } from 'prop-types';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 class FilePickerHeader extends Component {
   static propTypes = {
@@ -18,7 +19,8 @@ class FilePickerHeader extends Component {
     maxFiles: number,
     hideTabs: bool,
     titleIcon: node,
-    message: string
+    message: string,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -30,15 +32,16 @@ class FilePickerHeader extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.filePickerHeader}>
+      <div className={classes.filePickerHeader}>
         <span
-          className={styles.filePickerTitle}
+          className={classes.filePickerTitle}
           data-veritone-element="picker-header-title"
         >
           {
             this.props.titleIcon && (
-              <div className={styles.titleIconContainer}>
+              <div className={classes.titleIconContainer}>
                 {this.props.titleIcon}
               </div>
             )
@@ -47,16 +50,16 @@ class FilePickerHeader extends Component {
 
           {this.props.multiple &&
             this.props.maxFiles && (
-              <span className={styles.count}>
+              <span className={classes.count}>
                 {this.props.fileCount} / {this.props.maxFiles}
               </span>
             )}
         </span>
-        { this.props.onClose && (
+        {this.props.onClose && (
           <IconButton
             data-veritone-element="picker-header-close-btn"
             classes={{
-              root: styles.filePickerCloseButton
+              root: classes.filePickerCloseButton
             }}
             onClick={this.props.onClose}
           >
@@ -64,14 +67,14 @@ class FilePickerHeader extends Component {
           </IconButton>
         )}
         {
-            this.props.message && (
-              <div
-                className={styles.filePickerMessage}
-                data-veritone-element="picker-header-msg"
-              >
-                {this.props.message}
-              </div>
-            )
+          this.props.message && (
+            <div
+              className={classes.filePickerMessage}
+              data-veritone-element="picker-header-msg"
+            >
+              {this.props.message}
+            </div>
+          )
         }
         {
           !this.props.hideTabs && (
@@ -79,7 +82,7 @@ class FilePickerHeader extends Component {
               value={this.props.selectedTab}
               indicatorColor="primary"
               onChange={this.handleTabChange}
-              className={styles.filePickerTabs}
+              className={classes.filePickerTabs}
             >
               <Tab label="Upload" value="upload" />
               {this.props.allowUrlUpload && <Tab label="By URL" value="by-url" />}
@@ -91,4 +94,4 @@ class FilePickerHeader extends Component {
   }
 }
 
-export default FilePickerHeader;
+export default withStyles(styles)(FilePickerHeader);

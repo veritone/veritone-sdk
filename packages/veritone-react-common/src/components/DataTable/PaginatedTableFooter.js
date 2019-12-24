@@ -8,12 +8,12 @@ import LastPageIcon from '@material-ui/icons/LastPage';
 import TableCell from '@material-ui/core/TableCell';
 import SelectInput from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import { withStyles } from '@material-ui/styles';
 
-import { func, number } from 'prop-types';
+import { func, number, shape, any } from 'prop-types';
 import RefreshButton from 'components/RefreshButton';
-import styles from './styles/index.scss';
-
-export default class PaginatedTableFooter extends React.Component {
+import styles from './styles/index';
+class PaginatedTableFooter extends React.Component {
   static propTypes = {
     page: number.isRequired,
     perPage: number.isRequired,
@@ -21,7 +21,8 @@ export default class PaginatedTableFooter extends React.Component {
     onChangePerPage: func.isRequired,
     onRefreshPageData: func,
     rowCount: number,
-    colSpan: number
+    colSpan: number,
+    classes: shape({any})
   };
 
   static defaultProps = {
@@ -47,7 +48,7 @@ export default class PaginatedTableFooter extends React.Component {
   };
 
   render() {
-    const { rowCount, page, perPage } = this.props;
+    const { rowCount, page, perPage, classes } = this.props;
     const firstItem = page * perPage + 1;
     const lastItem = Math.min(page * perPage + perPage, rowCount);
 
@@ -58,13 +59,13 @@ export default class PaginatedTableFooter extends React.Component {
           textAlign: 'right'
         }}
       >
-        <div className={styles['paginated-footer']}>
-          <span className={styles['rows-per-page']}>Rows per page:</span>
+        <div className={classes['paginatedFooter']}>
+          <span className={classes['rowsPerPage']}>Rows per page:</span>
 
           <SelectInput
             value={this.props.perPage}
             onChange={this.props.onChangePerPage}
-            className={styles['per-page']}
+            className={classes['perPage']}
             style={{
               width: '4em',
               padding: '0 5px',
@@ -77,7 +78,7 @@ export default class PaginatedTableFooter extends React.Component {
             <MenuItem value={30}>30</MenuItem>
           </SelectInput>
 
-          <span className={styles['num-items']}>
+          <span className={classes['numItems']}>
             {firstItem}–{lastItem} of {rowCount}
           </span>
 
@@ -90,7 +91,7 @@ export default class PaginatedTableFooter extends React.Component {
           </IconButton>
 
           <IconButton
-            className={cx(styles['page-left'], 'pageLeft')}
+            className={cx(classes['pageLeft'], 'pageLeft')}
             onClick={this.handleBackButtonClick}
             disabled={page === 0}
           >
@@ -98,7 +99,7 @@ export default class PaginatedTableFooter extends React.Component {
           </IconButton>
 
           <IconButton
-            className={cx(styles['page-right'], 'pageRight')}
+            className={cx(classes['pageRight'], 'pageRight')}
             onClick={this.handleNextButtonClick}
             disabled={page >= Math.ceil(rowCount / perPage) - 1}
           >
@@ -115,7 +116,7 @@ export default class PaginatedTableFooter extends React.Component {
           {this.props.onRefreshPageData && (
             <RefreshButton
               onRefresh={this.props.onRefreshPageData}
-              className={cx(styles['refresh'], 'refresh')}
+              className={cx(classes['refresh'], 'refresh')}
             />
           )}
         </div>
@@ -125,3 +126,6 @@ export default class PaginatedTableFooter extends React.Component {
 }
 
 PaginatedTableFooter.muiName = 'TableFooter';
+
+
+export default withStyles(styles)(PaginatedTableFooter);

@@ -15,10 +15,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
 import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
+import { makeStyles } from '@material-ui/styles';
 import MediaPlayerComponent from '../../MediaPlayer';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+const useStyles = makeStyles(styles);
 // eslint-disable-next-line react/display-name
 const MediaPlayer = React.forwardRef((props, ref) => (
   <MediaPlayerComponent {...props} forwardedRef={ref} />
@@ -81,6 +83,7 @@ const formatAsDuration = (seconds) => {
 }
 
 const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMediaInfoPanel }) => {
+  const classes = useStyles();
   const itemType = selectedItem.type === 'folder' ?
     'folder' :
     get(selectedItem, 'primaryAsset.contentType', 'application').split('/')[0];
@@ -89,10 +92,10 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
     selectedItem.stopDateTime
   );
   return (
-    <div className={styles['media-info-container']} style={{ width }}>
+    <div className={classes['mediaInfoContainer']} style={{ width }}>
       {
         toggleMediaInfoPanel && (
-          <div data-veritone-element="close-button" className={styles['media-info-btn-container']}>
+          <div data-veritone-element="close-button" className={classes['mediaInfoBtnContainer']}>
             <Tooltip title="Hide Details" placement="left">
               <IconButton
                 /* eslint-disable react/jsx-no-bind */
@@ -108,10 +111,10 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
         (() => {
           switch (itemType) {
             case 'folder':
-              return <Folder className={styles['icon-info']} />
+              return <Folder className={classes['iconInfo']} />
             case 'doc':
             case 'application':
-              return <InsertDriveFile className={styles['icon-info']} />
+              return <InsertDriveFile className={classes['iconInfo']} />
             case 'video':
             case 'audio':
               return (
@@ -136,29 +139,29 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
               return <img
                 src={get(selectedItem, 'primaryAsset.signedUri')}
                 alt={selectedItem.name}
-                className={styles['image-preview']}
+                className={classes['imagePreview']}
               />
             default:
               return null;
           }
         })()
       }
-      <Typography className={styles['tdo-name']}>
+      <Typography className={classes['tdoName']}>
         {selectedItem.name}</Typography>
-      <div className={styles['info-details']}>
-        <Table className={styles['table-container']}>
+      <div className={classes['infoDetails']}>
+        <Table className={classes['tableContainer']}>
           <TableBody>
-            <TableRow className={styles['table-row']}>
+            <TableRow className={classes['tableRow']}>
               <TableCell
                 className={cx(
-                  styles['table-cell'],
-                  styles['table-first-column']
+                  classes['tableCell'],
+                  classes['tableFirstColumn']
                 )}
               >
                 Created
               </TableCell>
               <TableCell
-                className={styles['table-cell']}
+                className={classes['tableCell']}
               >
                 <span data-veritone-element="media-panel-created-date">
                   {formatDateString(selectedItem.createdDateTime)}
@@ -168,14 +171,14 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
             <TableRow>
               <TableCell
                 className={cx(
-                  styles['table-cell'],
-                  styles['table-first-column']
+                  classes['tableCell'],
+                  classes['tableFirstColumn']
                 )}
               >
                 Modified
               </TableCell>
               <TableCell
-                className={styles['table-cell']}
+                className={classes['tableCell']}
               >
                 <span data-veritone-element="media-panel-modified-date">
                   {formatDateString(selectedItem.modifiedDateTime)}
@@ -184,16 +187,16 @@ const MediaInfo = ({ selectedItem, width, onPlayerRefReady, playerRef, toggleMed
             </TableRow>
             {
               !!duration && (
-                <TableRow className={styles['table-row']}>
+                <TableRow className={classes['tableRow']}>
                   <TableCell
                     className={cx(
-                      styles['table-cell'],
-                      styles['table-first-column']
+                      classes['tableCell'],
+                      classes['tableFirstColumn']
                     )}
                   >
                     Duration
                   </TableCell>
-                  <TableCell className={styles['table-cell']}>
+                  <TableCell className={classes['tableCell']}>
                     <span data-veritone-element="media-panel-duration">
                       {formatAsDuration(duration)}
                     </span>
@@ -230,6 +233,7 @@ const transitionStyle = (width) => ({
 })
 
 const MediaInfoPanel = ({ open, selectedItems = [], width, ...props }) => {
+  const classes = useStyles();
   const selectedItem = selectedItems.length ? selectedItems[0] : null;
   const transitionStyleByWidth = transitionStyle(width);
   return (
@@ -237,7 +241,7 @@ const MediaInfoPanel = ({ open, selectedItems = [], width, ...props }) => {
       {
         state => (
           <div
-            className={styles['media-panel-container']}
+            className={classes['mediaPanelContainer']}
             style={
               transitionStyleByWidth[state]
             }

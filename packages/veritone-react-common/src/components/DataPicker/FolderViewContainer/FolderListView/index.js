@@ -13,11 +13,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Hidden from '@material-ui/core/Hidden';
+import { makeStyles } from '@material-ui/styles';
 
 import cx from 'classnames';
 
 import itemShape from '../itemShape';
-import styles from './styles.scss';
+import styles from './styles';
 
 const FILE_ICONS = {
   'folder': Folder,
@@ -26,6 +27,7 @@ const FILE_ICONS = {
   'doc': InsertDriveFile
 }
 
+const useStyles = makeStyles(styles);
 const formatDateString = date => {
   return format(parseISO(date), 'MMM d, yyyy h:mm a..aaa');
 };
@@ -41,6 +43,7 @@ const FolderListView = ({
   onSelectItem,
   isAcceptedType
 }) => {
+  const classes = useStyles();
   const headers = ['Name', 'Created Date Time', 'Modified Date Time', 'Type'];
   const hiddenIndices = [1, 2];
   function handleDoubleClick(event) {
@@ -51,20 +54,20 @@ const FolderListView = ({
   return (
     <Table>
       <TableHead>
-        <TableRow className={styles['table-row-head']}>
+        <TableRow className={classes['tableRowHead']}>
           {
             headers.map((header, index) => {
               const content = (
                 <TableCell
                   key={header}
                   className={cx(
-                    styles['table-row-head--hidden'],
-                    styles['table-row']
+                    classes['tableRowHeadHidden'],
+                    classes['tableRow']
                   )}
                   align="right"
                 >
                   {header}
-                  <div className={styles['table-row-text']}>
+                  <div className={classes['tableRowText']}>
                     {header}
                   </div>
                 </TableCell>
@@ -93,8 +96,8 @@ const FolderListView = ({
             <TableRow
               data-veritone-element="folder-list-item"
               className={cx({
-                [styles.selected]: highlightedItems[id],
-                [styles.unsupported]: !isSupported && type !== 'folder'
+                [classes.selected]: highlightedItems[id],
+                [classes.unsupported]: !isSupported && type !== 'folder'
               })}
               id={id}
               key={id}
@@ -107,14 +110,14 @@ const FolderListView = ({
             >
               <TableCell
                 scope="row"
-                className={styles['table-row']}
+                className={classes['tableRow']}
               >
-                <div className={cx(styles['table-first-column'])}>
-                  <FileIcon className={styles['table-icon']} />
+                <div className={cx(classes['tableFirstColumn'])}>
+                  <FileIcon className={classes['tableIcon']} />
                   <span className={
-                    cx(styles['table-first-column--text'],
+                    cx(classes['tableFirstColumnText'],
                       {
-                        [styles['table-first-column--folder']]: type === 'folder'
+                        [classes['tableFirstColumnFolder']]: type === 'folder'
                       })
                   }
                   >
@@ -124,19 +127,19 @@ const FolderListView = ({
               </TableCell>
               {
                 useHideWrap(
-                  <TableCell align="right" className={styles['table-row']}>
+                  <TableCell align="right" className={classes['tableRow']}>
                     {formatDateString(createdDateTime)}
                   </TableCell>
                 )
               }
               {
                 useHideWrap(
-                  <TableCell align="right" className={styles['table-row']}>
+                  <TableCell align="right" className={classes['tableRow']}>
                     {formatDateString(modifiedDateTime)}
                   </TableCell>
                 )
               }
-              <TableCell align="right" className={styles['table-row']}>
+              <TableCell align="right" className={classes['tableRow']}>
                 {
                   type === 'folder' ?
                     'folder' :

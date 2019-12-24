@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, string, shape, func, node } from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import {
   Folder,
   InsertDriveFile,
@@ -8,7 +8,7 @@ import {
   Videocam
 } from '@material-ui/icons';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Table  from '@material-ui/core/Table';
+import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -19,7 +19,6 @@ import classNames from 'classnames';
 import InfiniteWrapper from '../InfiniteWrapper';
 import infiniteWrapperShape from '../InfiniteWrapper/infiniteWrapperShape';
 import itemShape from './itemShape';
-import styles from './styles.scss';
 
 const muiStyles = () => ({
   tableHeadRow: {
@@ -55,6 +54,18 @@ const muiStyles = () => ({
   },
   selected: {
     background: 'rgba(0,0,0,0.37)'
+  },
+  tableContainer: {
+    paddingTop: 48,
+    position: 'relative',
+    width: '100%',
+  },
+  tableRowText: {
+    visibility: 'visible',
+    position: 'absolute',
+    lineHeight: 1.5,
+    top: 0,
+    padding: '15px 56px 15px 24px',
   }
 });
 
@@ -71,7 +82,12 @@ const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
 
 const DefaultLoading = () => (
-  <div className={styles['loading-container']}>
+  <div style={{
+    alignItems: 'center',
+    display: 'flex',
+    height: 80,
+    justifyContent: 'center',
+  }}>
     <CircularProgress size={50} />
   </div>
 )
@@ -114,7 +130,7 @@ class FilesTable extends React.Component {
     const eventKeyCode = event.keyCode;
     const { lastIndex = 0, shiftIndex, highlightedItems } = this.state;
     if (this.noneHighligthedItem(highlightedItems)) {
-      return ;
+      return;
     }
     if (eventKeyCode === 38) {
       if (event.shiftKey) {
@@ -174,8 +190,8 @@ class FilesTable extends React.Component {
   }
 
   noneHighligthedItem = (highlightedItems) =>
-  Object.keys(highlightedItems)
-    .filter(key => highlightedItems[key]).length === 0;
+    Object.keys(highlightedItems)
+      .filter(key => highlightedItems[key]).length === 0;
 
   onHighlightItem = (event) => {
     const { index } = Object.assign({}, event.currentTarget.dataset);
@@ -214,7 +230,7 @@ class FilesTable extends React.Component {
     const { highlightedItems } = this.state;
 
     return (
-      <div className={styles['table-container']}>
+      <div className={classes['tableContainer']}>
         <InfiniteWrapper
           finishedLoading={finishedLoading}
           threshold={DEFAULT_THRESHOLD}
@@ -236,7 +252,7 @@ class FilesTable extends React.Component {
                       align="right"
                     >
                       {header}
-                      <div className={styles['table-row-text']}>
+                      <div className={classes['tableRowText']}>
                         {header}
                       </div>
                     </TableCell>
@@ -268,8 +284,8 @@ class FilesTable extends React.Component {
                     >
                       <FileIcon />
                       <span className={
-                          classNames(classes.text, classes[type])
-                        }
+                        classNames(classes.text, classes[type])
+                      }
                       >
                         {name}
                       </span>
