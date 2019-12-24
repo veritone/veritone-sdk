@@ -75,8 +75,8 @@ class FileListItem extends Component {
         </div>
 
         <div className={classes.itemTextContainer}>
-          <span className={classes.itemNameText}>{this.props.file.name}</span>
-          <span className={classes.itemFileSizeText}>
+          <span className={classes.itemNameText} data-test="itemNameText">{this.props.file.name}</span>
+          <span className={classes.itemFileSizeText} data-test="itemFileSizeText">
             {formatBytes(this.props.file.size)}
           </span>
         </div>

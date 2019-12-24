@@ -110,8 +110,8 @@ class Notifier extends React.Component {
           onClose={hideNotification ? hideNotification : this.hideNotification}
           className={classNames(classes.popover)}
         >
-          <div className={classNames(classes.notificationWindow)}>
-            <div className={classNames(classes.header)} style={{ backgroundColor: headerBackgroundColor }}>
+          <div className={classNames(classes.notificationWindow)} data-test="notificationWindow">
+            <div className={classNames(classes.header)} style={{ backgroundColor: headerBackgroundColor }} data-test="header">
               <div className={classNames(classes.label)}>{headerText}</div>
               <div className={classNames(classes.chip)}>{numNotifications}</div>
               <IconButton className={classNames(classes.controls)} onClick={hideNotification ? hideNotification : this.hideNotification}>

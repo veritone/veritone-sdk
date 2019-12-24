@@ -168,7 +168,9 @@ class NotificationList extends React.Component {
             [classes.noOutro]: isRemoved && (!formatedData.outroAnimation || formatedData.outroAnimation === OUTRO_NONE)
           }
         )
-      }>
+      }
+      data-test="entry"
+      >
         <div className={classNames(classes.visualStatus)}>
           { formatedData.statusIcon }
         </div>

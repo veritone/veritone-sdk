@@ -194,7 +194,7 @@ class FilePicker extends Component {
               )}
 
             {this.state.selectedTab === 'upload' && (
-              <div className={classes.filePickerBody}>
+              <div className={classes.filePickerBody} data-test="filePickerBody">
                 <FileUploader
                   useFlatStyle={!this.props.onRequestClose}
                   onFilesSelected={this.handleFilesSelected}

@@ -107,6 +107,7 @@ const FolderListView = ({
               data-type={type}
               onClick={onHighlightItem}
               onDoubleClick={handleDoubleClick}
+              data-test={cx({ selected: highlightedItems[id] })}
             >
               <TableCell
                 scope="row"

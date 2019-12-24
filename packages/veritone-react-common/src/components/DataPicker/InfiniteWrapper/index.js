@@ -41,6 +41,13 @@ export default function InfiniteLoaderWrapper({
 }) {
   const muiClasses = useStyles();
   const containerRef = useRef(null);
+  // const getViewWindow = () => {
+  //   const boundingClient = containerRef.current.getBoundingClientRect();
+  //   return {
+  //     top: boundingClient.top,
+  //     bottom: boundingClient.bottom
+  //   }
+  // }
   const debouncedTriggerPagination = debounce(triggerPagination, 1000);
   const onScroll = () => {
     const container = containerRef.current;

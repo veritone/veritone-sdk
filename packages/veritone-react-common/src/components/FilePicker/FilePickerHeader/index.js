@@ -38,6 +38,7 @@ class FilePickerHeader extends Component {
         <span
           className={classes.filePickerTitle}
           data-veritone-element="picker-header-title"
+          data-test="filePickerTitle"
         >
           {
             this.props.titleIcon && (
