@@ -66,15 +66,9 @@ export default {
         'node_modules/process-es6/**'
       ],
       namedExports: {
-        '../../node_modules/react-is/index.js': [
-          'isElement',
-          'isValidElementType',
-          'ForwardRef'
-        ],
         '../../node_modules/redux-form/node_modules/react-is/index.js': [
           'isElement',
-          'isValidElementType',
-          'ForwardRef'
+          'isValidElementType'
         ]
       }
     }),
