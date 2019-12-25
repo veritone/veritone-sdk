@@ -21,15 +21,15 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Search, Clear } from '@material-ui/icons';
 import { isNumber } from 'lodash';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 // eslint-disable-next-line
 const Div = ({ className, children }) => (
   <div className={className}>{children}</div>
 );
-
-export class SimpleSearchBarBase extends React.Component {
+class SimpleSearchBarBaseComponent extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -100,7 +100,8 @@ export class SimpleSearchBarBase extends React.Component {
         autocomplete,
         isLoading,
         marginTop,
-        width
+        width,
+        classes,
       }
     } = this;
 
@@ -127,16 +128,16 @@ export class SimpleSearchBarBase extends React.Component {
       // render key added to force render during cleanup
       <ClickAwayListener onClickAway={clickAway} key={renderKey}>
         {/*this div here to prevent click away firing immediately, probably bug of material-ui*/}
-        <div style={{ marginTop }} className={styles.wrapper}>
+        <div style={{ marginTop }} className={classes.wrapper}>
           <PaperOrDiv
             style={{
               borderRadius: 8
             }}
-            className={cx(styles.colorContainer)}
+            className={cx(classes.colorContainer)}
           >
-            <div className={styles.searchBarContainer} style={{ width: _width }}>
+            <div className={classes.searchBarContainer} style={{ width: _width }}>
               <IconButton disabled={!focused} onClick={onSubmit}>
-                <Search className={styles.iconColor} />
+                <Search className={classes.iconColor} />
               </IconButton>
               <Input
                 // handle esc and enter
@@ -150,15 +151,15 @@ export class SimpleSearchBarBase extends React.Component {
                 value={value}
                 onChange={this.onChange}
                 onFocus={this.onFocus}
-                className={cx(styles.input)}
+                className={cx(classes.input)}
                 key={renderKey + 1}
               />
               <Zoom in={!!(focused && showClear && isLoading)}>
-                <div className={cx(styles.loadingIcon)}>
+                <div className={cx(classes.loadingIcon)}>
                   <CircularProgress size={20} />
                 </div>
               </Zoom>
-              <Zoom in={showClear} className={cx(styles.clearButton)}>
+              <Zoom in={showClear} className={cx(classes.clearButton)}>
                 <IconButton onClick={this.clear}>
                   <Clear />
                 </IconButton>
@@ -234,7 +235,7 @@ export class SimpleSearchBarBase extends React.Component {
   }
 }
 
-SimpleSearchBarBase.propTypes = {
+SimpleSearchBarBaseComponent.propTypes = {
   autocomplete: bool,
   onChange: func,
   onSubmit: func,
@@ -252,5 +253,12 @@ SimpleSearchBarBase.propTypes = {
   ),
   resetOnClickAway: bool,
   marginTop: string,
-  width: oneOfType([string, number])
+  width: oneOfType([string, number]),
+  classes: shape({ any }),
+};
+
+const SimpleSearchBarBase = withStyles(styles)(SimpleSearchBarBaseComponent);
+
+export {
+  SimpleSearchBarBase
 };

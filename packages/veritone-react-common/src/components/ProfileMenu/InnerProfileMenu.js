@@ -8,10 +8,11 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
-import { string, func, shape, arrayOf, element } from 'prop-types';
-import styles from './styles.scss';
+import { string, func, shape, arrayOf, element, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles';
 
-export default class InnerProfileMenu extends React.Component {
+class InnerProfileMenu extends React.Component {
   static propTypes = {
     onLogout: func.isRequired,
     onEditProfile: func.isRequired,
@@ -24,13 +25,15 @@ export default class InnerProfileMenu extends React.Component {
       }),
       signedImageUrl: string
     }),
-    additionMenuItems: arrayOf(element)
+    additionMenuItems: arrayOf(element),
+    classes: shape({ any }),
   };
 
   render() {
+    const { classes } = this.props;
     const userExists = !!Object.keys(this.props.user).length;
     if (!userExists) {
-      return <div className={styles.userNullState}>No user found</div>;
+      return <div className={classes.userNullState}>No user found</div>;
     }
 
     const userProfileImage =
@@ -39,19 +42,19 @@ export default class InnerProfileMenu extends React.Component {
       '//static.veritone.com/veritone-ui/default-avatar-2.png';
     return (
       <Fragment>
-        <ListSubheader className={styles['header']} key="header">
-          <div className={styles['user-avatar']}>
+        <ListSubheader className={classes['header']} key="header">
+          <div className={classes['userAvatar']}>
             <Avatar src={userProfileImage} />
           </div>
-          <div className={styles['user-profile']}>
-            <div className={styles['full-name']}>
+          <div className={classes['userProfile']}>
+            <div className={classes['fullName']}>
               {get(this.props.user, 'kvp.firstName')}&nbsp;
               {get(this.props.user, 'kvp.lastName')}
             </div>
-            <div className={styles['username']}>
+            <div className={classes['username']}>
               {get(this.props.user, 'userName')}
             </div>
-            <div className={styles['editButton']}>
+            <div className={classes['editButton']}>
               <Button
                 variant="contained"
                 color="secondary"
@@ -81,3 +84,5 @@ export default class InnerProfileMenu extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(InnerProfileMenu);

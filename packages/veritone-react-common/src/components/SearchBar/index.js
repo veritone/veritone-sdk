@@ -11,24 +11,30 @@ import {
 
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
+import { makeStyles } from '@material-ui/styles';
 
 import SearchPill from 'components/SearchPill';
 import { getGroupsFromSearchParameters, SearchBarError } from './parser';
 import { engineCategories } from './engineCategoryMappings';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 // need to look forward and backwards one search parameter, as well as take into the account the rendering level
 // because we render ((hello) and world ) as (hello) and world)
 const getGroupStyling = ({ before, after, level }) => {
+  const classes = useStyles();
+
   return cx({
-    [styles['searchGroupNestedLeft']]: before && before !== 'group',
-    [styles['searchGroupNestedRight']]: after && after !== 'group',
-    [styles['searchGroup']]: level === 0
+    [classes['searchGroupNestedLeft']]: before && before !== 'group',
+    [classes['searchGroupNestedRight']]: after && after !== 'group',
+    [classes['searchGroup']]: level === 0
   });
 };
 
 const SearchParameters = ({ parameters, level, disableTooltip }) => {
+  const classes = useStyles();
   const groups = getGroupsFromSearchParameters(parameters);
   const searchParameters = [];
   for (let i = 0; i < parameters.length; i++) {
@@ -48,9 +54,8 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
       const after = group.afterGroup;
 
       searchParameters.push(
-        <span className={getGroupStyling({ before, after, level })}>
+        <span className={getGroupStyling({ before, after, level })} key={searchParameter.id}>
           <SearchParameters
-            key={searchParameter.id}
             level={1 + level}
             parameters={parameters.slice(1 + i, group.endOfGroup)}
             disableTooltip={disableTooltip}
@@ -72,10 +77,10 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
           title={full}
           placement="bottom"
           disableHoverListener={disableTooltip}
+          key={searchParameter.id}
         >
-          <div className={styles['tooltipContainer']}>
+          <div className={classes['tooltipContainer']}>
             <SearchPill
-              key={searchParameter.id}
               label={abbreviation}
               exclude={exclude}
               engineCategoryIcon={engine.iconClass}
@@ -87,7 +92,7 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
     } else if (searchParameter.conditionType === 'join') {
       // render a joining operator
       searchParameters.push(
-        <span className={styles['joiningOperator']}>
+        <span className={classes['joiningOperator']} key={searchParameter.id}>
           {searchParameter.value}{' '}
         </span>
       );

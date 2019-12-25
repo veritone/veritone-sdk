@@ -6,10 +6,12 @@ import Button from '@material-ui/core/Button';
 import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
-
+import { makeStyles } from '@material-ui/styles';
 import { func, string, objectOf, any, bool, node } from 'prop-types';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const RaisedTextField = ({
   label,
@@ -21,6 +23,7 @@ const RaisedTextField = ({
   disabled,
   actionTooltipLabel
 }) => {
+  const classes = useStyles();
   const actionIcon = {
     edit: <EditIcon />,
     go: <ArrowRightIcon />
@@ -28,26 +31,26 @@ const RaisedTextField = ({
 
   return (
     <Paper
-      className={cx(styles.paper, className)}
+      className={cx(classes.paper, className)}
       style={containerStyle}
       square
     >
-      <div className={styles.container}>
-        <div className={styles.label}>{label}</div>
-        <div className={styles.value}>{value}</div>
+      <div className={classes.container}>
+        <div className={classes.label}>{label}</div>
+        <div className={classes.value}>{value}</div>
         <ConditionalToolTip title={actionTooltipLabel} placement="left">
-          <div className={styles.actionIconContainer}>
+          <div className={classes.actionIconContainer}>
             {action &&
               (actionIcon ? (
                 <IconButton
-                  className={styles.actionIcon}
+                  className={classes.actionIcon}
                   onClick={onClickAction}
                   disabled={!action || disabled}
                 >
                   {actionIcon}
                 </IconButton>
               ) : (
-                <Button // className={styles.actionIcon}
+                <Button // className={classes.actionIcon}
                   onClick={onClickAction}
                   disabled={disabled}
                 >

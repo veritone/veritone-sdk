@@ -13,7 +13,8 @@ const Lozenge = ({
   backgroundColor,
   textColor,
   border,
-  className
+  className,
+  ...props
 }) => {
   const classes = useStyles();
   return (
@@ -24,6 +25,7 @@ const Lozenge = ({
         color: textColor || '#fff',
         border: border || 'none'
       }}
+      {...props}
     >
       {iconClassName && <i className={iconClassName} />}
       {children}

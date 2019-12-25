@@ -1,13 +1,13 @@
 import React, { Component, cloneElement } from 'react';
-import { string, bool, func, objectOf, any, node } from 'prop-types';
+import { string, bool, func, objectOf, any, node, shape } from 'prop-types';
 
 import Cancel from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
-
+import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class Lightbox extends Component {
+class Lightbox extends Component {
   static propTypes = {
     open: bool,
     fullscreen: bool,
@@ -21,7 +21,8 @@ export default class Lightbox extends Component {
     className: string,
     buttonClassName: string,
     contentClassName: string,
-    data: objectOf(any)
+    data: objectOf(any),
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -83,30 +84,36 @@ export default class Lightbox extends Component {
       closeButton,
       className,
       buttonClassName,
-      contentClassName
+      contentClassName,
+      classes
     } = this.props;
 
     return (
       <div
-        className={classNames(styles.lightbox, className, {
-          [styles.open]: this.state.open,
-          [styles.hidden]: this.state.hidden,
-          [styles.fullscreen]: fullscreen
+        className={classNames(classes.lightbox, className, {
+          [classes.open]: this.state.open,
+          [classes.hidden]: this.state.hidden,
+          [classes.fullscreen]: fullscreen
+        })}
+        data-test={classNames({
+          open: this.state.open,
+          hidden: this.state.hidden,
         })}
       >
         <div
-          className={classNames(styles.background)}
+          className={classNames(classes.background)}
           onClick={this.handleBackdropClick}
+          data-test="background"
         />
-        <div className={classNames(styles.content, contentClassName)}>
+        <div className={classNames(classes.content, contentClassName)}>
           {cloneElement(children)}
           {closeButton && (
             <IconButton
               aria-label="Close"
               onClick={this.handleCloseButtonClick}
-              className={classNames(styles.closeButton, buttonClassName)}
+              className={classNames(classes.closeButton, buttonClassName)}
             >
-              <Cancel className={classNames(styles.closeButtonIcon)} />
+              <Cancel className={classNames(classes.closeButtonIcon)} />
             </IconButton>
           )}
         </div>
@@ -114,3 +121,5 @@ export default class Lightbox extends Component {
     );
   }
 }
+
+export default withStyles(styles)(Lightbox);

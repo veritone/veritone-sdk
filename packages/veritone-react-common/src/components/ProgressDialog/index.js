@@ -1,5 +1,5 @@
 import React from 'react';
-import { number, string, oneOf } from 'prop-types';
+import { number, string, oneOf, shape, any } from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckCircle from '@material-ui/icons/CheckCircle';
@@ -8,16 +8,17 @@ import Warning from '@material-ui/icons/Warning';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import yellow from '@material-ui/core/colors/yellow';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles';
 
-import styles from './styles.scss';
-
-export default class ProgressDialog extends React.Component {
+class ProgressDialog extends React.Component {
   static propTypes = {
     percentComplete: number,
     progressMessage: string,
     height: number,
     width: number,
-    completeStatus: oneOf(['success', 'failure', 'warning'])
+    completeStatus: oneOf(['success', 'failure', 'warning']),
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -28,19 +29,21 @@ export default class ProgressDialog extends React.Component {
   };
 
   renderProgress() {
+    const { classes } = this.props;
     return (
-      <div className={styles.percentageContainer}>
-        <div className={styles.percentage}>{this.props.percentComplete}%</div>
+      <div className={classes.percentageContainer}>
+        <div className={classes.percentage}>{this.props.percentComplete}%</div>
       </div>
     );
   }
 
   renderComplete() {
+    const {classes} = this.props;
     const icon = {
       success: (
         <CheckCircle
           classes={{
-            root: styles.resolutionIcon
+            root: classes.resolutionIcon
           }}
           style={{
             fill: green[500]
@@ -52,7 +55,7 @@ export default class ProgressDialog extends React.Component {
       failure: (
         <RemoveCircle
           classes={{
-            root: styles.resolutionIcon
+            root: classes.resolutionIcon
           }}
           style={{
             fill: red[500]
@@ -64,7 +67,7 @@ export default class ProgressDialog extends React.Component {
       warning: (
         <Warning
           classes={{
-            root: styles.resolutionIcon
+            root: classes.resolutionIcon
           }}
           style={{
             fill: yellow[500]
@@ -74,33 +77,33 @@ export default class ProgressDialog extends React.Component {
       )
     }[this.props.completeStatus];
 
-    return <div className={styles.resolutionIconContainer}>{icon}</div>;
+    return <div className={classes.resolutionIconContainer}>{icon}</div>;
   }
 
   render() {
     // todo: error message, close button (when error is present)
-
+    const { classes } = this.props;
     return (
       <Paper
-        classes={{ root: styles.container }}
+        classes={{ root: classes.container }}
         style={{ height: this.props.height, width: this.props.width }}
       >
-        <div className={styles.circularProgressContainer}>
+        <div className={classes.circularProgressContainer}>
           {!this.props.completeStatus && (
             <CircularProgress
-              className={styles.circularProgress}
+              className={classes.circularProgress}
               size={125}
               thickness={1}
             />
           )}
         </div>
 
-        <div className={styles.textContainer}>
+        <div className={classes.textContainer}>
           {this.props.completeStatus
             ? this.renderComplete()
             : this.renderProgress()}
 
-          <div className={styles.progressMessage}>
+          <div className={classes.progressMessage}>
             {this.props.progressMessage}
           </div>
         </div>
@@ -108,3 +111,5 @@ export default class ProgressDialog extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(ProgressDialog);
