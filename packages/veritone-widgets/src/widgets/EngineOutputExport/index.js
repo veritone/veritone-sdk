@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { get, isArray } from 'lodash';
-import { bool, func, string, arrayOf, shape, number } from 'prop-types';
+import { bool, func, string, arrayOf, shape, number, any } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import Card from '@material-ui/core/Card';
@@ -13,17 +13,15 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 import widget from '../../shared/widget';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
-const snackBarClasses = {
-  error: styles.errorSnackBar
-};
-
+@withStyles(styles)
 @connect(
   state => ({
     includeMedia: engineOutputExportModule.getIncludeMedia(state),
@@ -66,7 +64,8 @@ class EngineOutputExport extends Component {
     exportAndDownload: func.isRequired,
     errorSnackBars: arrayOf(shape({})),
     closeSnackBar: func,
-    fetchEngineRunsFailed: bool
+    fetchEngineRunsFailed: bool,
+    classes: shape({ any }),
   };
 
   handleIncludeMediaChange = event => {
@@ -91,13 +90,18 @@ class EngineOutputExport extends Component {
       onCancel,
       errorSnackBars,
       closeSnackBar,
-      fetchEngineRunsFailed
+      fetchEngineRunsFailed,
+      classes
     } = this.props;
 
     const disableExportButton =
       fetchingEngineRuns ||
       fetchingCategoryExportFormats ||
       fetchEngineRunsFailed;
+
+    const snackBarClasses = {
+      error: classes.errorSnackBar
+    };
 
     return (
       <Dialog
@@ -109,21 +113,21 @@ class EngineOutputExport extends Component {
           container
           direction="column"
           justify="flex-start"
-          className={styles.engineOutputExport}
+          className={classes.engineOutputExport}
         >
-          <Grid item className={styles.engineOutputExportHeader} container>
+          <Grid item className={classes.engineOutputExportHeader} container>
             <Grid item xs={11}>
-              <div className={styles.title}>{`${
+              <div className={classes.title}>{`${
                 tdos.length > 1 ? 'Bulk ' : ''
-              }Export and Download`}</div>
-              <div className={styles.subtitle}>
+                }Export and Download`}</div>
+              <div className={classes.subtitle}>
                 Select the category, engine, and format type you would like to
                 export with the option to download the corresponding file.
               </div>
             </Grid>
             <Grid item xs={1}>
               <IconButton
-                className={styles.closeButton}
+                className={classes.closeButton}
                 color="inherit"
                 onClick={onCancel}
                 aria-label="Close"
@@ -136,19 +140,19 @@ class EngineOutputExport extends Component {
           <Grid
             item
             xs
-            className={styles.engineOutputExportContent}
+            className={classes.engineOutputExportContent}
             container
             direction="column"
             alignItems="center"
           >
             <Grid item xs={12}>
-              <Card className={styles.formatSelection}>
+              <Card className={classes.formatSelection}>
                 <CardHeader
                   title="Export Format Selection"
                   subheader="Select the preferred engine categories and engines that have processed the file(s). Then choose the applicable format(s) to include in your export."
                   classes={{
-                    title: styles.exportFormatTitle,
-                    subheader: styles.exportFormatSubHeader
+                    title: classes.exportFormatTitle,
+                    subheader: classes.exportFormatSubHeader
                   }}
                 />
                 <EngineCategoryConfigList tdos={tdos} />
@@ -166,8 +170,8 @@ class EngineOutputExport extends Component {
                   }
                   subheader="Include the media file with your format export. Downloading the file may increase the wait time."
                   classes={{
-                    title: styles.exportFormatTitle,
-                    subheader: styles.exportFormatSubHeader
+                    title: classes.exportFormatTitle,
+                    subheader: classes.exportFormatSubHeader
                   }}
                 />
               </Card>
@@ -178,11 +182,11 @@ class EngineOutputExport extends Component {
             container
             justify="flex-end"
             alignItems="center"
-            className={styles.engineOutputExportActions}
+            className={classes.engineOutputExportActions}
             data-veritone-element="export-and-download-action-buttons"
           >
             <Button
-              className={styles.actionButton}
+              className={classes.actionButton}
               onClick={onCancel}
               data-veritone-element="export-and-download-cancel-button"
             >
@@ -191,7 +195,7 @@ class EngineOutputExport extends Component {
             <Button
               variant="contained"
               color="primary"
-              className={styles.actionButton}
+              className={classes.actionButton}
               onClick={this.handleExportAndDownload}
               disabled={disableExportButton}
               data-veritone-element="export-and-download-export-button"

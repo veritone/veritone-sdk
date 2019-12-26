@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { objectOf, any, func, string, number } from 'prop-types';
+import { objectOf, any, func, string, number, shape } from 'prop-types';
 
 import * as multipleEngineSelectionModule from '../../redux/modules/multipleEngineSelection';
 import widget from '../../shared/widget';
@@ -14,11 +14,13 @@ import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/styles';
 
 import { SelectionButton } from 'veritone-react-common';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 @connect((state, { ids }) => {
   return {
     selectedEngines: multipleEngineSelectionModule.selectedEngines(state)
@@ -30,7 +32,8 @@ class SelectionInfoPanel extends React.PureComponent {
     toggleEngineSelection: func,
     selectBaseline: func,
     baselineEngineId: string,
-    maxSelections: number
+    maxSelections: number,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -47,17 +50,19 @@ class SelectionInfoPanel extends React.PureComponent {
   getSelectionHandler = engineId => () => this.props.selectBaseline(engineId);
 
   render() {
+    const { classes } = this.props;
+
     return (
       <Paper elevation={4} style={{ height: '100%', minHeight: '300px' }}>
-        <div className={styles.pickerTitle}>
-          <Typography variant="h5">
-            Selected Engines{' '}
-            <Typography
-              variant="subtitle1"
-              style={{ display: 'inline-block' }}
-            >
-              {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
-            </Typography>
+        <div className={classes.pickerTitle}>
+          <Typography variant="h5" className={classes.textSpace}>
+            Selected Engines
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            className={classes.textLineHeight}
+          >
+            {Object.keys(this.props.selectedEngines).length} / {this.props.maxSelections}
           </Typography>
         </div>
         <List>
@@ -67,36 +72,41 @@ class SelectionInfoPanel extends React.PureComponent {
                 <ListItem key={engine.id} divider>
                   <Grid
                     container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="center"
+                    spacing={1}
                   >
-                    <Grid item xs={1} className={styles.alignRight}>
-                      {engine.owned && (
-                        <ListItemIcon>
-                          <StarIcon />
-                        </ListItemIcon>
-                      )}
+                    <Grid item xs={12} sm={8}>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center"
+                      >
+                        <Grid item xs={1}>
+                          {engine.owned && (
+                            <ListItemIcon>
+                              <StarIcon />
+                            </ListItemIcon>
+                          )}
+                        </Grid>
+                        <Grid item xs={this.props.selectBaseline ? 8 : 9}>
+                          <Typography variant="subtitle1">
+                            {engine.name}
+                          </Typography>
+                          <Typography variant="caption">
+                            {engine.ownerOrganization.name}
+                          </Typography>
+                        </Grid>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={this.props.selectBaseline ? 8 : 9}>
-                      <Typography variant="subtitle1">
-                        {engine.name}
-                      </Typography>
-                      <Typography variant="caption">
-                        {engine.ownerOrganization.name}
-                      </Typography>
-                    </Grid>
-                    {this.props.selectBaseline && (
-                      <Grid item xs={2} className={styles.alignRight}>
+                    <Grid item xs={12} sm={4} className={classes.columnRight}>
+                      {this.props.selectBaseline && (
                         <SelectionButton
                           selected={this.props.baselineEngineId === engine.id}
                           toggleSelection={this.getSelectionHandler(engine.id)}
                         >
                           Baseline
                         </SelectionButton>
-                      </Grid>
-                    )}
-                    <Grid item xs={1} className={styles.alignRight}>
+                      )}
                       <ListItemIcon>
                         <IconButton
                           aria-label="unselect_engine"

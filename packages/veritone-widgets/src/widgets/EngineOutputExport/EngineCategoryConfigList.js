@@ -7,18 +7,21 @@ import {
   objectOf,
   shape,
   string,
-  func
+  func,
+  any
 } from 'prop-types';
 
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/styles';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 import EngineCategoryConfig from './EngineCategoryConfig';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 @connect(
   state => ({
     outputConfigsByCategoryId: engineOutputExportModule.outputConfigsByCategoryId(
@@ -61,7 +64,8 @@ export default class EngineCategoryConfigList extends Component {
     toggleConfigExpand: func,
     setHasSpeakerData: func,
     hasSpeakerData: bool,
-    speakerCategoryType: string
+    speakerCategoryType: string,
+    classes: shape({ any })
   };
 
   componentDidMount() {
@@ -90,7 +94,8 @@ export default class EngineCategoryConfigList extends Component {
       outputConfigsByCategoryId,
       expandedCategories,
       toggleConfigExpand,
-      speakerCategoryType
+      speakerCategoryType,
+      classes
     } = this.props;
 
     // Temporary bypass of speaker category since we are planning
@@ -117,16 +122,16 @@ export default class EngineCategoryConfigList extends Component {
                 />
                 {index !==
                   Object.keys(outputConfigsByCategoryId).length - 1 && (
-                  <Divider />
-                )}
+                    <Divider />
+                  )}
               </Fragment>
             ))}
           </List>
         ) : (
-          <div className={styles.loadingConfigsContainer}>
-            <CircularProgress size={50} thickness={2.5} />
-          </div>
-        )}
+            <div className={classes.loadingConfigsContainer}>
+              <CircularProgress size={50} thickness={2.5} />
+            </div>
+          )}
       </div>
     );
   }
