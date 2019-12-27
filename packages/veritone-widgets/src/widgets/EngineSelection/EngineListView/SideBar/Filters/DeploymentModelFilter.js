@@ -1,8 +1,9 @@
 import React from 'react';
-import { func, shape, string } from 'prop-types';
+import { func, shape, string, any } from 'prop-types';
 import Radio from '@material-ui/core/Radio';
+import { withStyles } from '@material-ui/styles';
 
-import styles from '../styles.scss';
+import styles from '../styles';
 
 class DeploymentModelFilter extends React.Component {
   static propTypes = {
@@ -10,7 +11,8 @@ class DeploymentModelFilter extends React.Component {
     filters: shape({
       deploymentModel: string
     }).isRequired,
-    filterBy: func.isRequired
+    filterBy: func.isRequired,
+    classes: shape({ any }),
   };
 
   handleChange = event => {
@@ -27,14 +29,15 @@ class DeploymentModelFilter extends React.Component {
       NonNetworkIsolated: 'External Processing',
       HumanReview: 'Human Review'
     };
+    const { classes } = this.props;
 
     return (
-      <div className={styles.filterContainer}>
+      <div className={classes.filterContainer}>
         {Object.keys(deploymentModels).map(deploymentModel => (
-          <div className={styles.inlineFilter} key={deploymentModel}>
+          <div className={classes.inlineFilter} key={deploymentModel}>
             <Radio
               color="primary"
-              classes={{ root: styles.radio }}
+              classes={{ root: classes.radio }}
               checked={this.props.filters.deploymentModel === deploymentModel}
               onChange={this.handleChange}
               value={deploymentModel}
@@ -51,5 +54,5 @@ class DeploymentModelFilter extends React.Component {
 export default {
   label: 'Deployment Model',
   id: 'deploymentModel',
-  component: DeploymentModelFilter
+  component: withStyles(styles)(DeploymentModelFilter)
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bool, object, func, string, shape } from 'prop-types';
+import { bool, object, func, string, shape, any } from 'prop-types';
 import { get } from 'lodash';
 
 import { Lozenge, Truncate } from 'veritone-react-common';
@@ -9,6 +9,7 @@ import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import Checkbox from '@material-ui/core/Checkbox';
+import { withStyles } from '@material-ui/styles';
 
 import networkIsolatedLogo from '../../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../../images/externalaccess_logo.png';
@@ -19,8 +20,9 @@ import * as engineSelectionModule from '../../../../../redux/modules/engineSelec
 
 import ToggleButton from '../../../ToggleButton/';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 @connect(
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
@@ -59,7 +61,8 @@ export default class EngineSelectionRow extends React.Component {
     selectEngines: func.isRequired,
     deselectEngines: func.isRequired,
     checkEngine: func.isRequired,
-    uncheckEngine: func.isRequired
+    uncheckEngine: func.isRequired,
+    classes: shape({ any }),
   };
 
   handleChange = () => {
@@ -73,6 +76,7 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     const { name, iconClass, color } = this.props.engine.category || {};
 
     const deploymentModelLogo = {
@@ -81,16 +85,17 @@ export default class EngineSelectionRow extends React.Component {
       NonNetworkIsolated: externalProcessingLogo,
       HumanReview: humanReviewLogo
     };
+    console.log(styles);
 
     return (
-      <div className={styles.row}>
-        <div className={styles.avatar}>
+      <div className={classes.row}>
+        <div className={classes.avatar}>
           {this.props.engine.iconPath ? (
-            <img className={styles.icon} src={this.props.engine.iconPath} />
+            <img className={classes.icon} src={this.props.engine.iconPath} />
           ) : (
-            <i className="icon-engines" />
-          )}
-          <div className={styles.engineSelect}>
+              <i className="icon-engines" />
+            )}
+          <div className={classes.engineSelect}>
             <Checkbox
               color="primary"
               onChange={this.handleChange}
@@ -98,36 +103,36 @@ export default class EngineSelectionRow extends React.Component {
             />
           </div>
         </div>
-        <div className={styles.container}>
-          <div className={styles.primary}>
-            <div className={styles.main}>
-              <div className={styles.headings}>
-                <div className={styles.title} onClick={this.handleClick}>
+        <div className={classes.container}>
+          <div className={classes.primary}>
+            <div className={classes.main}>
+              <div className={classes.headings}>
+                <div className={classes.title} onClick={this.handleClick}>
                   {this.props.engine.name}
                 </div>
-                <div className={styles.orgName}>
+                <div className={classes.orgName}>
                   {get(this.props, 'engine.ownerOrganization.name')}
                 </div>
               </div>
             </div>
-            <div className={styles.info}>
+            <div className={classes.info}>
               {name && (
                 <Lozenge iconClassName={iconClass} backgroundColor={color}>
                   {name}
                 </Lozenge>
               )}
             </div>
-            <div className={styles.description}>
+            <div className={classes.description}>
               {this.props.engine.description && (
                 <Truncate clamp={3}>{this.props.engine.description}</Truncate>
               )}
             </div>
           </div>
-          <div className={styles.secondary}>
-            <div className={styles.logos}>
-              <div className={styles.logo}>
+          <div className={classes.secondary}>
+            <div className={classes.logos}>
+              <div className={classes.logo}>
                 <img
-                  className={styles.icon}
+                  className={classes.icon}
                   src={deploymentModelLogo[this.props.engine.deploymentModel]}
                 />
               </div>

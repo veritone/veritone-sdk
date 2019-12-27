@@ -3,8 +3,11 @@ import { arrayOf, string, number, func, bool } from 'prop-types';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import BackIcon from '@material-ui/icons/KeyboardBackspace';
+import { makeStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 function SelectedActionBar({
   id,
@@ -17,6 +20,7 @@ function SelectedActionBar({
   onSelectAll,
   disabledSelectAllMessage
 }) {
+  const classes = useStyles();
   const handleAddSelected = () => {
     onAddSelected(id, selectedEngines);
     onBack(id);
@@ -37,39 +41,39 @@ function SelectedActionBar({
   // selectedEngines.length < allEngines.length;
 
   return (
-    <div className={styles.addRemoveSelectedBar}>
-      <div className={styles.back}>
+    <div className={classes.addRemoveSelectedBar}>
+      <div className={classes.back}>
         <IconButton onClick={onBack}>
           <BackIcon />
         </IconButton>
-        <div className={styles.selectedCountText}>
+        <div className={classes.selectedCountText}>
           {displaySelectAllMessage && (
             <div>
               All{' '}
-              <span className={styles.selectedCount}>{`${
+              <span className={classes.selectedCount}>{`${
                 selectedEngines.length
-              }`}</span>{' '}
+                }`}</span>{' '}
               engines on this page are selected.{' '}
               <a
                 href="#"
                 onClick={handleSelectAll} // eslint-disable-line
               >
                 Select all{' '}
-                <span className={styles.selectedCount}>{`${
+                <span className={classes.selectedCount}>{`${
                   allEngines.length
-                }`}</span>{' '}
+                  }`}</span>{' '}
                 available engines.
               </a>
             </div>
           )}
           {!displaySelectAllMessage && (
-            <div className={styles.selectMessage}>
+            <div className={classes.selectMessage}>
               {selectedEngines.length} selected
             </div>
           )}
         </div>
       </div>
-      <div className={styles.bulkActions}>
+      <div className={classes.bulkActions}>
         <Button
           color="primary"
           onClick={handleAddSelected} // eslint-disable-line
