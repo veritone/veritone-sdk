@@ -154,7 +154,7 @@ class FolderSelectionDialog extends React.Component {
               onClick={this.handleCancel}
             />
           </Grid>
-          <Typography className={classes.dialogSubTitle} variant="subheading">
+          <Typography className={classes.dialogSubTitle} variant="subtitle1">
             Oops - Something went Wrong! Your folders could not be loaded.
           </Typography>
         </Dialog>
@@ -179,7 +179,7 @@ class FolderSelectionDialog extends React.Component {
               onClick={this.handleCancel}
             />
           </Grid>
-          <Typography className={classes.dialogSubTitle} variant="subheading">
+          <Typography className={classes.dialogSubTitle} variant="subtitle1">
             Choose a folder below to organize this data.
           </Typography>
           <DialogContent className={classes.dialogContent}>
@@ -190,10 +190,10 @@ class FolderSelectionDialog extends React.Component {
             >
               <Grid item container alignContent="center" alignItems="center">
                 <WorkIcon className={classes.workIcon} />
-                <Typography variant="title">My Organization</Typography>
+                <Typography variant="h6">My Organization</Typography>
               </Grid>
               <Grid item container alignContent="center" alignItems="center">
-                <Typography className={classes.saveText} variant="title">
+                <Typography className={classes.saveText} variant="h6">
                   Save to Root Level
                 </Typography>
               </Grid>
