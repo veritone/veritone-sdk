@@ -29,7 +29,7 @@ export default {
   },
   muiTabButtonRootOverride: {
     minWidth: 'initial !important', // hack: 'get rid of material-ui's responsive scaling of tabs
-    color: `${darkBlack} !important`,
+    color: darkBlack,
     fontSize: 14, // hack: 'get rid of material-ui's responsive scaling of tabs
   },
   singleTabLabel: {
