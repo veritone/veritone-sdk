@@ -162,7 +162,7 @@ const demoPosterImage =
 class Story extends React.Component {
   /* eslint-disable react/prop-types */
   state = {
-    boundingPolySeries: this.props.boundingPolySeries
+    boundingPolySeries: this.props.boundingPolySeries || []
   };
 
   onPlayerRefReady = ref => {
