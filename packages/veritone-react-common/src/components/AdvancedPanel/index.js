@@ -4,26 +4,28 @@ import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
+import InfoOutlineIcon from '@material-ui/icons/InfoOutlined';
 import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
 import { findIndex, get, isEqual } from 'lodash';
+import { withStyles } from '@material-ui/core/styles';
 
 import { guid } from '../../helpers/guid';
 import LocationSelect from '../AreaSelect';
 import RangeSelect from '../RangeSelect';
-import style from './styles.scss';
+import styles from './styles';
 
 const id = guid();
 
-class AdvancedPanel extends React.Component {
+class AdvancedPanelComponent extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
     searchByTag: PropTypes.string.isRequired,
     handleClose: PropTypes.func.isRequired,
     handleReset: PropTypes.func.isRequired,
     advancedOptions: PropTypes.shape(Object),
-    onAddAdvancedSearchParams: PropTypes.func.isRequired
+    onAddAdvancedSearchParams: PropTypes.func.isRequired,
+    classes: PropTypes.shape({ any: PropTypes.any }),
   };
 
   state = {
@@ -153,7 +155,7 @@ class AdvancedPanel extends React.Component {
 
   render() {
     const { boundingBoxes, step } = this.state;
-    const { open, handleClose, searchByTag } = this.props;
+    const { open, handleClose, searchByTag, classes } = this.props;
     return (
       <div>
         <Dialog
@@ -164,17 +166,20 @@ class AdvancedPanel extends React.Component {
           data-veritone-component="advanced-search-panel"
         >
           <div id="advanced-search-panel">
-            <div className={cx(style['title'])}>
-              <div className={cx(style['title-text'])}>Advanced Options</div>
+            <div className={cx(classes['title'])}>
+              <div
+                className={cx(classes['titleText'])}
+                data-test="title-text"
+              >Advanced Options</div>
               <div>
                 <IconButton
-                  className={cx(style['advanced-icon-button'])}
+                  className={cx(classes['advancedIconButton'])}
                   data-veritone-element="advanced-search-info-btn"
                 >
                   <InfoOutlineIcon />
                 </IconButton>
                 <IconButton
-                  className={cx(style['advanced-icon-button'])}
+                  className={cx(classes['advancedIconButton'])}
                   onClick={handleClose}
                 >
                   <CloseIcon />
@@ -183,12 +188,15 @@ class AdvancedPanel extends React.Component {
             </div>
           </div>
           <Divider />
-          <div className={cx(style['dialog-content'])}>
-            <div className={cx(style['area-text'])}>Area of Interest</div>
-            <div className={cx(style['only-return-text'])}>
+          <div className={cx(classes['dialogContent'])}>
+            <div className={cx(classes['areaText'])}>Area of Interest</div>
+            <div
+              className={cx(classes['onlyReturnText'])}
+              data-test="only-return-text"
+            >
               Only return search results for this {searchByTag} if they appear in a defined region.
             </div>
-            <div className={cx(style['location-select-div'])}>
+            <div className={cx(classes['locationSelectDiv'])}>
               <LocationSelect
                 onEditAoI={this.onEditAoI}
                 onRemoveAoI={this.onRemoveAoI}
@@ -202,36 +210,41 @@ class AdvancedPanel extends React.Component {
             </div>
           </div>
           <Divider />
-          <div className={cx(style['dialog-content'])}>
-            <div className={cx(style['area-text'])}>Confidence</div>
-            <div className={cx(style['only-return-text'])}>
+          <div className={cx(classes['dialogContent'])}>
+            <div className={cx(classes['areaText'])}>Confidence</div>
+            <div
+              className={cx(classes['onlyReturnText'])}
+              data-test="only-return-text"
+            >
               Search by the percentage of confidence of this {searchByTag}.
             </div>
-            <div className={cx(style['location-select-div'])}>
+            <div className={cx(classes['locationSelectDiv'])}>
               <RangeSelect
                 onChangeConfidenceRange={this.onChangeConfidenceRange}
                 selectedConfidenceRange={this.state.selectedConfidenceRange}
               />
             </div>
           </div>
-          <div className={cx(style['dialog-content'], style['action'])}>
+          <div className={cx(classes['dialogContent'], classes['action'])}>
             <div
               onClick={this.handleResetAll}
-              className={cx(style['reset-all'])}
+              className={cx(classes['resetAll'])}
+              data-test="reset-all"
             >
               RESET ALL
             </div>
             <div>
               <Button
                 onClick={handleClose}
-                className={cx(style['vbtn-black-color'], style['vbtn-cancel'])}
+                className={cx(classes['vbtnBlackColor'], classes['vbtnCancel'])}
+                data-test="vbtn-cancel"
               >
                 CANCEL
                 </Button>
               <Button
                 onClick={this.handleApply}
-                variant="raised"
-                className={cx(style['vbtn-blue'])}
+                variant="contained"
+                className={cx(classes['vbtnBlue'])}
               >
                 APPLY
               </Button>
@@ -242,6 +255,8 @@ class AdvancedPanel extends React.Component {
     );
   }
 }
+
+const AdvancedPanel = withStyles(styles)(AdvancedPanelComponent);
 
 export {
   AdvancedPanel

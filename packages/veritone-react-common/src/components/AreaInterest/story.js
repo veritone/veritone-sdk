@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import AreaInterest from './';
-
-export default class Story extends Component {
+class Story extends Component {
 
     state = {
         defaultAoI: {
@@ -30,7 +29,6 @@ export default class Story extends Component {
         )
     }
 }
-
 
 storiesOf('AreaInterest', module)
     .add('Simple test', () => <Story />);

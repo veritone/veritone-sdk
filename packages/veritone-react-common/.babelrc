@@ -1,7 +1,42 @@
 {
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-external-helpers",
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "helpers": "./src/helpers",
+          "images": "./src/resources/images",
+          "components": "./src/components",
+          "reduxModules": "./src/redux/modules"
+        }
+      }
+    ],
+    "@babel/plugin-transform-react-display-name",
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-proposal-export-namespace-from",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-runtime",
+    "lodash",
+    "date-fns"
+  ],
   "env": {
     "test": {
-      "presets": ["env", "react"],
+      "presets": [
+        "@babel/preset-env",
+        "@babel/preset-react"
+      ],
       "plugins": [
         [
           "module-resolver",
@@ -15,29 +50,37 @@
             }
           }
         ],
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-export-namespace-from",
+        [
+          "@babel/plugin-proposal-decorators",
+          {
+            "legacy": true
+          }
+        ],
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread",
         "lodash"
       ]
     },
     "production-es": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 5%"]
+              "browsers": [
+                "> 5%"
+              ]
             }
           }
         ],
-        "react",
-        "es2016"
+        "@babel/preset-react",
+        "@babel/preset-es2016"
       ],
       "plugins": [
-        "external-helpers",
+        "@babel/plugin-external-helpers",
         [
           "module-resolver",
           {
@@ -49,12 +92,18 @@
             }
           }
         ],
-        "add-react-displayname",
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",
-        "transform-runtime",
+        "@babel/plugin-transform-react-display-name",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-export-namespace-from",
+        [
+          "@babel/plugin-proposal-decorators",
+          {
+            "legacy": true
+          }
+        ],
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-runtime",
         "lodash",
         "date-fns"
       ]
@@ -62,18 +111,20 @@
     "production-cjs": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 0.5%"]
+              "browsers": [
+                "> 0.5%"
+              ]
             }
           }
         ],
-        "react"
+        "@babel/preset-react"
       ],
       "plugins": [
-        "external-helpers",
+        "@babel/plugin-external-helpers",
         [
           "module-resolver",
           {
@@ -85,12 +136,18 @@
             }
           }
         ],
-        "add-react-displayname",
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",
-        "transform-runtime",
+        "@babel/plugin-transform-react-display-name",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-export-namespace-from",
+        [
+          "@babel/plugin-proposal-decorators",
+          {
+            "legacy": true
+          }
+        ],
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-runtime",
         "lodash",
         "date-fns"
       ]

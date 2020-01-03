@@ -1,0 +1,81 @@
+export default {
+  dialogContent: {
+    margin: 20,
+  },
+  areaText: {
+    width: 670,
+    color: '#3B4043',
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: 500,
+    letterSpacing: 0.4,
+    lineHeight: '16px',
+  },
+  onlyReturnText: {
+    color: '#5F6369',
+    fontFamily: 'Roboto',
+    fontSize: 13,
+    lineHeight: '15px',
+    marginTop: 5,
+  },
+  locationSelectDiv: {
+    marginTop: 14,
+  },
+  confidenceText: {
+    height: 16,
+    width: 75,
+    color: '#3B4043',
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: 500,
+    letterSpacing: 0.4,
+    lineHeight: '16px',
+  },
+  action: {
+    display: 'flex',
+    marginTop: '0 !important',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  resetAll: {
+    height: 16,
+    width: 71,
+    color: '#000',
+    fontFamily: 'Roboto',
+    fontSize: 14,
+    fontWeight: 500,
+    letterSpacing: 0.1,
+    lineHeight: '16px',
+    cursor: 'pointer',
+  },
+  title: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 20,
+    '& $text': {
+      color: '#5C636B',
+      fontFamily: 'Roboto',
+      fontSize: 18,
+      fontWeight: 500,
+      lineHeight: '21px',
+    },
+  },
+  advancedIconButton: {
+    width: '24px !important',
+    height: '24px !important',
+    padding: '0px !important',
+    marginLeft: '20px !important',
+  },
+  vbtnBlue: {
+    backgroundColor: '#4285F4 !important',
+    color: '#FFFFFF !important',
+  },
+  vbtnBlackColor: {
+    color: '#000000 !important',
+  },
+  vbtnCancel: {
+    marginRight: '15px !important',
+  },
+  text: {},
+}

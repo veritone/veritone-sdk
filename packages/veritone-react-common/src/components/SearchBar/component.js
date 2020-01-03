@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import update from 'immutability-helper';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import JssProvider from 'react-jss/lib/JssProvider';
+import { MuiThemeProvider, createMuiTheme, StylesProvider, createGenerateClassName } from '@material-ui/core/styles';
 
 import {
   TranscriptSearchModal,
@@ -279,6 +278,10 @@ export const guid = () => {
   }
   return `${s4()}-${s4()}-${s4()}`;
 };
+
+const generateClassName = createGenerateClassName({
+  productionPrefix: `vsdk_${guid()}`,
+});
 
 export class SampleSearchBar extends React.Component {
   componentWillUnmount() {
@@ -787,7 +790,7 @@ export class SampleSearchBar extends React.Component {
   render() {
     return (
       <Fragment>
-        <JssProvider classNamePrefix={`vsdk_${guid()}`}>
+        <StylesProvider generateClassName={generateClassName}>
           <MuiThemeProvider theme={this.getTheme({ color: this.props.color, relativeSize: this.props.relativeSize })}>
             <SearchBarContainer
               auth={this.state.auth}
@@ -816,7 +819,7 @@ export class SampleSearchBar extends React.Component {
               isEditor={this.props.isEditor}
             />
           </MuiThemeProvider>
-        </JssProvider>
+        </StylesProvider>
         <div id="LoadSavedSearch"> </div>
         <div id="SaveSearch"> </div>
       </Fragment>

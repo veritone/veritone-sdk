@@ -5,7 +5,7 @@ import { findIndex } from 'lodash';
 
 import LocationSelect from './';
 
-export default class Story extends Component {
+class Story extends Component {
 
     state = {
         boundingBoxes: [],
