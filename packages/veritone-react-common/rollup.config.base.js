@@ -10,7 +10,6 @@ import { snakeCase } from 'lodash';
 
 import * as mui from '@material-ui/core';
 import * as muiIcons from '@material-ui/icons';
-import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
 import sass from './rollup-postcss-sass-loader';
 
@@ -18,7 +17,6 @@ export default {
   input: 'src/index.js',
   external: [
     'classnames',
-    ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
     ...Object.keys(lodash).map(name => `lodash/${name}`),
     ...Object.keys(lodash).map(name => `lodash/fp/${name}`),
     ...Object.keys(muiIcons).map(name => `@material-ui/icons/${name}`),
@@ -62,6 +60,30 @@ export default {
       // modulesOnly: true
     }),
     commonjs({
+      namedExports: {
+        '../../node_modules/react-is/index.js': [
+          'isElement',
+          'isValidElementType',
+          'ForwardRef'
+        ],
+        '../../node_modules/jss/lib/index.js': [
+          'createRule',
+          'hasCSSTOMSupport'
+        ],
+        '../../node_modules/jss-plugin-vendor-prefixer/dist/jss-plugin-vendor-prefixer.esm.js': [
+          'supportedKeyframes', 'supportedProperty', 'supportedValue'
+        ],
+        '../../node_modules/css-vendor/lib/index.js': [
+          'supportedKeyframes'
+        ],
+        '../../node_modules/react-jss/lib/index.js': [
+          'JssProvider'
+        ],
+        '../../node_modules/react-dnd/lib/index.js': [
+          'DndProvider',
+          'DropTarget'
+        ]
+      },
       include: ['../../node_modules/**', 'node_modules/**', '../**']
     }),
 

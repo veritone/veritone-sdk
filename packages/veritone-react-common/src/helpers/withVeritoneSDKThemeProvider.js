@@ -1,16 +1,17 @@
 import React from 'react';
 import { oneOfType, func, node, objectOf, object, any } from 'prop-types';
+import { createMuiTheme } from '@material-ui/core/styles';
 import {
-  MuiThemeProvider,
-  createMuiTheme,
-  jssPreset
-} from '@material-ui/core/styles';
+  jssPreset,
+  ThemeProvider,
+  createGenerateClassName,
+  StylesProvider
+} from '@material-ui/styles';
 import { create } from 'jss';
-import JssProvider from 'react-jss/lib/JssProvider';
 import blue from '@material-ui/core/colors/blue';
 import merge from 'lodash/merge';
-
 import { guid } from './guid';
+
 
 export const defaultVSDKTheme = {
   palette: {
@@ -27,15 +28,21 @@ export const defaultVSDKTheme = {
   }
 };
 
+const jss = create({
+  ...jssPreset()
+});
+
+const generateClassName = createGenerateClassName({
+  productionPrefix: `vsdk-${guid()}`,
+  seed: `vsdk-${guid()}`
+})
+
 export class VeritoneSDKThemeProvider extends React.Component {
   static propTypes = {
     theme: objectOf(any),
-    children: node
+    children: node,
+    generateClassName: func
   };
-
-  jssNamespace = `vsdk-${guid()}`;
-
-  jss = create(jssPreset());
 
   render() {
     const mergedTheme = createMuiTheme(
@@ -43,11 +50,14 @@ export class VeritoneSDKThemeProvider extends React.Component {
     );
 
     return (
-      <JssProvider jss={this.jss} classNamePrefix={this.jssNamespace}>
-        <MuiThemeProvider theme={mergedTheme}>
+      <StylesProvider
+        jss={jss}
+        generateClassName={this.props.generateClassName || generateClassName}
+      >
+        <ThemeProvider theme={mergedTheme}>
           {this.props.children}
-        </MuiThemeProvider>
-      </JssProvider>
+        </ThemeProvider>
+      </StylesProvider>
     );
   }
 }

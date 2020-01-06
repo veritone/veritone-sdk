@@ -1,0 +1,76 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
+  "validationContracts": ["transcript"],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "esto"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "es"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "una"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "frase"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1201,
+      "language": "es",
+      "words": [
+        {
+          "word": "."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 2500,
+      "stopTimeMs": 3200,
+      "language": "es",
+      "words": [
+        {
+          "word": "ahora"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 2500,
+      "stopTimeMs": 3200,
+      "language": "es",
+      "words": [
+        {
+          "word": "otro"
+        }
+      ]
+    }
+  ]
+}

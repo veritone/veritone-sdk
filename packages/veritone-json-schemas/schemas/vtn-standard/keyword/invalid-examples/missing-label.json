@@ -1,0 +1,13 @@
+{
+  "validationContracts": ["keyword"],
+  "object": [
+    {
+      "type": "keyword",
+      "objectCategory": [
+        {
+          "class": "true gentleman"
+        }
+      ]
+    }
+  ]
+}

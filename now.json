@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "builds": [{
+    "use": "@now/static-build",
+    "src": "packages/veritone-json-schemas/build_and_test.sh"
+  }]
+}

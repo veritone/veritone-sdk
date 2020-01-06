@@ -5,7 +5,8 @@ import { noop } from 'lodash';
 import Typography from '@material-ui/core/Typography';
 import Folder from '@material-ui/icons/Folder';
 
-import { format } from 'date-fns';
+import format from 'date-fns/format' 
+import parseISO from 'date-fns/parseISO'
 
 import MediaPlayer from '../../MediaPlayer';
 
@@ -19,8 +20,8 @@ import {
 import MediaInfoPanel from './';
 
 const getLocalTimeString = (date) => format(
-  date,
-  'dddd, MMMM D, YYYY [at] h:mm A'
+  parseISO(date),
+  'dddd, MMMM d, yyyy [at] h:mm a..aa'
 );
 
 describe('MediaInfoPanel', () => {

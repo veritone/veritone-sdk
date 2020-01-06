@@ -18,7 +18,7 @@ const SubtitleConfigForm = reduxForm({
   <form onSubmit={handleSubmit} data-veritone-component="subtitle-config-form">
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
-        <Grid container spacing={16} alignItems="flex-end">
+        <Grid container spacing={4} alignItems="flex-end">
           <Grid item className={styles.subtitleFieldLabel}>
             Max Characters per Caption Line
           </Grid>
@@ -49,7 +49,7 @@ const SubtitleConfigForm = reduxForm({
     </div>
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
-        <Grid container spacing={16} alignItems="flex-end">
+        <Grid container spacing={4} alignItems="flex-end">
           <Grid item className={styles.subtitleFieldLabel}>
             Number of Lines per Screen
           </Grid>

@@ -47,15 +47,20 @@
           "description": "Vendor specific referenceId to this engine result (optional)",
           "example": "1"
         },
+        "language": {
+          "$ref": "#/definitions/language"
+        },
         "validationContracts": {
           "type": "array",
+          "minItems": 1,
           "items": [
             {
-              "$ref": "#/definitions/objectResultType"
+              "$ref": "#/definitions/validationContracts"
             }
           ]
         }
-      }
+      },
+      "required": ["validationContracts"]
     },
     "confidence": {
       "type": "number",
@@ -80,6 +85,7 @@
         }
       },
       "required": ["x", "y"],
+      "additionalProperties": false,
       "description": "A point describing the 2d coordinates from the top left corner of the source."
     },
     "boundingPoly": {
@@ -103,9 +109,13 @@
             "type": "string",
             "description": "Private id variable used by the engine to refer to its internal dataset",
             "example": "1"
+          },
+          "confidence": {
+            "$ref": "#/definitions/confidence"
           }
         },
-        "required": ["class"]
+        "required": ["class"],
+        "additionalProperties": false
       },
       "description": "Optional categories for object recognition. Used for referencing external taxonomies."
     },
@@ -123,7 +133,8 @@
         "keyword",
         "text",
         "namedEntity",
-        "barcode"
+        "barcode",
+        "anomaly"
       ]
     },
     "objectResult": {
@@ -155,26 +166,77 @@
           "type": "string"
         },
         "type": {
-          "if": {
-            "properties": {
-              "objectCategory": {
-                "type": "object"
-              }
-            }
-          },
-          "then": {
-            "const": "object"
-          },
-          "else": {
-            "$ref": "#/definitions/objectResultType"
-          }
+          "$ref": "#/definitions/objectResultType"
+        },
+        "sentiment": {
+          "$ref": "#/definitions/sentiment"
+        },
+        "emotions": {
+          "$ref": "#/definitions/emotions"
+        },
+        "text": {
+          "$ref": "#/definitions/objectText"
+        },
+        "page": {
+          "$ref": "#/definitions/page"
+        },
+        "paragraph": {
+          "$ref": "#/definitions/paragraph"
+        },
+        "sentence": {
+          "$ref": "#/definitions/sentence"
         }
       },
-      "required": ["type"]
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "objectText": {
+      "description": "The extracted textual content of a found object.",
+      "type": "string"
     },
     "word": {
       "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
       "type": "string"
+    },
+    "words": {
+      "allOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": {
+                "$ref": "#/definitions/word"
+              },
+              "confidence": {
+                "$ref": "#/definitions/confidence"
+              },
+              "utteranceLength": {
+                "$ref": "#/definitions/utteranceLength"
+              },
+              "bestPath": {
+                "type": "boolean"
+              }
+            },
+            "required": ["word"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "array",
+          "if": {
+            "minItems": 2
+          },
+          "then": {
+            "items": {
+              "required": ["confidence", "utteranceLength"]
+            },
+            "uniqueItems": true,
+            "requireBestPath": true
+          }
+        }
+      ]
     },
     "utteranceLength": {
       "description": "Number of consecutive time-slices the utterance spans. example: of->thrones----->of->their-->own-> utteranceLength: thrones: 2; their,own: 1",
@@ -184,30 +246,151 @@
     },
     "language": {
       "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
-      "type": "string"
+      "type": "string",
+      "examples": ["en", "en-US"]
+    },
+    "seriesItem": {
+      "type": "object",
+      "properties": {
+        "startTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The start time relative to the start of the media asset in milliseconds.",
+          "example": 0
+        },
+        "stopTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The stop time relative to the start of the media asset in milliseconds.",
+          "example": 3000
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        },
+        "object": {
+          "$ref": "#/definitions/objectResult"
+        },
+        "words": {
+          "$ref": "#/definitions/words"
+        }
+      },
+      "required": ["startTimeMs", "stopTimeMs"],
+      "additionalProperties": false
     },
     "series": {
       "type": "array",
       "items": {
+        "$ref": "#/definitions/seriesItem"
+      }
+    },
+    "media": {
+      "type": "array",
+      "items": {
         "type": "object",
         "properties": {
-          "startTimeMs": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "The start time relative to the start of the media asset in milliseconds.",
-            "example": 0
+          "assetId": {
+            "type": "string",
+            "description": "The ID of the asset output by the engine"
           },
-          "stopTimeMs": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "The stop time relative to the start of the media asset in milliseconds.",
-            "example": 3000
+          "language": {
+            "$ref": "#/definitions/language"
           }
         },
-        "required": ["startTimeMs", "stopTimeMs"],
-        "additionalProperties": {
-          "$ref": "#/definitions/objectResult"
+        "required": ["assetId"]
+      }
+    },
+    "validationContracts": {
+      "type": "string",
+      "enum": [
+        "concept",
+        "entity",
+        "keyword",
+        "language",
+        "media-translated",
+        "object",
+        "sentiment",
+        "summary",
+        "text",
+        "transcript",
+        "anomaly"
+      ]
+    },
+    "page": {
+      "type": "integer",
+      "description": "The page on which the text or insight appears"
+    },
+    "paragraph": {
+      "type": "integer",
+      "description": "The paragraph in which the text or insight appears. If page is provided, it should be the paragraph number on the page (restart at 1 for each new page). Otherwise it may be an increasing number for the whole document."
+    },
+    "sentence": {
+      "type": "integer",
+      "description": "The sentence in which the text or insight appears. If paragraph is provided, it should be the sentence number within the paragraph (restart at 1 for each new paragraph). Otherwise it may be an increasing number for the whole document."
+    },
+    "noDocumentIndexing": {
+      "description": "Disable document indexing (page/paragraph/sentence) for the object",
+      "properties": {
+        "page": false,
+        "paragraph": false,
+        "sentence": false
+      }
+    },
+    "sentiment": {
+      "type": "object",
+      "properties": {
+        "positiveValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Positive sentiment rating"
+        },
+        "positiveConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of positive sentiment rating"
+        },
+        "negativeValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Negative sentiment rating"
+        },
+        "negativeConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of negative sentiment rating"
         }
+      },
+      "dependencies": {
+        "positiveConfidence": {
+          "required": ["positiveValue"]
+        },
+        "negativeConfidence": {
+          "required": ["negativeValue"]
+        }
+      }
+    },
+    "emotions": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "emotion": {
+            "type": "string"
+          },
+          "emotionValue": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "emotionConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["emotion"]
       }
     }
   }

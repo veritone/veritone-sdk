@@ -1,0 +1,24 @@
+{
+  "validationContracts": ["entity"],
+  "object": [
+    {
+      "type": "namedEntity",
+      "label": "John Smith",
+      "confidence": 0.5,
+      "objectCategory": [
+        {
+          "class": {
+            "label": "person"
+          }
+        }
+      ],
+      "sentiment": {
+        "positiveValue": 1,
+        "negativeValue": 0
+      },
+      "page": 1,
+      "paragraph": 1,
+      "sentence": 1
+    }
+  ]
+}

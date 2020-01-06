@@ -1,22 +1,25 @@
 import sinon from 'sinon';
-import { subDays, subHours, subMonths } from 'date-fns';
+import subDays from 'date-fns/subDays'
+import subHours from 'date-fns/subHours'
+import subMonths from 'date-fns/subMonths'
+import parse from 'date-fns/parse'
 
 import { Interval, format } from './date';
 
-describe('date interval helpers', function() {
-  describe('Interval class', function() {
+describe('date interval helpers', function () {
+  describe('Interval class', function () {
     let clock;
 
-    beforeEach(function() {
+    beforeEach(function () {
       // ensure date tests are stable by stopping time
       clock = sinon.useFakeTimers(new Date('Apr 01 2017'));
     });
 
-    afterEach(function() {
+    afterEach(function () {
       clock.restore();
     });
 
-    it('throws an error if a malformed interval is passed in', function() {
+    it('throws an error if a malformed interval is passed in', function () {
       let assertions = 6;
 
       try {
@@ -55,7 +58,7 @@ describe('date interval helpers', function() {
       expect(assertions).toEqual(0);
     });
 
-    it('translates a window to a concrete start/end', function() {
+    it('translates a window to a concrete start/end', function () {
       const hourRange = new Interval({ window: [12, 'h'] });
       const dayRange = new Interval({ window: [2, 'd'] });
       const monthRange = new Interval({ window: [2, 'm'] });
@@ -70,7 +73,7 @@ describe('date interval helpers', function() {
       expect(monthRange.end).toEqual(new Date());
     });
 
-    it('returns the same interval given a fixed interval', function() {
+    it('returns the same interval given a fixed interval', function () {
       const start = subDays(new Date(), 2);
       const end = subDays(new Date(), 1);
 
@@ -80,7 +83,7 @@ describe('date interval helpers', function() {
       expect(interval.end).toEqual(end);
     });
 
-    it('prioritizes the window if both window and start/end exist in a interval', function() {
+    it('prioritizes the window if both window and start/end exist in a interval', function () {
       const interval = new Interval({
         start: subDays(new Date(), 2),
         end: new Date(),
@@ -91,7 +94,7 @@ describe('date interval helpers', function() {
       expect(interval.end).toEqual(new Date());
     });
 
-    it('returns whether the interval will be treated as static/sliding', function() {
+    it('returns whether the interval will be treated as static/sliding', function () {
       const intervalBoth = new Interval({
         start: subDays(new Date(), 2),
         end: new Date(),
@@ -117,7 +120,7 @@ describe('date interval helpers', function() {
       expect(intervalStatic.isSliding()).toEqual(false);
     });
 
-    it('tests equality across instances with isEqual', function() {
+    it('tests equality across instances with isEqual', function () {
       expect(
         new Interval({
           start: subDays(new Date(), 2),
@@ -229,7 +232,7 @@ describe('date interval helpers', function() {
       ).toEqual(true); // ignores label
     });
 
-    it('JSON stringifies to start/end, also serializing private properties', function() {
+    it('JSON stringifies to start/end, also serializing private properties', function () {
       const windowInterval = new Interval({
         window: [12, 'h']
       });
@@ -256,7 +259,7 @@ describe('date interval helpers', function() {
       );
     });
 
-    it('parses back from JSON', function() {
+    it('parses back from JSON', function () {
       const windowInterval = new Interval({
         window: [12, 'h']
       });
@@ -278,7 +281,7 @@ describe('date interval helpers', function() {
       ).toEqual(true);
     });
 
-    it('sets/gets a label', function() {
+    it('sets/gets a label', function () {
       const interval = new Interval({
         label: 'My Interval',
         window: [12, 'h']
@@ -287,7 +290,7 @@ describe('date interval helpers', function() {
       expect(interval.label).toEqual('My Interval');
     });
 
-    it('formats the interval as a human-readable string', function() {
+    it('formats the interval as a human-readable string', function () {
       const labelInterval = new Interval({
         label: 'My Interval',
         window: [12, 'h']
@@ -309,7 +312,7 @@ describe('date interval helpers', function() {
       expect(staticInterval.toString()).toEqual('03/29/2017 – 04/01/2017');
     });
 
-    it('allows setting start/end', function() {
+    it('allows setting start/end', function () {
       let staticInterval = new Interval({
         start: subDays(new Date(), 2),
         end: new Date()
@@ -344,18 +347,18 @@ describe('date interval helpers', function() {
     });
   });
 
-  describe('format', function() {
-    it('returns empty string if date is null or undefined', function() {
+  describe('format', function () {
+    it('returns empty string if date is null or undefined', function () {
       expect(format(null)).toEqual('');
       expect(format(undefined)).toEqual('');
     });
 
-    it('returns empty string if date is invalid', function() {
+    it('returns empty string if date is invalid', function () {
       expect(format('invalid')).toEqual('');
     });
 
-    it('returns formatted string for valid dates', function() {
-      expect(format('jan 1, 2018', 'MM/DD/YYYY')).toEqual('01/01/2018');
+    it('returns formatted string for valid dates', function () {
+      expect(format(parse('Jan 1, 2018', 'MMM d, yyyy', new Date()), 'MM/dd/yyyy')).toEqual('01/01/2018');
     });
   });
 });

@@ -1,0 +1,11 @@
+{
+  "validationContracts": ["entity"],
+  "object": [
+    {
+      "type": "namedEntity",
+      "entityId": "<ID of the entity from an aiWARE library>",
+      "libraryId": "<Option ID of the library the entity is contained in>",
+      "sentence": 1
+    }
+  ]
+}

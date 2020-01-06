@@ -1,103 +1,143 @@
 import Ajv from 'ajv';
-import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
-import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
-import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
-
 import { isEmpty, cloneDeep } from 'lodash';
 
-const verifyObject = objectResult => {
-  // validate object
-  const ajv = new Ajv({
-    allErrors: true,
-    schemas: [MASTER_SCHEMA, OBJECT_SCHEMA]
-  });
-  const validate = ajv.compile(OBJECT_SCHEMA);
-  const valid = validate(objectResult);
+import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
+import * as CONCEPT_SCHEMA from '../schemas/vtn-standard/concept/concept.json';
+import * as ENTITY_SCHEMA from '../schemas/vtn-standard/entity/entity.json';
+import * as KEYWORD_SCHEMA from '../schemas/vtn-standard/keyword/keyword.json';
+import * as LANGUAGE_SCHEMA from '../schemas/vtn-standard/language/language.json';
+import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
+import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
+import * as SENTIMENT_SCHEMA from '../schemas/vtn-standard/sentiment/sentiment.json';
+import * as SUMMARY_SCHEMA from '../schemas/vtn-standard/summary/summary.json';
+import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
+import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
+import * as ANOMALY_SCHEMA from '../schemas/vtn-standard/anomaly/anomaly.json';
 
-  // filtered results after validation
-  const objectResultFiltered = cloneDeep(objectResult);
-  const ajvFilter = new Ajv({
-    schemas: [MASTER_SCHEMA, OBJECT_SCHEMA],
-    removeAdditional: 'all'
-  });
-  const validateWithFilter = ajvFilter.compile(OBJECT_SCHEMA);
-  validateWithFilter(objectResultFiltered);
-
-  if (!valid) {
-    return {
-      errors: validate.errors
-    };
-  } else {
-    return {
-      valid: true,
-      processed: objectResultFiltered
-    };
-  }
-};
-
-const verifyTranscript = transcriptResult => {
-  // custom function for validating there is only one best path in a transcript lattice
-  const validateBestPath = function(schema, data) {
-    validateBestPath.errors = [];
-    if (data.filter(word => word.bestPath === true).length !== 1) {
-      validateBestPath.errors.push({
-        keyword: 'requireBestPath',
-        message:
-          'there should be one and only one bestPath in a transcription lattice',
-        params: {
-          words: data
-        }
+/**
+ * Generates a function that will validate vtn-standard for a validation contract
+ * @param {Object} schema json-schema for the vtn-standard validationContract
+ * @param {{keyword: String, validator: SchemaValidateFunction}[]} [customValidators]
+ *   Array of additional validation functions and their keyword names.
+ *   Will be added to the ajv parser with .addKeyword().
+ * @return {Function} The validation function
+ */
+const generateValidationContractValidator = (schema, customValidators = []) => {
+  return result => {
+    // validate results
+    const ajv = new Ajv({
+      allErrors: true,
+      schemas: [MASTER_SCHEMA, schema]
+    });
+    for (const { keyword, validator } of customValidators) {
+      ajv.addKeyword(keyword, {
+        validate: validator,
+        errors: true
       });
-      return false;
     }
 
-    if (isEmpty(validateBestPath.errors)) {
-      this.errors = undefined;
-      return true;
+    const validate = ajv.compile(schema);
+    const valid = validate(result);
+
+    // validate results and filter out everything not validated
+    const resultFiltered = cloneDeep(result);
+    const ajvFilter = new Ajv({
+      schemas: [MASTER_SCHEMA, schema],
+      removeAdditional: true
+    });
+    for (const { keyword, validator } of customValidators) {
+      ajvFilter.addKeyword(keyword, {
+        validate: validator,
+        errors: true
+      });
+    }
+
+    const validateWithFilter = ajvFilter.compile(schema);
+    validateWithFilter(resultFiltered);
+
+    if (!valid) {
+      return {
+        errors: validate.errors
+      };
+    } else {
+      return {
+        valid: true,
+        processed: resultFiltered
+      };
     }
   };
+};
 
-  // validate transcript
-  const ajv = new Ajv({
-    allErrors: true,
-    schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA]
-  });
-  ajv.addKeyword('requireBestPath', {
-    validate: validateBestPath,
-    errors: true
-  });
-  const validate = ajv.compile(TRANSCRIPT_SCHEMA);
-  const valid = validate(transcriptResult);
+/**
+ * Custom function for validating there is only one best path in a transcript lattice
+ * @type SchemaValidateFunction
+ */
+const validateBestPath = function(schema, data) {
+  validateBestPath.errors = [];
+  if (data.filter(word => word.bestPath === true).length !== 1) {
+    validateBestPath.errors.push({
+      keyword: 'requireBestPath',
+      message:
+        'there should be one and only one bestPath in a transcription lattice',
+      params: {
+        words: data
+      }
+    });
+    return false;
+  }
 
-  // validate transcript and filter out everything not validated
-  const transcriptResultFiltered = cloneDeep(transcriptResult);
-  const ajvFilter = new Ajv({
-    schemas: [MASTER_SCHEMA, TRANSCRIPT_SCHEMA],
-    removeAdditional: 'all'
-  });
-  ajvFilter.addKeyword('requireBestPath', {
-    validate: validateBestPath,
-    errors: true
-  });
-
-  const validateWithFilter = ajvFilter.compile(TRANSCRIPT_SCHEMA);
-  validateWithFilter(transcriptResultFiltered);
-
-  if (!valid) {
-    return {
-      errors: validate.errors
-    };
-  } else {
-    return {
-      valid: true,
-      processed: transcriptResultFiltered
-    };
+  if (isEmpty(validateBestPath.errors)) {
+    this.errors = undefined;
+    return true;
   }
 };
 
+const verifyConcept = generateValidationContractValidator(CONCEPT_SCHEMA);
+const verifyEntity = generateValidationContractValidator(ENTITY_SCHEMA);
+const verifyKeyword = generateValidationContractValidator(KEYWORD_SCHEMA);
+const verifyLanguage = generateValidationContractValidator(LANGUAGE_SCHEMA);
+const verifyMediaTranslated = generateValidationContractValidator(
+  MEDIA_TRANSLATED_SCHEMA
+);
+const verifyObject = generateValidationContractValidator(OBJECT_SCHEMA);
+const verifySentiment = generateValidationContractValidator(SENTIMENT_SCHEMA);
+const verifySummary = generateValidationContractValidator(SUMMARY_SCHEMA);
+const verifyText = generateValidationContractValidator(TEXT_SCHEMA);
+const verifyAnomaly = generateValidationContractValidator(ANOMALY_SCHEMA);
+const verifyTranscript = generateValidationContractValidator(
+  TRANSCRIPT_SCHEMA,
+  [
+    {
+      keyword: 'requireBestPath',
+      validator: validateBestPath
+    }
+  ]
+);
+
 const VALIDATORS = {
+  concept: verifyConcept,
+  entity: verifyEntity,
+  keyword: verifyKeyword,
+  language: verifyLanguage,
+  'media-translated': verifyMediaTranslated,
+  object: verifyObject,
+  sentiment: verifySentiment,
+  summary: verifySummary,
+  text: verifyText,
   transcript: verifyTranscript,
-  object: verifyObject
+  anomaly: verifyAnomaly
 };
 
-export { VALIDATORS, verifyObject, verifyTranscript };
+export {
+  VALIDATORS,
+  verifyConcept,
+  verifyEntity,
+  verifyKeyword,
+  verifyLanguage,
+  verifyMediaTranslated,
+  verifyObject,
+  verifySentiment,
+  verifyText,
+  verifyTranscript,
+  verifyAnomaly
+};

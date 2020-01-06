@@ -1,6 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
 import Notifier from './';
+
 
 const handleOpen = jest.fn();
 const handleClose = jest.fn();
@@ -74,7 +76,7 @@ const mockNotifications = {
 describe('Notifier Component', () => {
   it('Empty notifier should be disabled', () => {
     const emptyNotifer = mount(<Notifier notifications = {[]} />)
-    expect(emptyNotifer.find('IconButton').props()["disabled"]).toBe(true)
+    expect(emptyNotifer.find(IconButton).props()["disabled"]).toBe(true)
   });
 
   it('should display notification number', () => {
@@ -84,7 +86,7 @@ describe('Notifier Component', () => {
   });
 
   const openNotifier = mount(<Notifier {...mockNotifications} />);
-  const notifierButtons = openNotifier.find('IconButton');
+  const notifierButtons = openNotifier.find(IconButton);
   it('should have notifier icon button', () => {
     expect(notifierButtons).toHaveLength(1);
   });

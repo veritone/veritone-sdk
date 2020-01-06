@@ -1,0 +1,41 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 300,
+      "words": [
+        {
+          "word": "this"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 300,
+      "stopTimeMs": 500,
+      "words": [
+        {
+          "word": "is"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 800,
+      "words": [
+        {
+          "word": "a"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 800,
+      "stopTimeMs": 1200,
+      "words": [
+        {
+          "word": "sentence"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
 import NotificationList from './NotificationList';
 
 const handleEntryRemove = jest.fn();
@@ -75,13 +76,13 @@ describe('Notifications Component', () => {
   });
 
   it('should have buttons for callbacks', () => {
-    expect(notificationList.find('IconButton')).toHaveLength(5);
+    expect(notificationList.find(IconButton)).toHaveLength(5);
   });
 
   it('Preparing entry should trigger remove callback', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '1234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(1);
     actionButtons.first().simulate('click');
     expect(handleEntryRemove).toHaveBeenCalledWith(
@@ -99,7 +100,7 @@ describe('Notifications Component', () => {
   it('Processing entry should trigger remove callback', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '2234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(1);
     actionButtons.first().simulate('click');
     expect(handleEntryRemove).toHaveBeenCalledWith(
@@ -117,7 +118,7 @@ describe('Notifications Component', () => {
   it('Failed entry buttons should trigger callbacks', () => {
     const failedEntry = notificationList.findWhere(entry => entry.key() === '3234');
     expect(failedEntry).toHaveLength(1);
-    const failedButtons = failedEntry.find('IconButton');
+    const failedButtons = failedEntry.find(IconButton);
     expect(failedButtons).toHaveLength(2);
     const actionButton = failedButtons.first();
     actionButton.simulate('click');
@@ -153,7 +154,7 @@ describe('Notifications Component', () => {
   it('complete entry should trigger remove callback', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '4234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(1);
     actionButtons.first().simulate('click');
     expect(handleEntryRemove).toHaveBeenCalledWith(
@@ -170,28 +171,28 @@ describe('Notifications Component', () => {
   it('Preparing entry without callback shouldnt have any buttons', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '5234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(0);
   });
 
   it('Processing entry without callback shouldnt have any buttons', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '6234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(0);
   });
 
   it('Failed entry without callback shouldnt have any buttons', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '7234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(0);
   });
 
   it('complete entry without callback shouldnt have any buttons', () => {
     const entry = notificationList.findWhere(entry => entry.key() === '8234');
     expect(entry).toHaveLength(1);
-    const actionButtons = entry.find('IconButton');
+    const actionButtons = entry.find(IconButton);
     expect(actionButtons).toHaveLength(0);
   });
 });

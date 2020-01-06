@@ -43,15 +43,15 @@
 }
 
 .searchPillBackgroundColor {
-  background-color: $light-blue50;
+  background-color: $light-blue50 !important;
 
   &:hover:not([disabled]) {
-    background-color: $grey-2;
+    background-color: $grey-2 !important;
   }
 }
 
 .searchPillHighlightedBackgroundColor {
-  background-color: $min-black;
+  background-color: $min-black !important;
 
   &:hover:not([disabled]) {
     background-color: $semi-black;
@@ -59,14 +59,14 @@
 }
 
 .searchPillExcludeBackgroundColor {
-  background-color: $light-red50;
+  background-color: $light-red50 !important;
 }
 
 .searchPillExcludeBackgroundColor {
-  background-color: $light-red50;
+  background-color: $light-red50 !important;
 
   &:hover:not([disabled]) {
-    background-color: $grey-2;
+    background-color: $grey-2 !important;
   }
 }
 
@@ -75,5 +75,5 @@
 }
 
 .searchPillSelectedBackgroundColor {
-  background-color: $min-black;
+  background-color: $min-black !important;
 }

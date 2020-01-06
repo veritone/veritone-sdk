@@ -9,7 +9,7 @@ import Close from '@material-ui/icons/Close';
 
 import styles from './styles.scss';
 
-const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
+const ExtensionPanel = ({ acceptedFileTypes = [], closeExtensionList }) => {
   const readableTypeNames = {
     'video/*': 'video',
     'audio/*': 'audio',
@@ -58,7 +58,7 @@ const ExtensionPanel = ({ acceptedFileTypes=[], closeExtensionList }) => {
               data-veritone-element="extension-list-category"
               className={cx(styles.extensionTypeContainer, styles[key])}
               container
-              spacing={8}>
+              spacing={2}>
               <Grid item xs={8} sm={6} md={4}>
                 <span className={styles.mediaTypeKey}>{key}</span>
               </Grid>

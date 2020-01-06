@@ -52,6 +52,7 @@ export Lightbox from './components/share-components/Lightbox';
 export VideoSource from './components/MediaPlayer/VideoSource';
 export Notifier from './components/Notifier';
 export DataPicker from './components/DataPicker';
+export SubAppbar from './components/SubAppbar';
 export {
   SimpleSearchBarBase,
   SimpleSearchBarController,
@@ -59,3 +60,10 @@ export {
   SimpleSearchBar,
   EntitySearchTemplate
 } from './components/SimpleSearchBar/SimpleSearchBar';
+
+export {
+  Form,
+  FormBuilder,
+  formUtils,
+  formHelpers
+} from './components/FormBuilder';

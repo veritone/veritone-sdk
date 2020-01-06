@@ -1,0 +1,21 @@
+{
+  "validationContracts": ["concept"],
+  "object": [
+    {
+      "type": "concept",
+      "text": "this is the text being classified, and it's talking about business finance.",
+      "objectCategory": [
+        {
+          "class": "economy, business and finance",
+          "@id": "http://cv.iptc.org/newscodes/subjectcode/04000000",
+          "confidence": 0.468
+        },
+        {
+          "class": "financial and business service",
+          "@id": "http://cv.iptc.org/newscodes/subjectcode/04006000",
+          "confidence": 0.897
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
 import Lightbox from './';
 
 const customValue = { value: 'this is a test' };
@@ -18,7 +19,7 @@ describe('Lightbox Component', () => {
     </Lightbox>
   );
 
-  const closeButton = lightbox.find('IconButton');
+  const closeButton = lightbox.find(IconButton);
   const background = lightbox.find('div.background');
   const content = lightbox.find('div.lightboxContent');
 

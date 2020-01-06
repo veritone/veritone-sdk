@@ -1,0 +1,16 @@
+{
+  "validationContracts": ["sentiment"],
+  "emotions": [
+    {
+      "emotion": "excited",
+      "emotionValue": 0.14
+    },
+    {
+      "emotion": "confused",
+      "emotionValue": 0.82
+    },
+    {
+      "emotionValue": 1
+    }
+  ]
+}

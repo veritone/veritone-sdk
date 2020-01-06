@@ -1,0 +1,42 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "validationContracts": ["object"],
+  "series": [
+    {
+      "startTimeMs": 2000,
+      "stopTimeMs": 2100,
+      "object": {
+        "type": "object",
+        "label": "dog",
+        "confidence": 0.9,
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.1
+          },
+          {
+            "x": 0.1,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.5
+          },
+          {
+            "x": 0.5,
+            "y": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "startTimeMs": 2100,
+      "stopTimeMs": 2200,
+      "object": {
+        "type": "object",
+        "label": "cat",
+        "confidence": 0.55
+      }
+    }
+  ]
+}

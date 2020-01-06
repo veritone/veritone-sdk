@@ -116,7 +116,7 @@ storiesOf('TopBar', module)
       leftText="Home"
       // eslint-disable-next-line
       renderActionButton={() => (
-        <Button variant="raised" color="primary">
+        <Button variant="contained" color="primary">
           Test action button
         </Button>
       )}

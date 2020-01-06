@@ -1,0 +1,13 @@
+{
+  "validationContracts": ["concept"],
+  "object": [
+    {
+      "type": "concept",
+      "objectCategory": [
+        {
+          "class": "person"
+        }
+      ]
+    }
+  ]
+}

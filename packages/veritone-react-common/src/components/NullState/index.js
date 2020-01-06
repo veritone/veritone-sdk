@@ -5,19 +5,18 @@ import { string, func, shape, node, bool } from 'prop-types';
 import styles from './styles.scss';
 
 const NullState = ({ imgProps, titleText, btnProps, children, inWidgets }) => {
-  const { src, alt, ...restProps } = imgProps;
   const containerClassName = inWidgets ?
     styles.inWidgetView : styles.nullStateView;
 
   return (
     <div className={containerClassName}>
-      {imgProps && <img src={src} alt={alt} {...restProps} />}
+      {imgProps && <img {...imgProps} />}
       {titleText && <div className={styles.titleText}>{titleText}</div>}
       {children}
       {btnProps && (
         <Button
           className={styles.buttonStyle}
-          variant="raised"
+          variant="contained"
           color="primary"
           onClick={btnProps.onClick}
         >

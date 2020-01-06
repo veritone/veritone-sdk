@@ -14,7 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { string, func } from 'prop-types';
 
-import styles from './styles.scss';  
+import styles from './styles.scss';
 
 export const helpPropTypes = {
   tooltipTitle: string,
@@ -29,7 +29,7 @@ export const helpPropTypes = {
 
 export default class Help extends React.Component {
   static propTypes = helpPropTypes;
-  
+
   static defaultProps = {
     tooltipTitle: 'Help',
     helpDocLabel: 'View Help Docs',
@@ -91,7 +91,7 @@ export default class Help extends React.Component {
       <div className={styles.help}>
         <Tooltip title={tooltipTitle || ''} disableFocusListener>
           <IconButton onClick={this.showHelpWindow} data-veritone-element="help-button">
-            <HelpIcon nativeColor="white" />
+            <HelpIcon htmlColor="white" />
           </IconButton>
         </Tooltip>
 
@@ -127,7 +127,7 @@ export default class Help extends React.Component {
             {
               //Show Chat With Support
               hasSupportChat &&
-              <ListItem 
+              <ListItem
                 button
                 onClick={this.openChatWindow}
                 data-veritone-element="open-support-chat-button"

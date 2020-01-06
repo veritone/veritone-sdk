@@ -1,0 +1,12 @@
+{
+  "media": [
+    {
+      "language": "en",
+      "assetId": "<ID of asset uploaded of english language translation>"
+    },
+    {
+      "language": "fr",
+      "assetId": "<ID of asset uploaded for french language translation>"
+    }
+  ]
+}

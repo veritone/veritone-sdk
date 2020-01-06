@@ -31,6 +31,18 @@ export default function widget(Component) {
       });
     }
 
+    setUpdaterProperties(ref) {
+      // allow access of ref properties on the widget itself
+      // (should only be used by consumers to call component's API)
+      forOwn(ref, (value, key) => {
+        try {
+          Object.defineProperty(this, key, { value });
+        } catch (e) {
+          /* */
+        }
+      });
+    }
+
     get Component() {
       return Component;
     }

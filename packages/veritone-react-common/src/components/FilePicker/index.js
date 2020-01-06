@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { isString, isArray } from 'lodash';
+import HTML from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
@@ -9,7 +11,6 @@ import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
-import DragDropContext from './DragDropContext';
 import styles from './styles.scss';
 import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
 
@@ -148,84 +149,86 @@ class FilePicker extends Component {
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
 
     return (
-      <Paper
-        classes={
-          this.props.onRequestClose && {
-            root: styles.filePickerPaperOverride
-          }
-        }
-        style={{
-          height: this.props.height,
-          width: this.props.width
-        }}
-      >
-        <div
-          className={
-            this.props.onRequestClose
-              ? styles.filePicker
-              : styles.filePickerNonModal
+      <DndProvider backend={HTML}>
+        <Paper
+          classes={
+            this.props.onRequestClose && {
+              root: styles.filePickerPaperOverride
+            }
           }
           style={{
-            height: '100%'
+            height: this.props.height,
+            width: this.props.width
           }}
         >
-          {this.props.onRequestClose ? (
-            <FilePickerHeader
-              selectedTab={this.state.selectedTab}
-              onSelectTab={this.handleTabChange}
-              onClose={this.handleCloseModal}
-              allowUrlUpload={this.props.allowUrlUpload}
-              title={this.props.title}
-              fileCount={this.state.files.length}
-              maxFiles={this.props.maxFiles}
-              multiple={this.props.multiple}
-            />
-          ) : (
-            <FilePickerFlatHeader
-              title={this.props.title}
-              fileCount={this.state.files.length}
-              maxFiles={this.props.maxFiles}
-            />
-          )}
-
-          {this.state.selectedTab === 'upload' && (
-            <div className={styles.filePickerBody}>
-              <FileUploader
-                useFlatStyle={!this.props.onRequestClose}
-                onFilesSelected={this.handleFilesSelected}
-                onFilesRejected={this.handleFilesRejected}
-                acceptedFileTypes={acceptedFileTypes}
+          <div
+            className={
+              this.props.onRequestClose
+                ? styles.filePicker
+                : styles.filePickerNonModal
+            }
+            style={{
+              height: '100%'
+            }}
+          >
+            {this.props.onRequestClose ? (
+              <FilePickerHeader
+                selectedTab={this.state.selectedTab}
+                onSelectTab={this.handleTabChange}
+                onClose={this.handleCloseModal}
+                allowUrlUpload={this.props.allowUrlUpload}
+                title={this.props.title}
+                fileCount={this.state.files.length}
+                maxFiles={this.props.maxFiles}
                 multiple={this.props.multiple}
               />
-              {this.state.files.length > 0 && (
-                <FileList
-                  files={this.state.files}
-                  onRemoveFile={this.handleRemoveFile}
+            ) : (
+                <FilePickerFlatHeader
+                  title={this.props.title}
+                  fileCount={this.state.files.length}
+                  maxFiles={this.props.maxFiles}
                 />
               )}
-            </div>
-          )}
 
-          {this.state.selectedTab === 'by-url' && (
-            <div className={styles.filePickerBody}>
-              <UrlUploader
-                onUpload={this.handleFilesSelected}
-                acceptedFileTypes={acceptedFileTypes}
+            {this.state.selectedTab === 'upload' && (
+              <div className={styles.filePickerBody}>
+                <FileUploader
+                  useFlatStyle={!this.props.onRequestClose}
+                  onFilesSelected={this.handleFilesSelected}
+                  onFilesRejected={this.handleFilesRejected}
+                  acceptedFileTypes={acceptedFileTypes}
+                  multiple={this.props.multiple}
+                />
+                {this.state.files.length > 0 && (
+                  <FileList
+                    files={this.state.files}
+                    onRemoveFile={this.handleRemoveFile}
+                  />
+                )}
+              </div>
+            )}
+
+            {this.state.selectedTab === 'by-url' && (
+              <div className={styles.filePickerBody}>
+                <UrlUploader
+                  onUpload={this.handleFilesSelected}
+                  acceptedFileTypes={acceptedFileTypes}
+                />
+              </div>
+            )}
+            <div className={styles.errorMessage}>{this.state.errorMessage}</div>
+            {this.props.onRequestClose && (
+              <FilePickerFooter
+                onCancel={this.handleCloseModal}
+                onSubmit={this.handlePickFiles}
+                disabled={this.disableNextStep()}
               />
-            </div>
-          )}
-          <div className={styles.errorMessage}>{this.state.errorMessage}</div>
-          {this.props.onRequestClose && (
-            <FilePickerFooter
-              onCancel={this.handleCloseModal}
-              onSubmit={this.handlePickFiles}
-              disabled={this.disableNextStep()}
-            />
-          )}
-        </div>
-      </Paper>
+            )}
+          </div>
+        </Paper>
+      </DndProvider>
     );
   }
 }
 
-export default DragDropContext(FilePicker);
+export default FilePicker;

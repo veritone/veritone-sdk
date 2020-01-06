@@ -1,6 +1,8 @@
 import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
+import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
 
 import SectionTree, { SectionTreeTab } from './SectionTree';
 
@@ -206,7 +208,7 @@ describe('SectionTreeTab', function() {
   it('adds dark styling with props.dark', function() {
     const wrapper = mount(<SectionTreeTab {...defaultProps} dark />);
 
-    expect(wrapper.find('Button').props().classes.root).toContain('dark');
+    expect(wrapper.find(Button).props().classes.root).toContain('dark');
   });
 
   it('calls props.onClick with props.id', function() {
@@ -221,9 +223,9 @@ describe('SectionTreeTab', function() {
 
   it('shows the count/clear button if props.filterCount is >0', function() {
     let wrapper = mount(<SectionTreeTab {...defaultProps} filterCount={0} />);
-    expect(wrapper.find('Chip')).toHaveLength(0);
+    expect(wrapper.find(Chip).length).toEqual(0);
 
     wrapper = mount(<SectionTreeTab {...defaultProps} filterCount={5} />);
-    expect(wrapper.find('Chip')).toHaveLength(2);
+    expect(wrapper.find(Chip).length).toEqual(1);
   });
 });

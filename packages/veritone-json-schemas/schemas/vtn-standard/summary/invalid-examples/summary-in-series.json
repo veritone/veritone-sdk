@@ -1,0 +1,10 @@
+{
+  "validationContracts": ["summary"],
+  "series": [
+    {
+      "startTime": 0,
+      "stopTime": 0,
+      "summary": "textual summary of the entire document goes here"
+    }
+  ]
+}

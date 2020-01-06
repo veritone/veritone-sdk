@@ -1,0 +1,27 @@
+{
+  "validationContracts": ["sentiment"],
+  "sentiment": {
+    "positiveValue": 0.56,
+    "positiveConfidence": 0.8,
+    "negativeValue": 0.2,
+    "negativeConfidence": 0.5
+  },
+
+  "emotions": [
+    {
+      "emotion": "excited",
+      "emotionValue": 0.14,
+      "emotionConfidence": 0.88
+    },
+    {
+      "emotion": "confused",
+      "emotionValue": 0.82,
+      "emotionConfidence": 0.75
+    },
+    {
+      "emotion": "🤯",
+      "emotionValue": 1,
+      "emotionConfidence": 1
+    }
+  ]
+}

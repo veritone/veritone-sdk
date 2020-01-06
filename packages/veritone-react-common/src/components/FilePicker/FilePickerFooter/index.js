@@ -37,7 +37,7 @@ class FilePickerFooter extends Component {
         </Button>
         <Button
           data-veritone-element={`picker-footer-${title}-button`}
-          variant="raised"
+          variant="contained"
           disabled={disabled}
           color="primary"
           onClick={onSubmit}
