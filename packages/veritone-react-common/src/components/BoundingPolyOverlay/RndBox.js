@@ -1,16 +1,22 @@
 import React from 'react';
 import cx from 'classnames';
-import Rnd from 'react-rnd';
+import { Rnd } from 'react-rnd';
+import { shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-import styles from './overlay.styles.scss';
+import styles from './overlay.styles';
 
-export default class RndBox extends React.Component {
-  static propTypes = {};
+class RndBox extends React.Component {
+  static propTypes = {
+    classes: shape({ any }),
+  };
+
   static defaultProps = {};
 
   render() {
     const resizeHandleSize = 6;
     const handleShift = resizeHandleSize / 2;
+    const { classes, ...rest } = this.props;
 
     return (
       <Rnd
@@ -25,18 +31,20 @@ export default class RndBox extends React.Component {
           bottom: { bottom: -handleShift }
         }}
         resizeHandleClasses={{
-          topLeft: styles.resizeHandle,
-          topRight: styles.resizeHandle,
-          bottomLeft: styles.resizeHandle,
-          bottomRight: styles.resizeHandle,
-          right: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-          left: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-          top: cx(styles.resizeHandle, styles.resizeHandleVertical),
-          bottom: cx(styles.resizeHandle, styles.resizeHandleVertical)
+          topLeft: classes.resizeHandle,
+          topRight: classes.resizeHandle,
+          bottomLeft: classes.resizeHandle,
+          bottomRight: classes.resizeHandle,
+          right: cx(classes.resizeHandle, classes.resizeHandleHorizontal),
+          left: cx(classes.resizeHandle, classes.resizeHandleHorizontal),
+          top: cx(classes.resizeHandle, classes.resizeHandleVertical),
+          bottom: cx(classes.resizeHandle, classes.resizeHandleVertical)
         }}
         bounds="parent"
-        {...this.props}
+        {...rest}
       />
     );
   }
 }
+
+export default withStyles(styles)(RndBox);
