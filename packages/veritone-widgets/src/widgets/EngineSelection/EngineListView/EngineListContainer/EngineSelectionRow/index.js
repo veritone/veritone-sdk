@@ -85,7 +85,6 @@ export default class EngineSelectionRow extends React.Component {
       NonNetworkIsolated: externalProcessingLogo,
       HumanReview: humanReviewLogo
     };
-    console.log(styles);
 
     return (
       <div className={classes.row}>
