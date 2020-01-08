@@ -7,13 +7,15 @@ import {
   object,
   arrayOf,
   string,
-  shape
+  shape,
+  any
 } from 'prop-types';
 import { isEmpty, debounce } from 'lodash';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/styles'
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
@@ -24,8 +26,9 @@ import EngineListContainer from './EngineListContainer';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 @connect(
   (state, { id }) => ({
     currentResults: engineSelectionModule.getCurrentResults(state, id),
@@ -80,7 +83,8 @@ export default class EngineListView extends React.Component {
         onClick: func.isRequired
       })
     ),
-    hideActions: bool
+    hideActions: bool,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -131,12 +135,12 @@ export default class EngineListView extends React.Component {
   };
 
   render() {
-    const { checkedEngineIds, currentTab } = this.props;
+    const { checkedEngineIds, currentTab, classes } = this.props;
 
     return (
-      <div className={styles.engineSelection}>
+      <div className={classes.engineSelection}>
         <EnginesSideBar id={this.props.id} />
-        <div className={styles.engineSelectionContent}>
+        <div className={classes.engineSelectionContent}>
           {!isEmpty(checkedEngineIds) && (
             <SelectedActionBar
               id={this.props.id}
@@ -152,26 +156,26 @@ export default class EngineListView extends React.Component {
           )}
           {isEmpty(checkedEngineIds) && (
             <Tabs
-              className={styles.tabs}
+              className={classes.tabs}
               value={this.props.currentTab}
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
-              fullWidth
+              variant="fullWidth"
             >
               <Tab
-                classes={{ selected: styles.tab }}
+                classes={{ selected: classes.tab }}
                 value="own"
                 label={`Your Engines (${this.props.selectedEngineIds.length})`}
               />
               <Tab
-                classes={{ selected: styles.tab }}
+                classes={{ selected: classes.tab }}
                 value="explore"
                 label="Explore All Engines"
               />
             </Tabs>
           )}
-          <div className={styles.engineListContainer}>
+          <div className={classes.engineListContainer}>
             {!this.props.failedToFetchEngines && (
               <SelectBar
                 id={this.props.id}
@@ -191,7 +195,7 @@ export default class EngineListView extends React.Component {
                 }
               />
             )}
-            <div className={styles.engineList}>
+            <div className={classes.engineList}>
               <EngineListContainer
                 id={this.props.id}
                 currentTab={this.props.currentTab}
@@ -207,16 +211,16 @@ export default class EngineListView extends React.Component {
               />
             </div>
             {!this.props.hideActions && (
-              <div className={styles.footer}>
+              <div className={classes.footer}>
                 <Button
-                  classes={{ label: styles.footerBtn }}
+                  classes={{ label: classes.footerBtn }}
                   onClick={this.props.onCancel}
                 >
                   Cancel
                 </Button>
                 <Button
                   color="primary"
-                  classes={{ label: styles.footerBtn }}
+                  classes={{ label: classes.footerBtn }}
                   onClick={this.handleSave}
                 >
                   Save

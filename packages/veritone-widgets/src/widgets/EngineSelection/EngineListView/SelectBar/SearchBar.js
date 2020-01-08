@@ -1,22 +1,24 @@
 import React from 'react';
-import { bool, func, string } from 'prop-types';
+import { bool, func, string, shape, any } from 'prop-types';
 
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class SearchBar extends React.Component {
+class SearchBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
     searchQuery: string,
     onToggleSearch: func.isRequired,
     isOpen: bool,
     onSearch: func.isRequired,
-    onClearSearch: func.isRequired
+    onClearSearch: func.isRequired,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -45,23 +47,25 @@ export default class SearchBar extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
+
     return this.props.isOpen ? (
       <TextField
-        className={styles.searchBar}
+        className={classes.searchBar}
         placeholder="Search by engine name"
         value={this.state.searchQuery}
         onChange={this.handleChange}
         inputProps={{
-          className: styles.searchBarInput
+          className: classes.searchBarInput
         }}
         InputProps={{
           classes: {
-            underline: styles.searchBarUnderline
+            underline: classes.searchBarUnderline
           },
           endAdornment: (
-            <InputAdornment className={styles.searchBarIcon} position="end">
+            <InputAdornment className={classes.searchBarIcon} position="end">
               <IconButton
-                className={styles.searchBarIcon}
+                className={classes.searchBarIcon}
                 onClick={this.handleToggleSearch}
               >
                 <CloseIcon />
@@ -71,12 +75,14 @@ export default class SearchBar extends React.Component {
         }}
       />
     ) : (
-      <IconButton
-        onClick={this.handleToggleSearch}
-        className={styles.searchBarIcon}
-      >
-        <SearchIcon />
-      </IconButton>
-    );
+        <IconButton
+          onClick={this.handleToggleSearch}
+          className={classes.searchBarIcon}
+        >
+          <SearchIcon />
+        </IconButton>
+      );
   }
 }
+
+export default withStyles(styles)(SearchBar);
