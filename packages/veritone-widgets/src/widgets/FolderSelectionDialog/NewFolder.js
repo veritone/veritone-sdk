@@ -1,6 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
-import { bool, func, string, shape, number } from 'prop-types';
+import { bool, func, string, shape, number, any } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import {
@@ -17,9 +17,11 @@ import {
   Input
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import styles from './styles.scss';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 
+@withStyles(styles)
 @connect(
   state => ({
     rootFolder: folderSelectionModule.rootFolder(state),
@@ -90,7 +92,8 @@ export default class NewFolder extends React.Component {
       })
     }),
     cancel: func,
-    resetNewFolder: func
+    resetNewFolder: func,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -161,10 +164,10 @@ export default class NewFolder extends React.Component {
   };
 
   renderLoader() {
-    const { newFolder } = this.props;
+    const { newFolder, classes } = this.props;
     if (newFolder.loading) {
       return (
-        <div className={styles.loadingContainer}>
+        <div className={classes.loadingContainer}>
           <CircularProgress size={50} />
         </div>
       );
@@ -172,7 +175,7 @@ export default class NewFolder extends React.Component {
   }
 
   render() {
-    const { selectedFolder, newFolder } = this.props;
+    const { selectedFolder, newFolder, classes } = this.props;
     const errorMessage = newFolder.errorMessage;
     const error = newFolder.error;
     const loadingNewFolder = newFolder.loading;
@@ -182,19 +185,19 @@ export default class NewFolder extends React.Component {
 
     return (
       <Dialog
-        className={styles.folderPicker}
+        className={classes.folderPicker}
         fullWidth
         maxWidth="md"
         open={this.props.open}
       >
         {this.renderLoader()}
         <Grid container justify="space-between" alignItems="center">
-          <DialogTitle className={styles.dialogTitle}>New Folder</DialogTitle>
-          <CloseIcon className={styles.closeIcon} onClick={this.handleCancel} />
+          <DialogTitle className={classes.dialogTitle}>New Folder</DialogTitle>
+          <CloseIcon className={classes.closeIcon} onClick={this.handleCancel} />
         </Grid>
-        <Typography className={styles.dialogSubTitle} variant="body2">
+        <Typography className={classes.dialogSubTitle} variant="body2">
           Create folder within{' '}
-          <span className={styles.folderNameSelected}>
+          <span className={classes.folderNameSelected}>
             {selectedFolderName}
           </span>. If you want to select a different folder click
           &quot;Cancel&quot; below and select a different folder.
@@ -211,21 +214,21 @@ export default class NewFolder extends React.Component {
           </FormControl>
           <Grid container justify="flex-end" alignContent="center">
             <Button
-              className={styles.button}
+              className={classes.button}
               onClick={this.handleCancel}
               size="large"
             >
-              <Typography className={styles.cancelButton}>Cancel</Typography>
+              <Typography className={classes.cancelButton}>Cancel</Typography>
             </Button>
             <Button
               disabled={loadingNewFolder}
-              className={cx(styles.button, styles.buttonSelect)}
+              className={cx(classes.button, classes.buttonSelect)}
               onClick={this.createNewFolder}
               variant="contained"
               size="large"
               color="primary"
             >
-              <Typography className={styles.selectButton}>Create</Typography>
+              <Typography className={classes.selectButton}>Create</Typography>
             </Button>
           </Grid>
         </DialogContent>
