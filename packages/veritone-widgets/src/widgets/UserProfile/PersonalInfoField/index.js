@@ -1,11 +1,15 @@
 import React from 'react';
 import { string, func } from 'prop-types';
 import { RaisedTextField } from 'veritone-react-common';
+import { makeStyles } from '@material-ui/styles';
 
-import classes from './styles.scss';
-import styles from '../PasswordField/styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const Index = ({ name, email, onEditName, onEditEmail }) => {
+  const classes = useStyles();
+
   return (
     <div className={classes.container}>
       <RaisedTextField
@@ -13,7 +17,7 @@ const Index = ({ name, email, onEditName, onEditEmail }) => {
         value={name}
         action="edit"
         onClickAction={onEditName}
-        className={styles.field}
+        className={classes.field}
       />
 
       <RaisedTextField
@@ -22,7 +26,7 @@ const Index = ({ name, email, onEditName, onEditEmail }) => {
         action="edit"
         onClickAction={onEditEmail}
         actionTooltipLabel="This address is used to identify your Veritone account and cannot be changed."
-        className={styles.field}
+        className={classes.field}
         disabled
       />
     </div>
