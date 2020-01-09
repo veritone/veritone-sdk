@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { func, arrayOf, number } from 'prop-types';
+import { func, arrayOf, number, shape, any } from 'prop-types';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
 
 import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositioningProvider';
 import Overlay from '../BoundingPolyOverlay/Overlay';
 import AreaInterest from '../AreaInterest';
-import styles from './styles.scss';
+import styles from './styles';
 
 const stylesByObjectType = {
   a: {
@@ -33,7 +34,7 @@ const buttonTextStep = {
   1: 'ADD AREA OF INTEREST',
   2: 'SAVE AREA OF INTEREST'
 }
-export default class LocationSelect extends Component {
+class LocationSelect extends Component {
 
   static propTypes = {
     handleAddBoundingBox: func,
@@ -43,7 +44,8 @@ export default class LocationSelect extends Component {
     boundingBoxes: arrayOf(Object),
     step: number,
     onEditAoI: func,
-    onRemoveAoI: func
+    onRemoveAoI: func,
+    classes: shape({ any }),
   }
 
   state = {
@@ -71,11 +73,12 @@ export default class LocationSelect extends Component {
       boundingBoxes,
       step = 1,
       onEditAoI,
-      onRemoveAoI
+      onRemoveAoI,
+      classes
     } = this.props;
     return (
-      <div className={styles.container}>
-        <div className={styles.screenLocation}>
+      <div className={classes.container}>
+        <div className={classes.screenLocation}>
           <OverlayPositioningProvider
             contentHeight={200}
             contentWidth={340}
@@ -92,24 +95,27 @@ export default class LocationSelect extends Component {
               key={this.state.frame}
               readOnly={step !== 2}
             />
-            <div className={cx(styles['image-default'])} />
+            <div className={cx(classes['imageDefault'])} />
           </OverlayPositioningProvider>
         </div>
-        <div className={styles.locationalCheckbox}>
+        <div className={classes.locationalCheckbox}>
           {step !== 3 ?
-            <div className={cx(styles['step-item'])}>
-              <div className={styles.introText}>
+            <div className={cx(classes['stepItem'])}>
+              <div
+                className={classes.introText}
+                data-test="introText"
+              >
                 {stepIntro[step]}
               </div>
               <Button
                 onClick={this.onUpdateStep(step + 1)}
-                className={cx(styles['btn-action-area'])}
+                className={cx(classes['btnActionArea'])}
               >
                 {buttonTextStep[step]}
               </Button>
             </div>
             :
-            <div className={cx(styles['aria-item'])}>
+            <div className={cx(classes['ariaItem'])}>
               <AreaInterest
                 areaOfInterest={boundingBoxes[0]}
                 onEditAoI={onEditAoI}
@@ -122,8 +128,10 @@ export default class LocationSelect extends Component {
     );
   }
 }
+
+export default withStyles(styles)(LocationSelect);
+
 export {
-  LocationSelect,
   stepIntro,
   buttonTextStep
 }
