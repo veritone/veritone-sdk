@@ -1,16 +1,19 @@
 import React from 'react';
-
+import { shape, any } from 'prop-types';
 import Downshift from 'downshift';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import { List, ListItem, ListItemText } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import styles from '../styles';
 
-import styles from '../styles.scss';
-
+@withStyles(styles)
 export default class StringValuePicker extends React.Component {
   render() {
+    const { classes } = this.props;
+
     return (
       <Downshift
         onSelect={this.props.onSelect}
@@ -27,7 +30,7 @@ export default class StringValuePicker extends React.Component {
           highlightedIndex,
           selectedItem
         }) => (
-          <div className={styles.autocomplete_container}>
+          <div className={classes.autocompleteContainer}>
             <TextField
               fullWidth
               autoFocus
@@ -83,3 +86,7 @@ export default class StringValuePicker extends React.Component {
     );
   }
 }
+
+StringValuePicker.propTypes = {
+  classes: shape({any})
+};

@@ -4,7 +4,7 @@ import Downshift from 'downshift';
 import { isArray } from 'lodash';
 import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
-import styles from './styles.scss';
+import styles from './styles';
 
 import Rx from 'rxjs/Rx';
 import {Observable} from "rxjs/Observable";
@@ -16,9 +16,9 @@ import { fromEvent } from 'rxjs/observable/fromEvent';
 import Typography from '@material-ui/core/Typography';
 import { List, ListItem, ListItemText } from '@material-ui/core';
 
-const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
-const autocompletePillClass = cx(styles['autocompletePill']);
-const deleteIconClass = cx(styles['deleteIcon']);
+// const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
+// const autocompletePillClass = cx(styles['autocompletePill']);
+// const deleteIconClass = cx(styles['deleteIcon']);
 
 
 
