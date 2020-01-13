@@ -50,3 +50,6 @@
 
 ## 1.0.2
 * Changes to examples to integrate nicely with our docs site.
+
+## 1.1.0
+* Adds support for Anomaly Detection Engines
