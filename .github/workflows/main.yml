@@ -1,0 +1,22 @@
+name: Build and Test All
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 8.11.2
+      - run: yarn install
+      - run: yarn buildall
+      - run: yarn lintall
+      - run: yarn testall
