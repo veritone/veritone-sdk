@@ -70,6 +70,7 @@ export default class ProfileMenu extends React.Component {
           </IconButton>
         </Tooltip>
         <Menu
+          disableEnforceFocus
           open={this.state.open}
           onClose={this.closeMenu}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
