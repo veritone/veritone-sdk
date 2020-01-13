@@ -16,6 +16,13 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 8.11.2
+          
+      # issue => https://stackoverflow.com/questions/8965606/node-and-error-emfile-too-many-open-files
+      - run: ulimit -Sn 65536
+      - run: echo "session required pam_limits.so" >> /etc/pam.d/common-session
+      - run: echo "root soft  nofile 40000" >> /etc/security/limits.conf
+      - run: echo "root hard  nofile 100000" >> /etc/security/limits.conf
+      # fix end
       - run: yarn install
       - run: yarn buildall
       - run: yarn lintall
