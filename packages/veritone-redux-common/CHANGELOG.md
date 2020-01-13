@@ -117,3 +117,7 @@ This allows redux-common to use more than one version of the API.
 ## 3.11.3
 
 \*\* Added response key under metadata in callGraphQLApi helper function to access raw response
+
+## 3.12.0
+
+* Update Redux and related packages to latest version

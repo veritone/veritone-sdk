@@ -293,3 +293,7 @@ const MyPage = () => (
 
 * Exposed `open` prop for DataPicker component
 * Default DataPicker to modal view
+
+## 8.1.0
+
+* Update Redux and related packages to latest version

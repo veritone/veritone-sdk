@@ -288,3 +288,7 @@
 * **POTENTIONALLY BREAKING UPDATES** that may or may not affect existing styles / behaviours
   * React version updated to 16.9.0
   * Material-ui version updated to 4.4
+
+## 9.1.0
+
+* Update Redux and related packages to latest version
