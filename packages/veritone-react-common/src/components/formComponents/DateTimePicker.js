@@ -2,11 +2,11 @@ import React from 'react';
 import Today from '@material-ui/icons/Today';
 import isValid from 'date-fns/isValid'
 import getYear from 'date-fns/getYear'
-import parse from 'date-fns/parse'
 import format from 'date-fns/format'
 import isDate from 'date-fns/isDate'
 import TextField from '@material-ui/core/TextField';
 import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
+import parseISO from 'date-fns/parseISO';
 
 import styles from './styles/dateTimePicker.scss';
 
@@ -144,7 +144,7 @@ TimeZoneField.propTypes = {
 };
 
 function consolidate(dateString, timeString) {
-  return parse(`${dateString}T${timeString}:00`);
+  return parseISO(`${dateString}T${timeString}:00`);
 }
 
 function getDateString(date) {
