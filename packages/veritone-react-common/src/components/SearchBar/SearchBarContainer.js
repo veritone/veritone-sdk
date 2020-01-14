@@ -1,11 +1,11 @@
 import React from 'react';
-import { arrayOf, func, object, string, oneOf } from 'prop-types';
+import { arrayOf, func, object, string, oneOf, shape, any } from 'prop-types';
 import cx from 'classnames';
 import { get, uniq, isEmpty, isEqual, sortBy, includes } from 'lodash';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeWhile";
 import { fromEvent } from 'rxjs/observable/fromEvent';
-import { withTheme } from '@material-ui/core/styles'
+import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -20,13 +20,10 @@ import { guid } from './component';
 import AdvancedPanel from '../AdvancedPanel';
 import EngineCategoryButton from './EngineCategoryButton';
 
-import styles from './styles.scss';
-
-const supportedCategoriesClass = cx(styles['supportedCategories']);
+import styles from './styles';
 
 class SearchBarContainer extends React.Component {
   static propTypes = {
-    theme: object,
     auth: string,
     color: string,
     api: string,
@@ -35,7 +32,8 @@ class SearchBarContainer extends React.Component {
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
     enabledEngineCategories: arrayOf(object),
-    defaultJoinOperator: oneOf(['and', 'or'])
+    defaultJoinOperator: oneOf(['and', 'or']),
+    classes: shape({ any }),
   };
 
   state = {
@@ -318,7 +316,7 @@ class SearchBarContainer extends React.Component {
     } = this.state;
     advancedEnableIds.forEach(id => {
       const newAdvancedEnableIds = advancedEnableIds.filter(item => item !== id)
-      if(!includes(paramsContentTypes, id)){
+      if (!includes(paramsContentTypes, id)) {
         this.setState(state => ({
           ...state,
           advancedEnableIds: newAdvancedEnableIds,
@@ -746,8 +744,10 @@ class SearchBarContainer extends React.Component {
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find(x => x.id === this.state.selectedPill);
-    const { isAdvancedSearchEnabled } = this.props;
+    const { isAdvancedSearchEnabled, classes } = this.props;
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
+    const supportedCategoriesClass = cx(classes['supportedCategories']);
+
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden', borderRadius: '8px' }} data-veritone-component={`search_bar_${this._id}`}>
         <SearchBar
@@ -800,14 +800,14 @@ class SearchBarContainer extends React.Component {
             onKeyPress={this.onEnter}
           >
             <Card
-              className={cx(styles['engineCategoryModal'])}
+              className={cx(classes['engineCategoryModal'])}
               style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }}
               elevation={0}>
               <CardHeader
                 avatar={
                   <Icon iconClass={openModal.iconClass} color={'grey '} size={'2em'} />
                 }
-                classes={{ action: cx(styles['modalAction']) }}
+                classes={{ action: cx(classes['modalAction']) }}
                 action={
                   <div className={supportedCategoriesClass}>
                     {this.props.enabledEngineCategories &&
@@ -854,16 +854,16 @@ class SearchBarContainer extends React.Component {
                   />
                 ) : null}
               </CardContent>
-              <CardActions classes={{ root: cx(styles['modalFooterActions']) }} style={{ padding: "1em" }}>
+              <CardActions classes={{ root: cx(classes['modalFooterActions']) }} style={{ padding: "1em" }}>
                 {isAdvancedSearchEnabled && (openModal.dataTag === 'object' || openModal.dataTag === 'logo') ? (
-                  <div className={cx(styles["advancedButton"])}>
+                  <div className={cx(classes["advancedButton"])}>
                     <Button disabled={this.disableAdvancedSearch} onClick={this.handleOpenAdvanced}>ADVANCED</Button>
-                    {this.getBadgeLength && !this.disableAdvancedSearch ? <div className={cx(styles["customBadge"])}>
+                    {this.getBadgeLength && !this.disableAdvancedSearch ? <div className={cx(classes["customBadge"])}>
                       {this.getBadgeLength}
                     </div> : null}
                   </div>
                 ) : ""}
-                <Button onClick={this.cancelModal} color="primary" className={cx(styles['cancelButton'])}>
+                <Button onClick={this.cancelModal} color="primary" className={cx(classes['cancelButton'])}>
                   Close
                 </Button>
                 <Button
@@ -895,7 +895,7 @@ class SearchBarContainer extends React.Component {
   }
 }
 
-export default withTheme()(SearchBarContainer);
+export default withStyles(styles)(SearchBarContainer);
 
 SearchBarContainer.defaultProps = {
   searchParameters: [],

@@ -2,17 +2,20 @@ import supportedEngineCategoryType from '.';
 import { shape, func, string } from 'prop-types';
 import React from 'react';
 
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import Icon from './Icon';
-
-import styles from './styles.scss';
-
-
 import cx from 'classnames';
 
+import Icon from './Icon';
+
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
+
 const EngineCategoryButton = ({ engineCategory, addPill, backgroundColor, color }) => {
-  const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
-  const tooltipClasses = cx(styles['searchPillTooltip']);
+  const classes = useStyles();
+  const engineCategoryIconClasses = cx(classes['engineCategoryPill']);
+  const tooltipClasses = cx(classes['searchPillTooltip']);
 
   const onAddPill = () => addPill(engineCategory.id);
 
@@ -23,7 +26,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, backgroundColor, color 
       key={engineCategory.id}
       className={cx(tooltipClasses)}
     >
-      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill} style={ { backgroundColor: backgroundColor } }>
+      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill} style={{ backgroundColor: backgroundColor }}>
         <Icon iconClass={engineCategory.iconClass} color={color} />
       </div>
     </Tooltip>
