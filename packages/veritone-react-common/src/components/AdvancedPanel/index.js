@@ -17,7 +17,8 @@ import styles from './styles';
 
 const id = guid();
 
-class AdvancedPanelComponent extends React.Component {
+@withStyles(styles)
+class AdvancedPanel extends React.Component {
   static propTypes = {
     open: PropTypes.bool,
     searchByTag: PropTypes.string.isRequired,
@@ -255,8 +256,6 @@ class AdvancedPanelComponent extends React.Component {
     );
   }
 }
-
-const AdvancedPanel = withStyles(styles)(AdvancedPanelComponent);
 
 export {
   AdvancedPanel

@@ -8,7 +8,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import cx from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
 import { get } from 'lodash';
 
