@@ -51,7 +51,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
     storeSpeakerToggle: engineOutputExportModule.storeSpeakerToggle
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 export default class EngineCategoryConfig extends Component {
   static propTypes = {

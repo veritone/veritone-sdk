@@ -384,7 +384,7 @@ class DataPicker extends React.Component {
     endPick: dataPickerModule.endPick
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class DataPickerWidgetComponent extends React.Component {
   static propTypes = {

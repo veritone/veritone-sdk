@@ -36,7 +36,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
     selectFileType: engineOutputExportModule.selectFileType
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 export default class EngineConfigItem extends Component {
   static propTypes = {
