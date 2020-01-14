@@ -45,7 +45,7 @@ import widget from '../../shared/widget';
     setAllEnginesSelected: engineSelectionModule.setAllEnginesSelected
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class EngineSelection extends React.Component {
   static propTypes = {

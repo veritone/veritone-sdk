@@ -23,7 +23,7 @@ import UserProfile from '../UserProfile';
   }),
   { fetchEnabledApps: user.fetchEnabledApps },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class AppBar extends React.Component {
   static propTypes = {

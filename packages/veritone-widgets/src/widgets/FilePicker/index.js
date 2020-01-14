@@ -186,7 +186,7 @@ class FilePicker extends React.Component {
     abortRequest: filePickerModule.abortRequest
   },
   null,
-  { withRef: true }
+  { forwardRef: true }
 )
 class FilePickerWidgetComponent extends React.Component {
   static propTypes = {
