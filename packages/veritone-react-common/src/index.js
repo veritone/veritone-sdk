@@ -54,6 +54,11 @@ export Notifier from './components/Notifier';
 export DataPicker from './components/DataPicker';
 export FolderTree from './components/FolderTree/index';
 export SearchBox from './components/FolderTree/Searchbox';
+export {
+  DeleteFolder,
+  CreateFolder,
+  EditFolder
+} from './components/FolderTree/Modals';
 export LoadingState from './components/FolderTree/LoadingState';
 export FolderNullState from './components/FolderTree/NullState'; 
 export SubAppbar from './components/SubAppbar';
