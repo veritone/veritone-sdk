@@ -6,17 +6,17 @@
     "prop-types": "^15.6.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-redux": "^5.0.6",
+    "react-redux": "^7.1.3",
     "redux-api-middleware-fixed": "^2.0.0",
-    "redux-saga": "^0.16.0",
+    "redux-dynamic-modules": "^5.2.0",
+    "redux-saga": "1.1.3",
     "veritone-functional-permissions": "^1.0.1",
     "veritone-oauth-helpers": "^2.1.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
-  "homepage":
-    "https://github.com/veritone/veritone-sdk/blob/master/packages/veritone-redux-common",
+  "homepage": "https://github.com/veritone/veritone-sdk/blob/master/packages/veritone-redux-common",
   "scripts": {
     "start": "",
     "test": "BABEL_ENV=test jest",
@@ -26,10 +26,8 @@
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
-    "build:es":
-      "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
-    "build:cjs":
-      "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "NODE_ENV=production rollup -c --watch",
     "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
@@ -76,10 +74,11 @@
   },
   "license": "Apache-2.0",
   "jest": {
-    "moduleDirectories": ["node_modules"],
+    "moduleDirectories": [
+      "node_modules"
+    ],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "setupFiles": [
@@ -88,6 +87,6 @@
     ]
   },
   "peerDependencies": {
-    "redux": "^4.0.0"
+    "redux": "^4.0.4"
   }
 }
