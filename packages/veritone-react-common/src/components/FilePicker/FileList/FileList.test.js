@@ -49,14 +49,14 @@ describe('FileListItem', () => {
     let wrapper = mount(
       <FileListItem file={mockFiles[0]} index={0} onRemoveFile={noop} />
     );
-    expect(wrapper.find('.itemNameText').text()).toEqual(mockFiles[0].name);
+    expect(wrapper.find('[data-test="itemNameText"]').text()).toEqual(mockFiles[0].name);
   });
 
   it('should display the size of the file', () => {
     let wrapper = mount(
       <FileListItem file={mockFiles[0]} index={0} onRemoveFile={noop} />
     );
-    expect(wrapper.find('.itemFileSizeText').text()).toEqual(
+    expect(wrapper.find('[data-test="itemFileSizeText"]').text()).toEqual(
       formatBytes(mockFiles[0].size)
     );
   });

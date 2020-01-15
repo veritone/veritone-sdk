@@ -9,15 +9,16 @@ import {
   number,
   objectOf,
   element,
-  bool
+  bool,
+  any
 } from 'prop-types';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-
+import { withStyles, makeStyles } from '@material-ui/styles';
 import { intersperse } from 'helpers/fp';
 import Chip from '../Chip';
-import styles from './styles/sectiontree.scss';
+import styles from './styles/sectiontree';
 
 const nodeShape = {
   // formComponentId for a leaf, or label/children for a node
@@ -27,13 +28,15 @@ const nodeShape = {
 nodeShape.children = arrayOf(shape(nodeShape));
 
 export const sectionsShape = shape(nodeShape);
+const useStyles = makeStyles(styles);
 
 class SectionTree extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,
     formComponents: objectOf(element).isRequired,
     activePath: arrayOf(number).isRequired,
-    onNavigate: func.isRequired
+    onNavigate: func.isRequired,
+    classes: shape({ any }),
   };
 
   handleNavigateForward = index => {
@@ -46,7 +49,7 @@ class SectionTree extends React.Component {
 
   render() {
     const currentPath = intersperse(this.props.activePath, 'children');
-
+    const { classes } = this.props;
     const currentVisibleSection = get(
       this.props.sections.children, // skip root when navigating
       currentPath,
@@ -58,7 +61,7 @@ class SectionTree extends React.Component {
       currentVisibleSection.children[0].formComponentId;
 
     return (
-      <div className={styles.tabsContainer}>
+      <div className={classes.tabsContainer}>
         {currentPath.length > 0 && (
           <SectionTreeTab
             dark
@@ -73,23 +76,23 @@ class SectionTree extends React.Component {
         {visibleFormComponentIdAtLeaf
           ? this.props.formComponents[visibleFormComponentIdAtLeaf]
           : currentVisibleSection.children.map(
-              ({ visible, label, formComponentId, children }, i) =>
-                visible !== false && (
-                  <SectionTreeTab
-                    label={label}
-                    rightIcon={<ChevronRightIcon />}
-                    key={label}
-                    id={i}
-                    onClick={this.handleNavigateForward}
-                  />
-                )
-            )}
+            ({ visible, label, formComponentId, children }, i) =>
+              visible !== false && (
+                <SectionTreeTab
+                  label={label}
+                  rightIcon={<ChevronRightIcon />}
+                  key={label}
+                  id={i}
+                  onClick={this.handleNavigateForward}
+                />
+              )
+          )}
       </div>
     );
   }
 }
 
-export default SectionTree;
+export default withStyles(styles)(SectionTree);
 
 export const SectionTreeTab = ({
   label,
@@ -99,31 +102,34 @@ export const SectionTreeTab = ({
   filterCount,
   dark,
   onClick = noop
-}) => (
-  /* eslint-disable react/jsx-no-bind */
-  <Button
-    classes={{
-      root: cx(styles.sectionTreeTab, { [styles.dark]: dark }),
-      label: styles.muiButtonLabelOverride
-    }}
-    onClick={() => onClick(id)}
-  >
-    <span className={styles.leftIcon}>{leftIcon}</span>
-    <span className={styles.label}>{label}</span>
+}) => {
+  const classes = useStyles();
+  return (
+    /* eslint-disable react/jsx-no-bind */
+    <Button
+      classes={{
+        root: cx(classes.sectionTreeTab, { [classes.dark]: dark }),
+        label: classes.muiButtonLabelOverride
+      }}
+      onClick={() => onClick(id)}
+    >
+      <span className={classes.leftIcon}>{leftIcon}</span>
+      <span className={classes.label}>{label}</span>
 
-    {filterCount > 0 && (
-      <div onMouseOver={() => console.log('hover')}>
-        <Chip
-          label={filterCount}
-          hoveredLabel={'clear'}
-          style={{ height: 18 }}
-          onClick={e => e.stopPropagation()}
-        />
-      </div>
-    )}
-    <span className={styles.rightIcon}>{rightIcon}</span>
-  </Button>
-);
+      {filterCount > 0 && (
+        <div onMouseOver={() => console.log('hover')}>
+          <Chip
+            label={filterCount}
+            hoveredLabel={'clear'}
+            style={{ height: 18 }}
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
+      <span className={classes.rightIcon}>{rightIcon}</span>
+    </Button>
+  );
+};
 
 SectionTreeTab.propTypes = {
   label: string,

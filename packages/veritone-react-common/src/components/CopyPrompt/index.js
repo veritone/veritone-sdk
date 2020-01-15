@@ -2,18 +2,20 @@ import React from 'react';
 import { isString } from 'lodash';
 import Clipboard from 'clipboard';
 import Button from '@material-ui/core/Button';
-import { node, string, shape, arrayOf, oneOfType, bool } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { node, string, shape, arrayOf, oneOfType, bool, any } from 'prop-types';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class CopyPrompt extends React.Component {
+class CopyPrompt extends React.Component {
   static propTypes = {
     children: node,
     args: arrayOf(
       oneOfType([string, shape({ t: string.isRequired, color: string })])
     ),
     fullWidth: bool,
-    showPrompt: bool
+    showPrompt: bool,
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -36,17 +38,18 @@ export default class CopyPrompt extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
       <div
-        className={styles['container']}
+        className={classes['container']}
         style={{ width: this.props.fullWidth ? '100%' : 'auto' }}
       >
         <div
-          className={styles['prompt']}
+          className={classes['prompt']}
           style={{ width: this.props.fullWidth ? '100%' : 'auto' }}
         >
           {this.props.showPrompt && (
-            <span className={styles['prompt-symbol']}>$</span>
+            <span className={classes['promptSymbol']}>$</span>
           )}
           <span ref={this.containerRef}>
             {this.props.children ||
@@ -55,13 +58,13 @@ export default class CopyPrompt extends React.Component {
                   isString(arg) ? (
                     <span key={arg}>{arg}</span>
                   ) : (
-                    <span
-                      className={styles[`color--${arg.color || 'black'}`]}
-                      key={arg.t}
-                    >
-                      {arg.t}
-                    </span>
-                  )
+                      <span
+                        className={classes[`color${arg.color || 'black'}`]}
+                        key={arg.t}
+                      >
+                        {arg.t}
+                      </span>
+                    )
               )}
           </span>
         </div>
@@ -70,7 +73,7 @@ export default class CopyPrompt extends React.Component {
             <Button
               variant="contained"
               color="primary"
-              classes={{ root: styles.button }}
+              classes={{ root: classes.button }}
             >
               Copy
             </Button>
@@ -80,3 +83,5 @@ export default class CopyPrompt extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(CopyPrompt);

@@ -20,12 +20,12 @@ describe('Lightbox Component', () => {
   );
 
   const closeButton = lightbox.find(IconButton);
-  const background = lightbox.find('div.background');
+  const background = lightbox.find('[data-test="background"]');
   const content = lightbox.find('div.lightboxContent');
 
   it("Lightbox is hidden when it shouldn't be", () => {
-    expect(lightbox.find('div.open')).toHaveLength(1);
-    expect(lightbox.find('div.hidden')).toHaveLength(0);
+    expect(lightbox.find('div[data-test="open"]')).toHaveLength(1);
+    expect(lightbox.find('div[data-test="hidden"]')).toHaveLength(0);
   });
 
   it('Missing Lighbox Close Button', () => {

@@ -27,7 +27,7 @@ import {
   FullscreenToggle
 } from 'video-react';
 import cx from 'classnames';
-
+import { withStyles } from '@material-ui/styles';
 import RestartMediaButton from './RestartMediaButton';
 import BoundingPolyOverlay from './../BoundingPolyOverlay/Overlay';
 import OverlayPositioningProvider from './../BoundingPolyOverlay/OverlayPositioningProvider';
@@ -35,9 +35,9 @@ import OverlayPositioningProvider from './../BoundingPolyOverlay/OverlayPosition
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class MediaPlayerComponent extends React.Component {
+class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
     streams: arrayOf(
@@ -102,7 +102,8 @@ export default class MediaPlayerComponent extends React.Component {
     ctrlProgress: bool,
     displayTime: bool,
     autoHide: bool,
-    autoHideTime: number
+    autoHideTime: number,
+    classes: shape({ any }),
   };
 
   static contextTypes = {
@@ -160,6 +161,7 @@ export default class MediaPlayerComponent extends React.Component {
       displayTime,
       autoHide,
       autoHideTime,
+      classes,
       ...props
     } = this.props;
 
@@ -195,13 +197,13 @@ export default class MediaPlayerComponent extends React.Component {
           />
         )}
         <Player
-          className={cx(styles.mediaPlayer, reactPlayerClassName)}
+          className={cx(classes.mediaPlayer, reactPlayerClassName)}
           ref={this.props.forwardedRef}
           store={this.context.store}
           {...props}
         >
           <ControlBar
-            className={cx('video-react', styles.mediaPlayerControls)}
+            className={cx('video-react', classes.mediaPlayerControls)}
             autoHide={autoHide}
             autoHideTime={autoHideTime}
             disableDefaultControls
@@ -226,9 +228,11 @@ export default class MediaPlayerComponent extends React.Component {
             streams={streams}
             disablePreload={props.preload === 'none' ? true : false}
           />
-          <BigPlayButton position="center" className={styles.mediaPlayButton} />
+          <BigPlayButton position="center" className={classes.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>
     );
   }
 }
+
+export default withStyles(styles)(MediaPlayerComponent);

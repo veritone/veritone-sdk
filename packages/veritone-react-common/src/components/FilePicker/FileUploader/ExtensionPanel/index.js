@@ -6,10 +6,13 @@ import mime from 'mime-types';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Close from '@material-ui/icons/Close';
+import { makeStyles } from '@material-ui/styles';
+import styles from './styles';
 
-import styles from './styles.scss';
+const useStyles = makeStyles(styles);
 
 const ExtensionPanel = ({ acceptedFileTypes = [], closeExtensionList }) => {
+  const classes = useStyles();
   const readableTypeNames = {
     'video/*': 'video',
     'audio/*': 'audio',
@@ -37,12 +40,12 @@ const ExtensionPanel = ({ acceptedFileTypes = [], closeExtensionList }) => {
   });
 
   return (
-    <div className={styles.extensionListContainer}>
-      <div className={styles.extensionListHeader}>
-        <span className={styles.extensionListTitle}>File Extensions</span>
+    <div className={classes.extensionListContainer}>
+      <div className={classes.extensionListHeader}>
+        <span className={classes.extensionListTitle}>File Extensions</span>
         <IconButton
           classes={{
-            root: styles.extensionListCloseButton
+            root: classes.extensionListCloseButton
           }}
           data-veritone-element="uploader-extension-close-btn"
           onClick={closeExtensionList}
@@ -50,23 +53,23 @@ const ExtensionPanel = ({ acceptedFileTypes = [], closeExtensionList }) => {
           <Close />
         </IconButton>
       </div>
-      <div className={styles.extensionList}>
+      <div className={classes.extensionList}>
         {
           Object.keys(typeMapper).filter(key => typeMapper[key].length).map(key => (
             <Grid
               key={`${key}-extension-list`}
               data-veritone-element="extension-list-category"
-              className={cx(styles.extensionTypeContainer, styles[key])}
+              className={cx(classes.extensionTypeContainer, classes[key])}
               container
               spacing={2}>
               <Grid item xs={8} sm={6} md={4}>
-                <span className={styles.mediaTypeKey}>{key}</span>
+                <span className={classes.mediaTypeKey}>{key}</span>
               </Grid>
               {
                 uniq(typeMapper[key]).map(ext => (
                   <Grid key={`${key}-extension-${ext}`} item xs={8} sm={6} md={4}>
                     <span
-                      className={styles.mediaExtension}
+                      className={classes.mediaExtension}
                       data-veritone-element="extension-list-item"
                     >
                       {ext}

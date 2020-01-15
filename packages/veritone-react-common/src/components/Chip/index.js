@@ -1,13 +1,14 @@
 import React from 'react';
 import LibChip from '@material-ui/core/Chip';
-import { string, node } from 'prop-types';
+import { string, node, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles';
 
-import styles from './styles.scss';
-
-export default class Chip extends React.Component {
+class Chip extends React.Component {
   static propTypes = {
     label: node,
-    hoveredLabel: string
+    hoveredLabel: string,
+    classes: shape({any}),
   };
 
   state = {
@@ -27,12 +28,12 @@ export default class Chip extends React.Component {
   };
 
   render() {
-    const { hoveredLabel, label, ...chipProps } = this.props;
+    const { hoveredLabel, label, classes, ...chipProps } = this.props;
 
     return (
       <div onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut}>
         <LibChip
-          classes={{ root: styles.root }}
+          classes={{ root: classes.root }}
           {...chipProps}
           label={this.state.hovered ? hoveredLabel : label}
         />
@@ -40,3 +41,5 @@ export default class Chip extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Chip);

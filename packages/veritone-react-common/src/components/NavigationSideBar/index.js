@@ -1,33 +1,41 @@
 import React from 'react';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
+import { makeStyles } from '@material-ui/styles';
 
-import styles from './styles/container.scss';
+import styles from './styles/container';
 import SectionTree, { sectionsShape } from './SectionTree';
 
 export { sectionsShape } from './SectionTree';
 
-export default class NavigationSideBarContainer extends React.Component {
-  static propTypes = {
-    sections: sectionsShape.isRequired,
-    classes: objectOf(any),
-    selectedItemClasses: objectOf(any),
-    activePath: arrayOf(string).isRequired,
-    onNavigate: func.isRequired
-  };
+const useStyles = makeStyles(styles);
 
-  render() {
-    return (
-      <div className={styles.container}>
-        <div style={{ width: '100%' }}>
-          <SectionTree
-            sections={this.props.sections}
-            activePath={this.props.activePath}
-            onNavigate={this.props.onNavigate}
-            classes={this.props.classes}
-            selectedItemClasses={this.props.selectedItemClasses}
-          />
-        </div>
+export default function NavigationSideBarContainer({
+  sections,
+  activePath,
+  onNavigate,
+  selectedItemClasses,
+  classes
+}) {
+  const muiClasses = useStyles();
+  return (
+    <div className={muiClasses.container}>
+      <div style={{ width: '100%' }}>
+        <SectionTree
+          sections={sections}
+          activePath={activePath}
+          onNavigate={onNavigate}
+          classes={classes}
+          selectedItemClasses={selectedItemClasses}
+        />
       </div>
-    );
-  }
+    </div>
+  )
 }
+
+NavigationSideBarContainer.propTypes = {
+  sections: sectionsShape.isRequired,
+  classes: objectOf(any),
+  selectedItemClasses: objectOf(any),
+  activePath: arrayOf(string).isRequired,
+  onNavigate: func.isRequired
+};

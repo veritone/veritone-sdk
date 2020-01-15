@@ -1,16 +1,18 @@
 import React from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import { func, string, number } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { func, string, number, shape, any } from 'prop-types';
 
-import styles from './styles/filtersList.scss';
+import styles from './styles/filtersList';
 
-export default class FiltersListItem extends React.Component {
+class FiltersListItem extends React.Component {
   static propTypes = {
     id: string.isRequired,
     label: string.isRequired,
     number: number,
-    onClearFilter: func.isRequired
+    onClearFilter: func.isRequired,
+    classes: shape({ any }),
   };
   static defaultProps = {};
 
@@ -20,17 +22,18 @@ export default class FiltersListItem extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.filterItem}>
+      <div className={classes.filterItem}>
         <IconButton
-          classes={{ root: styles.clearButton }}
+          classes={{ root: classes.clearButton }}
           onClick={this.handleClear}
         >
           <CloseIcon />
         </IconButton>
         <a
           href="#"
-          className={styles.filterItemLink}
+          className={classes.filterItemLink}
           onClick={this.handleClear}
         >
           {this.props.label} {this.props.number && `(${this.props.number})`}
@@ -39,3 +42,5 @@ export default class FiltersListItem extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(FiltersListItem);

@@ -1,23 +1,26 @@
 import React from 'react';
-import { arrayOf, string, element, func, bool } from 'prop-types';
+import { arrayOf, string, element, func, bool, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 import MultipleTabHeader from './MuitipleTabHeader';
 import SingleTabHeader from './SingleTabHeader';
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class DiscoverySidebarHeader extends React.Component {
+class DiscoverySidebarHeader extends React.Component {
   static propTypes = {
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
     rightIconButton: bool,
     rightIconButtonElement: element,
-    onSelectTab: func.isRequired
+    onSelectTab: func.isRequired,
+    classes: shape({ any }),
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.container}>
+      <div className={classes.container}>
         {this.props.tabs.length > 1 ? (
-          <div className={styles.multiTabsContainer}>
+          <div className={classes.multiTabsContainer}>
             <MultipleTabHeader
               tabs={this.props.tabs}
               selectedTab={this.props.selectedTab}
@@ -25,12 +28,12 @@ export default class DiscoverySidebarHeader extends React.Component {
             />
           </div>
         ) : (
-          <div className={styles.singleTabContainer}>
-            <SingleTabHeader tab={this.props.tabs[0]} />
-          </div>
-        )}
+            <div className={classes.singleTabContainer}>
+              <SingleTabHeader tab={this.props.tabs[0]} />
+            </div>
+          )}
         {this.props.rightIconButton && (
-          <div className={styles.rightIconButtonContainer}>
+          <div className={classes.rightIconButtonContainer}>
             {this.props.rightIconButtonElement}
           </div>
         )}
@@ -38,3 +41,5 @@ export default class DiscoverySidebarHeader extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(DiscoverySidebarHeader);

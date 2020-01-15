@@ -1,17 +1,21 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import { node, number, oneOf } from 'prop-types';
-
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/styles';
+import styles from './styles';
 
 export const appFooterHeightShort = 40;
 export const appFooterHeightTall = 65;
+
+const useStyles = makeStyles(styles);
+
 const AppFooter = ({
   children,
   elevation = 2,
   leftOffset = 0,
   height = 'short'
 }) => {
+  const classes = useStyles();
   const footerHeight = {
     short: appFooterHeightShort,
     tall: appFooterHeightTall
@@ -22,7 +26,7 @@ const AppFooter = ({
       component="footer"
       square
       elevation={elevation}
-      className={styles.container}
+      className={classes.container}
       style={{ height: footerHeight, marginLeft: leftOffset }}
     >
       {children}

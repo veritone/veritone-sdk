@@ -82,7 +82,7 @@ describe('Notifier Component', () => {
   it('should display notification number', () => {
     const closeNotifier = mount(<Notifier {...mockNotifications} />);
     expect(closeNotifier.text()).toEqual(mockNotifications.notifications.length.toString());
-    expect(closeNotifier.find('.notificationWindow')).toHaveLength(0);
+    expect(closeNotifier.find('div[data-test="notificationWindow"]')).toHaveLength(0);
   });
 
   const openNotifier = mount(<Notifier {...mockNotifications} />);
@@ -96,14 +96,14 @@ describe('Notifier Component', () => {
     expect(handleOpen).toHaveBeenCalled();
   });
 
-  const entryWindows = openNotifier.find('.notificationWindow');
+  const entryWindows = openNotifier.find('div[data-test="notificationWindow"]');
   it('should have notification list', () => {
     expect(entryWindow).toHaveLength(1);
   });
 
   let entryWindow = entryWindows.first();
   it('should have notification list header', () => {
-    const header = entryWindow.find('div.header');
+    const header = entryWindow.find('div[data-test="header"]');
     expect(header).toHaveLength(1);
     expect(header.first().text()).toContain(mockNotifications.notifications.length.toString());
   });

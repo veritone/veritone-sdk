@@ -10,10 +10,13 @@ import Folder from '@material-ui/icons/Folder';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import KeyboardVoice from '@material-ui/icons/KeyboardVoice';
 import Videocam from '@material-ui/icons/Videocam';
+import { makeStyles } from '@material-ui/styles';
 
 import MediaPlayerComponent from '../../../MediaPlayer';
 import itemShape from '../itemShape';
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const FILE_ICONS = {
   'folder': Folder,
@@ -23,6 +26,7 @@ const FILE_ICONS = {
 }
 
 function SimpleMediaCard(props) {
+  const classes = useStyles();
   const { item, isSelected } = props;
   const { type, name, primaryAsset, modifiedDateTime, streams } = item;
   const url = () => {
@@ -35,7 +39,7 @@ function SimpleMediaCard(props) {
     (FILE_ICONS[iconCategory] || FILE_ICONS['doc']);
   return (
     <div>
-      <Card className={cx(styles["item-card"])}>
+      <Card className={cx(classes["itemCard"])}>
         {url() ?
           <MediaPlayerComponent
             muted
@@ -45,23 +49,23 @@ function SimpleMediaCard(props) {
             src={url()}
           />
           :
-          <CardMedia className={cx(styles["item-media"])}>
-            <FileIcon className={cx(styles["icon-media"])} />
+          <CardMedia className={cx(classes["itemMedia"])}>
+            <FileIcon className={cx(classes["iconMedia"])} />
           </CardMedia>
         }
-        <CardContent className={cx(styles["item-card-content"], { [styles['item-card-content-selected']]: isSelected })}>
+        <CardContent className={cx(classes["itemCardContent"], { [classes['itemCardContentSelected']]: isSelected })}>
           <Typography
-            className={cx(styles["item-card-name"])}
+            className={cx(classes["itemCardName"])}
             gutterBottom
             variant="h5"
             component="h2"
           >
-            <div className={cx(styles["item-name"])}>
+            <div className={cx(classes["itemName"])}>
               {name}
             </div>
-            <FileIcon className={cx(styles["type-icon"])} />
+            <FileIcon className={cx(classes["typeIcon"])} />
           </Typography>
-          <Typography className={cx(styles["item-timestyle"])} component="p">
+          <Typography className={cx(classes["itemTimestyle"])} component="p">
             {modifiedDateTime}
           </Typography>
         </CardContent>

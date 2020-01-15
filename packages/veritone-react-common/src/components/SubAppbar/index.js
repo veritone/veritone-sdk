@@ -2,18 +2,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
+import { makeStyles } from '@material-ui/styles';
 import PopperButon from '../PopperButton';
 import BreadCrums from '../DataPicker/Breadcrumbs'
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 function SubAppbar({actions, pathList, onCrumbClick }) {
+  const classes = useStyles();
+
   return (
-    <div className={cx(styles['subappbar-container'])}>
-      <div className={cx(styles['button-container-react'])}>
+    <div className={cx(classes['subappbarContainer'])}>
+      <div className={cx(classes['buttonContainerReact'])}>
         <PopperButon actions={actions} />
       </div>
-      <div className={cx(styles['breadcrumb-container-subappbar'])}>
+      <div className={cx(classes['breadcrumbContainerSubappbar'])}>
         <BreadCrums onCrumbClick={onCrumbClick} pathList={pathList} />
       </div>
     </div>

@@ -3,14 +3,15 @@ import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, arrayOf, shape, bool, func } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { string, arrayOf, shape, bool, func, any } from 'prop-types';
 
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class AppSwitcher extends React.Component {
+class AppSwitcher extends React.Component {
   static propTypes = {
     tooltipTitle: string,
     currentAppName: string,
@@ -25,7 +26,8 @@ export default class AppSwitcher extends React.Component {
     ),
     enabledAppsFailedLoading: bool,
     handleRefresh: func,
-    onSwitchApp: func
+    onSwitchApp: func,
+    classes: shape({any}),
   };
   static defaultProps = {
     tooltipTitle: 'Switch Apps'
@@ -51,6 +53,7 @@ export default class AppSwitcher extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -68,7 +71,7 @@ export default class AppSwitcher extends React.Component {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           anchorEl={this.state.anchorEl}
           getContentAnchorEl={null}
-          className={styles.popover}
+          className={classes.popover}
         >
           {this.props.enabledAppsFailedLoading ? (
             <AppSwitcherErrorState onRefresh={this.props.handleRefresh} />
@@ -79,10 +82,12 @@ export default class AppSwitcher extends React.Component {
             />
           )}
         </Menu>
-        <span className={styles['appSwitcher__title']}>
+        <span className={classes.appSwitcherTitle}>
           {this.props.currentAppName}
         </span>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(AppSwitcher);

@@ -3,14 +3,16 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import mime from 'mime-types';
-import { func, arrayOf, string } from 'prop-types';
+import { func, arrayOf, string, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 class UrlUploader extends Component {
   static propTypes = {
     onUpload: func.isRequired,
-    acceptedFileTypes: arrayOf(string)
+    acceptedFileTypes: arrayOf(string),
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -111,16 +113,17 @@ class UrlUploader extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.urlUploader}>
+      <div className={classes.urlUploader}>
         <FormControl
-          className={styles.urlTextField}
+          className={classes.urlTextField}
           error={this.state.uploadError}
         >
           <InputLabel
             classes={{
-              error: styles.fileUrlInputError,
-              focused: styles.fileUrlInputFocused
+              error: classes.fileUrlInputError,
+              focused: classes.fileUrlInputFocused
             }}
             htmlFor="url-input"
           >
@@ -128,8 +131,8 @@ class UrlUploader extends Component {
           </InputLabel>
           <Input
             classes={{
-              root: styles.fileUrlPickerInputRoot,
-              input: styles.fileUlrPickerInput
+              root: classes.fileUrlPickerInputRoot,
+              input: classes.fileUlrPickerInput
             }}
             id="url-input"
             onKeyPress={this.preventInput}
@@ -138,25 +141,25 @@ class UrlUploader extends Component {
           />
         </FormControl>
         {this.state.image.length ? (
-          <div className={styles.imageContainer}>
-            <div className={styles.fileImage}>
+          <div className={classes.imageContainer}>
+            <div className={classes.fileImage}>
               <img src={this.state.image} />
             </div>
           </div>
         ) : (
-          <div className={styles.urlUploaderInfoBox}>
-            <span className={styles.correctUrlText}>
-              If the URL is correct the image will display here.
+            <div className={classes.urlUploaderInfoBox}>
+              <span className={classes.correctUrlText}>
+                If the URL is correct the image will display here.
             </span>
-            <span className={styles.confirmLicenseText}>
-              Remember, only use images that you have confirmed that you have
-              the license to use
+              <span className={classes.confirmLicenseText}>
+                Remember, only use images that you have confirmed that you have
+                the license to use
             </span>
-          </div>
-        )}
+            </div>
+          )}
       </div>
     );
   }
 }
 
-export default UrlUploader;
+export default withStyles(styles)(UrlUploader);

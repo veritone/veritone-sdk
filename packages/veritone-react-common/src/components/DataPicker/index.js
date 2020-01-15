@@ -7,16 +7,32 @@ import {
   shape,
   number,
   object,
-  oneOfType
+  oneOfType,
+  any
 } from 'prop-types';
 import { isArray, isUndefined } from 'lodash';
 import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/styles';
 import LeftNavigationPanel from './LeftNavigationPanel';
 import FolderViewContainer from './FolderViewContainer';
 import UploaderViewContainer from './UploaderViewContainer';
 import HeaderBar from './HeaderBar';
-import styles from './styles.scss';
 
+const styles = {
+  dataPickerContainer: {
+    display: 'flex',
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
+  },
+  dataPickerContentContainer: {
+    display: 'flex',
+    flexFlow: 'column',
+    alignItems: 'stretch',
+    width: '100%',
+    height: '100%',
+  }
+}
 const StreamView = () => (
   <Paper>
     <div style={{ width: '100%', height: '100%' }}>Stream view</div>;
@@ -67,7 +83,8 @@ class DataPicker extends React.Component {
       })
     ),
     height: number,
-    width: number
+    width: number,
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -78,7 +95,7 @@ class DataPicker extends React.Component {
     uploadSuccess: '',
     uploadError: '',
     uploadWarning: '',
-    onErrorMsg: () => {}
+    onErrorMsg: () => { }
   };
 
   state = {
@@ -191,7 +208,8 @@ class DataPicker extends React.Component {
       isError,
       onErrorMsg,
       height,
-      width
+      width,
+      classes
     } = this.props;
     const { uploadedFiles, showMediaInfoPanel } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
@@ -199,7 +217,7 @@ class DataPicker extends React.Component {
       availablePickerTypes.length > 1 && uploadPickerState !== 'uploading';
     const isFullScreen = !height && !width;
     return (
-      <div className={styles['data-picker-container']}>
+      <div className={classes['dataPickerContainer']}>
         {showLeftNav && (
           <LeftNavigationPanel
             availablePickerTypes={availablePickerTypes}
@@ -207,7 +225,7 @@ class DataPicker extends React.Component {
             toggleContentView={this.toggleContentView}
           />
         )}
-        <div className={styles['data-picker-content-container']}>
+        <div className={classes['dataPickerContentContainer']}>
           {showHeader && (
             <HeaderBar
               viewType={viewType}
@@ -283,4 +301,4 @@ class DataPicker extends React.Component {
   }
 }
 
-export default DataPicker;
+export default withStyles(styles)(DataPicker);

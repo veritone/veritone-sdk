@@ -1,16 +1,16 @@
 import React from 'react';
-import { shape, string, number, arrayOf, oneOfType, node, func, bool } from 'prop-types';
+import { shape, string, number, arrayOf, oneOfType, node, func, bool, any } from 'prop-types';
 import cx from 'classnames';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
 import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
+import { withStyles } from '@material-ui/styles';
 
 import BreadcrumbItem from './BreadcrumbItem';
+import styles, { lightBlackColor } from './styles';
 
-import styles from './styles.scss';
-
-export default class Breadcrumbs extends React.Component {
+class Breadcrumbs extends React.Component {
   static propTypes = {
     pathList: arrayOf(shape({
       id: string.isRequired,
@@ -19,12 +19,13 @@ export default class Breadcrumbs extends React.Component {
     maxItems: number,
     seperator: oneOfType([string, node]),
     onCrumbClick: func.isRequired,
-    isStream: bool
+    isStream: bool,
+    classes: shape({any}),
   }
 
   static defaultProps = {
     maxItems: 5,
-    seperator: <ChevronRight className={styles['icon-color']} />,
+    seperator: <ChevronRight style={{color : lightBlackColor}} />,
   }
 
   state = {
@@ -58,6 +59,7 @@ export default class Breadcrumbs extends React.Component {
       maxItems,
       seperator,
       isStream,
+      classes
     } = this.props;
 
     const { anchorEl } = this.state;
@@ -68,11 +70,11 @@ export default class Breadcrumbs extends React.Component {
     } = pathList;
     const hiddenCrumbs = pathList.slice(1, pathList.length - 1);
     const icon = isStream ? (
-      <div className={cx('icon-streams', styles['root-icon'])} />
-    ) : <Work className={styles['root-icon']} />;
+      <div className={cx('icon-streams', classes['rootIcon'])} />
+    ) : <Work className={classes['rootIcon']} />;
 
     return (
-      <div className={styles['breadcrumb-container']}>
+      <div className={classes['breadcrumbContainer']}>
         <React.Fragment key={'root'}>
           <BreadcrumbItem
             id={'root'}
@@ -120,10 +122,10 @@ export default class Breadcrumbs extends React.Component {
                 />
                 {seperator}
                 <Button
-                  className={styles['crumb-item']}
+                  className={classes['crumbItem']}
                   onClick={this.onSpreadClick}
                 >
-                  <MoreHoriz className={styles['icon-color']} />
+                  <MoreHoriz className={classes['iconColor']} />
                 </Button>
                 {seperator}
                 <BreadcrumbItem
@@ -167,3 +169,5 @@ export default class Breadcrumbs extends React.Component {
     )
   }
 }
+
+export default withStyles(styles)(Breadcrumbs); 

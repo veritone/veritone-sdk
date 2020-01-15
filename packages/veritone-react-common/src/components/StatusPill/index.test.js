@@ -28,7 +28,7 @@ describe('StatusPill', () => {
 
   it('Should render correct styles', () => {
     let wrapper = mount(<StatusPill status="active" />);
-    expect(wrapper.find('div').get(0).props.className).toEqual('statusPill');
+    expect(wrapper.find('div[data-test="statusPill"]')).toHaveLength(1);
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'backgroundColor',
       '#00c853'
@@ -40,7 +40,7 @@ describe('StatusPill', () => {
 
     const span = wrapper.find('span');
     expect(span).toHaveLength(1);
-    expect(span.get(0).props.className).toEqual('statusPillText');
+    expect(span.get(0).props['data-test']).toEqual('statusPillText');
 
     wrapper = mount(<StatusPill status="inactive" />);
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
