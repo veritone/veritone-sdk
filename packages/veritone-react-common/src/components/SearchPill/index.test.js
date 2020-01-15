@@ -27,7 +27,7 @@ describe('SearchPill', function () {
       <SearchPill engineCategoryIcon={'icon-transcription'} label={'label'} />
     );
 
-    expect(wrapper.find('.searchPillBackgroundColor')).toHaveLength(1);
+    expect(wrapper.find('div[data-test="searchPillBackgroundColor"]')).toHaveLength(1);
   });
 
   it('renders excluded pills with a different color', function () {
@@ -39,7 +39,7 @@ describe('SearchPill', function () {
       />
     );
 
-    expect(wrapper.find('.searchPillExcludeBackgroundColor')).toHaveLength(1);
+    expect(wrapper.find('div[data-test="searchPillExcludeBackgroundColor"]')).toHaveLength(1);
   });
 
   it('renders pills with the selected color over the excluded color', function () {
@@ -52,8 +52,8 @@ describe('SearchPill', function () {
       />
     );
 
-    expect(wrapper.find('.searchPillSelectedBackgroundColor')).toHaveLength(1);
-    expect(wrapper.find('.searchPillExcludeBackgroundColor')).toHaveLength(0);
+    expect(wrapper.find('div[data-test="searchPillSelectedBackgroundColor"]')).toHaveLength(1);
+    expect(wrapper.find('div[data-test="searchPillExcludeBackgroundColor"]')).toHaveLength(0);
   });
 
   it('displays highlighted backgroundColor precedence over excluded backgroundColor', function () {
@@ -66,10 +66,10 @@ describe('SearchPill', function () {
       />
     );
 
-    expect(wrapper.find('.searchPillHighlightedBackgroundColor')).toHaveLength(
+    expect(wrapper.find('div[data-test="searchPillHighlightedBackgroundColor"]')).toHaveLength(
       1
     );
-    expect(wrapper.find('.searchPillExcludeBackgroundColor')).toHaveLength(0);
+    expect(wrapper.find('div[data-test="searchPillExcludeBackgroundColor"]')).toHaveLength(0);
   });
 
   it('expects onClick to be called', function () {

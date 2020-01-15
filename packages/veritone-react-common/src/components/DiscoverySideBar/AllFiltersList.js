@@ -1,10 +1,10 @@
 import React from 'react';
-import { func, shape, arrayOf, string, number } from 'prop-types';
-
-import styles from './styles/filtersList.scss';
+import { func, shape, arrayOf, string, number, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles/filtersList';
 import FiltersListItem from './FiltersListItem';
 
-export default class AllFiltersList extends React.Component {
+class AllFiltersList extends React.Component {
   static propTypes = {
     onClearAllFilters: func.isRequired,
     onClearFilter: func.isRequired,
@@ -14,7 +14,8 @@ export default class AllFiltersList extends React.Component {
         number: number,
         id: string.isRequired
       })
-    )
+    ),
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -27,12 +28,13 @@ export default class AllFiltersList extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.container}>
-        <div className={styles.headerContainer}>
-          <span className={styles.header}>Your Selections</span>
+      <div className={classes.container}>
+        <div className={classes.headerContainer}>
+          <span className={classes.header}>Your Selections</span>
           <a
-            className={styles.clearLink}
+            className={classes.clearLink}
             onClick={this.handleClearAllFilters}
             href="#"
           >
@@ -40,7 +42,7 @@ export default class AllFiltersList extends React.Component {
           </a>
         </div>
 
-        <div className={styles.filtersContainer}>
+        <div className={classes.filtersContainer}>
           {this.props.filters.map(filter => (
             <FiltersListItem
               key={filter.id}
@@ -53,3 +55,5 @@ export default class AllFiltersList extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(AllFiltersList);

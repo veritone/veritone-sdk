@@ -1,11 +1,11 @@
 import React from 'react';
-import { func, bool, string } from 'prop-types';
+import { func, bool, string, shape, any } from 'prop-types';
 
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
-
+import { withStyles } from '@material-ui/styles';
 import cx from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
 class SearchPill extends React.PureComponent {
   static propTypes = {
@@ -16,7 +16,8 @@ class SearchPill extends React.PureComponent {
     highlighted: bool,
     selected: bool,
     exclude: bool,
-    disabled: bool
+    disabled: bool,
+    classes: shape({ any }),
   };
 
   handleDelete = e => {
@@ -25,28 +26,38 @@ class SearchPill extends React.PureComponent {
   };
 
   getBackgroundColor() {
-    let backgroundColor = styles.searchPillBackgroundColor;
+    const { classes } = this.props;
+    let backgroundColor = classes.searchPillBackgroundColor;
+    let dataTest = 'searchPillBackgroundColor';
     if (this.props.selected) {
-      backgroundColor = styles.searchPillSelectedBackgroundColor;
+      backgroundColor = classes.searchPillSelectedBackgroundColor;
+      dataTest = 'searchPillSelectedBackgroundColor';
     } else if (this.props.highlighted) {
-      backgroundColor = styles.searchPillHighlightedBackgroundColor;
+      backgroundColor = classes.searchPillHighlightedBackgroundColor;
+      dataTest = 'searchPillHighlightedBackgroundColor';
     } else if (this.props.exclude) {
-      backgroundColor = styles.searchPillExcludeBackgroundColor;
+      backgroundColor = classes.searchPillExcludeBackgroundColor;
+      dataTest = 'searchPillExcludeBackgroundColor';
     }
-    return backgroundColor;
+    return {
+      backgroundColor,
+      dataTest
+    };
   }
 
   render() {
+    const { classes } = this.props;
+    const { backgroundColor, dataTest } = this.getBackgroundColor();
     return (
       <Chip
         classes={{
           root: cx(
-            styles.searchPill,
-            { [styles.searchPillWithoutDelete]: !this.props.onDelete },
-            this.getBackgroundColor()
+            classes.searchPill,
+            { [classes.searchPillWithoutDelete]: !this.props.onDelete },
+            backgroundColor
           ),
           label: cx({
-            [styles.searchPillSelectedColor]: this.props.selected
+            [classes.searchPillSelectedColor]: this.props.selected
           })
         }}
         icon={
@@ -54,8 +65,8 @@ class SearchPill extends React.PureComponent {
             className={this.props.engineCategoryIcon}
             classes={{
               root: cx([
-                styles.engineCategoryIcon,
-                { [styles.searchPillSelectedColor]: this.props.selected }
+                classes.engineCategoryIcon,
+                { [classes.searchPillSelectedColor]: this.props.selected }
               ])
             }}
           />
@@ -64,9 +75,10 @@ class SearchPill extends React.PureComponent {
         onDelete={this.props.onDelete}
         onClick={this.props.onClick}
         disabled={this.props.disabled || !this.props.onClick}
+        data-test={dataTest}
       />
     );
   }
 }
 
-export default SearchPill;
+export default withStyles(styles)(SearchPill);

@@ -1,9 +1,10 @@
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { withStyles } from '@material-ui/styles';
 import { createComponent } from './redux-form-material-ui';
 
-import styles from './styles/radioGroup.scss';
+import styles from './styles/radioGroup';
 
-export default createComponent(
+const RadioGroupComponent = createComponent(
   RadioGroup,
   ({
     input: { onChange, value, ...inputProps },
@@ -23,7 +24,9 @@ export default createComponent(
     },
     classes: {
       ...classes,
-      root: styles.container
+      root: classes.container
     }
   })
 );
+
+export default withStyles(styles)(RadioGroupComponent);

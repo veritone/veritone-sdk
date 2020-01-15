@@ -1,8 +1,7 @@
 import React from 'react';
 import AttachMoneyIcon from '@material-ui/icons/Apps';
 import { storiesOf } from '@storybook/react';
-
-import styles from './story.styles.scss';
+import { makeStyles } from '@material-ui/styles';
 import SideBar from './';
 
 const Container = (
@@ -59,19 +58,26 @@ const exampleSideBarMenu = {
   }
 };
 
-storiesOf('NavigationSideBar', module).add('Base', () => {
+const useStyles = makeStyles({
+  iconselected: {
+    color: '#2196f3',
+  }
+})
+
+storiesOf('NavigationSideBar', module).add('Base', () => React.createElement(() => {
+  const classes = useStyles();
   return (
     <Container>
       <StatefulSideBar
         title="Navigation"
         sections={exampleSideBarMenu}
         selectedItemClasses={{
-          leftIcon: styles.iconselected
+          leftIcon: classes.iconselected
         }}
       />
     </Container>
   );
-});
+}));
 
 class StatefulSideBar extends React.Component {
   state = {

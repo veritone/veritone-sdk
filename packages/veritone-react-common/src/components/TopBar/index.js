@@ -15,14 +15,16 @@ import {
   arrayOf,
   element,
   number,
-  shape
+  shape,
+  any
 } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
 import { appBarHeight } from '../AppBar';
-import styles from './styles.scss';
+import styles from './styles';
 
 export const topBarHeight = 45;
-export default class TopBar extends React.Component {
+class TopBar extends React.Component {
   static propTypes = {
     appBarOffset: bool,
     elevation: number,
@@ -42,7 +44,8 @@ export default class TopBar extends React.Component {
     leftText: string,
     rightIconButtons: arrayOf(element),
     onRequestOpenMenu: func,
-    onClickBackButton: func
+    onClickBackButton: func,
+    classes: shape({ any }),
   };
   static defaultProps = {
     elevation: 2,
@@ -69,6 +72,7 @@ export default class TopBar extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <Paper
         style={{
@@ -77,15 +81,19 @@ export default class TopBar extends React.Component {
           marginLeft: this.props.leftOffset,
           background: '#fafafa'
         }}
-        className={cx(styles.container, {
-          [styles.selected]: this.props.selected
+        className={cx(classes.container, {
+          [classes.selected]: this.props.selected
         })}
         square
         elevation={this.props.elevation}
+        data-test="container"
+        data-test-selected={cx({
+          selected: this.props.selected
+        })}
       >
         {this.props.renderActionButton && (
           <div
-            className={styles.actionButtonContainer}
+            className={classes.actionButtonContainer}
             style={{ width: this.props.actionButtonContainerWidth }}
           >
             {this.props.renderActionButton()}
@@ -93,10 +101,10 @@ export default class TopBar extends React.Component {
         )}
         <div
           style={{ height: topBarHeight }}
-          className={styles.leftButtonContainer}
+          className={classes.leftButtonContainer}
         >
           {this.props.menuButton && (
-            <div className={styles.highlight}>
+            <div className={classes.highlight}>
               <IconButton
                 style={{ height: '100%' }}
                 onClick={this.props.onRequestOpenMenu}
@@ -112,17 +120,18 @@ export default class TopBar extends React.Component {
               style={{ height: '100%' }}
               onClick={this.props.onClickBackButton}
               className="backButton"
+              data-test="backButton"
             >
               <ArrowBackIcon />
             </IconButton>
           )}
         </div>
 
-        <div className={styles.rightContainer}>
-          <span className={cx({ [styles.selected]: this.props.selected })}>
+        <div className={classes.rightContainer}>
+          <span className={cx({ [classes.selected]: this.props.selected })}>
             {this.props.leftText}
           </span>
-          <div className={styles.rightIconButtons}>
+          <div className={classes.rightIconButtons}>
             {this.props.rightIconButtons}
 
             {this.props.rightMenu &&
@@ -157,3 +166,5 @@ export default class TopBar extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(TopBar);

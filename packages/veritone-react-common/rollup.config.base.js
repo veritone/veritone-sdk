@@ -82,6 +82,9 @@ export default {
         '../../node_modules/react-dnd/lib/index.js': [
           'DndProvider',
           'DropTarget'
+        ], 
+        '../../node_modules/@material-ui/utils/node_modules/react-is/index.js': [
+          'ForwardRef'
         ]
       },
       include: ['../../node_modules/**', 'node_modules/**', '../**']

@@ -3,23 +3,26 @@ import { func, bool, node } from 'prop-types';
 
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
-
+import { makeStyles } from '@material-ui/styles';
 import cx from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 function SelectionButton(props) {
+  const classes = useStyles();
   return (
     <Button
       className={cx([
-        styles.condensedButton,
-        { [styles.selected]: props.selected }
+        classes.condensedButton,
+        { [classes.selected]: props.selected }
       ])}
       variant="outlined"
       onClick={props.toggleSelection}
     >
       <Radio
-        classes={{ root: styles.condensed }}
-        className={styles.condensed}
+        classes={{ root: classes.condensed }}
+        className={classes.condensed}
         color={'primary'}
         checked={props.selected}
         onChange={props.toggleSelection}

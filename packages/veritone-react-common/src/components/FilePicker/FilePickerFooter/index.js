@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import { bool, func, string } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { bool, func, string, shape, any } from 'prop-types';
 import cx from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
 class FilePickerFooter extends Component {
   static propTypes = {
@@ -10,7 +11,8 @@ class FilePickerFooter extends Component {
     onCancel: func,
     onSubmit: func,
     title: string,
-    hasIntercom: bool
+    hasIntercom: bool,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -23,11 +25,12 @@ class FilePickerFooter extends Component {
       onCancel,
       disabled,
       onSubmit,
-      title
+      title,
+      classes
     } = this.props;
     return (
-      <div className={cx(styles.filePickerFooter, {
-        [styles.hasIntercom]: hasIntercom
+      <div className={cx(classes.filePickerFooter, {
+        [classes.hasIntercom]: hasIntercom
       })}>
         <Button
           data-veritone-element={`picker-footer-cancel-button`}
@@ -49,4 +52,4 @@ class FilePickerFooter extends Component {
   }
 }
 
-export default FilePickerFooter;
+export default withStyles(styles)(FilePickerFooter);

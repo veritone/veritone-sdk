@@ -5,7 +5,8 @@ import {
   arrayOf,
   shape,
   bool,
-  func
+  func,
+  any
 } from 'prop-types';
 import { get } from 'lodash';
 import cx from 'classnames';
@@ -17,12 +18,13 @@ import VideoIcon from '@material-ui/icons/LocalMovies';
 import ImageIcon from '@material-ui/icons/Photo';
 import TextIcon from '@material-ui/icons/ShortText';
 import AbortIcon from '@material-ui/icons/Delete';
+import { withStyles } from '@material-ui/styles';
 
 import { formatBytes } from '../../../helpers/format.js';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class FileProgressList extends React.Component {
+class FileProgressList extends React.Component {
   static propTypes = {
     percentByFiles: arrayOf(shape({
       key: string,
@@ -36,31 +38,33 @@ export default class FileProgressList extends React.Component {
       }).isRequired
     })).isRequired,
     showErrors: bool,
-    handleAbort: func
+    handleAbort: func,
+    classes: shape({ any }),
   };
 
   getFileMediaIcon = file => {
     const type = get(file, 'value.type');
+    const { classes } = this.props;
     const icons = {
-      audio: (<AudioIcon className={styles.fileIcon} data-test-target="audio" />),
-      video: (<VideoIcon className={styles.fileIcon} data-test-target="video" />),
-      image: (<ImageIcon className={styles.fileIcon} data-test-target="image" />),
-      text: (<TextIcon className={styles.fileIcon} data-test-target="text" />)
+      audio: (<AudioIcon className={classes.fileIcon} data-test-target="audio" />),
+      video: (<VideoIcon className={classes.fileIcon} data-test-target="video" />),
+      image: (<ImageIcon className={classes.fileIcon} data-test-target="image" />),
+      text: (<TextIcon className={classes.fileIcon} data-test-target="text" />)
     };
     const iconKeys = Object.keys(icons);
     for (let index in iconKeys) {
       const key = iconKeys[index];
       if (type && type.includes(key)) {
         return (
-          <div className={cx(styles.fileIconContainer, styles[key])}>
-            { icons[key] }
+          <div className={cx(classes.fileIconContainer, classes[key])}>
+            {icons[key]}
           </div>
         );
       }
     }
     return (
-      <div className={cx(styles.fileIconContainer, styles.text)}>
-        { icons.text }
+      <div className={cx(classes.fileIconContainer, classes.text)}>
+        {icons.text}
       </div>
     );
   };
@@ -74,7 +78,8 @@ export default class FileProgressList extends React.Component {
     const {
       percentByFiles,
       showErrors,
-      handleAbort
+      handleAbort,
+      classes
     } = this.props;
 
     const files = !showErrors
@@ -87,27 +92,27 @@ export default class FileProgressList extends React.Component {
           files.map(file => (
             <div
               key={file.key}
-              className={styles.fileProgressItem}
+              className={classes.fileProgressItem}
               data-test-target={file.key}>
               <LinearProgress
-                className={styles.fileProgressBar}
+                className={classes.fileProgressBar}
                 classes={{
                   barColorPrimary: get(file, 'value.error')
-                    ? styles.fileProgressBarError
-                    : styles.fileProgressBarPrimary
+                    ? classes.fileProgressBarError
+                    : classes.fileProgressBarPrimary
                 }}
                 variant="determinate"
                 value={
                   showErrors ? 0 : file.value.percent
                 } />
-              <div className={styles.fileProgressItemOverlay}>
-                { this.getFileMediaIcon(file) }
-                <span className={styles.fileName}>{file.value.name || file.key}</span>
-                <div className={styles.sizeContainer}>
-                  <span className={styles.fileSize}>{formatBytes(file.value.size)}</span>
+              <div className={classes.fileProgressItemOverlay}>
+                {this.getFileMediaIcon(file)}
+                <span className={classes.fileName}>{file.value.name || file.key}</span>
+                <div className={classes.sizeContainer}>
+                  <span className={classes.fileSize}>{formatBytes(file.value.size)}</span>
                 </div>
-                { handleAbort && file.value.percent != 100 && (
-                  <div className={styles.abortContainer}>
+                {handleAbort && file.value.percent != 100 && (
+                  <div className={classes.abortContainer}>
                     <IconButton onClick={this.handleAbortFile(file.key)}>
                       <AbortIcon />
                     </IconButton>
@@ -115,8 +120,8 @@ export default class FileProgressList extends React.Component {
                 )}
               </div>
               {!showErrors && file.value.percent != 100 && (
-                <div className={styles.progressTextOverlay} style={{ marginLeft: `${file.value.percent}%` }}>
-                  <span className={styles.progressText}>{file.value.percent}%</span>
+                <div className={classes.progressTextOverlay} style={{ marginLeft: `${file.value.percent}%` }}>
+                  <span className={classes.progressText}>{file.value.percent}%</span>
                 </div>
               )}
             </div>
@@ -126,3 +131,5 @@ export default class FileProgressList extends React.Component {
     );
   };
 }
+
+export default withStyles(styles)(FileProgressList);

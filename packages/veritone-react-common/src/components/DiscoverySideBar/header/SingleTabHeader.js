@@ -1,9 +1,12 @@
 import React from 'react';
 import { string } from 'prop-types';
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/styles';
+import styles from './styles';
 
+const useStyles = makeStyles(styles);
 const SingleTabHeader = ({ tab }) => {
-  return <div className={styles.singleTabLabel}>{tab}</div>;
+  const classes = useStyles();
+  return <div className={classes.singleTabLabel}>{tab}</div>;
 };
 
 SingleTabHeader.propTypes = {

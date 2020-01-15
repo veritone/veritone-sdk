@@ -1,11 +1,11 @@
 import React from 'react';
-import { string, func, shape, bool, oneOfType } from 'prop-types';
+import { string, func, shape, bool, oneOfType, any } from 'prop-types';
 import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles/timeRangePicker';
 
-import styles from './styles/timeRangePicker.scss';
-
-export default class TimeRangePicker extends React.Component {
+class TimeRangePicker extends React.Component {
   static propTypes = {
     input: shape({
       value: shape({
@@ -16,7 +16,8 @@ export default class TimeRangePicker extends React.Component {
       onChange: func.isRequired
     }).isRequired,
     readOnly: bool,
-    timeZone: oneOfType([string, bool])
+    timeZone: oneOfType([string, bool]),
+    classes: shape({ any })
   };
 
   handleChangeStart = ({ target: { value } }) => {
@@ -51,7 +52,7 @@ export default class TimeRangePicker extends React.Component {
   }
 
   render() {
-    let { timeZone } = this.props;
+    let { timeZone, classes } = this.props;
 
     // some components are not passing timezone, so we need to find it out
     // eslint-disable-next-line lodash/prefer-lodash-typecheck
@@ -60,7 +61,7 @@ export default class TimeRangePicker extends React.Component {
     }
 
     return (
-      <div className={styles.container}>
+      <div className={classes.container}>
         <TimeSelector
           value={this.props.input.value.start}
           onChange={this.handleChangeStart}
@@ -68,7 +69,7 @@ export default class TimeRangePicker extends React.Component {
         />
         {timeZone && (
           <TextField
-            className={styles.dateTimeTZ}
+            className={classes.dateTimeTZ}
             value={timeZone}
             InputProps={{
               disableUnderline: true
@@ -76,7 +77,7 @@ export default class TimeRangePicker extends React.Component {
             disabled
           />
         )}
-        <span className={styles.separator}>to</span>
+        <span className={classes.separator}>to</span>
         <TimeSelector
           value={this.props.input.value.end}
           onChange={this.handleChangeEnd}
@@ -84,7 +85,7 @@ export default class TimeRangePicker extends React.Component {
         />
         {timeZone && (
           <TextField
-            className={styles.dateTimeTZ}
+            className={classes.dateTimeTZ}
             value={timeZone}
             InputProps={{
               disableUnderline: true,
@@ -114,3 +115,5 @@ TimeSelector.propTypes = {
   onChange: func,
   readOnly: bool
 };
+
+export default withStyles(styles)(TimeRangePicker);

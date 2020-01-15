@@ -72,7 +72,7 @@ describe('Notifications Component', () => {
   );
 
   it('should have all entries', () => {
-    expect(notificationList.find('div.entry')).toHaveLength(mockNotifications.length);
+    expect(notificationList.find('div[data-test="entry"]')).toHaveLength(mockNotifications.length);
   });
 
   it('should have buttons for callbacks', () => {

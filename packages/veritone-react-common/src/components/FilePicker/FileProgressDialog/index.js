@@ -8,13 +8,14 @@ import green from '@material-ui/core/colors/green';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
+import { withStyles } from '@material-ui/styles';
 
 import FilePickerHeader from '../FilePickerHeader';
 import FileProgressList from '../FileProgressList';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class FileProgressDialog extends React.Component {
+class FileProgressDialog extends React.Component {
   static propTypes = {
     percentByFiles: arrayOf(shape({
       key: string,
@@ -33,7 +34,8 @@ export default class FileProgressDialog extends React.Component {
     // height: number,
     width: number,
     progressMessage: string,
-    completeStatus: oneOf(['success', 'failure', 'warning'])
+    completeStatus: oneOf(['success', 'failure', 'warning']),
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -56,17 +58,18 @@ export default class FileProgressDialog extends React.Component {
   renderProgress() {
     const {
       percentByFiles,
-      handleAbort
+      handleAbort,
+      classes
     } = this.props;
     const closeFunc = handleAbort ? this.handleClose : null;
 
     return (
       <div>
-        <FilePickerHeader 
+        <FilePickerHeader
           title="Uploading"
           hideTabs
           onClose={closeFunc} />
-        <div className={styles.progressListContainer}>
+        <div className={classes.progressListContainer}>
           <FileProgressList
             percentByFiles={percentByFiles}
             handleAbort={handleAbort} />
@@ -76,21 +79,22 @@ export default class FileProgressDialog extends React.Component {
   }
 
   renderComplete() {
+    const { classes } = this.props;
     const icon = {
       success: (
-        <CheckCircle classes={{ root: styles.resolveIcon }}
+        <CheckCircle classes={{ root: classes.resolveIcon }}
           style={{ fill: green[500] }}
           data-testtarget="successIcon"
         />
       ),
       failure: (
-        <Info classes={{ root: styles.resolveIcon }}
+        <Info classes={{ root: classes.resolveIcon }}
           style={{ color: '#F44336' }}
           data-testtarget="failureIcon"
         />
       ),
       warning: (
-        <Warning classes={{ root: styles.resolveIcon }}
+        <Warning classes={{ root: classes.resolveIcon }}
           style={{ color: '#ffc107' }}
           data-testtarget="warnIcon"
         />
@@ -103,18 +107,18 @@ export default class FileProgressDialog extends React.Component {
     } = this.props;
 
     const completeDialog = this.props.completeStatus !== 'success' ? (
-      <div className={styles.contentFlexer}>
-        <FilePickerHeader 
+      <div className={classes.contentFlexer}>
+        <FilePickerHeader
           title={`Upload ${this.props.completeStatus}`}
           message={this.props.progressMessage}
           titleIcon={icon}
           hideTabs
           onClose={onClose} />
-        <div className={styles.contentFlexer}>
-          <div className={styles.progressListContainer}>
+        <div className={classes.contentFlexer}>
+          <div className={classes.progressListContainer}>
             <FileProgressList percentByFiles={percentByFiles} showErrors />
           </div>
-          <CardActions className={styles.resolveActions}>
+          <CardActions className={classes.resolveActions}>
             <Button
               onClick={this.props.onRetryDone}>
               Done
@@ -134,9 +138,10 @@ export default class FileProgressDialog extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
       <Card
-        className={styles.container}
+        className={classes.container}
         style={{ width: this.props.width }}>
         {this.props.completeStatus
           ? this.renderComplete() : this.renderProgress()
@@ -145,3 +150,5 @@ export default class FileProgressDialog extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(FileProgressDialog);

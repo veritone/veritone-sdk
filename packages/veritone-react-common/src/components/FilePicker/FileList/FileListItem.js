@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import { shape, func, number, string } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
+import { shape, func, number, string, any } from 'prop-types';
 
 import { formatBytes } from '../../../helpers/format.js';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 class FileListItem extends Component {
   static propTypes = {
@@ -17,7 +18,8 @@ class FileListItem extends Component {
       type: string,
       webkitRelativePath: string
     }).isRequired,
-    index: number.isRequired
+    index: number.isRequired,
+    classes: shape({ any }),
   };
 
   state = {
@@ -56,31 +58,32 @@ class FileListItem extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.item}>
-        <div className={styles.itemPreviewContainer}>
+      <div className={classes.item}>
+        <div className={classes.itemPreviewContainer}>
           {this.state.dataUrl.length ? (
             <div
               style={{ backgroundImage: `url(${this.state.dataUrl})` }}
-              className={styles.itemImage}
+              className={classes.itemImage}
             />
           ) : (
-            <div className={styles.itemFolderIcon}>
-              <i className="icon-empty-folder" />
-            </div>
-          )}
+              <div className={classes.itemFolderIcon}>
+                <i className="icon-empty-folder" />
+              </div>
+            )}
         </div>
 
-        <div className={styles.itemTextContainer}>
-          <span className={styles.itemNameText}>{this.props.file.name}</span>
-          <span className={styles.itemFileSizeText}>
+        <div className={classes.itemTextContainer}>
+          <span className={classes.itemNameText} data-test="itemNameText">{this.props.file.name}</span>
+          <span className={classes.itemFileSizeText} data-test="itemFileSizeText">
             {formatBytes(this.props.file.size)}
           </span>
         </div>
 
-        <div className={styles.itemActionContainer}>
+        <div className={classes.itemActionContainer}>
           <IconButton
-            className={styles.itemDeleteIcon}
+            className={classes.itemDeleteIcon}
             aria-label="Delete"
             onClick={this.handleRemoveFile}
           >
@@ -92,4 +95,4 @@ class FileListItem extends Component {
   }
 }
 
-export default FileListItem;
+export default withStyles(styles)(FileListItem);
