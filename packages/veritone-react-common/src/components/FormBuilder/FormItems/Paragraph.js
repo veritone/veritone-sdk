@@ -1,7 +1,7 @@
 import React from 'react';
 import { bool, string, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function Paragraph({
   label,
@@ -19,6 +19,8 @@ export default function Paragraph({
     [name, onChange],
   );
 
+  const styles = useStyles({});
+
   return (
     <TextField
       fullWidth
@@ -31,7 +33,7 @@ export default function Paragraph({
       onChange={handleChange}
       multiline
       rows={4}
-      className={styles['form-item']}
+      className={styles.formItem}
       name={name}
     />
   )

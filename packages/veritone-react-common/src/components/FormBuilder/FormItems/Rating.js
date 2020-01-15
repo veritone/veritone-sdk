@@ -5,7 +5,7 @@ import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import styles from './styles.scss';
+import useStyles from './styles.js';
 
 export default function RatingNumber({
   label,
@@ -25,13 +25,15 @@ export default function RatingNumber({
     [value, onChange],
   )
 
+  const styles = useStyles({});
+
   return (
     <FormControl
       error={error.length > 0}
-      className={styles['form-item']}
+      className={styles.formItem}
       fullWidth
     >
-      <Box mb={3} borderColor="transparent" className={styles['rating-box']}>
+      <Box mb={3} borderColor="transparent" className={styles.ratingBox}>
         {
           label && <Typography component="legend">
             {label + `${required ? '*' : ''}`}

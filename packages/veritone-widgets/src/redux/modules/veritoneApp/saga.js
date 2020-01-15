@@ -1,5 +1,5 @@
 import { isFunction, get } from 'lodash';
-import { fork, call, takeLatest, put, select } from 'redux-saga/effects';
+import { fork, call, takeLatest, putResolve, select } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
 const { user: userModule, auth: authModule } = modules;
 
@@ -7,7 +7,7 @@ import * as appModule from './';
 
 export function* handleAppAuth() {
   try {
-    const res = yield put.resolve(userModule.fetchUser());
+    const res = yield putResolve(userModule.fetchUser());
     if (get(res, 'error')) {
       throw res.payload;
     }

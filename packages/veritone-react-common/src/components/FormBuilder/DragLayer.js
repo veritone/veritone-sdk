@@ -2,7 +2,7 @@ import React from 'react';
 import { useDragLayer } from 'react-dnd';
 import { form } from './configuration';
 import { BlockPreview } from './FormBlocks';
-import styles from './styles.scss';
+import useStyles from './DragLayer.style.js';
 
 function getItemStyles(initialOffset, currentOffset) {
   if (!initialOffset || !currentOffset) {
@@ -31,7 +31,10 @@ const CustomDragLayer = () => {
     initialOffset: monitor.getInitialSourceClientOffset(),
     currentOffset: monitor.getSourceClientOffset(),
     isDragging: monitor.isDragging(),
-  }))
+  }));
+
+  const styles = useStyles({});
+
   function renderItem() {
     switch (itemType) {
       case form:
