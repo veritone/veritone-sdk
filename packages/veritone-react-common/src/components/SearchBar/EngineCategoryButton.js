@@ -35,7 +35,8 @@ const EngineCategoryButton = ({ engineCategory, addPill, backgroundColor, color 
 EngineCategoryButton.propTypes = {
   engineCategory: shape(supportedEngineCategoryType),
   addPill: func,
-  color: string
+  color: string,
+  backgroundColor: string,
 };
 
 export default EngineCategoryButton;

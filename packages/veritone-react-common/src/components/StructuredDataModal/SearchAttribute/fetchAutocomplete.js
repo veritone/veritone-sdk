@@ -1,5 +1,3 @@
-import React from 'react';
-
 const fetchSDOSchema = function fetchSDOSchema(api, auth, schemaId) {
   return fetch(`${api}v3/graphql`, {
     method: 'POST',
@@ -80,7 +78,7 @@ const fetchAutocompleteValues = function fetchAutocomplete(api, auth, value, fie
         }
       ))
     }
-  };
+  }
 
   return fetch(`${api}v1/search/search/autocomplete`, {
     method: 'POST',

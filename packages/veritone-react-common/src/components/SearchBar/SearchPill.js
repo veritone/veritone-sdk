@@ -2,22 +2,12 @@ import React from 'react';
 import Chip from '@material-ui/core/Chip';
 
 import cx from 'classnames';
-import { string, func } from 'prop-types';
+import { string, func, any, bool } from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import styles from './styles';
-
-import { MuiThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
 
 import Icon from './Icon';
 
-const getTheme = () => {
-  const theme = createMuiTheme({
-    root: {
-      backgroundColor: 'blue',
-    }
-  });
-
-  return theme;
-}
 
 const useStyles = makeStyles(styles);
 
@@ -25,10 +15,9 @@ const SearchPill = ({ id, engineIconClass, label, remove, onClick, highlighted, 
   const classes = useStyles();
   const searchPillLabelClass = cx(classes['searchPillLabel']);
   const selectedSearchPillLabelClass = cx(classes['selectedPillLabel']);
-  const selectedDeleteIcon = cx(classes['selectedDeletedIcon']);
   const searchPillClass = cx(classes['searchPill']);
   const deleteIconClass = cx(classes['deleteIcon']);
-  const searchPillClasses = cx({ [`${classes['highlighted']}`]: highlighted, [`${classes['excludePill']}`]: exclude});
+  const searchPillClasses = cx({ [`${classes['highlighted']}`]: highlighted, [`${classes['excludePill']}`]: exclude });
 
   return (
     <Chip
@@ -47,7 +36,12 @@ SearchPill.propTypes = {
   engineIconClass: string.isRequired,
   label: string.isRequired,
   remove: func,
-  open: func
+  open: func,
+  onClick: func,
+  id: any,
+  highlighted: bool,
+  selected: bool,
+  exclude: bool
 };
 
 export default SearchPill;

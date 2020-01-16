@@ -1,15 +1,5 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
-
-import ModalSubtitle from '../ModalSubtitle';
-
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from '@material-ui/core/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import { bool, func, string, shape } from 'prop-types';
 import cx from 'classnames';
@@ -70,10 +60,10 @@ export default class SentimentSearchModal extends React.Component {
 
 const useStyles = makeStyles(styles);
 
-export const SentimentSearchForm = ({ cancel, onSubmit, onChange, inputValue }) => {
+export const SentimentSearchForm = ({ onChange, inputValue }) => {
   const classes = useStyles();
   const selectHackClass = cx(classes['material']);
-  
+
   return (
     <Select
       classes={{ select: selectHackClass }}
@@ -87,6 +77,11 @@ export const SentimentSearchForm = ({ cancel, onSubmit, onChange, inputValue }) 
     </Select>
   )
 };
+
+SentimentSearchForm.propTypes = {
+  onChange: func,
+  inputValue: string,
+}
 
 SentimentSearchModal.defaultProps = {
   modalState: { search: 'positive' }

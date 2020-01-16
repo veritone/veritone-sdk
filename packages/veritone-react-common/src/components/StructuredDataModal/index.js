@@ -1,16 +1,11 @@
 import React, { Fragment } from 'react';
-import { bool, func, object, number, string, shape, any } from 'prop-types';
+import { bool, func, object, number, string, shape, any, array } from 'prop-types';
 
-import {
-  CardActions,
-  CardContent,
-} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { FormControl, FormControlLabel } from '@material-ui/core';
 import { Radio, RadioGroup } from '@material-ui/core';
-import { List, ListItem, ListItemText } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { ListItem, ListItemText } from '@material-ui/core';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -30,8 +25,6 @@ import { fetchAutocompleteValues } from './SearchAttribute/fetchAutocomplete';
 import Rx from 'rxjs/Rx';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeUntil";
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 
 import styles from './styles';
 
@@ -106,6 +99,11 @@ class StructuredDataModal extends React.Component {
     majorVersion: number,
     schemaId: string,
     classes: shape({ any }),
+    presetSDOAttribute: any,
+    presetSDOSchema: any,
+    api: string,
+    auth: string,
+    sourceFilters: array,
   };
 
   static defaultProps = {
@@ -273,7 +271,6 @@ class StructuredDataModal extends React.Component {
           name: selectedAttribute.name,
           field: selectedAttribute.field,
           schemaName: selectedAttribute.schemaName,
-          type: selectedAttribute.type
         },
         selectedOperator: defaultOperator,
         value1: value1,
@@ -294,18 +291,18 @@ class StructuredDataModal extends React.Component {
     })
   }
 
-  showGeolocationModal = async (evt) => {
+  showGeolocationModal = async () => {
     this.setState({ showGeolocationModal: true });
   }
 
-  getGeolocationPoint = (evt) => {
+  getGeolocationPoint = () => {
     this.setState({
       showGeolocationModal: false,
       value1: this.geoModal.getFilterValue()
     })
   }
 
-  closeGeolocationModal = (evt) => {
+  closeGeolocationModal = () => {
     this.setState({ showGeolocationModal: false });
   }
 
@@ -626,7 +623,7 @@ class StructuredDataModal extends React.Component {
     return [
       <SelectSchemas key="schemas" ref={this.setSchemaPicker} api={this.props.api} auth={this.props.auth} onSelect={this.onSelectSchema} selected={this.state.selectedSchema || null} autocompleteValue />,
       <SelectAttributes key="attributes" ref={this.setAttributePicker} placeholder={"Search by property"} api={this.props.api} auth={this.props.auth} selected={this.state.selectedAttribute || null} onSelect={this.onSelectAttribute} dataRegistryId={this.state.selectedDataRegistryId} majorVersion={this.state.selectedSchemaMajorVersion} />,
-      <FormControl fullWidth margin="none" style={{ display: "flex", flexDirection: "row" }}>
+      <FormControl key="formCtl" fullWidth margin="none" style={{ display: "flex", flexDirection: "row" }}>
         {selectedType && this.renderOperators(selectedType)}
         {this.state.selectedOperator && this.state.selectedOperator.length > 0 && selectedType && this.renderValue(this.state.selectedOperator, selectedType)}
         {this.state.showGeolocationModal && this.renderGeolocationModal()}

@@ -32,6 +32,11 @@ const GhostInput = ({ showGhost, onFocus }) => {
   )
 }
 
+GhostInput.propTypes = {
+  showGhost: bool,
+  onFocus: func,
+}
+
 const JoiningOperator = ({ operator, onClick }) => {
   const classes = useStyles();
 
@@ -45,7 +50,12 @@ const JoiningOperator = ({ operator, onClick }) => {
   );
 }
 
-const SearchParameters = withTheme(({ theme, searchParameters, level, togglePill, highlightedPills, selectedPill, enabledEngineCategories, openPill, removePill, addPill, lastJoin, libraries, openMenu }) => {
+JoiningOperator.propTypes = {
+  operator: any,
+  onClick: func,
+}
+
+const SearchParameters = withTheme(({ theme, searchParameters, level, togglePill, highlightedPills, selectedPill, enabledEngineCategories, openPill, removePill, addPill, libraries, openMenu }) => {
   const classes = useStyles();
   let output = [];
 
@@ -118,7 +128,7 @@ const SearchParameters = withTheme(({ theme, searchParameters, level, togglePill
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
 
-      const { abbreviation, thumbnail, exclude } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
+      const { abbreviation, exclude } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
       const remove = () => removePill(searchParameter.id);
 
       const onClick = (e) => {
@@ -157,9 +167,8 @@ class SearchBarComponents extends React.Component {
     this.props.addPill(categoryToAdd);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (this.hashSearchParameters(prevProps.searchParameters) !== this.hashSearchParameters(this.props.searchParameters)) {
-      const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth && this.props.searchParameters.length > 0 : false;
       this.updateScrollState();
     }
   }
@@ -261,7 +270,7 @@ class SearchBarComponents extends React.Component {
       </div>
     )
   }
-};
+}
 
 const supportedEngineCategoryType = {
   id: string.isRequired,
@@ -289,6 +298,12 @@ SearchBarComponents.propTypes = {
   openPill: func,
   removePill: func,
   classes: shape({ any }),
+  openMenu: func,
+  openMenuExtraActions: func,
+  SearchParameters: shape({ any }),
+  highlightedPills: any,
+  togglePill: bool,
+  selectedPill: any,
 };
 
 SearchBarComponents.defaultProps = {

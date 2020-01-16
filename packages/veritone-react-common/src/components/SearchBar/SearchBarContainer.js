@@ -1,11 +1,11 @@
 import React from 'react';
-import { arrayOf, func, object, string, oneOf, shape, any } from 'prop-types';
+import { arrayOf, func, object, string, oneOf, shape, any, bool, array } from 'prop-types';
 import cx from 'classnames';
 import { get, uniq, isEmpty, isEqual, sortBy, includes } from 'lodash';
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeWhile";
 import { fromEvent } from 'rxjs/observable/fromEvent';
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -34,6 +34,22 @@ class SearchBarContainer extends React.Component {
     enabledEngineCategories: arrayOf(object),
     defaultJoinOperator: oneOf(['and', 'or']),
     classes: shape({ any }),
+    isAdvancedSearchEnabled: bool,
+    insertMultipleSearchParameters: func,
+    onSearch: func,
+    getCSP: func,
+    menuActions: array,
+    disableSavedSearch: bool,
+    isEditor: bool,
+    showLoadSavedSearch: func,
+    showSavedSearch: func,
+    resetSearchParameters: func,
+    addPill: func,
+    disabledSavedSearch: bool,
+    addJoiningOperator: any,
+    presetSDOAttribute: any,
+    presetSDOSchema: string,
+    sourceFilters: array,
   };
 
   state = {
@@ -60,7 +76,7 @@ class SearchBarContainer extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // modal closed, modal now open. register a window.resize event to make the modal responsive
     if ((!prevState.openModal || !prevState.openModal.modalId) && this.state.openModal && this.state.openModal.modalId) {
-      this.windowResizeListener = fromEvent(window, 'resize').map(x => x.currentTarget.outerWidth).debounceTime(150).distinctUntilChanged().subscribe(x => {
+      this.windowResizeListener = fromEvent(window, 'resize').map(x => x.currentTarget.outerWidth).debounceTime(150).distinctUntilChanged().subscribe(() => {
         if (this.searchBar) {
           this.setState({ clientWidth: this.searchBar.getBoundingClientRect().width })
         }
@@ -257,7 +273,7 @@ class SearchBarContainer extends React.Component {
         return ((e.shiftKey === true) || clickedOnHighlightedPill || clickedOnDeleteFromMenu);
       }
       // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
-      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile(clickTargetShouldNotClearHighlightedPills).subscribe(null, null, x => {
+      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile(clickTargetShouldNotClearHighlightedPills).subscribe(null, null, () => {
         this.setState({ highlightedPills: [] });
       });
       let highlightedPills = [searchParameterId];

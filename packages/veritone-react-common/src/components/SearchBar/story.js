@@ -33,7 +33,7 @@ storiesOf('SearchBar', module)
     const onSearch = (csp) => console.log("onSearch", JSON.stringify(csp));
 
     return (
-      <>
+      <React.Fragment>
         <div
           style={{
             height: '45px',
@@ -41,7 +41,6 @@ storiesOf('SearchBar', module)
             marginLeft: "50px",
             padding: '5px',
             background: "#2196f3",
-            padding: '5px',
             display: 'flex',
             alignItems: 'center'
           }}
@@ -57,6 +56,6 @@ storiesOf('SearchBar', module)
           /></div>
         <button id="searchButton">Search</button>
         <button id="generateCSPButton">GenerateCSP</button>
-      </>
+      </React.Fragment>
     )
   });

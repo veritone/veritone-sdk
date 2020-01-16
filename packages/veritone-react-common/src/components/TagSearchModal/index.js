@@ -1,23 +1,12 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
-import { FormHelperText, FormGroup, FormControlLabel } from '@material-ui/core';
+import { FormControlLabel } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { bool, func, string, shape, arrayOf, any } from 'prop-types';
+
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
-
-import ModalSubtitle from '../ModalSubtitle';
-import LinearProgress from '@material-ui/core/LinearProgress';
-
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from '@material-ui/core/Dialog';
-
-import { bool, func, string, shape, arrayOf } from 'prop-types';
-import update from 'immutability-helper';
-import { isArray } from 'lodash';
 import 'whatwg-fetch';
 
 // Tag Autocomplete config:
@@ -66,13 +55,14 @@ export default class TagSearchModal extends React.Component {
     }),
     fetchAutocomplete: func,
     applyFilter: func,
-    cancel: func
+    cancel: func,
+    libraries: any
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
+  state = JSON.parse(JSON.stringify(Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' })));
 
   componentWillMount() {
-    if(this.props.modalState.label) {
+    if (this.props.modalState.label) {
       const selectedItem = {
         description: this.props.modalState.description,
         id: this.props.modalState.id,
@@ -100,7 +90,7 @@ export default class TagSearchModal extends React.Component {
           loading: false,
         });
         return debouncedQueryString;
-      }).catch(err => {
+      }).catch(() => {
         this.setState({
           error: true,
           queryResults: [],
@@ -114,11 +104,11 @@ export default class TagSearchModal extends React.Component {
         queryResults: [],
         queryString: debouncedQueryString
       });
-      return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
+      return new Promise((resolve) => resolve(debouncedQueryString || ''));
     }
   };
 
-  onClickAutocomplete = event => {
+  onClickAutocomplete = () => {
     this.onChange(this.state.queryString);
   };
 
@@ -132,7 +122,7 @@ export default class TagSearchModal extends React.Component {
   };
 
   returnValue() {
-    if(!this.state.selectedResult) {
+    if (!this.state.selectedResult) {
       return;
     } else {
       return {
@@ -151,33 +141,33 @@ export default class TagSearchModal extends React.Component {
   render() {
     return (
       <TagSearchForm
-        cancel={ this.props.cancel }
-        onChange={ this.onChange }
-        showAutocomplete={ this.state.showAutocomplete }
-        modalState={ this.state }
-        selectResult={ this.selectResult }
-        toggleExclude={ this.toggleExclude }
-        onClickAutocomplete={ this.onClickAutocomplete }
-        loading={ this.state.loading }
+        cancel={this.props.cancel}
+        onChange={this.onChange}
+        showAutocomplete={this.state.showAutocomplete}
+        modalState={this.state}
+        selectResult={this.selectResult}
+        toggleExclude={this.toggleExclude}
+        onClickAutocomplete={this.onClickAutocomplete}
+        loading={this.state.loading}
       />
     );
   }
 }
 
-export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
+export const TagSearchForm = ({ cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading }) => {
   return (
     <Grid container spacing={8}>
-      <Grid item style={{flex: '1'}}>
+      <Grid item style={{ flex: '1' }}>
         <SearchAutocompleteContainer
           id="tag_autocomplete_container"
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          cancel={ cancel }
-          componentState={ modalState }
-          selectResult={ selectResult }
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          cancel={cancel}
+          componentState={modalState}
+          selectResult={selectResult}
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.1em" }} /> : null }
+        {loading ? <LinearProgress style={{ height: "0.1em" }} /> : null}
       </Grid>
       <Grid item>
         <FormControlLabel
@@ -193,6 +183,34 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
     </Grid>
   )
 };
+
+TagSearchForm.propTypes = {
+  onKeyPress: func,
+  modalState: shape({ exclude: bool }),
+  toggleExclude: func,
+  loading: bool,
+  selectResult: func,
+  defaultIsOpen: bool,
+  componentState: shape({
+    error: bool,
+    queryString: string,
+    queryResults: arrayOf(
+      shape({
+        header: string,
+        items: arrayOf(shape({
+          id: string,
+          type: string,
+          image: string,
+          label: string,
+          description: string
+        }))
+      })
+    )
+  }),
+  onClickAutocomplete: func,
+  onChange: func,
+  cancel: func
+}
 
 const TagConditionGenerator = modalState => {
   return {

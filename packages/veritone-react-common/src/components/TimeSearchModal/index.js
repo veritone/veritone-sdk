@@ -1,23 +1,15 @@
 import React from 'react';
 import cx from 'classnames';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from '@material-ui/core';
-import { FormControlLabel, FormHelperText } from '@material-ui/core';
+import { FormControlLabel } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import styles from './styles';
-import { arrayOf, bool, func, string, date, shape, any } from 'prop-types';
-
+import { arrayOf, bool, func, date, shape, string } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-
-import ModalSubtitle from '../ModalSubtitle';
 import Typography from '@material-ui/core/Typography';
+
+import styles from './styles';
 
 export default class TimeSearchModal extends React.Component {
   static propTypes = {
@@ -174,7 +166,6 @@ const daysOfTheWeek = [
 const useStyles = makeStyles(styles);
 
 export const TimeSearchForm = ({
-  cancel,
   onDayPartStartTimeChange,
   onDayPartEndTimeChange,
   onStationBroadcastTimeChange,
@@ -288,6 +279,19 @@ export const TimeSearchForm = ({
     </div>
   );
 };
+
+TimeSearchForm.propTypes = {
+  onDayPartStartTimeChange: func,
+  onDayPartEndTimeChange: func,
+  onStationBroadcastTimeChange: func,
+  onDayOfWeekSelectionChange: func,
+  inputValue: shape({
+    dayPartStartTime: string,
+    dayPartEndTime: string,
+    stationBroadcastTime: bool,
+    selectedDays: arrayOf(bool)
+  })
+}
 
 TimeSearchModal.defaultProps = {
   modalState: {

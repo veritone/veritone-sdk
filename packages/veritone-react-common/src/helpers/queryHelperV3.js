@@ -5,46 +5,46 @@ const _ = require('lodash');
 // 	each respective function is correct.
 export function generateTranscriptionConditions(queryParams) {
 	return addQueryStringFilters(queryParams);
-};
+}
 
 export function generateSentimentConditions(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateAudioCondition(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateFaceCondition(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateObjectCondition(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateGeolocationCondition(queryParams) {
 	return buildGeoDistanceOperator(queryParams);
-};
+}
 
-export function generateStationPayoutCondition(queryParams) {
+export function generateStationPayoutCondition() {
 	// TODO
 	return;
-};
+}
 
 export function generateOcrCondition(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateLogoCondition(queryParams) {
 	return addMetadataFilters(queryParams);
-};
+}
 
 export function generateTagCondition(queryParams) {
 	return buildTagQuery(queryParams);
 }
 
-export function generateTimeCondition(queryParams) {
+export function generateTimeCondition() {
 	// TODO
 	return;
 }
@@ -272,7 +272,7 @@ function overrideSentimentQuery(queryParam, queryParams) {
 	}
 }
 
-function addMetadataFilters(request, queryParams, callback) {
+function addMetadataFilters(_request, queryParams) {
 	// collapse same field queries so we can build correct query_object operator
 	var qParams = {};
 	var filters = [];
@@ -440,7 +440,6 @@ function buildGeoDistanceOperator(queryParams) {
 	if (!queryParams || typeof queryParams.longitude === 'undefined' || typeof queryParams.latitude === 'undefined' || typeof queryParams.distance === 'undefined') {
 		return [];
 	}
-	var distance = /([\d\.]+)([a-zA-Z]*)/.exec(queryParams.distance) || [];
 	return [{
 		operator: 'geo_distance',
 		field: 'geolocation.series',

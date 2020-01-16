@@ -1,16 +1,6 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-
-import {
-  CardActions,
-  CardContent,
-} from '@material-ui/core/Card';
-
 import { bool, func, string, shape } from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import ModalSubtitle from '../ModalSubtitle';
 
 export default class TranscriptSearchModal extends React.Component {
   static propTypes = {
@@ -53,7 +43,7 @@ export default class TranscriptSearchModal extends React.Component {
   }
 }
 
-export const TranscriptSearchForm = ( { defaultValue, cancel, onChange, onKeyPress, inputValue } ) => {
+export const TranscriptSearchForm = ( { defaultValue, onChange, onKeyPress } ) => {
   return (
     <TextField
       id="transcript_search_field"
@@ -66,6 +56,12 @@ export const TranscriptSearchForm = ( { defaultValue, cancel, onChange, onKeyPre
       fullWidth
     />
   )
+}
+
+TranscriptSearchForm.propTypes = {
+  defaultValue: string,
+  onChange: func,
+  onKeyPress: func
 }
 
 TranscriptSearchModal.defaultProps = {

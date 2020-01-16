@@ -17,7 +17,6 @@ export default {
     marginRight: '0.25em',
     marginLeft: '0.25em',
     height: 38,
-    display: 'flex',
   },
   searchInput: {
     flexGrow: 1,
@@ -186,5 +185,4 @@ export default {
     borderRadius: '50%',
   },
   deleteIcon: {},
-  highlighted: {},
 }

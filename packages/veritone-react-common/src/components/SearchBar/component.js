@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { bool, array, any, string, func } from 'prop-types';
 import update from 'immutability-helper';
 import { MuiThemeProvider, createMuiTheme, StylesProvider, createGenerateClassName } from '@material-ui/core/styles';
 
@@ -65,7 +66,6 @@ import {
 import SearchBarContainer from './SearchBarContainer';
 import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSearch';
 import VeritoneApp from '../SavedSearch/VeritoneApp';
-import { SearchBar } from '.';
 
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
@@ -170,7 +170,6 @@ const geolocation = {
   showPill: true
 }
 
-const appBarColor = '#ff2200';
 const enabledEngineCategories = [transcript, doc, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
 
 const engineCategoryMapping = {
@@ -665,7 +664,7 @@ export class SampleSearchBar extends React.Component {
       const newSearchParameters = update(this.state.searchParameters, {
         $splice: [[existing, 1, parameter]]
       });
-      this.setState(prevState => ({
+      this.setState(() => ({
         searchParameters: newSearchParameters
       }));
 
@@ -680,7 +679,7 @@ export class SampleSearchBar extends React.Component {
         $splice: [[index, 0, newSearchParameter]]
       });
 
-      this.setState(prevState => ({
+      this.setState(() => ({
         searchParameters: newSearchParameters
       }));
 
@@ -760,27 +759,27 @@ export class SampleSearchBar extends React.Component {
     return theme;
   }
 
-  showLoadSavedSearch = (e) => {
+  showLoadSavedSearch = () => {
     this.cleanupLoadSavedSearch();
     this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP });
     this.loadSavedSearchWidget.open();
   }
 
-  hideLoadSavedSearch = (e) => {
+  hideLoadSavedSearch = () => {
     if (this.loadSavedSearchWidget) {
       this.loadSavedSearchWidget.close();
       this.cleanupLoadSavedSearch();
     }
   }
 
-  showSavedSearch = (e) => {
+  showSavedSearch = () => {
     this.cleanupSavedSearch();
     const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
     this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp });
     this.savedSearchWidget.open();
   }
 
-  hideSavedSearch = (e) => {
+  hideSavedSearch = () => {
     if (this.savedSearchWidget) {
       this.savedSearchWidget.close();
       this.cleanupSavedSearch();
@@ -825,4 +824,24 @@ export class SampleSearchBar extends React.Component {
       </Fragment>
     );
   }
+}
+
+SampleSearchBar.propTypes = {
+  isEditor: bool,
+  menuActions: array,
+  api: string,
+  disableSavedSearch: bool,
+  color: string,
+  relativeSize: any,
+  presetSDOSchema: any,
+  sourceFilters: array,
+  isAdvancedSearchEnabled: bool,
+  defaultJoinOperator: any,
+  presetSDOAttribute: any,
+  enabledEngineCategories: any,
+  auth: string,
+  csp: any,
+  searchParameters: array,
+  toCSP: func,
+  onSearch: func,
 }
