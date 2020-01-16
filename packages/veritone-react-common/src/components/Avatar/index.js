@@ -1,11 +1,13 @@
 import React from 'react';
 import ButtonBase from '@material-ui/core/ButtonBase';
-
 import { string, number, func } from 'prop-types';
+import { makeStyles } from '@material-ui/styles';
+import styles from './styles';
 
-import styles from './styles.scss';
+const useStyles = makeStyles(styles);
 
 const Avatar = ({ src, size = 85, label, onClick }) => {
+  const classes = useStyles();
   return (
     <ButtonBase centerRipple onClick={onClick} disabled={!onClick}>
       <div
@@ -15,11 +17,11 @@ const Avatar = ({ src, size = 85, label, onClick }) => {
           width: size,
           cursor: onClick ? 'pointer' : 'initial'
         }}
-        className={styles.container}
+        className={classes.container}
       >
         {label && (
-          <div className={styles.labelBackgroundContainer}>
-            <div className={styles.labelContainer}>
+          <div className={classes.labelBackgroundContainer}>
+            <div className={classes.labelContainer}>
               <span>{label}</span>
             </div>
           </div>

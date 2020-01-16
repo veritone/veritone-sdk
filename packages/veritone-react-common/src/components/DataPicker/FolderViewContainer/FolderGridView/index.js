@@ -1,10 +1,13 @@
 import React from 'react';
 import { arrayOf, func, objectOf, bool } from 'prop-types';
 import cx from 'classnames';
+import { makeStyles  } from '@material-ui/styles';
 
 import itemShape from '../itemShape';
 import GridviewItem from './GridViewItem';
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const FolderGridView = ({
   items,
@@ -12,11 +15,12 @@ const FolderGridView = ({
   onHighlightItem,
   onSelectItem,
 }) => {
+  const classes = useStyles();
   return (
-    <div className={cx(styles["gridview-container"])}>
+    <div className={cx(classes["gridviewContainer"])}>
       {items.map((item, index) => (
         <div
-          className={cx(styles["gridview-item"], { [styles['selected']]: highlightedItems[item.id] })}
+          className={cx(classes["gridviewItem"], { [classes['selected']]: highlightedItems[item.id] })}
           id={item.id}
           type={item.type}
           key={item.id}

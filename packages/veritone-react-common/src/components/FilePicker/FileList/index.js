@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { arrayOf, object, func } from 'prop-types';
+import { arrayOf, object, func, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 import FileListItem from './FileListItem';
-import styles from './styles.scss';
+import styles from './styles';
 
 class FileList extends Component {
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.fileList}>
+      <div className={classes.fileList}>
         {this.props.files.map((file, index) => {
           return (
             <FileListItem
@@ -24,7 +26,8 @@ class FileList extends Component {
 
 FileList.propTypes = {
   files: arrayOf(object).isRequired,
-  onRemoveFile: func
+  onRemoveFile: func,
+  classes: shape({ any }),
 };
 
-export default FileList;
+export default withStyles(styles)(FileList);

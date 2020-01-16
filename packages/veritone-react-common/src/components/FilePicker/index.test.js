@@ -18,6 +18,6 @@ describe('FilePicker', () => {
   });
 
   it('should have a body', () => {
-    expect(filePickerComponent.find('.filePickerBody')).toHaveLength(1);
+    expect(filePickerComponent.find('[data-test="filePickerBody"]')).toHaveLength(1);
   });
 });

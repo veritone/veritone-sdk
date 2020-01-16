@@ -21,14 +21,15 @@ import {
   string,
   oneOfType,
   oneOf,
-  arrayOf
+  arrayOf, shape
 } from 'prop-types';
-
+import { withStyles , makeStyles} from '@material-ui/styles';
 import { LOADING } from './shared';
 import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
-import styles from './styles/index.scss';
+import styles from './styles/index';
 
+const useStyles = makeStyles(styles);
 /*
  * BASE TABLE
  */
@@ -45,7 +46,8 @@ class _Table extends React.Component {
     onShowCellRange: func,
     emptyRenderer: func,
     children: node, // children should be Columns
-    showHeader: bool
+    showHeader: bool,
+    classes: shape({any})
   };
 
   static defaultProps = {
@@ -56,6 +58,7 @@ class _Table extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     const restProps = omit(this.props, [
       'onShowCellRange',
       'renderFocusedRowDetails'
@@ -68,10 +71,10 @@ class _Table extends React.Component {
         transitionEnterTimeout={200}
         transitionLeaveTimeout={200}
         transitionName={{
-          enter: styles['enter'],
-          enterActive: styles['enterActive'],
-          leave: styles['leave'],
-          leaveActive: styles['leaveActive']
+          enter: classes['enter'],
+          enterActive: classes['enterActive'],
+          leave: classes['leave'],
+          leaveActive: classes['leaveActive']
         }}
         component="div"
       >
@@ -105,8 +108,9 @@ const NormalTableContainer = ({
   showHeader,
   ...rest
 }) => {
+  const classes = useStyles();
   return (
-    <Paper elevation={1} className={styles['table-wrapper']}>
+    <Paper elevation={1} className={classes['tableWrapper']}>
       <MuiTable>
         {showHeader && <TableHead rowCount={rowCount}>{children}</TableHead>}
         {rowCount === 0 ? (
@@ -156,7 +160,8 @@ class SplitTableContainer extends React.Component {
     rowGetter: func,
     emptyRenderer: func,
     showHeader: bool,
-    children: node
+    children: node,
+    classes : shape({any})
   };
 
   render() {
@@ -170,6 +175,7 @@ class SplitTableContainer extends React.Component {
       children,
       rowGetter,
       showHeader,
+      classes,
       ...rest
     } = this.props;
 
@@ -177,7 +183,7 @@ class SplitTableContainer extends React.Component {
 
     return (
       <div>
-        <Paper elevation={1} className={styles['split-table-wrapper']}>
+        <Paper elevation={1} className={classes['splitTableWrapper']}>
           <MuiTable className={cx(styles.table)}>
             {showHeader && (
               <TableHead rowCount={rowCount}>{children}</TableHead>
@@ -210,9 +216,9 @@ class SplitTableContainer extends React.Component {
             marginBottom: 15
           }}
           className={cx(
-            styles['focusTable'],
-            styles['focused-row'],
-            styles['split-table-wrapper']
+            classes['focusTable'],
+            classes['focusedRow'],
+            classes['splitTableWrapper']
           )}
           key={focusedRow}
         >
@@ -237,7 +243,7 @@ class SplitTableContainer extends React.Component {
           </MuiTable>
         </Paper>
 
-        <Paper elevation={1} className={styles['split-table-wrapper']}>
+        <Paper elevation={1} className={classes['splitTableWrapper']}>
           <MuiTable className={cx(styles.table)}>
             <TableBody
               {...restProps}
@@ -324,6 +330,7 @@ export const Column = ({
   width,
   ...rest
 }) => {
+  const classes = useStyles();
   function renderData() {
     if (data === LOADING) {
       return 'Loading...';
@@ -341,7 +348,7 @@ export const Column = ({
   return (
     <TableCell
       {...omit(rest, ['transformActions'])}
-      className={styles['table-cell']}
+      className={classes['tableCell']}
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
@@ -369,12 +376,13 @@ Column.propTypes = {
 };
 
 const TableHead = ({ children, rowCount }) => {
+  const classes = useStyles();
   return (
     <MuiTableHead>
       <TableRow>
         {React.Children.map(children, c => (
           <TableCell
-            className={styles['table-cell']}
+            className={classes['table-cell']}
             key={c.props.header}
             style={{
               textAlign: c.props.align || 'left',
@@ -398,5 +406,5 @@ export { LOADING };
 /*
  * Table with pagination functions
  */
-export const Table = withBasicBehavior(_Table);
-export const PaginatedTable = withBasicBehavior(withPagination(_Table));
+export const Table = withBasicBehavior(withStyles(styles)(_Table));
+export const PaginatedTable = withBasicBehavior(withPagination(withStyles(styles)(_Table)));

@@ -1,16 +1,18 @@
 import React from 'react';
 import cx from 'classnames';
-import { objectOf, any, func } from 'prop-types';
+import { objectOf, any, func, shape } from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class AppSwitcherItem extends React.Component {
+class AppSwitcherItem extends React.Component {
   static propTypes = {
     app: objectOf(any).isRequired,
-    onSelect: func.isRequired
+    onSelect: func.isRequired,
+    classes: shape({any}),
   };
 
   handleSwitchApp = () => {
@@ -18,16 +20,16 @@ export default class AppSwitcherItem extends React.Component {
   };
 
   render() {
-    const { app } = this.props;
+    const { app, classes } = this.props;
 
-    const appListButtonIconClasses = cx(styles['appListButtonIcon'], {
-      [`${styles['hasSvg']}`]: app.applicationIconSvg
+    const appListButtonIconClasses = cx(classes['appListButtonIcon'], {
+      [`${classes['hasSvg']}`]: app.applicationIconSvg
     });
 
     return (
       <MenuItem
         button
-        className={styles['appListButton']}
+        className={classes['appListButton']}
         // target={app.applicationId}
         onClick={this.handleSwitchApp}
       >
@@ -54,3 +56,5 @@ export default class AppSwitcherItem extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(AppSwitcherItem);

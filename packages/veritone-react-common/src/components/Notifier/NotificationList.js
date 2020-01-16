@@ -6,12 +6,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ErrorIconSvg from 'images/icon_error.svg';
 import CheckIconSvg from 'images/icon_check_circle.svg';
+import { withStyles } from '@material-ui/styles';
 
-
-import { string, arrayOf, oneOf, shape, func, node } from 'prop-types';
+import { string, arrayOf, oneOf, shape, func, node, any } from 'prop-types';
 
 import classNames from 'classnames';
-import styles from './styles.scss';
+import styles from './styles';
 
 const TYPE_CUSTOM = 'custom';
 const TYPE_PREPARING = 'preparing';
@@ -54,9 +54,10 @@ export const notificationListPropTypes = arrayOf(
   })
 );
 
-export default class NotificationList extends React.Component {
+class NotificationList extends React.Component {
   static propTypes = {
-    notifications: notificationListPropTypes
+    notifications: notificationListPropTypes,
+    classes: shape({any}),
   }
 
   state = {};
@@ -134,14 +135,15 @@ export default class NotificationList extends React.Component {
     const entryId = entryData.id;
     const isNewEntry = _.includes(this.state.newEntryIds, entryId);
     const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
+    const { classes } = this.props;
 
     return (
       <div key={entryId} className={
         classNames({
-          [styles.fadeIn]: isNewEntry && entryData.introAnimation === INTRO_FADE_IN,
-          [styles.fadeOut]: isRemoved && entryData.outroAnimation === OUTRO_FADE_OUT,
-          [styles.slideOut]: isRemoved && entryData.outroAnimation === OUTRO_SLIDE_OUT,
-          [styles.noOutro]: isRemoved && (!entryData.outroAnimation || entryData.outroAnimation === OUTRO_NONE)
+          [classes.fadeIn]: isNewEntry && entryData.introAnimation === INTRO_FADE_IN,
+          [classes.fadeOut]: isRemoved && entryData.outroAnimation === OUTRO_FADE_OUT,
+          [classes.slideOut]: isRemoved && entryData.outroAnimation === OUTRO_SLIDE_OUT,
+          [classes.noOutro]: isRemoved && (!entryData.outroAnimation || entryData.outroAnimation === OUTRO_NONE)
         })
       }>
         { entryData.customNode }
@@ -153,36 +155,39 @@ export default class NotificationList extends React.Component {
     const entryId = formatedData.id;
     const isNewEntry = _.includes(this.state.newEntryIds, entryId);
     const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
+    const { classes } = this.props;
 
     return (
       <div key={formatedData.id} className={
         classNames(
-          styles.entry,
+          classes.entry,
           {
-            [styles.fadeIn]: isNewEntry && formatedData.introAnimation === INTRO_FADE_IN,
-            [styles.fadeOut]: isRemoved && formatedData.outroAnimation === OUTRO_FADE_OUT,
-            [styles.slideOut]: isRemoved && formatedData.outroAnimation === OUTRO_SLIDE_OUT,
-            [styles.noOutro]: isRemoved && (!formatedData.outroAnimation || formatedData.outroAnimation === OUTRO_NONE)
+            [classes.fadeIn]: isNewEntry && formatedData.introAnimation === INTRO_FADE_IN,
+            [classes.fadeOut]: isRemoved && formatedData.outroAnimation === OUTRO_FADE_OUT,
+            [classes.slideOut]: isRemoved && formatedData.outroAnimation === OUTRO_SLIDE_OUT,
+            [classes.noOutro]: isRemoved && (!formatedData.outroAnimation || formatedData.outroAnimation === OUTRO_NONE)
           }
         )
-      }>
-        <div className={classNames(styles.visualStatus)}>
+      }
+      data-test="entry"
+      >
+        <div className={classNames(classes.visualStatus)}>
           { formatedData.statusIcon }
         </div>
-        <div className={classNames(styles.description)}>
-          <div className={classNames(styles.title)}>{formatedData.description1}</div>
-          <div className={classNames(styles.subtitle)}>{formatedData.description2}</div>
+        <div className={classNames(classes.description)}>
+          <div className={classNames(classes.title)}>{formatedData.description1}</div>
+          <div className={classNames(classes.subtitle)}>{formatedData.description2}</div>
         </div>
-        <div className={classNames(styles.extra)}>
-          <div className={classNames(styles.description)}>
+        <div className={classNames(classes.extra)}>
+          <div className={classNames(classes.description)}>
             {formatedData.statusDescription}
           </div>
-          <div className={classNames(styles.actions)}>
+          <div className={classNames(classes.actions)}>
           {
             formatedData.onActionClick && 
             <IconButton 
               color="default"
-              className={classNames(styles.iconButton)}
+              className={classNames(classes.iconButton)}
               onClick={this.handleEntryActionClicked(originalData)}
               data-veritone-element={formatedData.btnActionTrackName || 'notification-action-button'}
             >
@@ -193,12 +198,12 @@ export default class NotificationList extends React.Component {
             formatedData.onRemoveClick &&
             <IconButton 
               color="default"
-              className={classNames(styles.iconButton)}
+              className={classNames(classes.iconButton)}
               onClick={this.handleEntryRemoveClick(originalData)}
               data-veritone-element={formatedData.btnRemoveTrackName || 'notification-remove-button'}
             >
               {
-                formatedData.removeIcon || <CloseIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />
+                formatedData.removeIcon || <CloseIcon className={classNames(classes.icon)} style={{ fontSize: "20px" }} />
               }
             </IconButton>
           }
@@ -209,9 +214,10 @@ export default class NotificationList extends React.Component {
   }
 
   drawFailedItem = (entryData) => {
+    const { classes } = this.props;
     const failedEntryData = {
       statusIcon: <img src={ErrorIconSvg} />,
-      actionIcon: <RefreshIcon className={classNames(styles.icon)} style={{ fontSize: "20px" }} />,
+      actionIcon: <RefreshIcon className={classNames(classes.icon)} style={{ fontSize: "20px" }} />,
       statusDescription: 'failed',
       btnActionTrackName: 'failed-notification-retry-botton',
       btnRemoveTrackName: 'failed-notification-remove-button',
@@ -266,14 +272,16 @@ export default class NotificationList extends React.Component {
   };
 
   drawSpinner = () => {
+    const { classes } = this.props;
     return (
-        <div className={classNames(styles.spinner)} />
+        <div className={classNames(classes.spinner)} />
     );
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={classNames(styles.notificationList)}>
+      <div className={classNames(classes.notificationList)}>
       {
         this.state.allEntries.map(entry => {
           switch (entry.type) {
@@ -301,3 +309,5 @@ export default class NotificationList extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(NotificationList);

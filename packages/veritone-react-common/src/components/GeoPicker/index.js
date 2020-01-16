@@ -6,14 +6,16 @@ import {
   func,
   bool,
   string,
-  number
+  number,
+  any
 } from 'prop-types';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import GoogleMapsLoader from 'google-maps';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 const MARKER = 'marker';
 const CIRCLE = 'circle';
@@ -55,7 +57,8 @@ class GeoPicker extends React.Component {
       })
     ]),
     readOnly: bool,
-    onSelectGeolocation: func
+    onSelectGeolocation: func,
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -206,18 +209,19 @@ class GeoPicker extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <div
         ref={this.loadGoogleMaps}
         style={{ width: '100%', height: '100%', display: 'flex' }}
       >
-        <div className={styles.loading_container}>
+        <div className={classes.loadingContainer}>
           <CircularProgress
-            className={styles.loading_spinner}
+            className={classes.loadingSpinner}
             size={100}
             thickness={1}
           />
-          <Typography className={styles.loading_label}>
+          <Typography className={classes.loadingLabel}>
             Loading Google Maps
           </Typography>
         </div>
@@ -226,4 +230,4 @@ class GeoPicker extends React.Component {
   }
 }
 
-export default GeoPicker;
+export default withStyles(styles)(GeoPicker);     

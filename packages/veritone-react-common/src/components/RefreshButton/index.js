@@ -2,14 +2,17 @@ import React from 'react';
 import cx from 'classnames';
 import IconButton from '@material-ui/core/IconButton';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { func, string, bool } from 'prop-types';
-import styles from './styles/index.scss';
+import { func, string, bool, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
-export default class RefreshButton extends React.Component {
+import styles from './styles/index';
+
+class RefreshButton extends React.Component {
   static propTypes = {
     onRefresh: func.isRequired,
     disabled: bool,
-    className: string
+    className: string,
+    classes: shape({ any }),
   };
 
   state = {
@@ -36,10 +39,11 @@ export default class RefreshButton extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <IconButton
         className={cx(this.props.className, {
-          [styles['spin']]: this.state.animating
+          [classes['spin']]: this.state.animating
         })}
         disabled={this.props.disabled}
         onClick={this.handleClick}
@@ -49,3 +53,5 @@ export default class RefreshButton extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(RefreshButton);

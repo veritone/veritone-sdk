@@ -1,14 +1,16 @@
 import React from 'react';
-import { func } from 'prop-types';
+import { func, shape, any } from 'prop-types';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 class SearchInput extends React.Component {
   static propTypes = {
     onSearch: func.isRequired,
     onClear: func.isRequired,
+    classes: shape({ any }),
   }
 
   state = {
@@ -33,20 +35,21 @@ class SearchInput extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.search}>
-        <div className={styles['search-icon']}>
+      <div className={classes.search}>
+        <div className={classes['searchIcon']}>
           <SearchIcon />
         </div>
         <input
-          className={styles['search-input']}
+          className={classes['searchInput']}
           placeholder="Search..."
           name="search"
           onChange={this.onChange}
           value={this.state.searchValue}
           onKeyPress={this.onKeyPress}
         />
-        <div className={styles['clear-icon']}>
+        <div className={classes['clearIcon']}>
           <ClearIcon onClick={this.onClear} />
         </div>
       </div>
@@ -59,4 +62,4 @@ SearchInput.propTypes = {
   onClear: func.isRequired,
 }
 
-export default SearchInput;
+export default withStyles(styles)(SearchInput);

@@ -1,14 +1,15 @@
 import React from 'react';
+import { withStyles } from '@material-ui/styles';
+import { arrayOf, string, element, node, shape, any } from 'prop-types';
 
-import { arrayOf, string, element, node } from 'prop-types';
+import styles from './styles';
 
-import styles from './styles.scss';
-
-export default class ModalHeader extends React.Component {
+class ModalHeader extends React.Component {
   static propTypes = {
     children: node,
     title: string,
-    icons: arrayOf(element)
+    icons: arrayOf(element),
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -16,14 +17,17 @@ export default class ModalHeader extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.modalHeader}>
-        <div className={styles.fullScreenTopBar}>
-          <span className={styles.topBarTitle}>{this.props.title}</span>
-          <div className={styles.iconGroup}>{this.props.icons}</div>
+      <div className={classes.modalHeader}>
+        <div className={classes.fullScreenTopBar}>
+          <span className={classes.topBarTitle}>{this.props.title}</span>
+          <div className={classes.iconGroup}>{this.props.icons}</div>
         </div>
         <div>{this.props.children}</div>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(ModalHeader);

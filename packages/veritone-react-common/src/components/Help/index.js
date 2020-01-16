@@ -11,10 +11,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/styles';
+import { string, func, shape, any } from 'prop-types';
 
-import { string, func } from 'prop-types';
-
-import styles from './styles.scss';
+import styles from './styles';
 
 export const helpPropTypes = {
   tooltipTitle: string,
@@ -24,10 +24,11 @@ export const helpPropTypes = {
   supportLabel: string,
   supportCallback: func,
   onOpen: func,
-  onClose: func
+  onClose: func,
+  classes: shape({ any })
 };
 
-export default class Help extends React.Component {
+class Help extends React.Component {
   static propTypes = helpPropTypes;
 
   static defaultProps = {
@@ -79,16 +80,16 @@ export default class Help extends React.Component {
       supportLabel,
       helpDocLink,
       helpDocCallback,
-      supportCallback
+      supportCallback,
+      classes
     } = this.props;
-
 
     const hasHelpDoc = helpDocLink || helpDocCallback;
     const hasSupportChat = supportCallback || window.Intercom;
     const appVersion = lodash.get(window, 'config.appVersion');
 
     return (
-      <div className={styles.help}>
+      <div className={classes.help}>
         <Tooltip title={tooltipTitle || ''} disableFocusListener>
           <IconButton onClick={this.showHelpWindow} data-veritone-element="help-button">
             <HelpIcon htmlColor="white" />
@@ -107,7 +108,7 @@ export default class Help extends React.Component {
             horizontal: 'center',
           }}
           onClose={this.hideHelpWindow}
-          className={ styles.popover }
+          className={classes.popover}
         >
           <List disablePadding>
             {
@@ -121,7 +122,7 @@ export default class Help extends React.Component {
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary={helpDocLabel} classes={{root: styles.helpItemText}} />
+                <ListItemText primary={helpDocLabel} classes={{ root: classes.helpItemText }} />
               </ListItem>
             }
             {
@@ -135,7 +136,7 @@ export default class Help extends React.Component {
                 <ListItemIcon>
                   <MessageIcon />
                 </ListItemIcon>
-                <ListItemText primary={supportLabel} classes={{root: styles.helpItemText}} />
+                <ListItemText primary={supportLabel} classes={{ root: classes.helpItemText }} />
               </ListItem>
             }
             {
@@ -143,8 +144,8 @@ export default class Help extends React.Component {
               appVersion &&
               <Fragment>
                 <Divider />
-                <ListItem className={styles.versionWrapper}>
-                  <ListItemText primary={appVersion} classes={{primary: styles.versionText}} />
+                <ListItem className={classes.versionWrapper}>
+                  <ListItemText primary={appVersion} classes={{ primary: classes.versionText }} />
                 </ListItem>
               </Fragment>
             }
@@ -154,3 +155,5 @@ export default class Help extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(Help);
