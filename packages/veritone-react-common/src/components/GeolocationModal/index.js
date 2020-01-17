@@ -1,25 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormHelperText  from '@material-ui/core/FormHelperText';
-import { Map, tileLayer, marker, featureGroup, Control, circle } from 'leaflet';
+import { Map, tileLayer, featureGroup, Control, circle } from 'leaflet';
+// eslint-disable-next-line no-unused-vars
 import  { Draw } from 'leaflet-draw';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { bool, func, string, shape } from 'prop-types';
+
 import controlStyles from './geolocation.csss';
 import leafletStyles from './leaflet.csss';
 import leafletdrawStyles from './leafletdraw.csss';
-
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from '@material-ui/core/Dialog';
-
-import { bool, func, string, shape } from 'prop-types';
-
-import ModalSubtitle from '../ModalSubtitle';
-import { withTheme } from '@material-ui/core/styles'
 
 class GeolocationModal extends React.Component {
   static propTypes = {
@@ -71,7 +59,7 @@ class GeolocationModal extends React.Component {
   returnValue() {
     // console.log( this.getFilterValue() );
     return this.getFilterValue();
-  };
+  }
 
   renderMap(element) {
     if(!this.state.renderedMap) {

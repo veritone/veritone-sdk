@@ -1,4 +1,3 @@
-import supportedEngineCategoryType from '.';
 import { shape, func, string } from 'prop-types';
 import React from 'react';
 
@@ -7,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 
 import Icon from './Icon';
-
+import { supportedEngineCategoryType } from './index';
 import styles from './styles';
 
 const useStyles = makeStyles(styles);

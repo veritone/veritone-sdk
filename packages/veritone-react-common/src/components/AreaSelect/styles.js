@@ -18,6 +18,15 @@ export default {
     height: '100%',
     padding: '55px 30px 30px',
     border: '1px solid #DADCDF',
+    '& $btnActionArea': {
+      border: '1px solid #DADCDF',
+      borderRadius: 3,
+      padding: '7px 25px',
+      color: '#1973E8',
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+      },
+    },
   },
   ariaItem: {
     display: 'flex',
@@ -47,17 +56,6 @@ export default {
     border: '1px solid #DADCDF',
     display: 'inline-block',
     verticalAlign: 'top',
-  },
-  stepItem: {
-    '& $btnActionArea': {
-      border: '1px solid #DADCDF',
-      borderRadius: 3,
-      padding: '7px 25px',
-      color: '#1973E8',
-      '&:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0)',
-      },
-    },
   },
   imageDefault: {
     backgroundRepeat: 'no-repeat',

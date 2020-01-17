@@ -1,22 +1,16 @@
 import React from 'react';
+import { string, any, func } from 'prop-types';
+import ListItemText from '@material-ui/core/ListItemText';
+import { get, includes } from 'lodash';
 
 import Loader from './Loader';
 import { StructuredDataModal } from '../StructuredDataModal';
 import InfiniteSelect from './';
 import { fetchProperties } from './graphql';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import cx from 'classnames';
-import styles from './styles';
-
-import { get, includes } from 'lodash';
-
 const SchemaAttributes = ({
   name,
   schemaName,
-  type,
   organization,
   dataRegistryId,
   majorVersion
@@ -24,23 +18,33 @@ const SchemaAttributes = ({
   if (dataRegistryId && majorVersion) {
     return <ListItemText primary={name} />;
   } else {
-    return [
-      <ListItemText
-        primary={`${name}`}
-        secondary={`${schemaName} v${majorVersion}`}
-      />,
-      <ListItemText
-        primary={'\u00A0'}
-        secondary={`by ${organization}`}
-        secondaryTypographyProps={{
-          style: {
-            textAlign: 'right'
-          }
-        }}
-      />
-    ];
+    return (
+      <React.Fragment>
+        <ListItemText
+          primary={`${name}`}
+          secondary={`${schemaName} v${majorVersion}`}
+        />
+        <ListItemText
+          primary={'\u00A0'}
+          secondary={`by ${organization}`}
+          secondaryTypographyProps={{
+            style: {
+              textAlign: 'right'
+            }
+          }}
+        />
+      </React.Fragment>
+    );
   }
 };
+
+SchemaAttributes.propTypes = {
+  name: string,
+  schemaName: string,
+  organization: string,
+  dataRegistryId: any,
+  majorVersion: string
+}
 
 export default class SelectAttributes extends React.Component {
   state = {
@@ -71,7 +75,7 @@ export default class SelectAttributes extends React.Component {
       if (includes(StructuredDataModal.SUPPORTED_TYPES, get(result, 'type'))) {
         data.push({
           id: get(result, 'schema.id'),
-          name: get(result, 'title') || get(result, 'searchPath').split(".").pop() ,
+          name: get(result, 'title') || get(result, 'searchPath').split(".").pop(),
           field: get(result, 'searchPath'),
           schemaName: get(result, 'schema.dataRegistry.name'),
           organization: get(result, 'schema.dataRegistry.organization.name'),
@@ -192,4 +196,14 @@ export default class SelectAttributes extends React.Component {
       />
     );
   }
+}
+
+SelectAttributes.propTypes = {
+  placeholder: string,
+  onSelect: func,
+  selected: any,
+  api: string,
+  auth: string,
+  majorVersion: string,
+  dataRegistryId: any,
 }

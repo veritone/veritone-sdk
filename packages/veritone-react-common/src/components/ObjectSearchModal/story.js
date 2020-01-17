@@ -7,7 +7,7 @@ import { boolean, object } from '@storybook/addon-knobs';
 
 storiesOf('ObjectSearchModal', module).add('withOpenDialogAndDefaultValue', () => {
   const logFilter = value => console.log('filter value', value);
-  const fetchAutocomplete = new Promise((resolve, reject) => [{header: 'Fake Header', items: [{ label: 'Fake Label 1', description: 'Fake Description 1'}]}]);
+  const fetchAutocomplete = new Promise(() => [{header: 'Fake Header', items: [{ label: 'Fake Label 1', description: 'Fake Description 1'}]}]);
   const cancel = () => console.log("cancel pressed");
   return (
     <ObjectSearchModal

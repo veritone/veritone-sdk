@@ -1,5 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
+import { oneOfType, string, node, arrayOf } from 'prop-types';
 
 const ModalSubtitle = ({ children }) => (
   <Typography
@@ -12,5 +13,8 @@ const ModalSubtitle = ({ children }) => (
   </Typography>
 );
 
+ModalSubtitle.propTypes = {
+  children: oneOfType([string, node, arrayOf(node)])
+}
 
 export default ModalSubtitle;

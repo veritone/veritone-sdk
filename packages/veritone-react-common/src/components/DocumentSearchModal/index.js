@@ -1,16 +1,6 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-
-import {
-  CardActions,
-  CardContent,
-} from '@material-ui/core/Card';
-
-import { bool, func, string, shape } from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import ModalSubtitle from '../ModalSubtitle';
+import { bool, func, string, shape, any } from 'prop-types';
 
 export default class DocumentSearchModal extends React.Component {
   static propTypes = {
@@ -34,38 +24,44 @@ export default class DocumentSearchModal extends React.Component {
   };
 
   returnValue() {
-    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+    if (!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       return;
     } else {
-      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' } );
+      return ({ search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' });
     }
   }
 
   render() {
     return (
       <TranscriptSearchForm
-        cancel={ this.props.cancel }
-        defaultValue={ this.props.modalState && this.props.modalState.search || '' }
-        onChange={ this.onChange }
-        inputValue={ this.state.filterValue }
+        cancel={this.props.cancel}
+        defaultValue={this.props.modalState && this.props.modalState.search || ''}
+        onChange={this.onChange}
+        inputValue={this.state.filterValue}
       />
     );
   }
 }
 
-export const TranscriptSearchForm = ( { defaultValue, cancel, onChange, onKeyPress, inputValue } ) => {
+export const TranscriptSearchForm = ({ defaultValue, onChange, onKeyPress }) => {
   return (
     <TextField
       id="document_search_field"
       autoFocus
       margin="none"
-      defaultValue={ defaultValue }
-      onChange={ onChange }
-      onKeyPress={ onKeyPress }
+      defaultValue={defaultValue}
+      onChange={onChange}
+      onKeyPress={onKeyPress}
       placeholder="Search for words, numbers, or full sentences"
       fullWidth
     />
   )
+}
+
+TranscriptSearchForm.propTypes = {
+  defaultValue: any,
+  onChange: func,
+  onKeyPress: func
 }
 
 DocumentSearchModal.defaultProps = {

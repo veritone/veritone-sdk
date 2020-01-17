@@ -1,31 +1,21 @@
 import React from 'react';
-import { arrayOf, object, node, shape, any } from 'prop-types';
+import { object, node, shape, any, func, string, bool } from 'prop-types';
 
 import Downshift from 'downshift';
-
-import Select from '@material-ui/core/Select';
+import get from 'lodash/get';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Check from '@material-ui/icons/Check';
-import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import Menu from '@material-ui/core/Menu';
 import { withStyles } from '@material-ui/core/styles';
+import cx from 'classnames';
 
 import DropDownButton from './DropDownButton';
-
-import cx from 'classnames';
 import styles from './styles';
 
-import { get } from 'lodash';
-
 import Rx from 'rxjs/Rx';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/takeUntil';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 
 @withStyles(styles)
 export default class InfiniteSelect extends React.Component {
@@ -154,11 +144,11 @@ export default class InfiniteSelect extends React.Component {
     }
   };
 
-  onSelect = item => e => {
+  onSelect = item => () => {
     this.onChange(item);
   }
 
-  infiniteScroll = e => {
+  infiniteScroll = () => {
     if (
       !this.props.done && this._scrollContainer &&
       this._scrollContainer.scrollTop >=
@@ -207,12 +197,8 @@ export default class InfiniteSelect extends React.Component {
           itemToString={books => (books ? books.name : '')}
         >
           {({
-            getInputProps,
             getItemProps,
-            getLabelProps,
-            getMenuProps,
             isOpen,
-            inputValue,
             highlightedIndex,
             selectedItem
           }) => (
@@ -304,7 +290,22 @@ export default class InfiniteSelect extends React.Component {
 
 InfiniteSelect.propTypes = {
   loader: node,
-  selected: object
+  selected: object,
+  defaultSelected: any,
+  resetSelect: func,
+  onSelect: func,
+  data: any,
+  loadMoreData: func,
+  handleAutocompleteChange: func,
+  done: any,
+  classes: shape({ any }),
+  key: any,
+  onChange: func,
+  name: string,
+  placeholder: string,
+  noChoices: any,
+  loading: bool,
+  display: func
 };
 
 InfiniteSelect.defaultProps = {

@@ -117,7 +117,7 @@ export default function attachAutocomplete(url, config) {
 
     if (config.enableFullTextSearch) {
       autcompleteFunctions.push( queryString =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
           resolve({
             header: 'Full-text Search',
             items: [{

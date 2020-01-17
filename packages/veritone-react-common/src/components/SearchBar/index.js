@@ -302,7 +302,7 @@ SearchBarComponents.propTypes = {
   openMenuExtraActions: func,
   SearchParameters: shape({ any }),
   highlightedPills: any,
-  togglePill: bool,
+  togglePill: func,
   selectedPill: any,
 };
 

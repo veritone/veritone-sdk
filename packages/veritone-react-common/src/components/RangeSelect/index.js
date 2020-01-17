@@ -30,7 +30,7 @@ export default class RangeSelect extends Component {
     onChangeConfidenceRange(values)
   }
 
-  renderThumb = ({ props, isDragged }) => (
+  renderThumb = ({ props }) => (
     <div
       {...props}
       className={this.props.classes.renderThum}

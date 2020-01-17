@@ -1,17 +1,11 @@
 import React from 'react';
-import { Avatar, Button, Chip, Paper, TextField } from '@material-ui/core';
+import { Avatar, Paper, TextField } from '@material-ui/core';
 import Downshift from 'downshift';
-import { isArray } from 'lodash';
-import cx from 'classnames';
-import { bool, func, string, shape, arrayOf } from 'prop-types';
-import styles from './styles';
+import { bool, func, string, shape, arrayOf, array } from 'prop-types';
 
 import Rx from 'rxjs/Rx';
-import {Observable} from "rxjs/Observable";
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeUntil";
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 
 import Typography from '@material-ui/core/Typography';
 import { List, ListItem, ListItemText } from '@material-ui/core';
@@ -19,8 +13,6 @@ import { List, ListItem, ListItemText } from '@material-ui/core';
 // const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
 // const autocompletePillClass = cx(styles['autocompletePill']);
 // const deleteIconClass = cx(styles['deleteIcon']);
-
-
 
 class SearchAutocompleteContainer extends React.Component {
   static propTypes = {
@@ -101,7 +93,6 @@ class SearchAutocompleteContainer extends React.Component {
 
 const SearchAutocompleteDownshift = ({
   defaultIsOpen,
-  cancel,
   debouncedOnChange,
   onChange,
   onKeyPress,
@@ -125,12 +116,8 @@ const SearchAutocompleteDownshift = ({
         {({
           getInputProps,
           getItemProps,
-          getLabelProps,
-          getMenuProps,
           isOpen,
-          inputValue,
           highlightedIndex,
-          selectedItem,
           openMenu
         }) => (
         <div>
@@ -169,7 +156,7 @@ const SearchAutocompleteDownshift = ({
                       <div>
                         {
                           section.items && section.items.length
-                          ? section.items.slice(0, RESULT_COUNT_PER_CATEGORY).map((item, index) => {
+                          ? section.items.slice(0, RESULT_COUNT_PER_CATEGORY).map((item) => {
                               const indexAcc = result.itemIndex++;
                               return (
                                 <ListItem button
@@ -210,6 +197,18 @@ const SearchAutocompleteDownshift = ({
     </Downshift>
   );
 };
+
+SearchAutocompleteDownshift.propTypes = {
+  defaultIsOpen: bool,
+  debouncedOnChange: func,
+  onChange: func,
+  onKeyPress: func,
+  queryString: string,
+  results: array,
+  selectResult: func,
+  onClickAutocomplete: func,
+  isOpen: bool,
+}
 
 SearchAutocompleteContainer.defaultProps = {
   componentState: {

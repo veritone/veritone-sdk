@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { DocumentSearchModal } from './';
-import { DocumentSearchForm } from './';
+import { TranscriptSearchForm } from './';
 
 import { boolean, object } from '@storybook/addon-knobs';
 
@@ -11,14 +11,14 @@ storiesOf('DocumentSearchModal', module).add('withOpenDialogAndDefaultValue', ()
   return (
     <DocumentSearchModal
       open={boolean("Open", true)}
-      modalState={ object( "Search condition state", { "value": ('Lakers') } ) }
-      cancel={ cancel }
+      modalState={object("Search condition state", { "value": ('Lakers') })}
+      cancel={cancel}
       applyFilter={logFilter}
     />
   );
-}).add( 'withoutDialog', () => {
+}).add('withoutDialog', () => {
   return (
-    <DocumentSearchForm
+    <TranscriptSearchForm
       defaultValue={"lakers"}
     />
   );

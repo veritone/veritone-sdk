@@ -171,7 +171,7 @@ export default class Overlay extends React.Component {
     });
   };
 
-  handleResizeExistingBoxStop = (e, direction, ref, delta, position) => {
+  handleResizeExistingBoxStop = (_e, _direction, ref) => {
     const focusedId = ref.getAttribute('data-boxid');
     const focusedIndex = findIndex(this.state.boundingBoxPositions, {
       id: focusedId
@@ -192,7 +192,7 @@ export default class Overlay extends React.Component {
     });
   };
 
-  handleDragStagedBox = (e, d) => {
+  handleDragStagedBox = () => {
     this.setState({ userActingOnBoundingBox: true });
   };
 

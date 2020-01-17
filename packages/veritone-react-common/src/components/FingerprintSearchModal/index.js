@@ -1,16 +1,12 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
-import { FormHelperText, FormGroup, FormControlLabel } from '@material-ui/core';
+import { FormControlLabel } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { bool, func, string, shape, arrayOf, any, object } from 'prop-types';
+
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
-
-import LinearProgress  from '@material-ui/core/LinearProgress';
-
-import { bool, func, string, shape, arrayOf } from 'prop-types';
-import update from 'immutability-helper';
-import { isArray } from 'lodash';
 import 'whatwg-fetch';
 
 // Fingerprint Autocomplete config:
@@ -57,13 +53,14 @@ export default class FingerprintSearchModal extends React.Component {
       exclude: bool
     }),
     fetchAutocomplete: func,
-    cancel: func
+    cancel: func,
+    libraries: any
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false } )));
+  state = JSON.parse(JSON.stringify(Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false })));
 
   componentWillMount() {
-    if(this.props.modalState.label) {
+    if (this.props.modalState.label) {
       const selectedItem = {
         description: this.props.modalState.description,
         id: this.props.modalState.id,
@@ -91,7 +88,7 @@ export default class FingerprintSearchModal extends React.Component {
           queryString: debouncedQueryString
         });
         return debouncedQueryString;
-      }).catch(err => {
+      }).catch(() => {
         this.setState({
           loading: false,
           error: true,
@@ -105,11 +102,11 @@ export default class FingerprintSearchModal extends React.Component {
         queryResults: [],
         queryString: debouncedQueryString
       });
-      return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
+      return new Promise((resolve) => resolve(debouncedQueryString || ''));
     }
   };
 
-  onClickAutocomplete = event => {
+  onClickAutocomplete = () => {
     this.onChange(this.state.queryString);
   };
 
@@ -123,7 +120,7 @@ export default class FingerprintSearchModal extends React.Component {
   };
 
   returnValue() {
-    if(!this.state.selectedResult) {
+    if (!this.state.selectedResult) {
       return;
     } else {
       return {
@@ -142,33 +139,33 @@ export default class FingerprintSearchModal extends React.Component {
   render() {
     return (
       <FingerprintSearchForm
-        cancel={ this.props.cancel }
-        onChange={ this.onChange }
-        modalState={ this.state }
-        showAutocomplete={ this.state.showAutocomplete }
-        selectResult={ this.selectResult }
-        toggleExclude={ this.toggleExclude }
-        onClickAutocomplete={ this.onClickAutocomplete }
-        loading={ this.state.loading }
+        cancel={this.props.cancel}
+        onChange={this.onChange}
+        modalState={this.state}
+        showAutocomplete={this.state.showAutocomplete}
+        selectResult={this.selectResult}
+        toggleExclude={this.toggleExclude}
+        onClickAutocomplete={this.onClickAutocomplete}
+        loading={this.state.loading}
       />
     );
   }
 }
 
-export const FingerprintSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading} ) => {
+export const FingerprintSearchForm = ({ cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading }) => {
   return (
     <Grid container spacing={8}>
-      <Grid item style={{flex: '1'}}>
+      <Grid item style={{ flex: '1' }}>
         <SearchAutocompleteContainer
           id="fingerprint_autocomplete_container"
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          cancel={ cancel }
-          componentState={ modalState }
-          selectResult={ selectResult }
+          onChange={onChange}
+          onKeyPress={onKeyPress}
+          cancel={cancel}
+          componentState={modalState}
+          selectResult={selectResult}
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.1em" }}/> : null }
+        {loading ? <LinearProgress style={{ height: "0.1em" }} /> : null}
       </Grid>
       <Grid item>
         <FormControlLabel
@@ -184,6 +181,17 @@ export const FingerprintSearchForm = ( { cancel, onChange, onKeyPress, modalStat
     </Grid>
   )
 };
+
+FingerprintSearchForm.propTypes = {
+  onKeyPress: func,
+  modalState: object,
+  toggleExclude: func,
+  loading: bool,
+  selectResult: func,
+  onClickAutocomplete: func,
+  onChange: func,
+  cancel: func
+}
 
 const FingerprintConditionGenerator = modalState => {
   return {

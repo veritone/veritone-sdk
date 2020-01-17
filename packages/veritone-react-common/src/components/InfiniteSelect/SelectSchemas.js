@@ -1,19 +1,14 @@
 import React from 'react';
+import { string, object, func } from 'prop-types';
+import ListItemText from '@material-ui/core/ListItemText';
+import get from 'lodash/get';
 
 import Loader from './Loader';
 import InfiniteSelect from './';
 import { fetchSchemas } from './graphql';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import cx from 'classnames';
-import styles from './styles';
-
-import { get } from 'lodash';
-
-const Schema = ({name, majorVersion, organization}) => {
-  if(majorVersion && organization) {
+const Schema = ({ name, majorVersion, organization }) => {
+  if (majorVersion && organization) {
     return (
       <ListItemText primary={`${name} v${majorVersion}`} secondary={`by ${organization}`} />
     )
@@ -22,6 +17,12 @@ const Schema = ({name, majorVersion, organization}) => {
       <ListItemText primary={name} />
     )
   }
+}
+
+Schema.propTypes = {
+  name: string,
+  majorVersion: string,
+  organization: string,
 }
 
 export default class SelectSchemas extends React.Component {
@@ -49,11 +50,11 @@ export default class SelectSchemas extends React.Component {
     const records = [];
     results.forEach(data => {
       const majorVersions = new Set();
-      get(data, 'schemas.records').forEach( majorVersion => {
+      get(data, 'schemas.records').forEach(majorVersion => {
         majorVersions.add(majorVersion.majorVersion);
       });
 
-      majorVersions.forEach( majorVersion =>
+      majorVersions.forEach(majorVersion =>
         records.push(
           {
             id: get(data, 'id'),
@@ -113,12 +114,12 @@ export default class SelectSchemas extends React.Component {
       // filter out the selected item
       data = [...data].filter(
         x => {
-          if(this.state.selected) {
-            if(x.name !== get(this.state.selected, 'name')) {
+          if (this.state.selected) {
+            if (x.name !== get(this.state.selected, 'name')) {
               return true;
             }
 
-            if(x.majorVersion !== get(this.state.selected, 'majorVersion')) {
+            if (x.majorVersion !== get(this.state.selected, 'majorVersion')) {
               return true;
             }
             return false;
@@ -146,7 +147,7 @@ export default class SelectSchemas extends React.Component {
       selected: data,
       offset: 0
     }, () => {
-      if(this.props.onSelect) {
+      if (this.props.onSelect) {
         this.props.onSelect(data);
       }
     });
@@ -185,4 +186,11 @@ export default class SelectSchemas extends React.Component {
       />
     );
   }
+}
+
+SelectSchemas.propTypes = {
+  selected: object,
+  onSelect: func,
+  api: string,
+  auth: string,
 }

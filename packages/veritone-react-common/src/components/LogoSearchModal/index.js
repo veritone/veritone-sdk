@@ -1,24 +1,13 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
-import { FormHelperText, FormGroup, FormControlLabel } from '@material-ui/core';
+import { FormControlLabel } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { bool, func, string, shape, arrayOf, any, object } from 'prop-types';
+
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
-import ModalSubtitle from '../ModalSubtitle';
-import LinearProgress from '@material-ui/core/LinearProgress';
-
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from '@material-ui/core';
-
-import { bool, func, string, shape, arrayOf } from 'prop-types';
-import update from 'immutability-helper';
-import { isArray } from 'lodash';
 import 'whatwg-fetch';
 
 // Logo Autocomplete config:
@@ -115,7 +104,7 @@ export default class LogoSearchModal extends React.Component {
           });
           return debouncedQueryString;
         })
-        .catch(err => {
+        .catch(() => {
           this.setState({
             loading: false,
             error: true,
@@ -129,13 +118,13 @@ export default class LogoSearchModal extends React.Component {
         queryResults: [],
         queryString: debouncedQueryString
       });
-      return new Promise((resolve, reject) =>
+      return new Promise((resolve) =>
         resolve(debouncedQueryString || '')
       );
     }
   };
 
-  onClickAutocomplete = event => {
+  onClickAutocomplete = () => {
     this.onChange(this.state.queryString);
   };
 
@@ -183,9 +172,13 @@ export default class LogoSearchModal extends React.Component {
   }
 }
 
+LogoSearchModal.propTypes = {
+  onChangeSearchInput: func,
+  libraries: any,
+}
+
 export const LogoSearchForm = ({
   cancel,
-  applyFilter,
   onChange,
   onKeyPress,
   modalState,
@@ -222,6 +215,17 @@ export const LogoSearchForm = ({
     </Grid>
   );
 };
+
+LogoSearchForm.propTypes = {
+  cancel: func,
+  onChange: func,
+  onKeyPress: func,
+  modalState: object,
+  selectResult: func,
+  toggleExclude: func,
+  onClickAutocomplete: func,
+  loading: bool
+}
 
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {

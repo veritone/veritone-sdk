@@ -69,6 +69,7 @@ function percentageToPixelCoords({ x, y, contentWidth, contentHeight }) {
   };
 }
 
+// eslint-disable-next-line no-unused-vars
 function pixelBoundingBoxToXYWidthHeight([tl, tr, br, bl]) {
   return {
     x: tl.x,
