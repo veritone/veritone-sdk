@@ -1,7 +1,7 @@
 {
   "env": {
     "test": {
-      "presets": ["env", "react"],
+      "presets": ["env", "react", "typescript"],
       "plugins": [
         [
           "module-resolver",
@@ -34,7 +34,8 @@
           }
         ],
         "react",
-        "es2016"
+        "es2016",
+        "typescript"
       ],
       "plugins": [
         "external-helpers",

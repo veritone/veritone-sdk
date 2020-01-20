@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 
 import AdvancedPanel from './';
 
-export default class Story extends Component {
+class Story extends Component {
   state = {
     openAdvancedPanel: false,
     advancedEnableIds: [],
@@ -40,6 +40,7 @@ export default class Story extends Component {
           handleReset={this.handleResetAdvanced}
           advancedOptions={this.getAdvancedOptions}
           onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
+          searchByTag="search category"
         />
       </div>
     )

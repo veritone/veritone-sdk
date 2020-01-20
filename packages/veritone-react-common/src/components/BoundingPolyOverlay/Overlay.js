@@ -413,10 +413,8 @@ export default class Overlay extends React.Component {
           }) => (
               <RndBox
                 key={id}
-                extendsProps={{
-                  'data-boxid': id,
-                  onClick: this.handleClickBox
-                }}
+                data-boxid={id}
+                onClick={this.handleClickBox}
                 style={{
                   ...boundingBoxCommonStyles,
                   ...this.props.defaultBoundingBoxStyles,

@@ -10,10 +10,10 @@ import Dialog, {
   DialogContent,
   DialogTitle
 } from '@material-ui/core/Dialog';
-
+import { makeStyles } from '@material-ui/core/styles';
 import { bool, func, string, shape } from 'prop-types';
-import styles from './styles.scss';
 import cx from 'classnames';
+import styles from './styles';
 
 export default class SentimentSearchModal extends React.Component {
   static propTypes = {
@@ -38,7 +38,7 @@ export default class SentimentSearchModal extends React.Component {
   };
 
   applyFilterIfValue = () => {
-    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+    if (!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       this.props.applyFilter();
     } else {
       this.props.applyFilter(
@@ -48,39 +48,45 @@ export default class SentimentSearchModal extends React.Component {
   };
 
   returnValue() {
-    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+    if (!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       return;
     } else {
-      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null } );
+      return ({ search: this.state.filterValue ? this.state.filterValue.trim() : null });
     }
   }
 
   render() {
     return (
       <SentimentSearchForm
-        cancel={ this.props.cancel }
-        onSubmit={ this.applyFilterIfValue }
-        onChange={ this.onChange }
-        inputValue={ this.state.filterValue }
+        cancel={this.props.cancel}
+        onSubmit={this.applyFilterIfValue}
+        onChange={this.onChange}
+        inputValue={this.state.filterValue}
       />
     );
   }
 }
 
-export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } ) => {
-  const selectHackClass = cx(styles['material']);
+
+const useStyles = makeStyles(styles);
+
+export const SentimentSearchForm = ({ cancel, onSubmit, onChange, inputValue }) => {
+  const classes = useStyles();
+  const selectHackClass = cx(classes['material']);
+  
   return (
     <Select
       classes={{ select: selectHackClass }}
       native
-      style={ {width: "200px", boxShadow: "none" } }
-      value={ inputValue }
-      onChange={ onChange }
+      style={{ width: "200px", boxShadow: "none" }}
+      value={inputValue}
+      onChange={onChange}
     >
       <option value={'positive'}>Positive</option>
       <option value={'negative'}>Negative</option>
     </Select>
-  )};
+  )
+};
 
 SentimentSearchModal.defaultProps = {
   modalState: { search: 'positive' }

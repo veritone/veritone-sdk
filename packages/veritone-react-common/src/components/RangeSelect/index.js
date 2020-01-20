@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
-import { func, arrayOf, number } from 'prop-types';
+import { func, arrayOf, number, shape, any } from 'prop-types';
 import { Range, getTrackBackground } from 'react-range';
 import cx from 'classnames';
-import styles from './styles.scss';
+import { withStyles } from '@material-ui/core/styles';
+
+import styles from './styles';
 
 const STEP = 1;
 const MIN = 0;
 const MAX = 100;
 
+@ withStyles(styles)
 export default class RangeSelect extends Component {
 
   static propTypes = {
     onChangeConfidenceRange: func.isRequired,
-    selectedConfidenceRange: arrayOf(number)
+    selectedConfidenceRange: arrayOf(number),
+    classes: shape({ any }),
   }
 
   handleValueChange = (values) => {
@@ -29,7 +33,7 @@ export default class RangeSelect extends Component {
   renderThumb = ({ props, isDragged }) => (
     <div
       {...props}
-      className={styles.renderThum}
+      className={this.props.classes.renderThum}
     />
   )
 
@@ -37,11 +41,11 @@ export default class RangeSelect extends Component {
     <div
       onMouseDown={props.onMouseDown}
       onTouchStart={props.onTouchStart}
-      className={styles.renderTrack}
+      className={this.props.classes.renderTrack}
     >
       <div
         ref={props.ref}
-        className={styles.trackLine}
+        className={this.props.classes.trackLine}
         style={{
           background: getTrackBackground({
             values: this.props.selectedConfidenceRange,
@@ -57,12 +61,15 @@ export default class RangeSelect extends Component {
   )
 
   render() {
-    const { selectedConfidenceRange = [0, 100] } = this.props;
+    const { selectedConfidenceRange = [0, 100], classes } = this.props;
     return (
       <div
-        className={styles.rangeInput}
+        className={classes.rangeInput}
       >
-        <div className={cx(styles['value-min'])}>
+        <div
+          className={cx(classes['valueMin'])}
+          data-test="value-min"
+        >
           {selectedConfidenceRange[0].toFixed(0)}
         </div>
         <Range
@@ -74,7 +81,10 @@ export default class RangeSelect extends Component {
           renderThumb={this.renderThumb}
           renderTrack={this.renderTrack}
         />
-        <div className={cx(styles['value-max'])}>
+        <div
+          className={cx(classes['valueMax'])}
+          data-test="value-max"
+        >
           {selectedConfidenceRange[1].toFixed(0)}
         </div>
       </div>

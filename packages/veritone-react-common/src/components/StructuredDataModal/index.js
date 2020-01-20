@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { bool, func, object, number, string } from 'prop-types';
+import { bool, func, object, number, string, shape, any } from 'prop-types';
 
 import {
   CardActions,
@@ -12,6 +12,7 @@ import { Radio, RadioGroup } from '@material-ui/core';
 import { List, ListItem, ListItemText } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 import { format, parse } from 'date-fns';
 import { get } from 'lodash'
@@ -32,18 +33,19 @@ import "rxjs/add/operator/takeUntil";
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 class StructuredDataModal extends React.Component {
   async componentDidMount() {
-    if(this.props.modalState.field) {
+    if (this.props.modalState.field) {
       let state = await this.rehydrateProps(this.props.modalState);
 
-      if(this._schemaPicker) {
+      if (this._schemaPicker) {
         this._schemaPicker.onSelect(state.selectedSchema);
       }
 
-      if(this._attributePicker) {
+      if (this._attributePicker) {
         this._attributePicker.onSelect(state.selectedAttribute);
       }
 
@@ -55,11 +57,11 @@ class StructuredDataModal extends React.Component {
       state.value1 = undefined;
       state.value2 = undefined;
 
-      if(this._schemaPicker) {
+      if (this._schemaPicker) {
         this._schemaPicker.onSelect(state.selectedSchema);
       }
 
-      if(this._attributePicker) {
+      if (this._attributePicker) {
         this._attributePicker.onSelect(state.selectedAttribute);
       }
 
@@ -102,7 +104,8 @@ class StructuredDataModal extends React.Component {
     modalState: object,
     cancel: func,
     majorVersion: number,
-    schemaId: string
+    schemaId: string,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -180,7 +183,7 @@ class StructuredDataModal extends React.Component {
 
     // preserve backwards compatability with existing SDO watchlists.
     // old sdo watchlists don't specify the major version, so we default to the published one
-    if(!majorVersion) {
+    if (!majorVersion) {
       majorVersion = get(schemaLookup, 'data.schema.dataRegistry.publishedSchema.majorVersion');
     }
 
@@ -190,7 +193,8 @@ class StructuredDataModal extends React.Component {
         id: dataRegistryId,
         name: schemaName,
         organization: orgName,
-        majorVersion: majorVersion},
+        majorVersion: majorVersion
+      },
       selectedAttribute: {
         id: schemaId,
         majorVersion: majorVersion,
@@ -215,7 +219,7 @@ class StructuredDataModal extends React.Component {
   }
 
   onSelectSchema = data => {
-    if(this._attributePicker) {
+    if (this._attributePicker) {
       this._attributePicker.resetSelect();
     }
 
@@ -236,14 +240,14 @@ class StructuredDataModal extends React.Component {
     let value1 = undefined;
     let value2 = undefined;
 
-    if(get(selectedAttribute, 'field') !== get(this.state.selectedAttribute, 'field')) {
+    if (get(selectedAttribute, 'field') !== get(this.state.selectedAttribute, 'field')) {
       value1 = '';
       value2 = '';
     }
 
     if (selectedAttribute.type === 'geoPoint') {
       defaultOperator = 'within';
-      if(get(selectedAttribute, 'field') !== get(this.state.selectedAttribute, 'field')) {
+      if (get(selectedAttribute, 'field') !== get(this.state.selectedAttribute, 'field')) {
         value1 = undefined;
         value2 = undefined;
       }
@@ -267,7 +271,7 @@ class StructuredDataModal extends React.Component {
           id: selectedAttribute.id,
           type: selectedAttribute.type,
           name: selectedAttribute.name,
-          field:  selectedAttribute.field,
+          field: selectedAttribute.field,
           schemaName: selectedAttribute.schemaName,
           type: selectedAttribute.type
         },
@@ -340,8 +344,8 @@ class StructuredDataModal extends React.Component {
     this.stop$ = Rx.Observable.fromEvent(e.target, 'blur');
     this.stop$.take(1).subscribe();
 
-    Rx.Observable.fromEvent(e.target, 'keyup').map( x => x.target.value).distinctUntilChanged().debounceTime(500).last( debouncedText => this.searchField(debouncedText) )
-    .takeUntil(this.stop$).subscribe();
+    Rx.Observable.fromEvent(e.target, 'keyup').map(x => x.target.value).distinctUntilChanged().debounceTime(500).last(debouncedText => this.searchField(debouncedText))
+      .takeUntil(this.stop$).subscribe();
   }
 
   hideAutocompleteValue = () => {
@@ -472,11 +476,11 @@ class StructuredDataModal extends React.Component {
   }
 
   async searchField(inputValue) {
-    if(!inputValue || inputValue.length === 0 || inputValue.trim() !== this.state.value1) {
+    if (!inputValue || inputValue.length === 0 || inputValue.trim() !== this.state.value1) {
       return;
     }
 
-    if(this.state.selectedAttribute && inputValue && inputValue.trim().length > 0) {
+    if (this.state.selectedAttribute && inputValue && inputValue.trim().length > 0) {
       this.setState({
         showStringAutoComplete: true,
         loadingAutocomplete: true,
@@ -486,7 +490,7 @@ class StructuredDataModal extends React.Component {
       let field = this.state.selectedAttribute.field;
       let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue.trim().toLowerCase(), field, this.props.sourceFilters);
       let autocompleteValues = values && values.fields ? values.fields[field] : [];
-      autocompleteValues = autocompleteValues.map( value => get(value, 'key'));
+      autocompleteValues = autocompleteValues.map(value => get(value, 'key'));
       this.setState({
         loadingAutocomplete: false,
         showStringAutoComplete: true,
@@ -525,6 +529,8 @@ class StructuredDataModal extends React.Component {
   }
 
   renderValue(operator, type) {
+    const { classes } = this.props;
+
     if (type === 'boolean') {
       return (
         <Fragment>
@@ -551,7 +557,7 @@ class StructuredDataModal extends React.Component {
             type={this.getInputType(type)}
             value={this.state.value1}
             margin="normal"
-            className={styles['row']}
+            className={classes['row']}
             required
             id="value1" />
           <StaticTextField value={'and'} marginLeft marginRight />
@@ -561,7 +567,7 @@ class StructuredDataModal extends React.Component {
             type={this.getInputType(type)}
             value={this.state.value2}
             margin="normal"
-            className={styles['row']}
+            className={classes['row']}
             required
             id="value2"
           />
@@ -576,7 +582,7 @@ class StructuredDataModal extends React.Component {
             onMouseDown={this.showGeolocationModal}
             margin="normal"
             value={this.renderGeolocationLabel(this.state.value1)}
-            className={styles['row']}
+            className={classes['row']}
             required
             placeholder="select geolocation"
             id="value1"
@@ -585,7 +591,7 @@ class StructuredDataModal extends React.Component {
       );
     } else if (this.getInputType(type) === 'string') {
       return (
-        <StringValuePicker loader={<Loader />} loading={this.state.loadingAutocomplete} onChange={this.getAutoCompleteValue} value={this.state.value1} items={this.state.autocompleteValues} onSelect={ this.onSelectAutocompleteValue } onFocusAutocomplete={this.showAutocompleteValue} onBlurAutocomplete={this.hideAutocompleteValue} open={this.state.showStringAutoComplete} />
+        <StringValuePicker loader={<Loader />} loading={this.state.loadingAutocomplete} onChange={this.getAutoCompleteValue} value={this.state.value1} items={this.state.autocompleteValues} onSelect={this.onSelectAutocompleteValue} onFocusAutocomplete={this.showAutocompleteValue} onBlurAutocomplete={this.hideAutocompleteValue} open={this.state.showStringAutoComplete} />
       );
     } else {
       return (
@@ -596,7 +602,7 @@ class StructuredDataModal extends React.Component {
             type={this.getInputType(type)}
             value={this.state.value1}
             margin="none"
-            className={styles['row']}
+            className={classes['row']}
             required
             placeholder="search value"
             id="value1"
@@ -618,12 +624,12 @@ class StructuredDataModal extends React.Component {
     const selectedType = get(this.state.selectedAttribute, 'type');
 
     return [
-      <SelectSchemas key="schemas" ref={this.setSchemaPicker} api={this.props.api} auth={this.props.auth} onSelect={this.onSelectSchema} selected={this.state.selectedSchema || null} autocompleteValue/>,
+      <SelectSchemas key="schemas" ref={this.setSchemaPicker} api={this.props.api} auth={this.props.auth} onSelect={this.onSelectSchema} selected={this.state.selectedSchema || null} autocompleteValue />,
       <SelectAttributes key="attributes" ref={this.setAttributePicker} placeholder={"Search by property"} api={this.props.api} auth={this.props.auth} selected={this.state.selectedAttribute || null} onSelect={this.onSelectAttribute} dataRegistryId={this.state.selectedDataRegistryId} majorVersion={this.state.selectedSchemaMajorVersion} />,
       <FormControl fullWidth margin="none" style={{ display: "flex", flexDirection: "row" }}>
-        {selectedType && this.renderOperators(selectedType) }
-        {this.state.selectedOperator && this.state.selectedOperator.length > 0 && selectedType && this.renderValue(this.state.selectedOperator, selectedType) }
-        {this.state.showGeolocationModal && this.renderGeolocationModal() }
+        {selectedType && this.renderOperators(selectedType)}
+        {this.state.selectedOperator && this.state.selectedOperator.length > 0 && selectedType && this.renderValue(this.state.selectedOperator, selectedType)}
+        {this.state.showGeolocationModal && this.renderGeolocationModal()}
       </FormControl>,
     ]
   }

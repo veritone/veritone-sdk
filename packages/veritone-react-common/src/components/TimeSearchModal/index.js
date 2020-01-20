@@ -9,9 +9,10 @@ import Dialog, {
 } from '@material-ui/core';
 import { FormControlLabel, FormHelperText } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
+import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import styles from './styles.scss';
-import { arrayOf, bool, func, string, date, shape } from 'prop-types';
+import styles from './styles';
+import { arrayOf, bool, func, string, date, shape, any } from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -29,7 +30,7 @@ export default class TimeSearchModal extends React.Component {
         selectedDays: arrayOf(bool)
       })
     }),
-    cancel: func
+    cancel: func,
   };
   static defaultProps = {
     cancel: () => console.log('You clicked cancel')
@@ -43,7 +44,7 @@ export default class TimeSearchModal extends React.Component {
 
   initializeState = (initialValue) => {
     const filterValue = this.copyFilter(initialValue);
-    if(filterValue.stationBroadcastTime === false) {
+    if (filterValue.stationBroadcastTime === false) {
       filterValue.dayPartStartTime = fromUTCToLocal(filterValue.dayPartStartTime);
       filterValue.dayPartEndTime = fromUTCToLocal(filterValue.dayPartEndTime);
     }
@@ -101,7 +102,7 @@ export default class TimeSearchModal extends React.Component {
       return
     } else {
       const filterValue = this.copyFilter(this.state.filterValue);
-      if(filterValue.stationBroadcastTime === false) {
+      if (filterValue.stationBroadcastTime === false) {
         filterValue.dayPartStartTime = fromLocalToUTC(filterValue.dayPartStartTime);
         filterValue.dayPartEndTime = fromLocalToUTC(filterValue.dayPartEndTime);
       }
@@ -170,6 +171,8 @@ const daysOfTheWeek = [
   } // SUNDAY
 ];
 
+const useStyles = makeStyles(styles);
+
 export const TimeSearchForm = ({
   cancel,
   onDayPartStartTimeChange,
@@ -178,95 +181,99 @@ export const TimeSearchForm = ({
   onDayOfWeekSelectionChange,
   inputValue
 }) => {
+  const classes = useStyles();
   const asterisk = !inputValue.stationBroadcastTime ? '*' : '';
 
   return (
-      <div className={cx(styles['timeSearchConfigContent'])}>
-        <div className={cx(styles['timeSelectSection'])}>
-          <div className={cx(styles['timeSelectSection'])}>
-            <div className={cx(styles['timeInputSection'])}>
-              <TextField
-                label={'Start Time' + asterisk}
-                InputLabelProps={{
-                  shrink: true
-                }}
-                autoFocus
-                className="dayPartStartTimeInput"
-                type="time"
-                min="00:00"
-                max="23:59"
-                value={inputValue.dayPartStartTime}
-                onChange={onDayPartStartTimeChange}
-              />
-            </div>
-            <div className={cx(styles['timeInputSection'])}>
-              <TextField
-                label={'End Time' + asterisk}
-                InputLabelProps={{
-                  shrink: true
-                }}
-                className="dayPartEndTimeInput"
-                type="time"
-                min="00:00"
-                max="23:59"
-                value={inputValue.dayPartEndTime}
-                onChange={onDayPartEndTimeChange}
-              />
-            </div>
-          </div>
-          <div className={cx(styles['stationSwitchSection'])}>
-            <FormControlLabel
-              control={
-                <Switch
-                  className="stationBroadcastSwitch"
-                  color="primary"
-                  checked={inputValue.stationBroadcastTime}
-                  onChange={onStationBroadcastTimeChange}
-                />
-              }
-              label="Station Broadcast Time"
+    <div className={cx(classes['timeSearchConfigContent'])}>
+      <div className={cx(classes['timeSelectSection'])}>
+        <div className={cx(classes['timeSelectSection'])}>
+          <div className={cx(classes['timeInputSection'])}>
+            <TextField
+              label={'Start Time' + asterisk}
+              InputLabelProps={{
+                shrink: true
+              }}
+              autoFocus
+              className="dayPartStartTimeInput"
+              type="time"
+              min="00:00"
+              max="23:59"
+              value={inputValue.dayPartStartTime}
+              onChange={onDayPartStartTimeChange}
             />
-            <Typography variant="caption" color="textSecondary" gutterBottom>
-              Display results against all timezones for this time range.
-            </Typography>
+          </div>
+          <div className={cx(classes['timeInputSection'])}>
+            <TextField
+              label={'End Time' + asterisk}
+              InputLabelProps={{
+                shrink: true
+              }}
+              className="dayPartEndTimeInput"
+              type="time"
+              min="00:00"
+              max="23:59"
+              value={inputValue.dayPartEndTime}
+              onChange={onDayPartEndTimeChange}
+            />
           </div>
         </div>
-        {inputValue.stationBroadcastTime && (
-          <div className={cx(styles['dayOfWeekConfig'])}>
-            <h4>Day of the Week</h4>
-            <div className={cx(styles['dayOfWeekSelection'])}>
-              {daysOfTheWeek.map(dayOfTheWeek => (
-                <FormControlLabel
-                  key={dayOfTheWeek.isoWeekday}
-                  control={
-                    <Checkbox
-                      color="primary"
-                      checked={
-                        inputValue.selectedDays[dayOfTheWeek.isoWeekday - 1]
-                      }
-                      onChange={onDayOfWeekSelectionChange}
-                      value={String(dayOfTheWeek.isoWeekday - 1)}
-                    />
-                  }
-                  label={dayOfTheWeek.name}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {!inputValue.stationBroadcastTime && (
-          <label>
-            <Typography variant="caption" color="textSecondary" gutterBottom>
-              *{
-                new Date()
-                  .toLocaleTimeString('en-us', { timeZoneName: 'long' })
-                  .split(' ')[2]
-              }{' '}
-              Time Zone
+        <div className={cx(classes['stationSwitchSection'])}>
+          <FormControlLabel
+            control={
+              <Switch
+                className="stationBroadcastSwitch"
+                color="primary"
+                checked={inputValue.stationBroadcastTime}
+                onChange={onStationBroadcastTimeChange}
+              />
+            }
+            label="Station Broadcast Time"
+          />
+          <Typography variant="caption" color="textSecondary" gutterBottom>
+            Display results against all timezones for this time range.
             </Typography>
-          </label>
-        )}
-              { /*
+        </div>
+      </div>
+      {inputValue.stationBroadcastTime && (
+        <div className={cx(classes['dayOfWeekConfig'])}>
+          <h4>Day of the Week</h4>
+          <div
+            className={cx(classes['dayOfWeekSelection'])}
+            data-test="dayOfWeekSelection"
+          >
+            {daysOfTheWeek.map(dayOfTheWeek => (
+              <FormControlLabel
+                key={dayOfTheWeek.isoWeekday}
+                control={
+                  <Checkbox
+                    color="primary"
+                    checked={
+                      inputValue.selectedDays[dayOfTheWeek.isoWeekday - 1]
+                    }
+                    onChange={onDayOfWeekSelectionChange}
+                    value={String(dayOfTheWeek.isoWeekday - 1)}
+                  />
+                }
+                label={dayOfTheWeek.name}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      {!inputValue.stationBroadcastTime && (
+        <label>
+          <Typography variant="caption" color="textSecondary" gutterBottom>
+            *{
+              new Date()
+                .toLocaleTimeString('en-us', { timeZoneName: 'long' })
+                .split(' ')[2]
+            }{' '}
+            Time Zone
+            </Typography>
+        </label>
+      )}
+      { /*
         disabled={
           !inputValue ||
           !inputValue.dayPartStartTime ||
@@ -278,7 +285,7 @@ export const TimeSearchForm = ({
         }
 
       */}
-      </div>
+    </div>
   );
 };
 
@@ -302,7 +309,7 @@ TimeSearchModal.defaultProps = {
 };
 
 const TimeConditionGenerator = modalState => {
-  const dayPartTimeToMinutes = function(hourMinuteTime) {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
       typeof hourMinuteTime !== 'string' ||
@@ -368,7 +375,7 @@ const TimeDisplay = modalState => {
   if (modalState.search.dayPartStartTime && modalState.search.dayPartEndTime) {
     let dayPartStartTime = modalState.search.dayPartStartTime;
     let dayPartEndTime = modalState.search.dayPartEndTime;
-    if(modalState.search.stationBroadcastTime === false) {
+    if (modalState.search.stationBroadcastTime === false) {
       dayPartStartTime = fromUTCToLocal(dayPartStartTime);
       dayPartEndTime = fromUTCToLocal(dayPartEndTime);
     }
