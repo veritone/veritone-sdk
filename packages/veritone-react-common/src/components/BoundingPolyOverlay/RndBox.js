@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import Rnd from 'react-rnd';
+import { Rnd } from 'react-rnd';
 
 import styles from './overlay.styles.scss';
 

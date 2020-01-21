@@ -4,7 +4,7 @@ import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
+import InfoOutlineIcon from '@material-ui/icons/InfoOutlined';
 import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
 import { findIndex, get, isEqual } from 'lodash';
@@ -40,18 +40,25 @@ class AdvancedPanel extends React.Component {
     const currentParentRange = get(currentState, 'parentRange', [0, 100]);
     const nextBoundingPoly = get(nextProps, 'advancedOptions.boundingPoly', []);
     const nextRange = get(nextProps, 'advancedOptions.range', [0, 100]);
-    if (!isEqual(currentParentBoudingPoly, nextBoundingPoly) || !isEqual(currentParentRange, nextRange)) {
+    if (
+      !isEqual(currentParentBoudingPoly, nextBoundingPoly) ||
+      !isEqual(currentParentRange, nextRange)
+    ) {
       return {
-        boundingBoxes: nextBoundingPoly.length ? [{
-          boundingPoly: nextBoundingPoly,
-          overlayObjectType: 'c',
-          id: id
-        }] : [],
-        step: (nextBoundingPoly && nextBoundingPoly.length) ? 3 : 1,
+        boundingBoxes: nextBoundingPoly.length
+          ? [
+              {
+                boundingPoly: nextBoundingPoly,
+                overlayObjectType: 'c',
+                id: id
+              }
+            ]
+          : [],
+        step: nextBoundingPoly && nextBoundingPoly.length ? 3 : 1,
         selectedConfidenceRange: nextRange,
         parentBoudingPoly: nextBoundingPoly,
         parentRange: nextRange
-      }
+      };
     }
     return null;
   }
@@ -64,7 +71,7 @@ class AdvancedPanel extends React.Component {
       boundingBoxes: [
         ...state.boundingBoxes,
         {
-          ...newBox,
+          ...newBox
         }
       ]
     }));
@@ -97,21 +104,21 @@ class AdvancedPanel extends React.Component {
   onEditAoI = () => {
     this.setState({
       step: 2
-    })
-  }
+    });
+  };
 
   onRemoveAoI = () => {
     this.setState({
       step: 1,
       boundingBoxes: []
-    })
-  }
+    });
+  };
 
-  onUpdateStep = (step) => {
+  onUpdateStep = step => {
     this.setState({
       step: step,
       readOnly: step !== 2
-    })
+    });
     if (step === 2) {
       const defaultBoundingBox = {
         boundingPoly: [
@@ -122,16 +129,16 @@ class AdvancedPanel extends React.Component {
         ],
         overlayObjectType: 'c',
         id: guid()
-      }
+      };
       this.handleAddBoundingBox(defaultBoundingBox);
     }
-  }
+  };
 
-  onChangeConfidenceRange = (e) => {
+  onChangeConfidenceRange = e => {
     this.setState({
       selectedConfidenceRange: [...e]
-    })
-  }
+    });
+  };
 
   handleResetAll = () => {
     this.setState({
@@ -140,16 +147,17 @@ class AdvancedPanel extends React.Component {
       selectedConfidenceRange: [0, 100]
     });
     this.props.handleReset();
-  }
+  };
 
   handleApply = () => {
     const { onAddAdvancedSearchParams } = this.props;
     const { boundingBoxes, selectedConfidenceRange, step } = this.state;
     onAddAdvancedSearchParams({
-      boundingPoly: step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
+      boundingPoly:
+        step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
       range: selectedConfidenceRange
-    })
-  }
+    });
+  };
 
   render() {
     const { boundingBoxes, step } = this.state;
@@ -186,7 +194,8 @@ class AdvancedPanel extends React.Component {
           <div className={cx(style['dialog-content'])}>
             <div className={cx(style['area-text'])}>Area of Interest</div>
             <div className={cx(style['only-return-text'])}>
-              Only return search results for this {searchByTag} if they appear in a defined region.
+              Only return search results for this {searchByTag} if they appear
+              in a defined region.
             </div>
             <div className={cx(style['location-select-div'])}>
               <LocationSelect
@@ -227,10 +236,10 @@ class AdvancedPanel extends React.Component {
                 className={cx(style['vbtn-black-color'], style['vbtn-cancel'])}
               >
                 CANCEL
-                </Button>
+              </Button>
               <Button
                 onClick={this.handleApply}
-                variant="raised"
+                variant="contained"
                 className={cx(style['vbtn-blue'])}
               >
                 APPLY
@@ -238,13 +247,11 @@ class AdvancedPanel extends React.Component {
             </div>
           </div>
         </Dialog>
-      </div >
+      </div>
     );
   }
 }
 
-export {
-  AdvancedPanel
-}
+export { AdvancedPanel };
 
 export default AdvancedPanel;

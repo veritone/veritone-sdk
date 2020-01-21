@@ -171,7 +171,7 @@ export default class Overlay extends React.Component {
     });
   };
 
-  handleResizeExistingBoxStop = (e, direction, ref, delta, position) => {
+  handleResizeExistingBoxStop = (e, direction, ref) => {
     const focusedId = ref.getAttribute('data-boxid');
     const focusedIndex = findIndex(this.state.boundingBoxPositions, {
       id: focusedId
@@ -192,7 +192,7 @@ export default class Overlay extends React.Component {
     });
   };
 
-  handleDragStagedBox = (e, d) => {
+  handleDragStagedBox = () => {
     this.setState({ userActingOnBoundingBox: true });
   };
 
@@ -411,75 +411,72 @@ export default class Overlay extends React.Component {
             readOnly,
             boundingPoly: { x, y, width, height }
           }) => (
-              <RndBox
-                key={id}
-                extendsProps={{
-                  'data-boxid': id,
-                  onClick: this.handleClickBox
-                }}
-                style={{
-                  ...boundingBoxCommonStyles,
-                  ...this.props.defaultBoundingBoxStyles,
-                  ...this.props.stylesByObjectType[overlayObjectType],
-                  pointerEvents:
-                    readOnly ||
-                      this.props.readOnly ||
-                      this.props.addOnly ||
-                      this.state.drawingInitialBoundingBox
-                      ? 'none'
-                      : 'auto'
-                }}
-                size={{ width, height }}
-                position={{ x, y }}
-                onDragStop={this.handleDragExistingBoxStop}
-                onDrag={this.handleDragExistingBox}
-                onResize={this.handleResizeExistingBox}
-                onResizeStop={this.handleResizeExistingBoxStop}
-                disableDragging={
-                  readOnly || this.props.readOnly || this.props.addOnly
-                }
-                enableResizing={
-                  !readOnly &&
-                    !this.props.readOnly &&
-                    !this.props.addOnly &&
-                    this.state.focusedBoundingBoxId === id
-                    ? undefined
-                    : false
-                }
-              />
-            )
-        )}
-
-        {this.hasStagedBoundingBox() &&
-          !this.props.readOnly && (
             <RndBox
+              key={id}
+              data-boxid={id}
+              onClick={this.handleClickBox}
               style={{
                 ...boundingBoxCommonStyles,
                 ...this.props.defaultBoundingBoxStyles,
-                ...this.props.stagedBoundingBoxStyles,
-                // do not let this box interfere with mouse events as we draw it out
-                pointerEvents: this.state.drawingInitialBoundingBox
-                  ? 'none'
-                  : 'auto'
+                ...this.props.stylesByObjectType[overlayObjectType],
+                pointerEvents:
+                  readOnly ||
+                  this.props.readOnly ||
+                  this.props.addOnly ||
+                  this.state.drawingInitialBoundingBox
+                    ? 'none'
+                    : 'auto'
               }}
-              size={{
-                width: this.state.stagedBoundingBoxPosition.width,
-                height: this.state.stagedBoundingBoxPosition.height
-              }}
-              position={{
-                x: this.state.stagedBoundingBoxPosition.x,
-                y: this.state.stagedBoundingBoxPosition.y
-              }}
-              onDragStop={this.handleDragStagedBoxStop}
-              onDrag={this.handleDragStagedBox}
-              onResize={this.handleResizeStagedBox}
-              onResizeStop={this.handleResizeStagedBoxStop}
+              size={{ width, height }}
+              position={{ x, y }}
+              onDragStop={this.handleDragExistingBoxStop}
+              onDrag={this.handleDragExistingBox}
+              onResize={this.handleResizeExistingBox}
+              onResizeStop={this.handleResizeExistingBoxStop}
+              disableDragging={
+                readOnly || this.props.readOnly || this.props.addOnly
+              }
               enableResizing={
-                // don't show handles during initial drag placement
-                this.state.drawingInitialBoundingBox ? false : undefined
+                !readOnly &&
+                !this.props.readOnly &&
+                !this.props.addOnly &&
+                this.state.focusedBoundingBoxId === id
+                  ? undefined
+                  : false
               }
             />
-          )}
+          )
+        )}
+
+        {this.hasStagedBoundingBox() && !this.props.readOnly && (
+          <RndBox
+            style={{
+              ...boundingBoxCommonStyles,
+              ...this.props.defaultBoundingBoxStyles,
+              ...this.props.stagedBoundingBoxStyles,
+              // do not let this box interfere with mouse events as we draw it out
+              pointerEvents: this.state.drawingInitialBoundingBox
+                ? 'none'
+                : 'auto'
+            }}
+            size={{
+              width: this.state.stagedBoundingBoxPosition.width,
+              height: this.state.stagedBoundingBoxPosition.height
+            }}
+            position={{
+              x: this.state.stagedBoundingBoxPosition.x,
+              y: this.state.stagedBoundingBoxPosition.y
+            }}
+            onDragStop={this.handleDragStagedBoxStop}
+            onDrag={this.handleDragStagedBox}
+            onResize={this.handleResizeStagedBox}
+            onResizeStop={this.handleResizeStagedBoxStop}
+            enableResizing={
+              // don't show handles during initial drag placement
+              this.state.drawingInitialBoundingBox ? false : undefined
+            }
+          />
+        )}
 
         <div
           style={{

@@ -2,7 +2,7 @@ import React from 'react';
 import { findIndex } from 'lodash';
 import { storiesOf } from '@storybook/react';
 import { select, number, text, boolean } from '@storybook/addon-knobs';
-import Slider from '@material-ui/lab/Slider';
+import Slider from '@material-ui/core/Slider';
 import faker from 'faker';
 
 import { guid } from '../../helpers/guid';
@@ -127,9 +127,7 @@ class Story extends React.Component {
           />
           <div
             style={{
-              backgroundImage: `url(https://picsum.photos/${
-                this.props.contentWidth
-              }/${this.props.contentHeight})`,
+              backgroundImage: `url(https://picsum.photos/${this.props.contentWidth}/${this.props.contentHeight})`,
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'contain',

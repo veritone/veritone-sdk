@@ -1,7 +1,34 @@
 {
+  "presets": [
+    "env",
+    "react"
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": "./src",
+        "alias": {
+          "helpers": "./src/helpers",
+          "images": "./src/resources/images",
+          "components": "./src/components",
+          "reduxModules": "./src/redux/modules"
+        }
+      }
+    ],
+    "transform-export-extensions",
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    "transform-runtime",
+    "lodash"
+  ],
   "env": {
     "test": {
-      "presets": ["env", "react"],
+      "presets": [
+        "env",
+        "react",
+      ],
       "plugins": [
         [
           "module-resolver",
@@ -29,12 +56,14 @@
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 5%"]
+              "browsers": [
+                "> 5%"
+              ]
             }
           }
         ],
         "react",
-        "es2016"
+        "typescript"
       ],
       "plugins": [
         "external-helpers",
@@ -66,11 +95,13 @@
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 0.5%"]
+              "browsers": [
+                "> 0.5%"
+              ]
             }
           }
         ],
-        "react"
+        "react",
       ],
       "plugins": [
         "external-helpers",
