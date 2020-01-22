@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func, any } from 'prop-types';
 import { includes, get } from 'lodash';
 import cx from 'classnames';
 import { modules } from 'veritone-redux-common';
@@ -17,10 +17,12 @@ import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
+@withStyles(styles)
 @connect(
   (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
@@ -65,7 +67,8 @@ export default class EngineConfigItem extends Component {
       })
     ).isRequired,
     selectFileType: func,
-    exportClosedCaptionsEnabled: bool
+    exportClosedCaptionsEnabled: bool,
+    classes: shape({ any })
   };
 
   render() {
@@ -76,47 +79,48 @@ export default class EngineConfigItem extends Component {
       category,
       formats,
       selectFileType,
-      exportClosedCaptionsEnabled
+      exportClosedCaptionsEnabled,
+      classes
     } = this.props;
 
     const selectedFileExtensions = formats.map(format => format.extension);
 
     return (
       <ListItem
-        className={styles.engineListItem}
+        className={classes.engineListItem}
         data-veritone-component="engine-config-list-item"
       >
         {engine && engine.signedIconPath ? (
-          <img className={styles.engineLogo} src={engine.signedIconPath} />
+          <img className={classes.engineLogo} src={engine.signedIconPath} data-test="engineLogo" />
         ) : (
-            <Icon className={cx(styles['default-engine-icon'], 'icon-engines')} />
+            <Icon className={cx(classes['defaultEngineicon'], 'icon-engines')} />
           )}
         <ListItemText
-          classes={{ primary: styles.engineNameText }}
+          classes={{ primary: classes.engineNameText }}
           primary={
             engine ? (
               engine.name
             ) : (
-                <span className={styles.allEnginesText}>
+                <span className={classes.allEnginesText}>
                   <span>All Engines</span>
                   <Tooltip
                     title="Export will include formats selected for all available engines in this category"
                     placement="bottom-start"
                   >
-                    <InfoIcon className={styles.allEnginesInfoIcon} />
+                    <InfoIcon className={classes.allEnginesInfoIcon} />
                   </Tooltip>
                 </span>
               )
           }
           inset={!engine}
         />
-        <FormControl className={styles.formControl}>
+        <FormControl className={classes.formControl}>
           <InputLabel htmlFor="engine-export">
             {selectedFileExtensions.length ? "" : "Select export format"}
           </InputLabel>
           <Select
             multiple
-            className={styles.selectStyles}
+            className={classes.selectStyles}
             value={selectedFileExtensions}
             // eslint-disable-next-line
             onChange={evt =>
@@ -131,7 +135,7 @@ export default class EngineConfigItem extends Component {
             input={
               <Input
                 classes={{
-                  root: styles.engineConfigInput
+                  root: classes.engineConfigInput
                 }}
               />
             }
@@ -162,7 +166,7 @@ export default class EngineConfigItem extends Component {
                   key={`format-${engineId}-${format.format}`}
                   value={format.format}
                   classes={{
-                    selected: styles.exportFormatSelected
+                    selected: classes.exportFormatSelected
                   }}
                   data-veritone-element={`${format.format}-export-format`}
                 >

@@ -1,15 +1,16 @@
 import React from 'react';
-import { func, number, bool, string, arrayOf, shape } from 'prop-types';
+import { func, number, bool, string, arrayOf, shape, any } from 'prop-types';
 
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/styles';
 
 import SearchBar from './SearchBar';
 
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class SelectBar extends React.Component {
+class SelectBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
     currentTab: string.isRequired,
@@ -27,12 +28,14 @@ export default class SelectBar extends React.Component {
         onClick: func.isRequired
       })
     ),
-    count: number.isRequired
+    count: number.isRequired,
+    classes: shape({ any }),
   };
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.selectBar}>
+      <div className={classes.selectBar}>
         <Checkbox
           color="primary"
           checked={!!this.props.isChecked}
@@ -41,7 +44,7 @@ export default class SelectBar extends React.Component {
         />
         <div>Select All ({this.props.count})</div>
 
-        <div className={styles.selectBarIcons}>
+        <div className={classes.selectBarIcons}>
           <SearchBar
             key={
               this.props.id + this.props.isSearchOpen + this.props.currentTab
@@ -54,8 +57,8 @@ export default class SelectBar extends React.Component {
             isOpen={this.props.isSearchOpen}
           />
           {this.props.actionMenuItems && (
-            <div className={styles.actionMenuDividerContainer}>
-              <div className={styles.actionMenuDivider} />
+            <div className={classes.actionMenuDividerContainer}>
+              <div className={classes.actionMenuDivider} />
             </div>
           )}
           {this.props.actionMenuItems &&
@@ -70,16 +73,18 @@ export default class SelectBar extends React.Component {
                     {buttonText}
                   </Button>
                 ) : (
-                  <IconButton
-                    key={`${buttonText}-${iconClass}`}
-                    onClick={onClick}
-                  >
-                    <i className={iconClass} />
-                  </IconButton>
-                )
+                    <IconButton
+                      key={`${buttonText}-${iconClass}`}
+                      onClick={onClick}
+                    >
+                      <i className={iconClass} />
+                    </IconButton>
+                  )
             )}
         </div>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(SelectBar);

@@ -56,11 +56,11 @@ describe('Media Player Lightbox Widget', () => {
   });
 
   it('Missing Lightbox Container', () => {
-    expect(wrapper.find('div.popupContainer')).toHaveLength(1);
+    expect(wrapper.find('div[data-test="popupContainer"]')).toHaveLength(1);
   });
 
   it('Missing Lighbox Close Button', () => {
-    expect(wrapper.find('IconButton')).toHaveLength(1);
+    expect(wrapper.find('button[aria-label="Close"]')).toHaveLength(1);
   });
 
   it('Missing Controllers', () => {
@@ -68,13 +68,13 @@ describe('Media Player Lightbox Widget', () => {
   });
 
   it('Missing Live Label', () => {
-    const liveLabel = wrapper.find('div.liveLabel');
+    const liveLabel = wrapper.find('div[data-test="liveLabel"]');
     expect(liveLabel).toHaveLength(1);
     expect(liveLabel.text()).toEqual('LIVE');
   });
 
   it('Missing Media Player', () => {
-    expect(wrapper.find('MediaPlayerComponent')).toHaveLength(1);
+    expect(wrapper.find('MediaPlayerComponent').length).toBeGreaterThanOrEqual(1);
   });
 
   it('Mising Overlay Position Provider - MediaPlayer structure has changed and it may effect MediaPlayerLightbox', () => {
@@ -90,6 +90,6 @@ describe('Media Player Lightbox Widget', () => {
   });
 
   it('Missing reactPlayer class - it looks like bounding Poly layout has changed & it may cause caling problems in MediaPlayerLightbox', () => {
-    expect(wrapper.find('Player').hasClass('reactPlayer')).toBe(true);
+    expect(wrapper.find('Player').props()).toHaveProperty('className', expect.stringMatching('reactPlayer'));
   });
 });

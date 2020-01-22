@@ -1,14 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { string, shape, object, func, bool } from 'prop-types';
+import { string, shape, object, func, bool, any } from 'prop-types';
 
 import BackIcon from '@material-ui/icons/KeyboardBackspace';
+import { withStyles } from '@material-ui/styles';
 import InfoSection from './InfoSection';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 
+@withStyles(styles)
 @connect(
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
@@ -36,24 +38,26 @@ export default class EngineDetailView extends React.Component {
     isSelected: bool.isRequired,
     onCloseDetailView: func.isRequired,
     selectEngines: func.isRequired,
-    deselectEngines: func.isRequired
+    deselectEngines: func.isRequired,
+    classes: shape({ any })
   };
 
   static defaultProps = {};
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className={styles.detailsContainer}>
-        <div className={styles.back}>
+      <div className={classes.detailsContainer}>
+        <div className={classes.back}>
           <div
-            className={styles.backBtn}
+            className={classes.backBtn}
             onClick={this.props.onCloseDetailView}
           >
             <BackIcon />
             <span>Back</span>
           </div>
         </div>
-        <div className={styles.content}>
+        <div className={classes.content}>
           <InfoSection
             id={this.props.id}
             engine={this.props.engine}
@@ -61,9 +65,9 @@ export default class EngineDetailView extends React.Component {
             onRemove={this.props.deselectEngines}
             isSelected={this.props.isSelected}
           />
-          <div className={styles.description}>
-            <div className={styles.sectionHeading}>Description</div>
-            <div className={styles.descriptionContent}>
+          <div className={classes.description}>
+            <div className={classes.sectionHeading}>Description</div>
+            <div className={classes.descriptionContent}>
               {this.props.engine.description}
             </div>
           </div>

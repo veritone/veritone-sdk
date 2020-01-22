@@ -18,8 +18,6 @@ import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
-import styles from './styles.scss';
-
 const mockStore = configureMockStore();
 
 const testTDOs = [{ tdoId: 'fakeTDOId ' }];
@@ -319,7 +317,7 @@ describe('EngineConfigItem', () => {
     });
 
     it('shows the engine logo', () => {
-      expect(wrapper.find('.' + styles.engineLogo).exists()).toEqual(true);
+      expect(wrapper.find('[data-test="engineLogo"]').exists()).toEqual(true);
     });
 
     it('shows the engine name', () => {
