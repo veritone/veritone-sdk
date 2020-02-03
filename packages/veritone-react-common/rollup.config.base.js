@@ -64,7 +64,8 @@ export default {
         '../../node_modules/react-is/index.js': [
           'isElement',
           'isValidElementType',
-          'ForwardRef'
+          'ForwardRef',
+          'isFragment'
         ],
         '../../node_modules/jss/lib/index.js': [
           'createRule',
