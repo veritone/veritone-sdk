@@ -1,3 +1,6 @@
+/* eslint-disable operator-assignment */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import cx from 'classnames';
 import {
@@ -8,7 +11,7 @@ import {
   func,
   object,
   node,
-  any
+  any,
 } from 'prop-types';
 
 import Chip from '@material-ui/core/Chip';
@@ -28,15 +31,15 @@ import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
 
-const containerClasses = cx(styles['searchBar']);
+const containerClasses = cx(styles.searchBar);
 
-const searchInputContainerClass = cx(styles['searchInput']);
+const searchInputContainerClass = cx(styles.searchInput);
 
 const GhostInput = ({ showGhost, onFocus }) => (
   <span
     onClick={onFocus}
     maxLength="0"
-    className={cx(styles['afterCursor'])}
+    className={cx(styles.afterCursor)}
     type="textbox"
     size="1"
   >
@@ -50,28 +53,26 @@ const GhostInput = ({ showGhost, onFocus }) => (
 
 GhostInput.propTypes = {
   showGhost: bool,
-  onFocus: func
+  onFocus: func,
 };
 
-const JoiningOperator = ({ operator, onClick }) => {
-  return (
-    <Chip
-      label={operator}
-      onClick={onClick}
-      classes={{ label: cx(styles['joinOperatorChip']) }}
-      style={{
-        background: 'transparent',
-        color: '#2196F3',
-        paddingLeft: 0,
-        paddingRight: 0
-      }}
-    />
-  );
-};
+const JoiningOperator = ({ operator, onClick }) => (
+  <Chip
+    label={operator}
+    onClick={onClick}
+    classes={{ label: cx(styles.joinOperatorChip) }}
+    style={{
+      background: 'transparent',
+      color: '#2196F3',
+      paddingLeft: 0,
+      paddingRight: 0,
+    }}
+  />
+);
 
 JoiningOperator.propTypes = {
   operator: node,
-  onClick: func
+  onClick: func,
 };
 
 const SearchParameters = withTheme(
@@ -87,9 +88,9 @@ const SearchParameters = withTheme(
     removePill,
     addPill,
     libraries,
-    openMenu
+    openMenu,
   }) => {
-    let output = [];
+    const output = [];
 
     // need to do a pass over the search parameters to build a tree so we can render groups cleanly
     // creates a structure where {id: number}
@@ -98,27 +99,27 @@ const SearchParameters = withTheme(
     const groups = {};
     let startOfGroup = null;
     let treeLevel = 0;
-    for (let i = 0; i < searchParameters.length; i++) {
+    for (let i = 0; i < searchParameters.length; i += 1) {
       if (searchParameters[i].value === '(') {
         if (treeLevel === 0) {
           startOfGroup = searchParameters[i].id;
         }
-        treeLevel++;
+        treeLevel += 1;
       } else if (searchParameters[i].value === ')') {
-        treeLevel--;
+        treeLevel -= 1;
         if (treeLevel === 0) {
           groups[startOfGroup] = {
             endOfGroup: i,
             afterGroup:
-              searchParameters[i + 1] && searchParameters[i + 1].conditionType
+              searchParameters[i + 1] && searchParameters[i + 1].conditionType,
           };
           startOfGroup = null;
         }
       }
     }
 
-    for (let i = 0; i < searchParameters.length; i++) {
-      let searchParameter = searchParameters[i];
+    for (let i = 0; i < searchParameters.length; i += 1) {
+      const searchParameter = searchParameters[i];
       if (searchParameter.conditionType === 'join') {
         const onClick = e => {
           openMenu(e.currentTarget, searchParameter);
@@ -137,16 +138,16 @@ const SearchParameters = withTheme(
             searchParameters[i - 1] &&
             searchParameters[i - 1].conditionType !== 'group'
           ) {
-            nestedGroupStyling += cx(styles['searchGroupNestedLeft']) + ' ';
+            nestedGroupStyling += `${cx(styles.searchGroupNestedLeft)} `;
           }
           if (
             groups[searchParameter.id].afterGroup &&
             groups[searchParameter.id].afterGroup !== 'group'
           ) {
-            nestedGroupStyling += cx(styles['searchGroupNestedRight']);
+            nestedGroupStyling += cx(styles.searchGroupNestedRight);
           }
           const stylingClass =
-            level === 0 ? cx(styles['searchGroup']) : nestedGroupStyling;
+            level === 0 ? cx(styles.searchGroup) : nestedGroupStyling;
 
           output.push(
             <span
@@ -154,7 +155,7 @@ const SearchParameters = withTheme(
                 alignItems: 'center',
                 display: 'flex',
                 flexWrap: 'nowrap',
-                borderColor: theme.palette.primary.main
+                borderColor: theme.palette.primary.main,
               }}
               className={stylingClass}
               key={`search_container_${searchParameter.id}`}
@@ -220,11 +221,11 @@ const SearchParameters = withTheme(
 
 class SearchBar extends React.Component {
   state = {
-    showScrollBar: false
+    showScrollBar: false,
   };
 
   addPill = () => {
-    let categoryToAdd = this.props.enabledEngineCategories[0].id;
+    const categoryToAdd = this.props.enabledEngineCategories[0].id;
     this.props.addPill(categoryToAdd);
   };
 
@@ -242,12 +243,12 @@ class SearchBar extends React.Component {
       ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth &&
         this.props.searchParameters.length > 0
       : false;
-    this.setState({ showScrollBar: showScrollBar });
+    this.setState({ showScrollBar });
   }
 
   scrollLeft = step => {
     if (this.scrollContainer) {
-      let amount = step && step > 5 ? 5 : step;
+      const amount = step && step > 5 ? 5 : step;
       this.scrollContainer.scrollLeft =
         this.scrollContainer.scrollLeft - amount * 10;
       this.updateScrollState();
@@ -256,40 +257,40 @@ class SearchBar extends React.Component {
 
   scrollRight = step => {
     if (this.scrollContainer) {
-      let amount = step && step > 5 ? 5 : step;
+      const amount = step && step > 5 ? 5 : step;
       this.scrollContainer.scrollLeft =
         this.scrollContainer.scrollLeft + amount * 10;
       this.updateScrollState();
     }
   };
 
-  mouseDown = direction => {
-    return e => {
-      if (direction === 'left') {
-        this.scrollLeft(10);
-      } else {
-        this.scrollRight(10);
-      }
+  mouseDown = direction => e => {
+    if (direction === 'left') {
+      this.scrollLeft(10);
+    } else {
+      this.scrollRight(10);
+    }
 
-      if (!this.scrollListener) {
-        this.scrollListener = interval(50)
-          .takeUntil(fromEvent(e.target, 'mouseup'))
-          .subscribe(
-            x => {
-              if (direction === 'left') {
-                this.scrollLeft(x);
-              } else {
-                this.scrollRight(x);
-              }
-            },
-            null,
-            () => (this.scrollListener = null)
-          );
-      } else {
-        this.scrollListener.unsubscribe();
-        this.scrollListener = null;
-      }
-    };
+    if (!this.scrollListener) {
+      this.scrollListener = interval(50)
+        .takeUntil(fromEvent(e.target, 'mouseup'))
+        .subscribe(
+          x => {
+            if (direction === 'left') {
+              this.scrollLeft(x);
+            } else {
+              this.scrollRight(x);
+            }
+          },
+          null,
+          () => {
+            this.scrollListener = null;
+          }
+        );
+    } else {
+      this.scrollListener.unsubscribe();
+      this.scrollListener = null;
+    }
   };
 
   hashSearchParameters = searchParameters => {
@@ -302,7 +303,7 @@ class SearchBar extends React.Component {
       <div className={containerClasses}>
         {this.state.showScrollBar ? (
           <span onMouseDown={this.mouseDown('left')}>
-            <IconButton classes={{ root: cx(styles['resetButton']) }}>
+            <IconButton classes={{ root: cx(styles.resetButton) }}>
               <KeyboardArrowLeft />
             </IconButton>
           </span>
@@ -343,7 +344,7 @@ class SearchBar extends React.Component {
         </div>
         {this.state.showScrollBar ? (
           <span onMouseDown={this.mouseDown('right')}>
-            <IconButton classes={{ root: cx(styles['resetButton']) }}>
+            <IconButton classes={{ root: cx(styles.resetButton) }}>
               <KeyboardArrowRight />
             </IconButton>
           </span>
@@ -352,7 +353,7 @@ class SearchBar extends React.Component {
           <IconButton
             onClick={this.props.openMenuExtraActions}
             data-veritone-element={'more_actions'}
-            classes={{ root: cx(styles['resetButton']) }}
+            classes={{ root: cx(styles.resetButton) }}
           >
             <MoreVert />
           </IconButton>
@@ -361,6 +362,22 @@ class SearchBar extends React.Component {
     );
   }
 }
+
+const condition = {
+  id: string.isRequired,
+  value: object.isRequired,
+  conditionType: string.isRequired,
+};
+
+const supportedEngineCategoryType = {
+  id: string.isRequired,
+  name: string.isRequired,
+  tooltip: string.isRequired,
+  iconClass: string.isRequired,
+  enablePill: bool,
+  showPill: bool,
+  addPilll: func,
+};
 
 SearchBar.propTypes = {
   color: string.isRequired,
@@ -375,30 +392,14 @@ SearchBar.propTypes = {
   openMenu: func,
   selectedPill: any,
   highlightedPills: any,
-  togglePill: func
-};
-
-const supportedEngineCategoryType = {
-  id: string.isRequired,
-  name: string.isRequired,
-  tooltip: string.isRequired,
-  iconClass: string.isRequired,
-  enablePill: bool,
-  showPill: bool,
-  addPilll: func
-};
-
-const condition = {
-  id: string.isRequired,
-  value: object.isRequired,
-  conditionType: string.isRequired
+  togglePill: func,
 };
 
 SearchBar.defaultProps = {
   color: '#eeeeee',
   enabledEngineCategories: [],
   searchParameters: [],
-  addPill: id => console.log('Open search pill modal', id)
+  addPill: id => console.log('Open search pill modal', id),
 };
 
 export { SearchBar, supportedEngineCategoryType };

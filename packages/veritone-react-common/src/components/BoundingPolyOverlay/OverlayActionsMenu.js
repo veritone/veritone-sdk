@@ -16,11 +16,11 @@ export default class OverlayActionsMenu extends React.PureComponent {
     menuItems: arrayOf(
       shape({
         label: string.isRequired,
-        onClick: func.isRequired
+        onClick: func.isRequired,
       })
     ),
     bottomOffset: number,
-    focusedBoundingBoxId: string
+    focusedBoundingBoxId: string,
   };
 
   static defaultProps = {};

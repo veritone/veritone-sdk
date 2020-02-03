@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
@@ -23,7 +25,7 @@ class AdvancedPanel extends React.Component {
     handleClose: PropTypes.func.isRequired,
     handleReset: PropTypes.func.isRequired,
     advancedOptions: PropTypes.shape(Object),
-    onAddAdvancedSearchParams: PropTypes.func.isRequired
+    onAddAdvancedSearchParams: PropTypes.func.isRequired,
   };
 
   state = {
@@ -32,7 +34,7 @@ class AdvancedPanel extends React.Component {
     step: 1,
     selectedConfidenceRange: [0, 100],
     parentBoudingPoly: [],
-    parentRange: [0, 100]
+    parentRange: [0, 100],
   };
 
   static getDerivedStateFromProps(nextProps, currentState) {
@@ -50,14 +52,14 @@ class AdvancedPanel extends React.Component {
               {
                 boundingPoly: nextBoundingPoly,
                 overlayObjectType: 'c',
-                id: id
-              }
+                id,
+              },
             ]
           : [],
         step: nextBoundingPoly && nextBoundingPoly.length ? 3 : 1,
         selectedConfidenceRange: nextRange,
         parentBoudingPoly: nextBoundingPoly,
-        parentRange: nextRange
+        parentRange: nextRange,
       };
     }
     return null;
@@ -71,53 +73,55 @@ class AdvancedPanel extends React.Component {
       boundingBoxes: [
         ...state.boundingBoxes,
         {
-          ...newBox
-        }
-      ]
+          ...newBox,
+        },
+      ],
     }));
   };
 
   handleDeleteBoundingBox = deletedId => {
     this.setState(state => ({
-      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
+      boundingBoxes: state.boundingBoxes.filter(
+        ({ id: idBox }) => idBox !== deletedId
+      ),
     }));
   };
 
   handleChangeBoundingBox = changedBox => {
     this.setState(state => {
       const affectedIndex = findIndex(state.boundingBoxes, {
-        id: changedBox.id
+        id: changedBox.id,
       });
 
-      let newState = {
-        boundingBoxes: [...state.boundingBoxes]
+      const newState = {
+        boundingBoxes: [...state.boundingBoxes],
       };
 
       newState.boundingBoxes[affectedIndex] = changedBox;
 
       return {
-        boundingBoxes: newState.boundingBoxes
+        boundingBoxes: newState.boundingBoxes,
       };
     });
   };
 
   onEditAoI = () => {
     this.setState({
-      step: 2
+      step: 2,
     });
   };
 
   onRemoveAoI = () => {
     this.setState({
       step: 1,
-      boundingBoxes: []
+      boundingBoxes: [],
     });
   };
 
   onUpdateStep = step => {
     this.setState({
-      step: step,
-      readOnly: step !== 2
+      step,
+      readOnly: step !== 2,
     });
     if (step === 2) {
       const defaultBoundingBox = {
@@ -125,10 +129,10 @@ class AdvancedPanel extends React.Component {
           { x: 0, y: 0 },
           { x: 0, y: 1 },
           { x: 1, y: 1 },
-          { x: 1, y: 0 }
+          { x: 1, y: 0 },
         ],
         overlayObjectType: 'c',
-        id: guid()
+        id: guid(),
       };
       this.handleAddBoundingBox(defaultBoundingBox);
     }
@@ -136,7 +140,7 @@ class AdvancedPanel extends React.Component {
 
   onChangeConfidenceRange = e => {
     this.setState({
-      selectedConfidenceRange: [...e]
+      selectedConfidenceRange: [...e],
     });
   };
 
@@ -144,7 +148,7 @@ class AdvancedPanel extends React.Component {
     this.setState({
       step: 1,
       boundingBoxes: [],
-      selectedConfidenceRange: [0, 100]
+      selectedConfidenceRange: [0, 100],
     });
     this.props.handleReset();
   };
@@ -155,7 +159,7 @@ class AdvancedPanel extends React.Component {
     onAddAdvancedSearchParams({
       boundingPoly:
         step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
-      range: selectedConfidenceRange
+      range: selectedConfidenceRange,
     });
   };
 
@@ -172,7 +176,7 @@ class AdvancedPanel extends React.Component {
           data-veritone-component="advanced-search-panel"
         >
           <div id="advanced-search-panel">
-            <div className={cx(style['title'])}>
+            <div className={cx(style.title)}>
               <div className={cx(style['title-text'])}>Advanced Options</div>
               <div>
                 <IconButton
@@ -223,7 +227,7 @@ class AdvancedPanel extends React.Component {
               />
             </div>
           </div>
-          <div className={cx(style['dialog-content'], style['action'])}>
+          <div className={cx(style['dialog-content'], style.action)}>
             <div
               onClick={this.handleResetAll}
               className={cx(style['reset-all'])}

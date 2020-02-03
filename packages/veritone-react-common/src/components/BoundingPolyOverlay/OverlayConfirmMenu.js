@@ -10,13 +10,13 @@ export default class OverlayConfirmMenu extends React.Component {
     onConfirm: func.isRequired,
     onCancel: func.isRequired,
     onMinimize: func.isRequired,
-    bottomOffset: number
+    bottomOffset: number,
   };
 
   static defaultProps = {};
 
   state = {
-    menuAnchorEl: null
+    menuAnchorEl: null,
   };
 
   render() {
@@ -36,7 +36,7 @@ export default class OverlayConfirmMenu extends React.Component {
         </Button>
         <div
           style={{
-            borderRight: '1px solid #E0E0E0'
+            borderRight: '1px solid #E0E0E0',
           }}
         >
           {' '}

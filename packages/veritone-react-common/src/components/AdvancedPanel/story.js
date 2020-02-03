@@ -1,35 +1,37 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 import Button from '@material-ui/core/Button';
 
-import AdvancedPanel from './';
+import { AdvancedPanel } from './index';
 
 export default class Story extends Component {
   state = {
     openAdvancedPanel: false,
     advancedEnableIds: [],
-    advancedOptions: {}
-  }
+    advancedOptions: {},
+  };
+
   handleClickOpen = () => {
     this.setState({
-      openAdvancedPanel: true
-    })
-  }
+      openAdvancedPanel: true,
+    });
+  };
 
   handleCloseAdvanced = () => {
     this.setState({
-      openAdvancedPanel: false
-    })
-  }
+      openAdvancedPanel: false,
+    });
+  };
 
   handleResetAdvanced = () => {
     console.log('reset');
-  }
+  };
 
   handleApplyAdvancedOptions = () => {
     console.log('apply');
     this.handleCloseAdvanced();
-  }
+  };
+
   render() {
     return (
       <div>
@@ -42,13 +44,8 @@ export default class Story extends Component {
           onAddAdvancedSearchParams={this.handleApplyAdvancedOptions}
         />
       </div>
-    )
+    );
   }
 }
 
-
-
-storiesOf('AdvancedSearchPanel', module)
-  .add('Base', () => (
-    <Story />
-  ));
+storiesOf('AdvancedSearchPanel', module).add('Base', () => <Story />);

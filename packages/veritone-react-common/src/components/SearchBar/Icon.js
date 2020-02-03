@@ -6,16 +6,16 @@ const Icon = ({ iconClass, color, size }) => (
     className={iconClass}
     style={{
       padding: '0.25em',
-      color: color,
+      color,
       display: 'block',
-      fontSize: size
+      fontSize: size,
     }}
   />
 );
 Icon.propTypes = {
   iconClass: string,
   color: string,
-  size: string
+  size: string,
 };
 
 export default Icon;

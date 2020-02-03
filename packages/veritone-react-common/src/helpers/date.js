@@ -1,12 +1,25 @@
+/* eslint-disable no-underscore-dangle */
 import { isArray, isMatch, isDate } from 'lodash';
 import {
   subHours,
   subDays,
   subMonths,
   format as libFormat,
-  isValid
+  isValid,
 } from 'date-fns';
 
+export const dateFormats = {
+  full: 'MMM Do, YYYY hh:mmA',
+  short: 'MM/DD/YYYY',
+};
+
+export function format(date, ...args) {
+  if (!date) {
+    return '';
+  }
+
+  return isValid(new Date(date)) ? libFormat(date, ...args) : '';
+}
 export class Interval {
   constructor({ label, start, end, window } = {}) {
     this.label = label;
@@ -54,13 +67,13 @@ export class Interval {
   isEqual(interval) {
     if (this.isSliding()) {
       return isMatch(interval, {
-        _window: this._window
+        _window: this._window,
       });
     }
 
     return isMatch(interval, {
       _start: this._start,
-      _end: this._end
+      _end: this._end,
     });
   }
 
@@ -70,7 +83,7 @@ export class Interval {
       end: this.end,
       _start: this._start,
       _end: this._end,
-      _window: this._window
+      _window: this._window,
     };
   }
 
@@ -114,7 +127,7 @@ export class Interval {
     const subFn = {
       h: subHours,
       d: subDays,
-      m: subMonths
+      m: subMonths,
     }[window[1]];
 
     if (!subFn) {
@@ -123,7 +136,7 @@ export class Interval {
 
     return {
       start: subFn(new Date(), window[0]),
-      end: new Date()
+      end: new Date(),
     };
   }
 
@@ -133,7 +146,7 @@ export class Interval {
     return new Interval({
       window: interval._window,
       start: interval._start ? new Date(interval._start) : undefined,
-      end: interval._end ? new Date(interval._end) : undefined
+      end: interval._end ? new Date(interval._end) : undefined,
     });
   }
 }
@@ -141,35 +154,22 @@ export class Interval {
 export const defaultIntervals = {
   day: new Interval({
     label: 'Last day',
-    window: [1, 'd']
+    window: [1, 'd'],
   }),
   week: new Interval({
     label: 'Last 7 days',
-    window: [7, 'd']
+    window: [7, 'd'],
   }),
   month: new Interval({
     label: 'Last 30 days',
-    window: [30, 'd']
+    window: [30, 'd'],
   }),
   quarter: new Interval({
     label: 'Last 90 days',
-    window: [90, 'd']
+    window: [90, 'd'],
   }),
   year: new Interval({
     label: 'Last 365 days',
-    window: [365, 'd']
-  })
+    window: [365, 'd'],
+  }),
 };
-
-export const dateFormats = {
-  full: 'MMM Do, YYYY hh:mmA',
-  short: 'MM/DD/YYYY'
-};
-
-export function format(date, ...args) {
-  if (!date) {
-    return '';
-  }
-
-  return isValid(new Date(date)) ? libFormat(date, ...args) : '';
-}

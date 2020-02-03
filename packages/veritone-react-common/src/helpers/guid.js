@@ -1,4 +1,4 @@
-
+// eslint-disable-next-line import/prefer-default-export
 export function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)

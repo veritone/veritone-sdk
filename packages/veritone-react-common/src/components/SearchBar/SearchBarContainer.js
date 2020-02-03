@@ -1,3 +1,8 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import {
   arrayOf,
@@ -7,7 +12,7 @@ import {
   oneOf,
   any,
   array,
-  bool
+  bool,
 } from 'prop-types';
 import cx from 'classnames';
 import { get, uniq, isEmpty, isEqual, sortBy, includes } from 'lodash';
@@ -23,7 +28,7 @@ import { Card, CardHeader, CardContent, CardActions } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 
-import { SearchBar } from '.';
+import { SearchBar } from './index';
 import Icon from './Icon';
 import { guid } from './component';
 import AdvancedPanel from '../AdvancedPanel';
@@ -31,7 +36,7 @@ import EngineCategoryButton from './EngineCategoryButton';
 
 import styles from './styles.scss';
 
-const supportedCategoriesClass = cx(styles['supportedCategories']);
+const supportedCategoriesClass = cx(styles.supportedCategories);
 
 class SearchBarContainer extends React.Component {
   static propTypes = {
@@ -60,7 +65,7 @@ class SearchBarContainer extends React.Component {
     addJoiningOperator: any,
     presetSDOSchema: string,
     presetSDOAttribute: any,
-    sourceFilters: any
+    sourceFilters: any,
   };
 
   state = {
@@ -71,7 +76,7 @@ class SearchBarContainer extends React.Component {
     openAdvancedPanel: false,
     advancedEnableIds: [],
     advancedOptions: {},
-    disableAdvancedSearch: true
+    disableAdvancedSearch: true,
   };
 
   _id = guid();
@@ -98,7 +103,7 @@ class SearchBarContainer extends React.Component {
         .subscribe(() => {
           if (this.searchBar) {
             this.setState({
-              clientWidth: this.searchBar.getBoundingClientRect().width
+              clientWidth: this.searchBar.getBoundingClientRect().width,
             });
           }
         });
@@ -116,13 +121,13 @@ class SearchBarContainer extends React.Component {
 
   handleOpenAdvanced = () => {
     this.setState({
-      openAdvancedPanel: true
+      openAdvancedPanel: true,
     });
   };
 
   handleCloseAdvanced = () => {
     this.setState({
-      openAdvancedPanel: false
+      openAdvancedPanel: false,
     });
   };
 
@@ -133,8 +138,8 @@ class SearchBarContainer extends React.Component {
       advancedEnableIds: uniq([...state.advancedEnableIds, modalId]),
       advancedOptions: {
         ...state.advancedOptions,
-        [modalId]: parameter
-      }
+        [modalId]: parameter,
+      },
     }));
     this.handleCloseAdvanced();
   };
@@ -148,8 +153,8 @@ class SearchBarContainer extends React.Component {
       ),
       advancedOptions: {
         ...state.advancedOptions,
-        [modalId]: undefined
-      }
+        [modalId]: undefined,
+      },
     }));
     this.handleCloseAdvanced();
   };
@@ -212,10 +217,10 @@ class SearchBarContainer extends React.Component {
     if (this.state.highlightedPills.length <= 0) {
       return;
     }
-    let first = this.props.searchParameters.findIndex(
+    const first = this.props.searchParameters.findIndex(
       x => x.id === this.state.highlightedPills[0]
     );
-    let last = this.props.searchParameters.findIndex(
+    const last = this.props.searchParameters.findIndex(
       x =>
         x.id ===
         this.state.highlightedPills[this.state.highlightedPills.length - 1]
@@ -236,9 +241,9 @@ class SearchBarContainer extends React.Component {
       const newSearchParameters = this.props.searchParameters.filter(
         x => x.id !== before.id && x.id !== after.id
       );
-      let [
+      const [
         simplifiedParameters,
-        extraneousGroups
+        extraneousGroups,
       ] = this.simplifySearchParameters(newSearchParameters);
       this.props.removeSearchParameter(extraneousGroups);
       if (this.props.onSearch) {
@@ -249,24 +254,24 @@ class SearchBarContainer extends React.Component {
         {
           parameter: {
             value: ')',
-            conditionType: 'group'
+            conditionType: 'group',
           },
-          index: last + 1
+          index: last + 1,
         },
         {
           parameter: {
             value: '(',
-            conditionType: 'group'
+            conditionType: 'group',
           },
-          index: first
-        }
+          index: first,
+        },
       ];
       const newSearchParameters = this.props.insertMultipleSearchParameters(
         paramsToAdd
       );
-      let [
+      const [
         simplifiedParameters,
-        extraneousGroups
+        extraneousGroups,
       ] = this.simplifySearchParameters(newSearchParameters);
       this.props.removeSearchParameter(extraneousGroups);
       if (this.props.onSearch) {
@@ -278,10 +283,10 @@ class SearchBarContainer extends React.Component {
   };
 
   getToggleGroupLabel = () => {
-    let first = this.props.searchParameters.findIndex(
+    const first = this.props.searchParameters.findIndex(
       x => x.id === this.state.highlightedPills[0]
     );
-    let last = this.props.searchParameters.findIndex(
+    const last = this.props.searchParameters.findIndex(
       x =>
         x.id ===
         this.state.highlightedPills[this.state.highlightedPills.length - 1]
@@ -297,15 +302,14 @@ class SearchBarContainer extends React.Component {
       after.value === ')'
     ) {
       return 'Ungroup Selection';
-    } else {
-      return 'Group Selection';
     }
+    return 'Group Selection';
   };
 
   addPill = modalId => {
     this.setState({
-      openModal: { modalId: modalId },
-      insertDirection: null
+      openModal: { modalId },
+      insertDirection: null,
     });
   };
 
@@ -313,7 +317,7 @@ class SearchBarContainer extends React.Component {
     this.props.addOrModifySearchParameter(
       {
         value: operator || this.props.defaultJoinOperator,
-        conditionType: 'join'
+        conditionType: 'join',
       },
       index
     );
@@ -322,7 +326,7 @@ class SearchBarContainer extends React.Component {
   togglePill = (searchParameterId, searchParameters) => {
     if (this.state.highlightedPills.length > 0) {
       // if the pill is already highlighted, unhighlight it
-      let alreadyHighlightedIndex = this.state.highlightedPills.indexOf(
+      const alreadyHighlightedIndex = this.state.highlightedPills.indexOf(
         searchParameterId
       );
       if (alreadyHighlightedIndex !== -1) {
@@ -330,38 +334,38 @@ class SearchBarContainer extends React.Component {
           alreadyHighlightedIndex === 0 ||
           alreadyHighlightedIndex === this.state.highlightedPills.length - 1
         ) {
-          let highlightedPills = this.state.highlightedPills.filter(
+          const highlightedPills = this.state.highlightedPills.filter(
             x => x !== searchParameterId
           );
-          this.setState({ highlightedPills: highlightedPills });
+          this.setState({ highlightedPills });
         }
         return;
       }
 
       // if there are pills already highlighted, we can only highlight their neighbors
-      let pills = searchParameters.filter(
+      const pills = searchParameters.filter(
         x => x.conditionType !== 'join' && x.conditionType !== 'group'
       );
       // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
-      let pillToHighlightIndex = pills.findIndex(
+      const pillToHighlightIndex = pills.findIndex(
         x => x.id === searchParameterId
       );
-      let firstHighlightedPillIndex = pills.findIndex(
+      const firstHighlightedPillIndex = pills.findIndex(
         x => x.id === this.state.highlightedPills[0]
       );
-      let lastHighlightedPillIndex = pills.findIndex(
+      const lastHighlightedPillIndex = pills.findIndex(
         x =>
           x.id ===
           this.state.highlightedPills[this.state.highlightedPills.length - 1]
       );
       if (pillToHighlightIndex === firstHighlightedPillIndex - 1) {
-        let highlightedPills = [...this.state.highlightedPills];
+        const highlightedPills = [...this.state.highlightedPills];
         highlightedPills.unshift(searchParameterId);
-        this.setState({ highlightedPills: highlightedPills });
+        this.setState({ highlightedPills });
       } else if (pillToHighlightIndex === lastHighlightedPillIndex + 1) {
-        let highlightedPills = [...this.state.highlightedPills];
+        const highlightedPills = [...this.state.highlightedPills];
         highlightedPills.push(searchParameterId);
-        this.setState({ highlightedPills: highlightedPills });
+        this.setState({ highlightedPills });
       } else {
         // BOOP! you tried to group a non adjacent pill
         // console.warn('You tried to highlight a non-adjacent pill');
@@ -369,7 +373,7 @@ class SearchBarContainer extends React.Component {
     } else {
       // if there are no pills highlighted yet, we can highlight any of the pills
       const clickTargetShouldNotClearHighlightedPills = e => {
-        let clickedOnHighlightedPill =
+        const clickedOnHighlightedPill =
           e.path.find(
             y =>
               y.attributes &&
@@ -378,7 +382,7 @@ class SearchBarContainer extends React.Component {
                 y.attributes.getNamedItem('data-searchparameterid').value
               ) !== -1
           ) || false;
-        let clickedOnDeleteFromMenu = e.path.find(
+        const clickedOnDeleteFromMenu = e.path.find(
           y =>
             y.attributes &&
             y.attributes.getNamedItem('data-preservehighlight') &&
@@ -396,16 +400,16 @@ class SearchBarContainer extends React.Component {
         .subscribe(null, null, () => {
           this.setState({ highlightedPills: [] });
         });
-      let highlightedPills = [searchParameterId];
-      this.setState({ highlightedPills: highlightedPills });
+      const highlightedPills = [searchParameterId];
+      this.setState({ highlightedPills });
     }
   };
 
-  simplifySearchParameters(searchParameters) {
-    let reduced = searchParameters.reduce(
+  simplifySearchParameters = searchParameters => {
+    const reduced = searchParameters.reduce(
       (accu, searchParameter) => {
-        let simplified = accu[0];
-        let removed = accu[1];
+        const simplified = accu[0];
+        const removed = accu[1];
 
         // remove groups that only contain one element
         if (
@@ -436,7 +440,7 @@ class SearchBarContainer extends React.Component {
       [[], []]
     );
 
-    let [simplifiedParameters, extraneousGroups] = reduced;
+    const [simplifiedParameters, extraneousGroups] = reduced;
     while (
       simplifiedParameters.length > 2 &&
       simplifiedParameters[0].value === '(' &&
@@ -452,7 +456,7 @@ class SearchBarContainer extends React.Component {
     }
 
     return [simplifiedParameters, extraneousGroups];
-  }
+  };
 
   removePill = (searchParameterId, searchParameters) => {
     const updatedSearchParameters = this.simpleRemovePill(
@@ -481,16 +485,16 @@ class SearchBarContainer extends React.Component {
           advancedEnableIds: newAdvancedEnableIds,
           advancedOptions: {
             ...advancedOptions,
-            [id]: undefined
-          }
+            [id]: undefined,
+          },
         }));
       }
     });
-    let index = searchParameters.findIndex(x => x.id === searchParameterId);
-    let previousParameter = searchParameters[index - 1];
+    const index = searchParameters.findIndex(x => x.id === searchParameterId);
+    const previousParameter = searchParameters[index - 1];
     let newSearchParameters = null;
 
-    let pillsToRemove = [];
+    const pillsToRemove = [];
     // if the pill to be removed is the start of a group, we need to remove the next joining parameter and not the previous one
     if (
       (previousParameter && previousParameter.value === '(') ||
@@ -504,7 +508,7 @@ class SearchBarContainer extends React.Component {
       );
     } else if (this.numberOfPills(searchParameters) > 1) {
       // if the pill to be removed is in the middle of a group, remove the last joining parameter
-      let lastJoiningParameter = searchParameters
+      const lastJoiningParameter = searchParameters
         .slice(0, index)
         .reverse()
         .find(x => x.conditionType === 'join');
@@ -520,9 +524,9 @@ class SearchBarContainer extends React.Component {
         x => x.id !== searchParameterId
       );
     }
-    let [
+    const [
       simplifiedParameters,
-      extraneousGroups
+      extraneousGroups,
     ] = this.simplifySearchParameters(newSearchParameters);
     this.props.removeSearchParameter(
       pillsToRemove.concat(extraneousGroups.map(x => x.id))
@@ -530,14 +534,12 @@ class SearchBarContainer extends React.Component {
     return simplifiedParameters;
   };
 
-  getRemovePill = searchParameters => {
-    return searchParameterId => {
-      this.removePill(searchParameterId, searchParameters);
-    };
+  getRemovePill = searchParameters => searchParameterId => {
+    this.removePill(searchParameterId, searchParameters);
   };
 
   getLastJoiningOperator = searchParameters => {
-    for (let i = searchParameters.length - 1; i >= 0; i--) {
+    for (let i = searchParameters.length - 1; i >= 0; i -= 1) {
       if (searchParameters[i].conditionType === 'join') {
         return searchParameters[i].value;
       }
@@ -552,9 +554,8 @@ class SearchBarContainer extends React.Component {
         searchParameter.conditionType !== 'group'
       ) {
         return accu + 1;
-      } else {
-        return accu;
       }
+      return accu;
     }, 0);
 
   addNewSearchParameter = (parameter, engineId) => {
@@ -569,9 +570,9 @@ class SearchBarContainer extends React.Component {
     this.props.addOrModifySearchParameter({
       value: {
         ...parameter,
-        advancedOptions: this.getAdvancedOptions
+        advancedOptions: this.getAdvancedOptions,
       },
-      conditionType: engineId
+      conditionType: engineId,
     });
   };
 
@@ -579,10 +580,10 @@ class SearchBarContainer extends React.Component {
     this.props.addOrModifySearchParameter({
       value: {
         ...parameterValue,
-        advancedOptions: this.getAdvancedOptions
+        advancedOptions: this.getAdvancedOptions,
       },
       conditionType: engineId,
-      id: searchParameterId
+      id: searchParameterId,
     });
   };
 
@@ -590,12 +591,12 @@ class SearchBarContainer extends React.Component {
     this.setState({
       openModal: {
         modalId: pillState.conditionType,
-        modalState: pillState.value
+        modalState: pillState.value,
       },
       selectedPill: pillState.id,
       advancedOptions: {
-        [pillState.conditionType]: get(pillState, 'value.advancedOptions', {})
-      }
+        [pillState.conditionType]: get(pillState, 'value.advancedOptions', {}),
+      },
     });
   };
 
@@ -607,29 +608,29 @@ class SearchBarContainer extends React.Component {
           label: 'AND',
           onClick: () => {
             this.menuChangeOperator(searchParameter, 'and');
-          }
+          },
         },
         {
           label: 'OR',
           onClick: () => {
             this.menuChangeOperator(searchParameter, 'or');
-          }
+          },
         },
         {
-          divider: true
+          divider: true,
         },
         {
           label: 'Insert Search Term to Left',
           onClick: () => {
             this.menuInsertDirection('left');
-          }
+          },
         },
         {
           label: 'Insert Search Term to Right',
           onClick: () => {
             this.menuInsertDirection('right');
-          }
-        }
+          },
+        },
       ];
     } else {
       const showGroupOptions =
@@ -640,39 +641,39 @@ class SearchBarContainer extends React.Component {
           {
             label: this.getToggleGroupLabel(),
             onClick: this.menuGroupSelection,
-            preserveHighlight: 'true'
+            preserveHighlight: 'true',
           },
           {
             label: 'Delete',
             onClick: this.menuRemoveHighlightedPills,
-            preserveHighlight: 'true'
-          }
+            preserveHighlight: 'true',
+          },
         ];
       } else {
         menuOptions = [
           {
             label: 'Edit',
-            onClick: this.menuEditPill
+            onClick: this.menuEditPill,
           },
           {
             label: 'Delete',
-            onClick: this.menuRemovePill
+            onClick: this.menuRemovePill,
           },
           {
-            divider: true
+            divider: true,
           },
           {
             label: 'Insert Search Term to Left',
             onClick: () => {
               this.menuInsertDirection('left');
-            }
+            },
           },
           {
             label: 'Insert Search Term to Right',
             onClick: () => {
               this.menuInsertDirection('right');
-            }
-          }
+            },
+          },
         ];
       }
     }
@@ -680,7 +681,7 @@ class SearchBarContainer extends React.Component {
     this.setState({
       menuAnchorEl: target,
       selectedPill: searchParameter.id,
-      menuOptions
+      menuOptions,
     });
   };
 
@@ -692,7 +693,7 @@ class SearchBarContainer extends React.Component {
           onClick: () => {
             x.onClick(this.props.getCSP());
             this.handleMenuClose();
-          }
+          },
         }))) ||
       {};
 
@@ -706,41 +707,39 @@ class SearchBarContainer extends React.Component {
     // if there are search parameters and savedSearch is not disabled, add them as extra options
     if (this.props.disableSavedSearch) {
       customMenuActions = [...customMenuActions];
+    } else if (
+      this.props.searchParameters &&
+      this.props.isEditor &&
+      this.props.searchParameters.length > 0
+    ) {
+      customMenuActions = [
+        {
+          label: 'Load Search Profile',
+          onClick: e => {
+            this.props.showLoadSavedSearch(e);
+            this.handleMenuClose();
+          },
+        },
+        {
+          label: 'Save Search Profile',
+          onClick: e => {
+            this.props.showSavedSearch(e);
+            this.handleMenuClose();
+          },
+        },
+        ...customMenuActions,
+      ];
     } else {
-      if (
-        this.props.searchParameters &&
-        this.props.isEditor &&
-        this.props.searchParameters.length > 0
-      ) {
-        customMenuActions = [
-          {
-            label: 'Load Search Profile',
-            onClick: e => {
-              this.props.showLoadSavedSearch(e);
-              this.handleMenuClose();
-            }
+      customMenuActions = [
+        {
+          label: 'Load Search Profile',
+          onClick: e => {
+            this.props.showLoadSavedSearch(e);
+            this.handleMenuClose();
           },
-          {
-            label: 'Save Search Profile',
-            onClick: e => {
-              this.props.showSavedSearch(e);
-              this.handleMenuClose();
-            }
-          },
-          ...customMenuActions
-        ];
-      } else {
-        customMenuActions = [
-          {
-            label: 'Load Search Profile',
-            onClick: e => {
-              this.props.showLoadSavedSearch(e);
-              this.handleMenuClose();
-            }
-          },
-          ...customMenuActions
-        ];
-      }
+        },
+        ...customMenuActions,
+      ];
     }
 
     if (customMenuActions && customMenuActions.length > 0) {
@@ -749,13 +748,13 @@ class SearchBarContainer extends React.Component {
 
     const menuActions = [
       ...customMenuActions,
-      { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
+      { label: 'Reset Search Bar', onClick: this.resetSearchParameters },
     ];
 
     this.setState({
       menuAnchorEl: evt.nativeEvent.path.find(x => x.type === 'button'),
       selectedPill: null,
-      menuOptions: menuActions
+      menuOptions: menuActions,
     });
   };
 
@@ -763,20 +762,20 @@ class SearchBarContainer extends React.Component {
     this.setState({
       menuAnchorEl: null,
       selectedPill: null,
-      menuOptions: null
+      menuOptions: null,
     });
   };
 
   menuChangeOperator = (searchParameter, newOperatorValue) => {
     const newParameter = {
       ...searchParameter,
-      value: newOperatorValue
+      value: newOperatorValue,
     };
     this.props.addOrModifySearchParameter(newParameter);
     this.setState(
       {
         menuAnchorEl: null,
-        selectedPill: null
+        selectedPill: null,
       },
       () => {
         if (this.props.onSearch) {
@@ -790,8 +789,8 @@ class SearchBarContainer extends React.Component {
     this.setState(
       {
         menuAnchorEl: null,
-        openModal: { modalId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182' }, //TODO dont use hardcoded id
-        insertDirection
+        openModal: { modalId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182' }, // TODO dont use hardcoded id
+        insertDirection,
       },
       () => {
         if (this.props.onSearch) {
@@ -805,7 +804,7 @@ class SearchBarContainer extends React.Component {
     this.removePill(this.state.selectedPill, this.props.searchParameters);
     this.setState({
       menuAnchorEl: null,
-      selectedPill: null
+      selectedPill: null,
     });
   };
 
@@ -821,7 +820,7 @@ class SearchBarContainer extends React.Component {
     this.setState(
       {
         menuAnchorEl: null,
-        selectedPill: null
+        selectedPill: null,
       },
       () => {
         if (this.props.onSearch) {
@@ -837,7 +836,7 @@ class SearchBarContainer extends React.Component {
     );
     this.openPill(selectedPill);
     this.setState({
-      menuAnchorEl: null
+      menuAnchorEl: null,
     });
   };
 
@@ -845,7 +844,7 @@ class SearchBarContainer extends React.Component {
     this.toggleGrouping();
     this.setState({
       menuAnchorEl: null,
-      selectedPill: null
+      selectedPill: null,
     });
   };
 
@@ -855,13 +854,13 @@ class SearchBarContainer extends React.Component {
       selectedPill: null,
       insertDirection: null,
       advancedOptions: {},
-      disableAdvancedSearch: true
+      disableAdvancedSearch: true,
     });
   };
 
   addOrEditModal = () => {
     if (this.state.selectedPill) {
-      //insert new pill next to selected pill
+      // insert new pill next to selected pill
       if (this.state.insertDirection) {
         const selectedPillIndex = this.props.searchParameters.findIndex(
           x => x.id === this.state.selectedPill
@@ -876,11 +875,11 @@ class SearchBarContainer extends React.Component {
         }
         const searchTermParam = {
           value: newSearchParameterValue,
-          conditionType: this.state.openModal.modalId
+          conditionType: this.state.openModal.modalId,
         };
         const operatorParam = {
           value: 'and',
-          conditionType: 'join'
+          conditionType: 'join',
         };
         const selectedParamConditionType = this.props.searchParameters[
           selectedPillIndex
@@ -898,7 +897,7 @@ class SearchBarContainer extends React.Component {
             openModal: { modalId: null, key: guid() },
             selectedPill: null,
             insertDirection: null,
-            disableAdvancedSearch: true
+            disableAdvancedSearch: true,
           },
           () => {
             if (this.props.onSearch) {
@@ -921,7 +920,7 @@ class SearchBarContainer extends React.Component {
             openModal: { modalId: null, key: guid() },
             selectedPill: null,
             insertDirection: null,
-            disableAdvancedSearch: true
+            disableAdvancedSearch: true,
           },
           () => {
             if (this.props.onSearch) {
@@ -939,11 +938,11 @@ class SearchBarContainer extends React.Component {
         newSearchParameterValue,
         this.state.openModal.modalId
       );
-      let lastModal = this.state.openModal.modalId;
+      const lastModal = this.state.openModal.modalId;
       this.setState(
         {
-          openModal: { modalId: '' + lastModal, key: guid() },
-          disableAdvancedSearch: true
+          openModal: { modalId: `${lastModal}`, key: guid() },
+          disableAdvancedSearch: true,
         },
         () => {
           if (this.props.onSearch) {
@@ -960,7 +959,7 @@ class SearchBarContainer extends React.Component {
       selectedPill: null,
       menuAnchorEl: null,
       highlightedPills: [],
-      disableAdvancedSearch: true
+      disableAdvancedSearch: true,
     });
     this.props.resetSearchParameters();
     if (this.props.onSearch) {
@@ -984,7 +983,7 @@ class SearchBarContainer extends React.Component {
       this.setState({
         openModal: { modalId: engineCategory.id },
         key: guid(),
-        disableAdvancedSearch: true
+        disableAdvancedSearch: true,
       });
     } else {
       this.props.addPill();
@@ -1046,7 +1045,7 @@ class SearchBarContainer extends React.Component {
           anchorEl={this.state.menuAnchorEl}
           anchorOrigin={{ vertical: 'bottom', ...horizontalAnchorPosition }}
           transformOrigin={horizontalAnchorPosition}
-          getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
+          getContentAnchorEl={null} // required to be able to set anchorOrigin and anchorEl
         >
           {this.state.menuOptions &&
             this.state.menuOptions.map(menuOption =>
@@ -1079,11 +1078,11 @@ class SearchBarContainer extends React.Component {
             onKeyPress={this.onEnter}
           >
             <Card
-              className={cx(styles['engineCategoryModal'])}
+              className={cx(styles.engineCategoryModal)}
               style={{
                 width:
                   this.state.clientWidth ||
-                  this.searchBar.getBoundingClientRect().width
+                  this.searchBar.getBoundingClientRect().width,
               }}
               elevation={0}
             >
@@ -1095,7 +1094,7 @@ class SearchBarContainer extends React.Component {
                     size={'2em'}
                   />
                 }
-                classes={{ action: cx(styles['modalAction']) }}
+                classes={{ action: cx(styles.modalAction) }}
                 action={
                   <div className={supportedCategoriesClass}>
                     {this.props.enabledEngineCategories &&
@@ -1144,7 +1143,7 @@ class SearchBarContainer extends React.Component {
                     ref={input => {
                       this.openModal = input;
                     }}
-                    //setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
+                    // setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
                     api={this.props.api}
                     auth={this.props.auth}
                     libraries={libraryIds}
@@ -1171,13 +1170,13 @@ class SearchBarContainer extends React.Component {
                 ) : null}
               </CardContent>
               <CardActions
-                classes={{ root: cx(styles['modalFooterActions']) }}
+                classes={{ root: cx(styles.modalFooterActions) }}
                 style={{ padding: '1em' }}
               >
                 {isAdvancedSearchEnabled &&
                 (openModal.dataTag === 'object' ||
                   openModal.dataTag === 'logo') ? (
-                  <div className={cx(styles['advancedButton'])}>
+                  <div className={cx(styles.advancedButton)}>
                     <Button
                       disabled={this.disableAdvancedSearch}
                       onClick={this.handleOpenAdvanced}
@@ -1185,7 +1184,7 @@ class SearchBarContainer extends React.Component {
                       ADVANCED
                     </Button>
                     {this.getBadgeLength && !this.disableAdvancedSearch ? (
-                      <div className={cx(styles['customBadge'])}>
+                      <div className={cx(styles.customBadge)}>
                         {this.getBadgeLength}
                       </div>
                     ) : null}
@@ -1196,7 +1195,7 @@ class SearchBarContainer extends React.Component {
                 <Button
                   onClick={this.cancelModal}
                   color="primary"
-                  className={cx(styles['cancelButton'])}
+                  className={cx(styles.cancelButton)}
                 >
                   Close
                 </Button>
@@ -1241,5 +1240,5 @@ SearchBarContainer.defaultProps = {
   insertMultipleSearchParameters: state =>
     console.log('insert multiple search parameters', state),
   removeSearchParameter: id =>
-    console.log('Remove the search parameter with the id', id)
+    console.log('Remove the search parameter with the id', id),
 };

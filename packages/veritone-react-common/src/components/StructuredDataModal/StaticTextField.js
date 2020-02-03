@@ -8,7 +8,7 @@ export default withTheme(({ value, theme, marginLeft, marginRight }) => (
     style={{
       paddingTop: theme.spacing.unit * 3,
       marginLeft: marginLeft ? '0.5em' : null,
-      marginRight: marginRight ? '0.5em' : null
+      marginRight: marginRight ? '0.5em' : null,
     }}
   >
     {value}

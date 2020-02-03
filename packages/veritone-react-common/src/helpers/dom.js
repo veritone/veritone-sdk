@@ -1,28 +1,29 @@
+// eslint-disable-next-line import/prefer-default-export
 export function getMousePosition(e) {
-  let el = e.target,
-    el_left = 0,
-    el_top = 0,
-    x,
-    y;
+  let el = e.target;
+  let elLeft = 0;
+  let elTop = 0;
+  let x;
+  let y;
 
   while (el.offsetParent) {
-    el_left += el.offsetLeft;
-    el_top += el.offsetTop;
+    elLeft += el.offsetLeft;
+    elTop += el.offsetTop;
     el = el.offsetParent;
   }
 
   el = e.target;
   while (el.parentNode) {
-    el_left -= el.scrollLeft;
-    el_top -= el.scrollTop;
+    elLeft -= el.scrollLeft;
+    elTop -= el.scrollTop;
     el = el.parentNode;
   }
 
   x = e.clientX;
   y = e.clientY;
 
-  x -= el_left;
-  y -= el_top;
+  x -= elLeft;
+  y -= elTop;
 
   return { x, y };
 }

@@ -1,28 +1,22 @@
+/* eslint-disable no-param-reassign */
 import React from 'react';
-import { Avatar, Button, Chip, Paper, TextField } from '@material-ui/core';
+import {
+  Avatar,
+  Paper,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import Downshift from 'downshift';
-import { isArray } from 'lodash';
-import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
-import styles from './styles.scss';
 
 import Rx from 'rxjs/Rx';
-import {Observable} from "rxjs/Observable";
-import "rxjs/add/operator/take";
-import "rxjs/add/operator/takeUntil";
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/takeUntil';
 
-import Typography from '@material-ui/core/Typography';
-import { List, ListItem, ListItemText } from '@material-ui/core';
-
-const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
-const autocompletePillClass = cx(styles['autocompletePill']);
-const deleteIconClass = cx(styles['deleteIcon']);
-
-
-
-class SearchAutocompleteContainer extends React.Component {
+class SearchAutocomplete extends React.Component {
   static propTypes = {
     selectResult: func,
     defaultIsOpen: bool,
@@ -32,20 +26,22 @@ class SearchAutocompleteContainer extends React.Component {
       queryResults: arrayOf(
         shape({
           header: string,
-          items: arrayOf(shape({
-            id: string,
-            type: string,
-            image: string,
-            label: string,
-            description: string
-          }))
+          items: arrayOf(
+            shape({
+              id: string,
+              type: string,
+              image: string,
+              label: string,
+              description: string,
+            })
+          ),
         })
-      )
+      ),
     }),
     onClickAutocomplete: func,
     onChange: func,
     isOpen: bool,
-    cancel: func
+    cancel: func,
   };
 
   state = JSON.parse(JSON.stringify(this.props.componentState));
@@ -54,13 +50,18 @@ class SearchAutocompleteContainer extends React.Component {
     this.stop$ = Rx.Observable.fromEvent(e.target, 'focusout');
     this.stop$.take(1).subscribe();
 
-    Rx.Observable.fromEvent(e.target, 'keyup').map( x => x.target.value).distinctUntilChanged().debounceTime(500).last( debouncedText => this.props.onChange(debouncedText) )
-    .takeUntil(this.stop$).subscribe();
+    Rx.Observable.fromEvent(e.target, 'keyup')
+      .map(x => x.target.value)
+      .distinctUntilChanged()
+      .debounceTime(500)
+      .last(debouncedText => this.props.onChange(debouncedText))
+      .takeUntil(this.stop$)
+      .subscribe();
   };
 
   onKeyDown = e => {
-    this.setState({queryString: e.target.value});
-  }
+    this.setState({ queryString: e.target.value });
+  };
 
   onEnter = event => {
     if (event.key === 'Enter') {
@@ -70,38 +71,37 @@ class SearchAutocompleteContainer extends React.Component {
     }
   };
 
-  selectResult = (result) => {
-    if(this.props.selectResult) {
+  selectResult = result => {
+    if (this.props.selectResult) {
       this.props.selectResult(result);
     }
-    if(result && result.label) {
+    if (result && result.label) {
       this.setState({
-        queryString: result.label
-      })
+        queryString: result.label,
+      });
     }
-  }
+  };
 
   render() {
     return (
       <SearchAutocompleteDownshift
-        defaultIsOpen={ this.props.defaultIsOpen }
-        cancel={ this.props.cancel }
-        debouncedOnChange={ this.debouncedOnChange }
-        onKeyPress={ this.onEnter }
-        onChange={ this.onKeyDown }
-        queryString={ this.state.queryString }
-        results={ this.props.componentState.queryResults }
-        selectResult={ this.selectResult }
-        onClickAutocomplete={ this.props.onClickAutocomplete }
+        defaultIsOpen={this.props.defaultIsOpen}
+        cancel={this.props.cancel}
+        debouncedOnChange={this.debouncedOnChange}
+        onKeyPress={this.onEnter}
+        onChange={this.onKeyDown}
+        queryString={this.state.queryString}
+        results={this.props.componentState.queryResults}
+        selectResult={this.selectResult}
+        onClickAutocomplete={this.props.onClickAutocomplete}
         isOpen={this.props.isOpen}
       />
     );
   }
 }
 
-const SearchAutocompleteDownshift = ({
+export const SearchAutocompleteDownshift = ({
   defaultIsOpen,
-  cancel,
   debouncedOnChange,
   onChange,
   onKeyPress,
@@ -109,121 +109,155 @@ const SearchAutocompleteDownshift = ({
   results,
   selectResult,
   onClickAutocomplete,
-  isOpen
+  isOpen,
 }) => {
   const RESULT_COUNT_PER_CATEGORY = 10;
-  const itemToString = (item) => item && item.label;
-  const onFocus = (event) => { debouncedOnChange(event); event.target.select() };
+  const itemToString = item => item && item.label;
+  const onFocus = event => {
+    debouncedOnChange(event);
+    event.target.select();
+  };
 
   return (
     <Downshift
       isOpen={isOpen}
-      itemToString={ itemToString }
-      onSelect={ selectResult }
-      defaultIsOpen={ defaultIsOpen }
+      itemToString={itemToString}
+      onSelect={selectResult}
+      defaultIsOpen={defaultIsOpen}
     >
-        {({
-          getInputProps,
-          getItemProps,
-          getLabelProps,
-          getMenuProps,
-          isOpen,
-          inputValue,
-          highlightedIndex,
-          selectedItem,
-          openMenu
-        }) => (
+      {({
+        getInputProps,
+        getItemProps,
+        isOpen: isOpenResult,
+        highlightedIndex,
+        openMenu,
+      }) => (
         <div>
           <TextField
             {...getInputProps({
               value: queryString,
-              placeholder: "Type to search",
+              placeholder: 'Type to search',
               autoFocus: true,
               fullWidth: true,
-              onFocus: onFocus,
-              onChange: onChange,
+              onFocus,
+              onChange,
               onClick: () => {
-                if(onClickAutocomplete) {
+                if (onClickAutocomplete) {
                   onClickAutocomplete();
                 }
                 openMenu();
               },
-              onKeyPress: onKeyPress
+              onKeyPress,
             })}
           />
-          { isOpen && results && results.length ?
-            <Paper square
+          {isOpenResult && results && results.length ? (
+            <Paper
+              square
               style={{
                 maxHeight: '300px',
                 overflow: 'auto',
               }}
             >
               <List dense={true}>
-              {
-                results && results.reduce((result, section, sectionIndex) => {
-                  result.sections.push(
-                    <div key={ 'section_' + sectionIndex }>
-                      <ListItem>
-                        <ListItemText primary={section.header}/>
-                      </ListItem>
-                      <div>
-                        {
-                          section.items && section.items.length
-                          ? section.items.slice(0, RESULT_COUNT_PER_CATEGORY).map((item, index) => {
-                              const indexAcc = result.itemIndex++;
-                              return (
-                                <ListItem button
-                                  key={ 'item' + indexAcc }
-                                  component="div"
-                                  {...getItemProps({
-                                    item: item,
-                                    index: indexAcc,
-                                    selected: highlightedIndex === indexAcc,
-                                    style: {
-                                      backgroundColor:
-                                        highlightedIndex === indexAcc ? '#eeeeee' : null,
-                                    }
-                                  })}
-                                >
-                                  { item.image
-                                    ? <Avatar src={ item.image } />
-                                    : null
-                                  }
-                                  <ListItemText style={{ paddingLeft: "1em" }} primary={item.label} secondary={item.description}/>
-                                </ListItem>
-                              )
-                            })
-                          : <ListItem><Typography style={{ paddingLeft: "1em" }}>No Results</Typography></ListItem>
-                        }
-                      </div>
-                    </div>
-                  );
-                  return result;
-                }, { sections: [], itemIndex: 0 } ).sections
-              }
+                {results &&
+                  results.reduce(
+                    (result, section, sectionIndex) => {
+                      result.sections.push(
+                        <div key={`section_${sectionIndex}`}>
+                          <ListItem>
+                            <ListItemText primary={section.header} />
+                          </ListItem>
+                          <div>
+                            {section.items && section.items.length ? (
+                              section.items
+                                .slice(0, RESULT_COUNT_PER_CATEGORY)
+                                .map(item => {
+                                  // eslint-disable-next-line no-plusplus
+                                  const indexAcc = result.itemIndex++;
+                                  return (
+                                    <ListItem
+                                      button
+                                      key={`item${indexAcc}`}
+                                      component="div"
+                                      {...getItemProps({
+                                        item,
+                                        index: indexAcc,
+                                        selected: highlightedIndex === indexAcc,
+                                        style: {
+                                          backgroundColor:
+                                            highlightedIndex === indexAcc
+                                              ? '#eeeeee'
+                                              : null,
+                                        },
+                                      })}
+                                    >
+                                      {item.image ? (
+                                        <Avatar src={item.image} />
+                                      ) : null}
+                                      <ListItemText
+                                        style={{ paddingLeft: '1em' }}
+                                        primary={item.label}
+                                        secondary={item.description}
+                                      />
+                                    </ListItem>
+                                  );
+                                })
+                            ) : (
+                              <ListItem>
+                                <Typography style={{ paddingLeft: '1em' }}>
+                                  No Results
+                                </Typography>
+                              </ListItem>
+                            )}
+                          </div>
+                        </div>
+                      );
+                      return result;
+                    },
+                    { sections: [], itemIndex: 0 }
+                  ).sections}
               </List>
             </Paper>
-            : null
-          }
+          ) : null}
         </div>
       )}
     </Downshift>
   );
 };
 
-SearchAutocompleteContainer.defaultProps = {
+SearchAutocompleteDownshift.propTypes = {
+  defaultIsOpen: bool,
+  debouncedOnChange: func,
+  onChange: func,
+  onKeyPress: func,
+  queryString: string,
+  results: arrayOf(
+    shape({
+      header: string,
+      items: arrayOf(
+        shape({
+          id: string,
+          type: string,
+          image: string,
+          label: string,
+          description: string,
+        })
+      ),
+    })
+  ),
+  selectResult: func,
+  onClickAutocomplete: func,
+  isOpen: bool,
+};
+
+SearchAutocomplete.defaultProps = {
   componentState: {
     error: false,
     queryString: '',
-    queryResults: []
+    queryResults: [],
   },
   onChange: value => console.log('Autocomplete field changed', value),
-  cancel: () => console.log('You clicked cancel')
+  cancel: () => console.log('You clicked cancel'),
 };
 
-export {
-  SearchAutocompleteContainer,
-  SearchAutocompleteDownshift
-}
-
-export default SearchAutocompleteContainer;
+export default SearchAutocomplete;

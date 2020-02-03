@@ -6,12 +6,13 @@ import {
   flow,
   map,
   zip,
-  flatten
+  flatten,
 } from 'lodash';
 
 import { slice as fpSlice } from 'lodash/fp';
 
 // https://gist.github.com/jtheisen/f680afab642454fc0747b21ec3b11e02
+// eslint-disable-next-line import/prefer-default-export
 export function intersperse(a, f) {
   const pairs = zip(tail(a), fpSlice(0, -1, a));
 
