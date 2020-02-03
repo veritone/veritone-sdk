@@ -1,12 +1,16 @@
 import React from 'react';
-import cx from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from '../styles';
 
-import styles from '../styles.scss';
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export default function NullState() {
+  const classes = useStyles();
   return (
-    <div className={cx(styles['loading'])}>
+    <div className={classes.loading}>
       <CircularProgress />
     </div>
     );

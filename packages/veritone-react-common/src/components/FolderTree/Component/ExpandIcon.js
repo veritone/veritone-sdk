@@ -9,10 +9,15 @@ import {
   number,
   string
 } from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from '../styles';
 
-import styles from '../styles.scss';
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export default function ExpandIcon({ folder, opening, onExpand }) {
+  const classes = useStyles();
   const folderId = _.get(folder, 'id');
   const expanded = _.includes(opening, folderId);
   const expandStyle = expanded ? 'icon-sort-desc' : 'icon-caret-right';
@@ -30,7 +35,7 @@ export default function ExpandIcon({ folder, opening, onExpand }) {
       onClick={onExpand(folderId)}
       className={cx([
         expandStyle,
-        styles['expand-icon']
+        classes.expandIcon
       ])}
     />
   )

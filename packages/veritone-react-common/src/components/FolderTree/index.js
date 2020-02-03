@@ -6,11 +6,14 @@ import {
   shape,
   arrayOf,
 } from 'prop-types';
-import cx from 'classnames';
 import _ from 'lodash';
-
+import { makeStyles } from '@material-ui/core/styles';
 import Folder from './Folder';
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export const getAllChildId = (item, foldersData) => {
   if (_.isNil(item)) {
@@ -66,6 +69,7 @@ function FolderTree({
   onMenuClick
 }) {
   const [opening, setopening] = useState([]);
+  const classes = useStyles();
   React.useEffect(() => {
     if (defaultOpening.length > 0) {
       setopening([...opening, ...defaultOpening]);
@@ -137,7 +141,7 @@ function FolderTree({
   const rootIds = _.get(foldersData, 'rootIds', []);
   const dataForMapping = getFolderIds(foldersData, isEnableShowRootFolder);
   return (
-    <div className={cx(styles['folder-tree-container'])}>
+    <div className={classes.folderTreeContainer}>
       {dataForMapping.map(folderId => {
         const childs = foldersData.byId[folderId].childs || [];
         const folder = foldersData.byId[folderId];

@@ -1,12 +1,16 @@
 import React from 'react';
 import { string } from 'prop-types';
-import cx from 'classnames';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from '../styles';
 
-import styles from '../styles.scss';
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export default function NullState({ message }) {
+  const classes = useStyles();
   return (
-    <div className={cx(styles['loading'])}>
+    <div className={classes.loading}>
       {message}
     </div>
   );

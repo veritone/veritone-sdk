@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import cx from 'classnames';
 import { get, isNil, omit, isEmpty } from 'lodash';
 import { shape, bool, func, arrayOf, string } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -9,8 +8,14 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+
 import FolderTree from '../../index';
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+}));
 
 const actionType = {
   1: 'New Folder',
@@ -33,6 +38,7 @@ export default function EditFolder({
   processingFolder = [],
   handerClickNewFolder
 }) {
+  const classes = useStyles();
   const [folderName, setFolderName] = React.useState('');
   const [error, setError] = React.useState('');
   const [selectedFolder, setSelectedFolder] = React.useState({});
@@ -111,10 +117,10 @@ export default function EditFolder({
         <DialogTitle id="create-folder">
           {actionType[type]}
         </DialogTitle>
-        <DialogContent className={cx(styles['dialog-content'])}>
+        <DialogContent className={classes.dialogContent}>
           {
             isEnableEditName && (
-              <div className={cx(styles['folder-name-field'])}>
+              <div className={classes.folderNameField}>
                 <TextField
                   autoFocus
                   margin="dense"
@@ -131,12 +137,12 @@ export default function EditFolder({
             )
           }
           {isEnableEditFolder && (
-            <div className={cx(styles['action-new-field'])}>
+            <div className={classes.actionNewField}>
               <div>Choose a Folder</div>
               {!isNewFolder && (
                 <Button
                   color="primary"
-                  className={cx(styles['button-styles'])}
+                  className={classes.buttonStyles}
                   onClick={handlerNewFolder}
                 >
                   NEW FOLDER
@@ -145,7 +151,7 @@ export default function EditFolder({
             </div>
           )}
           {isEnableEditFolder && (
-            <div className={cx(styles['folder-tree-card'])}>
+            <div className={classes.folderTreeCard}>
               <FolderTree
                 selectable={false}
                 loading={false}
@@ -163,7 +169,7 @@ export default function EditFolder({
         </DialogContent>
         <DialogActions>
           <Button
-            className={cx(styles['button-styles'])}
+            className={classes.buttonStyles}
             onClick={handleClose}
             color="primary"
           >
@@ -171,7 +177,7 @@ export default function EditFolder({
           </Button>
           <Button
             disabled={getSubmitStatus()}
-            className={cx(styles['button-styles'])}
+            className={classes.buttonStyles}
             onClick={onUpdate}
             color="primary"
           >

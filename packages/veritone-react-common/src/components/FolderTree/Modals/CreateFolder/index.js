@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import cx from 'classnames';
 import { get } from 'lodash';
 import { shape, bool, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -10,7 +9,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export default function CreateFolder({
   open,
@@ -18,6 +22,7 @@ export default function CreateFolder({
   handleClose,
   handleSubmit
 }) {
+  const classes = useStyles();
   const [folderName, setFolderName] = React.useState('');
   const [error, setError] = React.useState('');
   React.useEffect(() => {
@@ -73,7 +78,7 @@ export default function CreateFolder({
         <DialogContentText>
           {getContent()}
         </DialogContentText>
-        <div className={cx(styles['folder-name-field'])}>
+        <div className={classes.folderNameField}>
           <TextField
             autoFocus
             margin="dense"
@@ -92,7 +97,7 @@ export default function CreateFolder({
         <Button
           onClick={handleClose}
           color="primary"
-          className={cx(styles['button-styles'])}
+          className={classes.buttonStyles}
         >
           Cancel
         </Button>
@@ -100,7 +105,7 @@ export default function CreateFolder({
           disabled={folderName === ''}
           onClick={onCreate}
           color="primary"
-          className={cx(styles['button-styles'])}
+          className={classes.buttonStyles}
         >
           Create
           </Button >

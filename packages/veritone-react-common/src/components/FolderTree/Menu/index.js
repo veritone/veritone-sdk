@@ -1,18 +1,23 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import { arrayOf, func, shape } from 'prop-types';
-import cx from 'classnames';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+}));
 
 export default function FolderMenu({
   folderAction,
   onMenuClick,
   folder
 }) {
+  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
     event.stopPropagation();
@@ -29,7 +34,7 @@ export default function FolderMenu({
   return (
     <div>
       <IconButton
-        className={cx(styles['folder-menu-button'])}
+        className={classes.folderMenuButton}
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}

@@ -17,12 +17,17 @@ import {
   Checkbox,
   CircularProgress
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ExpandIcon from './Component/ExpandIcon';
 import FolderIcon from './Component/FolderIcon';
+import styles from './styles';
 import Menu from './Menu';
-import styles from './styles.scss';
 import { getAllChildId } from './index';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+}));
 
 function Folder({
   opening = [],
@@ -41,6 +46,7 @@ function Folder({
   processingFolder,
   level
 }) {
+  const classes = useStyles();
   const folderId = _.get(folder, 'id');
   const isOpening = _.includes(opening, folderId);
   const folderLabel = _.get(folder, 'name', 'My organization');
@@ -80,13 +86,13 @@ function Folder({
   }
 
   return (
-    <List className={cx(styles['folder'])}>
+    <List className={classes.folder}>
       <ListItem
         data-id={folderId}
         onClick={onChangeItem(folder)}
         className={cx({
-          [styles['highlighted']]: _.includes(selectedIds, folderId) && !selectable,
-          [styles['list-item']]: true
+          [classes.highlighted]: _.includes(selectedIds, folderId) && !selectable,
+          [classes.listItem]: true
         })}
       >
         <div style={{ minWidth: level * 15, width: level * 15 }} />
@@ -113,11 +119,11 @@ function Folder({
           selectable={selectable}
         />
         <ListItemText
-          className={cx(styles['list-item-text'])}
+          className={classes.listItemText}
           primary={folderLabel}
         />
         {isProgressing && (
-          <div className={cx(styles['icon-progress'])}>
+          <div className={classes.iconProgress}>
             <CircularProgress
               variant="indeterminate"
               size={16}
@@ -125,7 +131,7 @@ function Folder({
           </div>
         )}
         {folderAction.length > 0 && !isRootFolder && (
-          <div className={cx(styles['icon-menu'])}>
+          <div className={classes.iconMenu}>
             <Menu
               folderAction={folderAction}
               folder={folder}

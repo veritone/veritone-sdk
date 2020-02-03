@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import cx from 'classnames';
 import { get } from 'lodash';
 import { shape, bool, func } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -9,7 +8,12 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 
 export default function DeleteFolder({
   open,
@@ -17,6 +21,7 @@ export default function DeleteFolder({
   handleClose,
   handleSubmit,
 }) {
+  const classes = useStyles();
   const [approvedText, setapprovedText] = React.useState('');
   const isFolderWithContent = () => {
     return get(folder, 'hasContent', false);
@@ -56,12 +61,12 @@ export default function DeleteFolder({
         <DialogTitle id="create-folder">
           {getDialogTitle()}
         </DialogTitle>
-        <DialogContent className={cx(styles['dialog-content'])}>
-          <div className={cx(styles['action-new-field'])}>
+        <DialogContent className={classes.dialogContent}>
+          <div className={classes.actionNewField}>
             {getContent()}
           </div>
           {isFolderWithContent() && (
-            <div className={cx(styles['folder-name-field'])}>
+            <div className={classes.folderNameField}>
               <div>
                 To continue, type <b>DELETE</b> in box to confirm.
             </div>
@@ -69,7 +74,7 @@ export default function DeleteFolder({
                 autoFocus
                 margin="dense"
                 onChange={onChaneDeleteField}
-                id="delele-confirm"
+                id="deleleConfirm"
                 type="text"
               />
             </div>
@@ -79,7 +84,7 @@ export default function DeleteFolder({
           <Button
             onClick={handleClose}
             color="primary"
-            className={cx(styles['button-styles'])}
+            className={classes.buttonStyles}
           >
             Cancel
           </Button>
@@ -87,7 +92,7 @@ export default function DeleteFolder({
             disabled={isFolderWithContent() && approvedText !== 'DELETE'}
             onClick={onDelete}
             color="primary"
-            className={cx(styles['button-styles'])}
+            className={classes.buttonStyles}
           >
             Submit
           </Button >

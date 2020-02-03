@@ -1,16 +1,20 @@
 import React from 'react';
-import cx from 'classnames';
 import { func, string } from 'prop-types';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from './styles';
 
-import styles from './styles.scss';
+const useStyles = makeStyles(theme => ({
+  ...styles
+}));
 
 export default function Searchbox({
   onSearch,
   placeholder = 'Search'
 }) {
+  const classes = useStyles();
   const inputRef = React.createRef();
   const [focusing, setFocusing] = React.useState(false);
   const [data, setData] = React.useState('');
@@ -34,18 +38,18 @@ export default function Searchbox({
     }
   }
   return (
-    <div className={cx(styles['search-box-root'])}>
+    <div className={classes.searchBoxRoot}>
       <InputBase
         onChange={handleChangeInput}
         inputRef={inputRef}
-        className={cx(styles['input'])}
+        className={classes.input}
         placeholder={placeholder}
         inputProps={{ 'aria-label': 'Search-input' }}
         onKeyDown={handleKeyDown}
       />
       <IconButton
         onClick={handleSearch}
-        className={cx(styles['icon-button'])}
+        className={classes.iconButton}
         aria-label="search-button"
       >
         <SearchIcon />

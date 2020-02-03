@@ -9,8 +9,12 @@ import {
   bool,
   arrayOf
 } from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+import styles from '../styles';
 
-import styles from '../styles.scss';
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
 export default function FolderIcon({
   folder,
   highlightedIds,
@@ -18,13 +22,14 @@ export default function FolderIcon({
   isOpening,
   selectable
 }) {
+  const classes = useStyles();
   const folderId = _.get(folder, 'id');
   if (isRootFolder) {
-    const selected = _.includes(highlightedIds, folderId) ? styles['selected'] : null;
+    const selected = _.includes(highlightedIds, folderId) ? classes.selected : null;
     return (
       <div className={cx([
         'icon-work',
-        styles['folder-item'],
+        classes.folderItem,
         selected
       ])} />
     )
@@ -39,32 +44,32 @@ export default function FolderIcon({
       return (
         <div className={cx([
           folderIcon,
-          styles['folder-icon']
+          classes.folderIcon
         ])} />
       );
     case 'collection':
       return (
         <div className={cx([
           'icon-collections2',
-          styles['content-icon']
+          classes.contentIcon
         ])} />);
     case 'watchlist':
       return (
         <div className={cx([
           'icon-watchlist',
-          styles['content-icon']
+          classes.contentIcon
         ])} />);
     case 'tdo':
       return (
         <div className={cx([
           'icon-applications',
-          styles['content-icon']
+          classes.contentIcon
         ])} />);
     default:
       return (
         <div className={cx([
           'icon-results',
-          styles['content-icon']
+          classes.contentIcon
         ])} />);
   }
 }
