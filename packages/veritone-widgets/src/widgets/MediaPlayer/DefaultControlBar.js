@@ -18,10 +18,12 @@ import {
   FullscreenToggle
 } from 'video-react';
 import { shape, objectOf, any, bool, number } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
 import { RestartMediaButton } from 'veritone-react-common';
-import styles from './styles.scss';
+import styles from './styles';
 
+@withStyles(styles)
 @connect(
   state => ({
     playerState: state.player,
@@ -49,7 +51,8 @@ export default class DefaultControlBar extends React.Component {
     ctrlProgress: bool,
     displayTime: bool,
     autoHide: bool,
-    autoHideTime: number
+    autoHideTime: number,
+    classes: shape({ any }),
   };
   static defaultProps = {
     btnRestart: true,
@@ -88,7 +91,8 @@ export default class DefaultControlBar extends React.Component {
       ctrlProgress,
       displayTime,
       autoHide,
-      autoHideTime
+      autoHideTime,
+      classes
     } = this.props;
 
     return (
@@ -98,11 +102,12 @@ export default class DefaultControlBar extends React.Component {
           {
             'video-react-has-started': hasStarted
           },
-          styles.externalStyles
+          classes.externalStyles
         )}
+        data-test="DefaultControlBar"
       >
         <ControlBar
-          className={cx(styles.mediaPlayerControls)}
+          className={cx('mediaPlayerControls')}
           // need to provide these manually because ControlBar is
           // supposed to be a child of Player and get them automatically
           autoHide={autoHide}

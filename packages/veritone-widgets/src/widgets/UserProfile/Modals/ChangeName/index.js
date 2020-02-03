@@ -9,16 +9,21 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const ChangeName = ({ open, disableConfirm, onConfirm, onCancel }) => {
+  const classes = useStyles();
+
   return (
-    <Dialog open={open} classes={{ root: styles.dialogContainer }}>
+    <Dialog open={open} classes={{ root: classes.dialogContainer }}>
       <DialogTitle>Change Name</DialogTitle>
 
       <DialogContent>
-        <div className={styles.inputGroup}>
+        <div className={classes.inputGroup}>
           <Field
             component={TextField}
             name="firstName"
@@ -27,7 +32,7 @@ const ChangeName = ({ open, disableConfirm, onConfirm, onCancel }) => {
             fullWidth
           />
         </div>
-        <div className={styles.inputGroup}>
+        <div className={classes.inputGroup}>
           <Field
             component={TextField}
             name="lastName"

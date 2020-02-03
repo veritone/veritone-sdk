@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { forEach, get, includes, find, kebabCase } from 'lodash';
-import { string, bool, shape, func, arrayOf, number } from 'prop-types';
+import { string, bool, shape, func, arrayOf, number, any } from 'prop-types';
 import { connect } from 'react-redux';
 
 import List from '@material-ui/core/List';
@@ -20,13 +20,15 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
+import { withStyles } from '@material-ui/styles';
 
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
-import styles from './styles.scss';
+import styles from './styles';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
+@withStyles(styles)
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId),
@@ -87,7 +89,8 @@ export default class EngineCategoryConfig extends Component {
     storeSpeakerToggle: func,
     initialSpeakerToggle: shape({
       withSpeakerData: bool
-    })
+    }),
+    classes: shape({ any }),
   };
 
   state = {
@@ -130,7 +133,8 @@ export default class EngineCategoryConfig extends Component {
       expanded,
       initialSubtitleConfig,
       initialSpeakerToggle,
-      transcriptCategoryType
+      transcriptCategoryType,
+      classes
     } = this.props;
     const isTranscriptionCategory =
       category.categoryType === transcriptCategoryType;
@@ -168,7 +172,7 @@ export default class EngineCategoryConfig extends Component {
             id="engineCategoryName"
             primary={`${category.name} (${engineCategoryConfigs.length})`}
           />
-          <ListItemIcon classes={{ root: styles.expandIcon }}>
+          <ListItemIcon classes={{ root: classes.expandIcon }}>
             <IconButton
               aria-label="Expand Category"
               // eslint-disable-next-line
@@ -194,16 +198,16 @@ export default class EngineCategoryConfig extends Component {
             })}
             {hasSpeakerData &&
               isTranscriptionCategory && (
-                <ListItem className={styles.engineListItem}>
-                  <div className={styles.customizeOutputBox}>
+                <ListItem className={classes.engineListItem}>
+                  <div className={classes.customizeOutputBox}>
                     <RecordVoiceOverIcon
-                      className={styles.customizeSettingsIcon}
+                      className={classes.customizeSettingsIcon}
                     />
-                    <span className={styles.customizeSettingsText}>
+                    <span className={classes.customizeSettingsText}>
                       Include speaker separation results
                     </span>
                     <Switch
-                      className={styles.customizeButton}
+                      className={classes.customizeButton}
                       color="primary"
                       checked={initialSpeakerToggle.withSpeakerData}
                       onChange={this.handleSpeakerToggle}
@@ -213,16 +217,16 @@ export default class EngineCategoryConfig extends Component {
                 </ListItem>
               )}
             {hasSubtitleFormatsSelected && (
-              <ListItem className={styles.engineListItem}>
-                <div className={styles.customizeOutputBox}>
-                  <ClosedCaptionIcon className={styles.customizeSettingsIcon} />
-                  <span className={styles.customizeSettingsText}>
+              <ListItem className={classes.engineListItem}>
+                <div className={classes.customizeOutputBox}>
+                  <ClosedCaptionIcon className={classes.customizeSettingsIcon} />
+                  <span className={classes.customizeSettingsText}>
                     Subtitle formats have been selected, adjust the format and
                     display settings here
                   </span>
                   <Button
                     color="primary"
-                    className={styles.customizeButton}
+                    className={classes.customizeButton}
                     onClick={this.openCustomizeSubtitles}
                     data-veritone-element="customize-subtitle-formats-button"
                   >
@@ -243,7 +247,7 @@ export default class EngineCategoryConfig extends Component {
             Subtitle Format Settings
           </DialogTitle>
           <DialogContent>
-            <DialogContentText className={styles.subtitleConfigInfo}>
+            <DialogContentText className={classes.subtitleConfigInfo}>
               Adjust the format and display settings for your subtitle export
               for maximum readability.
             </DialogContentText>

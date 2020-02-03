@@ -5,32 +5,38 @@ import Button from '@material-ui/core/Button';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Typography from '@material-ui/core/Typography';
 import blue from '@material-ui/core/colors/blue';
+import { makeStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 const FailureScreen = ({
   message = 'Oops! Something went wrong.',
-  classes = {
-    errorOutlineIcon: {
-      root: styles.errorIcon
-    },
-    message: {
-      root: styles.message
-    },
-    button: {
-      root: styles.button
-    }
-  },
+  classes,
   onRetry
 }) => {
+  const muiClasses = useStyles();
+  const classesProps = classes ? classes : {
+    errorOutlineIcon: {
+      root: muiClasses.errorIcon
+    },
+    message: {
+      root: muiClasses.message
+    },
+    button: {
+      root: muiClasses.button
+    }
+  };
+
   return (
-    <div className={styles.container}>
-      <ErrorOutlineIcon classes={classes.errorOutlineIcon} />
-      <Typography variant="h5" classes={classes.message}>
+    <div className={muiClasses.container}>
+      <ErrorOutlineIcon classes={classesProps.errorOutlineIcon} />
+      <Typography variant="h5" classes={classesProps.message}>
         {message}
       </Typography>
-      <Button variant="contained" classes={classes.button} onClick={onRetry}>
-        <RefreshIcon htmlColor={blue[500]} style={{ marginRight: '10px' }} />
+      <Button variant="contained" classes={classesProps.button} onClick={onRetry}>
+        <RefreshIcon htmlColor={blue[500]} className={muiClasses.icon} />
         Retry
       </Button>
     </div>

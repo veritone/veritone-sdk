@@ -69,6 +69,13 @@ export default {
         '../../node_modules/redux-form/node_modules/react-is/index.js': [
           'isElement',
           'isValidElementType'
+        ],
+        '../../node_modules/react-is/index.js': [
+          'ForwardRef'
+        ],
+        '../../node_modules/jss/lib/index.js': [
+          'createRule',
+          'hasCSSTOMSupport'
         ]
       }
     }),

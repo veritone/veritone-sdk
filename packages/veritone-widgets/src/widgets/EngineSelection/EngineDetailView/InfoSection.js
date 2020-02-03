@@ -1,6 +1,6 @@
 import React from 'react';
 import { func, object, bool, string, shape } from 'prop-types';
-
+import { makeStyles } from '@material-ui/styles';
 import { Lozenge } from 'veritone-react-common';
 import ToggleButton from '../ToggleButton/';
 import networkIsolatedLogo from '../images/networkisolated_logo.png';
@@ -8,9 +8,12 @@ import externalAccessLogo from '../images/externalaccess_logo.png';
 import externalProcessingLogo from '../images/externalprocessing_logo.png';
 import humanReviewLogo from '../images/humanreview_logo.png';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 function InfoSection({ id, engine, onAdd, onRemove, isSelected }) {
+  const classes = useStyles(styles);
   const deploymentModelLogo = {
     FullyNetworkIsolated: networkIsolatedLogo,
     MostlyNetworkIsolated: externalAccessLogo,
@@ -22,33 +25,33 @@ function InfoSection({ id, engine, onAdd, onRemove, isSelected }) {
   const { name: categoryName, iconClass, color } = engine.category || {};
 
   return (
-    <div className={styles.row}>
-      <div className={styles.avatar}>
+    <div className={classes.row}>
+      <div className={classes.avatar}>
         {engine.iconPath ? (
           <img src={engine.iconPath} />
         ) : (
           <i className="icon-engines" />
         )}
       </div>
-      <div className={styles.container}>
-        <div className={styles.primary}>
-          <div className={styles.title}>{engine.name}</div>
-          <div className={styles.orgName}>{orgName}</div>
-          <div className={styles.info}>
+      <div className={classes.container}>
+        <div className={classes.primary}>
+          <div className={classes.title}>{engine.name}</div>
+          <div className={classes.orgName}>{orgName}</div>
+          <div className={classes.info}>
             {categoryName && (
               <Lozenge iconClassName={iconClass} backgroundColor={color}>
                 {categoryName}
               </Lozenge>
             )}
           </div>
-          <div className={styles.logos}>
-            <div className={styles.logo}>
+          <div className={classes.logos}>
+            <div className={classes.logo}>
               <img src={deploymentModelLogo[engine.deploymentModel]} />
             </div>
           </div>
         </div>
-        <div className={styles.secondary}>
-          <div className={styles.button}>
+        <div className={classes.secondary}>
+          <div className={classes.button}>
             <ToggleButton
               id={id}
               onAdd={onAdd}

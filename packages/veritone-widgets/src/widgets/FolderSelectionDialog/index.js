@@ -1,6 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
-import { bool, func, string, shape, number } from 'prop-types';
+import { bool, func, string, shape, number, any } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import {
@@ -15,12 +15,14 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
+import { withStyles } from '@material-ui/styles';
 import FolderList from './FolderList';
 import NewFolder from './NewFolder';
-import styles from './styles.scss';
+import styles from './styles';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import widget from '../../shared/widget';
 
+@withStyles(styles)
 @connect(
   state => ({
     rootFolder: folderSelectionModule.rootFolder(state),
@@ -71,7 +73,8 @@ class FolderSelectionDialog extends React.Component {
       })
     }),
     onCancel: func,
-    onSelect: func
+    onSelect: func,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -118,10 +121,10 @@ class FolderSelectionDialog extends React.Component {
   };
 
   renderLoader() {
-    const { loading } = this.props;
+    const { loading, classes } = this.props;
     if (loading) {
       return (
-        <div className={styles.loadingContainer}>
+        <div className={classes.loadingContainer}>
           <CircularProgress size={50} />
         </div>
       );
@@ -129,7 +132,7 @@ class FolderSelectionDialog extends React.Component {
   }
 
   render() {
-    const { rootFolder, selectedFolder, loading, rootFolderType } = this.props;
+    const { rootFolder, selectedFolder, loading, rootFolderType, classes } = this.props;
     const rootId = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = rootId === selectedId;
@@ -137,21 +140,21 @@ class FolderSelectionDialog extends React.Component {
     if (!loading && isEmpty(rootFolder)) {
       return (
         <Dialog
-          className={styles.folderPicker}
+          className={classes.folderPicker}
           fullWidth
           maxWidth="md"
           open={this.props.open}
         >
           <Grid container justify="space-between" alignItems="center">
-            <DialogTitle className={styles.dialogTitle}>
+            <DialogTitle className={classes.dialogTitle}>
               Select Folder
             </DialogTitle>
             <CloseIcon
-              className={styles.closeIcon}
+              className={classes.closeIcon}
               onClick={this.handleCancel}
             />
           </Grid>
-          <Typography className={styles.dialogSubTitle} variant="subheading">
+          <Typography className={classes.dialogSubTitle} variant="subtitle1">
             Oops - Something went Wrong! Your folders could not be loaded.
           </Typography>
         </Dialog>
@@ -161,36 +164,36 @@ class FolderSelectionDialog extends React.Component {
     return (
       <React.Fragment>
         <Dialog
-          className={styles.folderPicker}
+          className={classes.folderPicker}
           fullWidth
           maxWidth="md"
           open={this.props.open}
         >
           {this.renderLoader()}
           <Grid container justify="space-between" alignItems="center">
-            <DialogTitle className={styles.dialogTitle}>
+            <DialogTitle className={classes.dialogTitle}>
               Select Folder
             </DialogTitle>
             <CloseIcon
-              className={styles.closeIcon}
+              className={classes.closeIcon}
               onClick={this.handleCancel}
             />
           </Grid>
-          <Typography className={styles.dialogSubTitle} variant="subheading">
+          <Typography className={classes.dialogSubTitle} variant="subtitle1">
             Choose a folder below to organize this data.
           </Typography>
-          <DialogContent className={styles.dialogContent}>
+          <DialogContent className={classes.dialogContent}>
             <Grid
-              className={cx(styles.rootfolder, idsMatch && styles.selected)}
+              className={cx(classes.rootfolder, idsMatch && classes.selected)}
               onClick={this.handleClick}
               container
             >
               <Grid item container alignContent="center" alignItems="center">
-                <WorkIcon className={styles.workIcon} />
-                <Typography variant="title">My Organization</Typography>
+                <WorkIcon className={classes.workIcon} />
+                <Typography variant="h6">My Organization</Typography>
               </Grid>
               <Grid item container alignContent="center" alignItems="center">
-                <Typography className={styles.saveText} variant="title">
+                <Typography className={classes.saveText} variant="h6">
                   Save to Root Level
                 </Typography>
               </Grid>
@@ -215,13 +218,13 @@ class FolderSelectionDialog extends React.Component {
                 xs={3}
               >
                 <Button
-                  className={cx(styles.button, styles.buttonNewFolder)}
+                  className={cx(classes.button, classes.buttonNewFolder)}
                   variant="outlined"
                   color="primary"
                   onClick={this.openNewFolderDialog}
                   size="large"
                 >
-                  <Typography className={styles.newFolderButton}>
+                  <Typography className={classes.newFolderButton}>
                     New Folder
                   </Typography>
                 </Button>
@@ -234,22 +237,22 @@ class FolderSelectionDialog extends React.Component {
                 xs={9}
               >
                 <Button
-                  className={styles.button}
+                  className={classes.button}
                   onClick={this.handleCancel}
                   size="large"
                 >
-                  <Typography className={styles.cancelButton}>
+                  <Typography className={classes.cancelButton}>
                     Cancel
                   </Typography>
                 </Button>
                 <Button
-                  className={cx(styles.button, styles.buttonSelect)}
+                  className={cx(classes.button, classes.buttonSelect)}
                   onClick={this.onSelect}
                   variant="contained"
                   size="large"
                   color="primary"
                 >
-                  <Typography className={styles.selectButton}>
+                  <Typography className={classes.selectButton}>
                     Select
                   </Typography>
                 </Button>
@@ -259,7 +262,7 @@ class FolderSelectionDialog extends React.Component {
         </Dialog>
         {this.state.openNewFolder ? (
           <NewFolder
-            rootFolderType = {rootFolderType}
+            rootFolderType={rootFolderType}
             open={this.state.openNewFolder}
             cancel={this.closeNewFolderDialog}
           />

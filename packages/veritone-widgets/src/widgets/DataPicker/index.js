@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { string, bool, oneOf, arrayOf, shape, number, func } from 'prop-types';
+import { string, bool, oneOf, arrayOf, shape, number, func, any } from 'prop-types';
 import { noop, get } from 'lodash';
 
 import { connect } from 'react-redux';
@@ -10,6 +10,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/styles';
 
 import { DataPicker as DataPickerComponent } from 'veritone-react-common';
 
@@ -18,7 +19,7 @@ import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 /*
   Required parameters:
@@ -40,6 +41,7 @@ import styles from './styles.scss';
   widget.pick(); // open Picker
   widget.cancel(); // close Picker
 */
+@withStyles(styles)
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
@@ -165,7 +167,8 @@ class DataPicker extends React.Component {
     selectNode: func.isRequired,
     getItemByTypeAndId: func.isRequired,
     height: number,
-    width: number
+    width: number,
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -305,6 +308,7 @@ class DataPicker extends React.Component {
       currentDirectoryLoadingState,
       itemRefs,
       getItemByTypeAndId,
+      classes,
       height = 1,
       width = 1
     } = this.props;
@@ -314,17 +318,17 @@ class DataPicker extends React.Component {
     const dimensionOverride = fullScreen
       ? {}
       : {
-          height,
-          width
-        };
+        height,
+        width
+      };
 
     const openState = open === undefined ? internalState : open;
     return (
       <Fragment>
         <Dialog
-          open={openState}
+          open={openState || false}
           fullScreen={fullScreen}
-          classes={{ paper: styles.dataPickerPaper }}
+          classes={{ paper: classes.dataPickerPaper }}
           PaperProps={{ style: dimensionOverride }}
         >
           <DataPickerComponent
@@ -359,7 +363,7 @@ class DataPicker extends React.Component {
           onClose={this.handleCloseErrorMsg}
         >
           <SnackbarContent
-            className={styles['data-picker-error-snack']}
+            className={classes.dataPickerErrorSnack}
             message={errorMsg}
             action={[
               <IconButton key="close-btn" onClick={this.handleCloseErrorMsg}>
