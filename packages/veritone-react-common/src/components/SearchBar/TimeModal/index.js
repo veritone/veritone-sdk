@@ -3,7 +3,7 @@ import parse from 'date-fns/parse';
 import format from 'date-fns/format';
 
 const fromUTCToLocal = inputTime => {
-  const converted = parse(new Date().toDateString() + ' ' + inputTime + ':00Z');
+  const converted = parse(`${inputTime}:00Z`, 'hh:mm:ssX', new Date());
   return format(converted, 'HH:mm');
 };
 
@@ -49,14 +49,9 @@ const getTimeLabel = modalState => {
       dayPartStartTime = fromUTCToLocal(dayPartStartTime);
       dayPartEndTime = fromUTCToLocal(dayPartEndTime);
     }
-    const startTime = format(
-      new Date().toDateString() + ' ' + dayPartStartTime,
-      'hh:mm A'
-    );
-    const endTime = format(
-      new Date().toDateString() + ' ' + dayPartEndTime,
-      'hh:mm A'
-    );
+
+    const startTime = format(parse(dayPartStartTime, 'hh:mm', new Date()), 'hh:mm a');
+    const endTime = format(parse(dayPartEndTime, 'hh:mm', new Date()), 'hh:mm a');
 
     label = `${startTime}-${endTime}`;
     if (modalState.search.stationBroadcastTime) {

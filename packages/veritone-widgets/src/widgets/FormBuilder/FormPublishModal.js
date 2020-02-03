@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, bool, objectOf, arrayOf, string } from 'prop-types';
+import { func, bool, objectOf, arrayOf, string, shape, oneOfType, number } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -130,7 +130,10 @@ export default function FormPublishModal({
 }
 
 FormPublishModal.propTypes = {
-  locations: arrayOf(string),
+  locations: arrayOf(shape({
+    id: oneOfType([string, number]),
+    name: string
+  })),
   selectedLocations: objectOf(bool),
   fetchLocations: func,
   locationLoading: bool,

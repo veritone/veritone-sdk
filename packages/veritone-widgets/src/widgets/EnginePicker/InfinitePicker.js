@@ -7,7 +7,8 @@ import {
   objectOf,
   any,
   bool,
-  func
+  func,
+  shape
 } from 'prop-types';
 import { debounce } from 'lodash';
 import { guid } from '../../shared/util';
@@ -26,8 +27,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ExpandableInputField } from 'veritone-react-common';
 import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 class StatefulExpandableInputField extends React.Component {
   static propTypes = {
@@ -89,7 +91,8 @@ class InfiniteTablePicker extends React.Component {
       width: string,
       paddingLeft: string
     }),
-    maxSelections: number
+    maxSelections: number,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -128,8 +131,8 @@ class InfiniteTablePicker extends React.Component {
   debouncedScroll = debounce((evt, id) => {
     if (
       evt.target.scrollHeight -
-        evt.target.scrollTop -
-        this.props.infiniteScrollMargin <
+      evt.target.scrollTop -
+      this.props.infiniteScrollMargin <
       evt.target.clientHeight
     ) {
       this.props.fetchMore({
@@ -164,45 +167,48 @@ class InfiniteTablePicker extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <Paper elevation={4} style={{ height: this.props.pickerHeight }}>
-        <div className={styles.infinitePickerContainer}>
-          <div className={styles.pickerTitle}>
-            <div className={styles.pickerTitleContainer}>
+        <div className={classes.infinitePickerContainer}>
+          <div className={classes.pickerTitle}>
+            <div className={classes.pickerTitleContainer}>
               <Typography variant="h5">
                 {this.props.pickerTitle}
               </Typography>
             </div>
-            <div className={styles.pickerSearchContainer}>
+            <div className={classes.pickerSearchContainer}>
               <StatefulExpandableInputField
                 onSearch={this.onSearch}
                 onReset={this.onReset}
               />
             </div>
           </div>
-          <div className={styles.tableContainer} onScroll={this.handleScroll}>
-            <Table className={styles.table}>
-              <TableHead className={styles.infiniteScrollHeader}>
-                {this.props.columns.map(column => (
-                  <TableCell
-                    key={`header_${column.name}`}
-                    style={{
-                      width: column.width,
-                      paddingRight: '8px',
-                      minWidth: column.width,
-                      paddingLeft: column.paddingLeft
-                    }}
-                  >
-                    <Typography variant="subtitle1">{column.name}</Typography>
-                  </TableCell>
-                ))}
+          <div className={classes.tableContainer} onScroll={this.handleScroll}>
+            <Table className={classes.table}>
+              <TableHead className={classes.infiniteScrollHeader}>
+                <TableRow>
+                  {this.props.columns.map(column => (
+                    <TableCell
+                      key={`header_${column.name}`}
+                      style={{
+                        width: column.width,
+                        paddingRight: '8px',
+                        minWidth: column.width,
+                        paddingLeft: column.paddingLeft
+                      }}
+                    >
+                      <Typography variant="subtitle1">{column.name}</Typography>
+                    </TableCell>
+                  ))}
+                </TableRow>
               </TableHead>
-              <TableBody className={styles.infiniteScrollContainer}>
+              <TableBody className={classes.infiniteScrollContainer}>
                 {this.props.loadingFailed && (
-                  <TableRow className={styles.rowLoader}>
+                  <TableRow className={classes.rowLoader}>
                     <TableCell
                       colSpan={this.props.columns.length}
-                      className={styles.rowLoaderSpinner}
+                      className={classes.rowLoaderSpinner}
                     >
                       <Typography variant="subtitle1" gutterBottom>
                         {this.props.failedToLoadMessage}
@@ -225,7 +231,7 @@ class InfiniteTablePicker extends React.Component {
                       selected={
                         this.props.selected && row.id in this.props.selected
                       }
-                      classes={{ selected: styles.selected }}
+                      classes={{ selected: classes.selected }}
                     >
                       {this.props.maxSelections === 1 ? (
                         <TableCell
@@ -238,29 +244,29 @@ class InfiniteTablePicker extends React.Component {
                           />
                         </TableCell>
                       ) : (
-                        <TableCell
-                          style={{ minWidth: this.props.columns[0].width }}
-                        >
-                          <Checkbox
-                            disabled={this.isSelectionDisabled(row.id)}
-                            value={row.id}
-                            checked={
-                              this.props.selected &&
-                              row.id in this.props.selected
-                            }
-                            onChange={this.getToggleSelectionHandler(row.id)}
-                          />
-                        </TableCell>
-                      )}
+                          <TableCell
+                            style={{ minWidth: this.props.columns[0].width }}
+                          >
+                            <Checkbox
+                              disabled={this.isSelectionDisabled(row.id)}
+                              value={row.id}
+                              checked={
+                                this.props.selected &&
+                                row.id in this.props.selected
+                              }
+                              onChange={this.getToggleSelectionHandler(row.id)}
+                            />
+                          </TableCell>
+                        )}
                       {this.props.renderRow(row)}
                     </TableRow>
                   ))}
                 {this.props.loading &&
                   (!this.props.rows || this.props.rows.length === 0) && (
-                    <TableRow className={styles.rowLoader}>
+                    <TableRow className={classes.rowLoader}>
                       <TableCell
                         colSpan={this.props.columns.length}
-                        className={styles.rowLoaderSpinner}
+                        className={classes.rowLoaderSpinner}
                       >
                         <CircularProgress size={60} />
                       </TableCell>
@@ -272,7 +278,7 @@ class InfiniteTablePicker extends React.Component {
           {this.props.loading &&
             this.props.rows &&
             this.props.rows.length > 0 && (
-              <div className={styles.firstLoader}>
+              <div className={classes.firstLoader}>
                 <CircularProgress size={60} />
               </div>
             )}
@@ -282,5 +288,5 @@ class InfiniteTablePicker extends React.Component {
   }
 }
 
-const InfinitePicker = InfiniteTablePicker;
+const InfinitePicker = withStyles(styles)(InfiniteTablePicker);
 export { InfinitePicker };

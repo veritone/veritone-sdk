@@ -1,16 +1,17 @@
 import React from 'react';
 import { string, number } from 'prop-types';
-
+import { makeStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 
-import styles from './styles.scss';
-
+import styles from './styles';
+const useStyles = makeStyles(styles);
 const FilePickerFlatHeader = ({ title, fileCount, maxFiles }) => {
+  const classes = useStyles();
   return (
-    <div className={styles.filePickerFlatHeader}>
+    <div className={classes.filePickerFlatHeader}>
       <Typography variant="h6">
         {title}
-        &nbsp;<span className={styles.count}>
+        &nbsp;<span className={classes.count}>
           {fileCount}/{maxFiles}
         </span>
       </Typography>

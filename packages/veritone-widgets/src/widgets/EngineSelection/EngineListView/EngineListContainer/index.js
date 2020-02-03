@@ -1,18 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, string, arrayOf, bool } from 'prop-types';
+import { func, string, arrayOf, bool, shape, any } from 'prop-types';
 import { isEmpty, noop } from 'lodash';
 
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/styles'
 
 import EngineList from './EngineList';
 import FailureScreen from './FailureScreen/';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
 
+@withStyles(styles)
 @connect(
   (state, ownProps) => ({
     noFilterResultsFound:
@@ -33,7 +35,8 @@ export default class EngineListContainer extends React.Component {
     onViewDetail: func.isRequired,
     isFetchingEngines: bool.isRequired,
     failedToFetchEngines: bool.isRequired,
-    refetchEngines: func.isRequired
+    refetchEngines: func.isRequired,
+    classes: shape({ any }),
   };
 
   handleExploreAllEnginesClick = e => {
@@ -45,6 +48,7 @@ export default class EngineListContainer extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     if (this.props.failedToFetchEngines) {
       return (
         <FailureScreen
@@ -56,7 +60,7 @@ export default class EngineListContainer extends React.Component {
 
     if (this.props.isFetchingEngines) {
       return (
-        <div className={styles.isFetching}>
+        <div className={classes.isFetching}>
           <CircularProgress size={50} />
         </div>
       );
@@ -64,9 +68,9 @@ export default class EngineListContainer extends React.Component {
 
     if (this.props.currentTab === 'own' && this.props.noFilterResultsFound) {
       return (
-        <div className={styles.noResults}>
+        <div className={classes.noResults}>
           <i className="icon-engines" />
-          <span className={styles.noResultsMessage}>
+          <span className={classes.noResultsMessage}>
             You do not have any engines selected that match these filters.
           </span>
         </div>
@@ -76,9 +80,9 @@ export default class EngineListContainer extends React.Component {
     if (isEmpty(this.props.engineIds)) {
       if (this.props.currentTab === 'explore') {
         return (
-          <div className={styles.noResults}>
+          <div className={classes.noResults}>
             <i className="icon-engines" />
-            <span className={styles.noResultsMessage}>
+            <span className={classes.noResultsMessage}>
               Your search returned no results.
             </span>
           </div>
@@ -86,12 +90,12 @@ export default class EngineListContainer extends React.Component {
       }
 
       return (
-        <div className={styles.noEnabledEngines}>
-          <div className={styles.noEnabledEnginesContainer}>
-            <div className={styles.noEnabledEnginesIcon}>
+        <div className={classes.noEnabledEngines}>
+          <div className={classes.noEnabledEnginesContainer}>
+            <div className={classes.noEnabledEnginesIcon}>
               <i className="icon-engines" />
             </div>
-            <div className={styles.noEnabledEnginesText}>
+            <div className={classes.noEnabledEnginesText}>
               You have no enabled engines.
             </div>
             <Button

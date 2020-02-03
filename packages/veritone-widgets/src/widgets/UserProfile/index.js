@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { startCase, noop, isEmpty, get } from 'lodash';
-import { string, func, bool, shape } from 'prop-types';
+import { string, func, bool, shape, any } from 'prop-types';
 import { withProps, branch, renderNothing } from 'recompose';
 import {
   reduxForm,
@@ -17,6 +17,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
+import { withStyles } from '@material-ui/styles';
 
 import { Avatar } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
@@ -35,7 +36,7 @@ import PasswordField from './PasswordField';
 import ChangeNameModal from './Modals/ChangeName';
 import ResetPasswordModal from './Modals/ResetPassword';
 
-import styles from './styles.scss';
+import styles from './styles';
 const defaultAvatarImg =
   'https://static.veritone.com/veritone-ui/default-avatar.png';
 
@@ -84,6 +85,7 @@ const defaultAvatarImg =
     return errors;
   }
 })
+@withStyles(styles)
 export class UserProfile extends React.Component {
   static propTypes = {
     user: shape({
@@ -104,7 +106,8 @@ export class UserProfile extends React.Component {
     invalid: bool,
     pristine: bool,
     submitting: bool,
-    enablePasswordReset: bool
+    enablePasswordReset: bool,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -195,13 +198,15 @@ export class UserProfile extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
+
     return (
       <Form
         onSubmit={this.props.handleSubmit(this.handleUpdateUser)}
-        className={styles.container}
+        className={classes.container}
       >
-        <div className={styles.column}>
-          <div className={styles.section}>
+        <div className={classes.column}>
+          <div className={classes.section}>
             <FilePicker
               accept={['image/*']}
               multiple={false}
@@ -218,18 +223,18 @@ export class UserProfile extends React.Component {
             />
           </div>
 
-          <div className={styles.section}>
+          <div className={classes.section}>
             <Typography
               variant="h6"
               gutterBottom
-              classes={{ root: styles.title }}
+              classes={{ root: classes.title }}
             >
               Your Personal Info
             </Typography>
             <Typography
               variant="subtitle1"
               gutterBottom
-              classes={{ root: styles.subheading }}
+              classes={{ root: classes.subheading }}
             >
               Manage your basic information.
             </Typography>
@@ -242,27 +247,27 @@ export class UserProfile extends React.Component {
             />
           </div>
           {this.props.enablePasswordReset === true && (
-            <div className={styles.section}>
-            <Typography
-              variant="h6"
-              gutterBottom
-              classes={{ root: styles.title }}
-            >
-              Signing in to Veritone
+            <div className={classes.section}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                classes={{ root: classes.title }}
+              >
+                Signing in to Veritone
             </Typography>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              classes={{ root: styles.subheading }}
-            >
-              Control your password and account access.
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                classes={{ root: classes.subheading }}
+              >
+                Control your password and account access.
             </Typography>
 
-            <PasswordField
-              lastUpdated={this.props.user.lastPasswordUpdated}
-              onEdit={this.openChangePasswordModal}
-            />
-          </div>
+              <PasswordField
+                lastUpdated={this.props.user.lastPasswordUpdated}
+                onEdit={this.openChangePasswordModal}
+              />
+            </div>
           )}
           <ChangeNameModal
             open={this.state.currentModal === 'changeName'}

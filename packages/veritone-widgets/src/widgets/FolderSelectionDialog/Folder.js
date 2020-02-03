@@ -1,11 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import { shape, number, string, func } from 'prop-types';
-import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
+import { shape, number, string, func, any } from 'prop-types';
 import FolderIcon from '@material-ui/icons/Folder';
-import styles from './styles.scss';
+import { withStyles } from '@material-ui/styles';
 
+import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
+import styles from './styles';
+
+@withStyles(styles)
 @connect(
   state => ({
     selectedFolder: folderSelectionModule.selectedFolder(state)
@@ -52,7 +55,8 @@ export default class Folder extends React.Component {
       childFolders: shape({
         count: number
       })
-    })
+    }),
+    classes: shape({ any }),
   };
 
   handleClick = () => {
@@ -61,7 +65,7 @@ export default class Folder extends React.Component {
   };
 
   render() {
-    const { folder, selectedFolder } = this.props;
+    const { folder, selectedFolder, classes } = this.props;
     const listId = folder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = listId === selectedId;
@@ -69,14 +73,14 @@ export default class Folder extends React.Component {
     return (
       <li>
         <div
-          className={cx(styles.folder, idsMatch && styles.selected)}
+          className={cx(classes.folder, idsMatch && classes.selected)}
           onClick={this.handleClick}
         >
-          <FolderIcon className={styles.folderIcon} />
+          <FolderIcon className={classes.folderIcon} />
           <div
             className={cx(
-              styles.folderName,
-              idsMatch && styles.folderNameSelected
+              classes.folderName,
+              idsMatch && classes.folderNameSelected
             )}
           >
             {folder.name}

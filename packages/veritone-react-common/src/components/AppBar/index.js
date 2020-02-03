@@ -2,6 +2,7 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 
 import {
@@ -24,13 +25,12 @@ import Notifier, { notifierPropTypes } from 'components/Notifier';
 import Help, { helpPropTypes } from 'components/Help';
 
 import SmallVeritoneLogo from 'images/header-veritone-icon.svg';
-
-import styles from './styles.scss';
+import styles from './styles';
 
 export const appBarHeight = 60;
 export const defaultAppBarZIndex = 1000;
 
-export default class AppBar extends React.Component {
+class AppBar extends React.Component {
   static propTypes = {
     title: string,
     titleColor: string,
@@ -83,7 +83,8 @@ export default class AppBar extends React.Component {
     zIndex: number,
     totalNotification: number,
     showNotifications: func,
-    hideNotification: func
+    hideNotification: func,
+    classes: shape({any})
   };
   static defaultProps = {
     logo: true,
@@ -147,7 +148,8 @@ export default class AppBar extends React.Component {
       additionMenuItems,
       totalNotification,
       showNotifications,
-      hideNotification
+      hideNotification,
+      classes
     } = this.props;
 
     return (
@@ -155,7 +157,7 @@ export default class AppBar extends React.Component {
         component="header"
         square
         elevation={elevation}
-        className={styles.appBar}
+        className={classes.appBar}
         style={{
           height: appBarHeight,
           background: backgroundColor,
@@ -163,29 +165,29 @@ export default class AppBar extends React.Component {
         }}
       >
         <div
-          className={styles.logo}
+          className={classes.logo}
           style={{ backgroundColor: logoBackgroundColor }}
           onClick={this.goHome}
         >
           {logo && <img src={logoSrc} draggable="false" />}
         </div>
-        <div className={styles.content} style={{ color: titleColor }}>
+        <div className={classes.content} style={{ color: titleColor }}>
           <div
-            className={classNames(styles.left, styles.noSelect)}
+            className={classNames(classes.left, classes.noSelect)}
             onClick={this.goHome}
           >
             {appLogoSrc ? (
               <img
-                className={styles.appLogo}
+                className={classes.appLogo}
                 src={appLogoSrc}
                 draggable="false"
               />
             ) : (
-                <div className={styles.title}>{title}</div>
+                <div className={classes.title}>{title}</div>
               )}
           </div>
           <div
-            className={styles.searchBarHolder}
+            className={classes.searchBarHolder}
             style={{
               justifyContent: searchBarJustification,
               marginLeft: searchBarLeftMargin,
@@ -194,21 +196,21 @@ export default class AppBar extends React.Component {
           >
             {searchBar || <div id='veritone-search-bar' />}
           </div>
-          <div className={styles.right}>
-            <div className={styles.controllers}>
+          <div className={classes.right}>
+            <div className={classes.controllers}>
               {//Custom Controllers (Copy over from the previous app bar version)
                 rightActions &&
                 rightActions.length > 0 && (
                   <div
-                    className={classNames(styles['iconGroup'], styles.noSelect)}
+                    className={classNames(classes.iconGroup, classes.noSelect)}
                   >
                     {rightActions.map(({ label, onClick, isActive }) => (
-                      <div className={styles['iconGroup__icon']} key={label}>
+                      <div className={classes.iconGroupIcon} key={label}>
                         <span
                           onClick={onClick}
                           className={classNames(
-                            styles['rightAction-label'],
-                            isActive ? styles.active : styles.passive
+                            classes.rightActionLabel,
+                            isActive ? classes.active : classes.passive
                           )}
                         >
                           {label}
@@ -273,3 +275,5 @@ export default class AppBar extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(AppBar);

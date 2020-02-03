@@ -14,9 +14,9 @@ import {
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-
+import { makeStyles } from '@material-ui/styles';
 import { intersperse } from 'helpers/fp';
-import styles from './styles/sectiontree.scss';
+import styles from './styles/sectiontree';
 
 const nodeShape = {
   label: string,
@@ -26,126 +26,130 @@ const nodeShape = {
 nodeShape.children = objectOf(shape(nodeShape));
 
 export const sectionsShape = shape(nodeShape);
+const useStyles = makeStyles(styles);
 
-class SectionTree extends React.Component {
-  static propTypes = {
-    sections: sectionsShape.isRequired,
-    activePath: arrayOf(string).isRequired,
-    onNavigate: func.isRequired,
-    selectedItemClasses: shape({
-      leftIcon: string
-    }),
-    classes: shape({
-      leftIcon: string
-    })
-  };
-
-  handleNavigateForward = path => {
-    this.props.onNavigate([...this.getNavigationRelativePath(), path]);
-  };
-
-  handleNavigateBack = () => {
-    this.props.onNavigate(initial(this.getNavigationRelativePath()));
-  };
-
-  handleNavigateSibling = path => {
-    this.props.onNavigate([...initial(this.getNavigationRelativePath()), path]);
-  };
-
-  getNavigationRelativePath = () => {
-    const deepestMatchingPath = this.getDeepestMatchedPath();
-    const showingPartialPath = deepestMatchingPath !== this.props.activePath;
-    return showingPartialPath ? deepestMatchingPath : this.props.activePath;
-  };
-
-  getDeepestMatchedPath = () => {
+export default function SectionTree({
+  sections,
+  activePath,
+  onNavigate,
+  selectedItemClasses,
+  classes
+}) {
+  const muiClasses = useStyles();
+  const getDeepestMatchedPath = () => {
     // find the deepest section we can match in the tree by dropping pieces
     // from the activePath until we find one that works.
     // this can probably be done more cleanly.
-    return this.props.activePath.reduce(
+    return activePath.reduce(
       result => {
         const tryPath = intersperse(result, 'children');
-        const maybeSection = get(this.props.sections.children, tryPath);
-
+        const maybeSection = get(sections.children, tryPath);
         return maybeSection ? result : initial(result);
       },
-      [...this.props.activePath]
+      [...activePath]
     );
   };
 
-  render() {
-    const deepestMatchedPath = this.getDeepestMatchedPath();
-    const deepestMatchedPathParent = initial(deepestMatchedPath);
+  const getNavigationRelativePath = () => {
+    const deepestMatchingPath = getDeepestMatchedPath();
+    const showingPartialPath = deepestMatchingPath !== activePath;
+    return showingPartialPath ? deepestMatchingPath : activePath;
+  };
 
-    const currentVisibleSection =
-      this.props.activePath.length === 0
-        ? this.props.sections // root visible by default
-        : get(
-            this.props.sections.children, // skip root when navigating
-            intersperse(deepestMatchedPath, 'children')
-          );
+  const handleNavigateForward = (path) => {
+    onNavigate([...getNavigationRelativePath(), path]);
+  };
 
-    const currentVisibleSectionParent = get(
-      this.props.sections.children,
-      intersperse(deepestMatchedPathParent, 'children'),
-      this.props.sections
-    );
+  const handleNavigateBack = () => {
+    onNavigate(initial(getNavigationRelativePath()));
+  };
 
-    const parentIsRoot = currentVisibleSectionParent === this.props.sections;
-    const selectedItemHasChildren = !!currentVisibleSection.children;
-    const rootItemSelected = parentIsRoot && !selectedItemHasChildren;
+  const handleNavigateSibling = (path) => {
+    onNavigate([...initial(getNavigationRelativePath()), path]);
+  };
 
-    return (
-      <div className={styles.tabsContainer}>
-        {!rootItemSelected &&
-          this.props.activePath.length > 0 && (
-            <SectionTreeTab
-              selectedClasses={this.props.selectedItemClasses}
-              classes={this.props.classes}
-              selected
-              label={currentVisibleSection.label}
-              leftIcon={<ArrowBackIcon />}
-              onClick={this.handleNavigateBack}
-              data-testtarget="back-button"
-              btnActionTrackName={currentVisibleSection.btnActionTrackName}
-            />
-          )}
+  const deepestMatchedPath = getDeepestMatchedPath();
+  const deepestMatchedPathParent = initial(deepestMatchedPath);
 
-        {map(
-          // render the parent (w/ current section highlighted + its siblings)
-          // when we're at a leaf path
-          currentVisibleSection.children
-            ? currentVisibleSection.children
-            : currentVisibleSectionParent.children,
-          ({ label, formComponentId, children, icon, iconClassName, btnActionTrackName }, path) => (
-            <SectionTreeTab
-              selectedClasses={this.props.selectedItemClasses}
-              classes={this.props.classes}
-              selected={label === currentVisibleSection.label}
-              label={label}
-              leftIcon={
-                iconClassName ? <span className={iconClassName} /> : icon
-              }
-              rightIcon={
-                children && Object.keys(children).length && <ChevronRightIcon />
-              }
-              key={`${label}-${path}`}
-              id={path}
-              onClick={
-                currentVisibleSection.children
-                  ? this.handleNavigateForward
-                  : this.handleNavigateSibling
-              }
-              btnActionTrackName={btnActionTrackName}
-            />
-          )
+  const currentVisibleSection =
+    activePath.length === 0
+      ? sections // root visible by default
+      : get(
+        sections.children, // skip root when navigating
+        intersperse(deepestMatchedPath, 'children')
+      );
+
+  const currentVisibleSectionParent = get(
+    sections.children,
+    intersperse(deepestMatchedPathParent, 'children'),
+    sections
+  );
+
+  const parentIsRoot = currentVisibleSectionParent === sections;
+  const selectedItemHasChildren = !!currentVisibleSection.children;
+  const rootItemSelected = parentIsRoot && !selectedItemHasChildren;
+
+  return (
+    <div className={muiClasses.tabsContainer}>
+      {!rootItemSelected &&
+        activePath.length > 0 && (
+          <SectionTreeTab
+            selectedClasses={selectedItemClasses}
+            classes={classes}
+            selected
+            label={currentVisibleSection.label}
+            leftIcon={<ArrowBackIcon />}
+            // eslint-disable-next-line react/jsx-no-bind
+            onClick={handleNavigateBack}
+            data-testtarget="back-button"
+            btnActionTrackName={currentVisibleSection.btnActionTrackName}
+          />
         )}
-      </div>
-    );
-  }
-}
 
-export default SectionTree;
+      {map(
+        // render the parent (w/ current section highlighted + its siblings)
+        // when we're at a leaf path
+        currentVisibleSection.children
+          ? currentVisibleSection.children
+          : currentVisibleSectionParent.children,
+        ({ label, formComponentId, children, icon, iconClassName, btnActionTrackName }, path) => (
+          <SectionTreeTab
+            selectedClasses={selectedItemClasses}
+            classes={classes}
+            selected={label === currentVisibleSection.label}
+            label={label}
+            leftIcon={
+              iconClassName ? <span className={iconClassName} /> : icon
+            }
+            rightIcon={
+              children && Object.keys(children).length && <ChevronRightIcon />
+            }
+            key={`${label}-${path}`}
+            id={path}
+            onClick={
+              currentVisibleSection.children
+                ? handleNavigateForward
+                : handleNavigateSibling
+            }
+            btnActionTrackName={btnActionTrackName}
+          />
+        )
+      )}
+    </div>
+  );
+};
+
+SectionTree.propTypes = {
+  sections: sectionsShape.isRequired,
+  activePath: arrayOf(string).isRequired,
+  onNavigate: func.isRequired,
+  selectedItemClasses: shape({
+    leftIcon: string
+  }),
+  classes: shape({
+    leftIcon: string
+  })
+};
 
 export const SectionTreeTab = ({
   label = '',
@@ -157,27 +161,29 @@ export const SectionTreeTab = ({
   classes = {},
   onClick = noop,
   btnActionTrackName
-}) => (
-  /* eslint-disable react/jsx-no-bind */
-  <Button
-    classes={{
-      root: cx(styles.sectionTreeTab, { [styles.selected]: selected }),
-      label: styles.muiButtonLabelOverride
-    }}
-    onClick={() => onClick(id)}
-    data-veritone-element={btnActionTrackName || `sidebar-${kebabCase(label.toLowerCase())}-button`}
-  >
-    <span
-      className={cx(styles.leftIcon, classes.leftIcon, {
-        [selectedClasses.leftIcon]: selected
-      })}
+}) => {
+  const muiClasses = useStyles(); 
+  return (
+    /* eslint-disable react/jsx-no-bind */
+    <Button
+      classes={{
+        root: cx(muiClasses.sectionTreeTab, { [muiClasses.selected]: selected }),
+        label: muiClasses.muiButtonLabelOverride
+      }}
+      onClick={() => onClick(id)}
+      data-veritone-element={btnActionTrackName || `sidebar-${kebabCase(label.toLowerCase())}-button`}
     >
-      {leftIcon}
-    </span>
-    <span className={styles.label}>{label}</span>
-    <span className={styles.rightIcon}>{rightIcon}</span>
-  </Button>
-);
+      <span
+        className={cx(muiClasses.leftIcon, classes.leftIcon, {
+          [selectedClasses.leftIcon]: selected
+        })}
+      >
+        {leftIcon}
+      </span>
+      <span className={muiClasses.label}>{label}</span>
+      <span className={muiClasses.rightIcon}>{rightIcon}</span>
+    </Button>
+  )};
 
 SectionTreeTab.propTypes = {
   label: string,

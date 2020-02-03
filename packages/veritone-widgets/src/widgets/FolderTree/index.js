@@ -15,16 +15,24 @@ import {
   FolderNullState,
   LoadingState
 } from 'veritone-react-common';
-import { isEmpty, isNil, flattenDeep, get } from 'lodash';
-import * as folderModule from '../../redux/modules/folder';
-import * as folderSelector from '../../redux/modules/folder/selector';
-import widget from '../../shared/widget';
 import {
   DeleteFolder,
   CreateFolder,
   EditFolder
 } from 'veritone-react-common';
-import styles from './styles.scss';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { isEmpty, isNil, flattenDeep, get } from 'lodash';
+import * as folderModule from '../../redux/modules/folder';
+import * as folderSelector from '../../redux/modules/folder/selector';
+import widget from '../../shared/widget';
+
+import styles from './styles';
+
+const useStyles = makeStyles(theme => ({
+  ...styles
+})); 
+
 
 export const getAllParentId = (item, folderDataFlatten) => {
   if (isEmpty(item) || isNil(item)) {
@@ -85,7 +93,7 @@ function FolderTreeWrapper({
   unSelectAllFolder,
   unSelectCurrentFolder
 }) {
-
+  const classes = useStyles();
   const [openNew, setOpenNew] = useState(false);
   const [selectedFolder, setSelected] = useState({});
   const [openModify, setOpenModify] = useState(false);
@@ -353,7 +361,7 @@ function FolderTreeWrapper({
 
 
   return (
-    <div className={styles['container']}>
+    <div className={classes.container}>
       {isEnableSearch && (
         <SearchBox onSearch={onSearch} />
       )}

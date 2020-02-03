@@ -1,14 +1,24 @@
 import React from 'react';
-import { func, string, node } from 'prop-types';
+import { func, string, node, shape, any } from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-
+import { withStyles } from '@material-ui/styles';
 import Grow from '@material-ui/core/Grow';
 
 import cx from 'classnames';
-import styles from './styles.scss';
+
+const styles = {
+  underline: {
+    '&::before': {
+      right: '1em !important',
+    },
+    '&::after': {
+      right: '1em !important',
+    }
+  }
+};
 
 class ExpandableInputField extends React.Component {
   static propTypes = {
@@ -18,7 +28,8 @@ class ExpandableInputField extends React.Component {
     onReset: func,
     icon: node.isRequired,
     onFocus: func,
-    onBlur: func
+    onBlur: func,
+    classes: shape({ any }),
   };
 
   state = {
@@ -62,6 +73,7 @@ class ExpandableInputField extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     if (this.state.expanded) {
       return (
         <Grow in>
@@ -77,7 +89,7 @@ class ExpandableInputField extends React.Component {
             onFocus={this.props.onFocus}
             InputProps={{
               classes: {
-                underline: cx(styles['underline'])
+                underline: cx(classes['underline'])
               },
               endAdornment: (
                 <IconButton onClick={this.resetSearch} disableRipple>
@@ -96,4 +108,4 @@ class ExpandableInputField extends React.Component {
   }
 }
 
-export default ExpandableInputField;
+export default withStyles(styles)(ExpandableInputField);

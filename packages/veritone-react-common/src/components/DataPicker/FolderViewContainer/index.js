@@ -1,12 +1,12 @@
 import React from 'react';
-import { oneOf, arrayOf, func, bool, string } from 'prop-types';
+import { oneOf, arrayOf, func, bool, string, shape, any } from 'prop-types';
 import cx from 'classnames';
 import { get } from 'lodash';
 
 import Paper from '@material-ui/core/Paper';
 import Refresh from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
-
+import { withStyles } from '@material-ui/styles';
 import {
   hasCommandModifier
 } from 'helpers/dom';
@@ -20,7 +20,7 @@ import itemShape from './itemShape';
 import FolderListView from './FolderListView';
 import FolderLoading from './FolderLoading'
 import FolderGridView from './FolderGridView';
-import styles from './styles.scss';
+import styles from './styles';
 
 const genArray = (a, b) => new Array(Math.max(a, b) - Math.min(a, b) + 1)
   .fill(0).map((_, i) => i + Math.min(a, b));
@@ -49,6 +49,7 @@ class FolderViewContainer extends React.Component {
     showMediaInfoPanel: bool,
     toggleMediaInfoPanel: func,
     multiple: bool,
+    classes: shape({ any })
   }
 
   static defaultProps = {
@@ -183,7 +184,7 @@ class FolderViewContainer extends React.Component {
     if (
       !multiple || (
         !holdingShift && !holdingCtrl && !holdingCmd
-       )
+      )
     ) {
       this.onHighlight(parseInt(index, 10));
     }
@@ -253,8 +254,8 @@ class FolderViewContainer extends React.Component {
       const item = items.find(i => i.id === selectedNodes[0].id);
       if (
         item.type === 'tdo'
-          && this.isAcceptedType(item)
-          || item.type === 'folder'
+        && this.isAcceptedType(item)
+        || item.type === 'folder'
       ) {
         onSelectItem(selectedNodes);
       } else {
@@ -279,7 +280,8 @@ class FolderViewContainer extends React.Component {
       toggleContentView,
       isFullScreen,
       showMediaInfoPanel,
-      toggleMediaInfoPanel
+      toggleMediaInfoPanel,
+      classes
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -287,7 +289,7 @@ class FolderViewContainer extends React.Component {
     if (isError) {
       return (
         <Paper>
-          <div className={styles['folder-null-state-container']}>
+          <div className={classes['folderNullStateContainer']}>
             <div>Error Loading data</div>
             <span>{isError}</span>
             <IconButton onClick={triggerPagination}>
@@ -306,7 +308,7 @@ class FolderViewContainer extends React.Component {
       && 'Click upload button to add content';
     if (items.length === 0 && isLoaded) {
       return (
-        <div className={styles['folder-null-state-container']}>
+        <div className={classes['folderNullStateContainer']}>
           <NullState
             imgProps={{
               src: 'https://static.veritone.com/veritone-ui/no-files-folders.svg',
@@ -316,7 +318,7 @@ class FolderViewContainer extends React.Component {
             btnProps={nullstateBtnProps}
             inWidgets
           >
-            { nullstateText }
+            {nullstateText}
           </NullState>
         </div>
       );
@@ -324,7 +326,7 @@ class FolderViewContainer extends React.Component {
 
     if (items.length === 0 && isLoading) {
       return (
-        <div className={styles['folder-null-state-container']}>
+        <div className={classes['folderNullStateContainer']}>
           <LoadingState />
         </div>
       )
@@ -334,14 +336,14 @@ class FolderViewContainer extends React.Component {
     const mediaPanelEnabled = showMediaInfoPanel && !!selectedItems.length && viewType === 'list';
 
     return (
-      <Paper className={styles['folder-paper']}>
-        <div className={styles['folder-view-container']}>
+      <Paper className={classes['folderPaper']}>
+        <div className={classes['folderViewContainer']}>
           <div className={cx(
-            styles['folder-view-content'],
-              {
-                [`${styles['panel-open']}`]: mediaPanelEnabled
-              }
-            )}>
+            classes['folderViewContent'],
+            {
+              [`${classes['panelOpen']}`]: mediaPanelEnabled
+            }
+          )}>
             <InfiniteWrapper
               isLoading={isLoading}
               triggerPagination={triggerPagination}
@@ -369,7 +371,7 @@ class FolderViewContainer extends React.Component {
               }
             </InfiniteWrapper>
           </div>
-          { mediaPanelEnabled && (
+          {mediaPanelEnabled && (
             <MediaInfoPanel
               open={mediaPanelEnabled}
               playerRef={this.playerRef}
@@ -392,4 +394,4 @@ class FolderViewContainer extends React.Component {
   }
 }
 
-export default FolderViewContainer;
+export default withStyles(styles)(FolderViewContainer);

@@ -68,10 +68,9 @@ describe('DataPicker', () => {
       wrapper
         .find('[data-veritone-element="folder-list-item"]')
         .hostNodes()
-        .at(0)
-        .render()
-        .hasClass('selected')
-    ).toBe(true);
+        .first()
+        .find('[data-test="selected"]')
+    ).toHaveLength(1);
     expect(wrapper.exists(MediaInfoPanel)).toBe(true);
 
     // Open button should be active now

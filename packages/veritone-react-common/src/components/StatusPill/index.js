@@ -1,13 +1,14 @@
 import React from 'react';
-import { string } from 'prop-types';
+import { string, shape, any } from 'prop-types';
 import Lozenge from 'components/Lozenge';
 
 import blue from '@material-ui/core/colors/blue';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import green from '@material-ui/core/colors/green';
 import grey from '@material-ui/core/colors/grey';
+import { withStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 const white = '#FFFFFF';
 const stateStyles = {
@@ -30,9 +31,10 @@ const stateStyles = {
   }
 };
 
-export default class StatusPill extends React.Component {
+class StatusPill extends React.Component {
   static propTypes = {
-    status: string
+    status: string,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -41,16 +43,20 @@ export default class StatusPill extends React.Component {
 
   render() {
     const pillStyles = stateStyles[this.props.status || 'processing'];
+    const { classes } = this.props;
 
     return (
       <Lozenge
         backgroundColor={pillStyles.backgroundColor}
         textColor={pillStyles.color}
         border={pillStyles.border}
-        className={styles.statusPill}
+        className={classes.statusPill}
+        data-test="statusPill"
       >
-        <span className={styles.statusPillText}>{this.props.status}</span>
+        <span className={classes.statusPillText} data-test="statusPillText">{this.props.status}</span>
       </Lozenge>
     );
   }
 }
+
+export default withStyles(styles)(StatusPill);

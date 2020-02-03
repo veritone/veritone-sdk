@@ -3,13 +3,14 @@ import { noop, startsWith, endsWith } from 'lodash';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import { DropTarget } from 'react-dnd';
-import { string, func, arrayOf, bool } from 'prop-types';
+import { string, func, arrayOf, bool, shape, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 import { NativeTypes } from 'react-dnd-html5-backend';
 const { FILE } = NativeTypes;
 
 import ExtensionPanel from './ExtensionPanel';
 
-import styles from './styles.scss';
+import styles from './styles';
 
 const boxTarget = {
   drop(props, monitor) {
@@ -57,6 +58,7 @@ const collect = (connect, monitor) => {
 };
 
 @DropTarget(FILE, boxTarget, collect)
+@withStyles(styles)
 class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
@@ -66,7 +68,8 @@ class FileUploader extends Component {
     onFilesRejected: func,
     isOver: bool.isRequired,
     connectDropTarget: func.isRequired,
-    multiple: bool
+    multiple: bool,
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -97,7 +100,7 @@ class FileUploader extends Component {
   setInputRef = r => (this._input = r);
 
   render() {
-    const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
+    const { acceptedFileTypes, connectDropTarget, isOver, classes } = this.props;
     const { showExtensionList } = this.state;
 
     const acceptMessage = 'Drag & Drop';
@@ -105,35 +108,35 @@ class FileUploader extends Component {
 
     return connectDropTarget(
       <div className={cx([
-        styles.fileUploader,
-        { [styles.flat]: this.props.useFlatStyle }
+        classes.fileUploader,
+        { [classes.flat]: this.props.useFlatStyle }
       ])}>
-        { showExtensionList ? (
-            <ExtensionPanel
-              acceptedFileTypes={acceptedFileTypes}
-              closeExtensionList={this.closeExtensionList} />
-          ) : (
-            <div className={styles.uploaderContainer}>
-              { !!acceptedFileTypes.length && (
+        {showExtensionList ? (
+          <ExtensionPanel
+            acceptedFileTypes={acceptedFileTypes}
+            closeExtensionList={this.closeExtensionList} />
+        ) : (
+            <div className={classes.uploaderContainer}>
+              {!!acceptedFileTypes.length && (
                 <span
-                  className={styles.extensionListOpenButton}
+                  className={classes.extensionListOpenButton}
                   data-veritone-element="uploader-extension-open-btn"
                   onClick={this.openExtensionList}>
                   Extension Types
                 </span>
               )}
               <span>
-                <i className={cx(styles.fileUploadIcon, 'icon-ingest')} />
+                <i className={cx(classes.fileUploadIcon, 'icon-ingest')} />
               </span>
-              <span className={styles.fileUploaderAcceptText}>{acceptMessage}</span>
+              <span className={classes.fileUploaderAcceptText}>{acceptMessage}</span>
 
               <label htmlFor="file">
                 <Button
                   component="span"
                   disableFocusRipple
                   disableRipple>
-                  <span className={styles.fileUploaderSubtext}>{subMessage}</span>
-                  <span className={cx(styles.fileUploaderSubtext, styles.subtextBlue)}>browse</span>
+                  <span className={classes.fileUploaderSubtext}>{subMessage}</span>
+                  <span className={cx(classes.fileUploaderSubtext, classes.subtextBlue)}>browse</span>
                 </Button>
               </label>
               <input
@@ -146,8 +149,8 @@ class FileUploader extends Component {
                 ref={this.setInputRef}
               />
             </div>
-        )}
-        {isOver && <div className={styles.uploaderOverlay} />}
+          )}
+        {isOver && <div className={classes.uploaderOverlay} />}
       </div>
     );
   }

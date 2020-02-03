@@ -1,8 +1,9 @@
 import React from 'react';
-import { node, number, bool, string } from 'prop-types';
+import { node, number, bool, string, shape, any } from 'prop-types';
 import { isEqual } from 'lodash';
 import cx from 'classnames';
-import styles from './overlayPositioningProvider.styles.scss';
+import { withStyles } from '@material-ui/styles';
+import styles from './styles';
 
 export const OverlayPositioningContext = React.createContext({
   top: 0,
@@ -10,13 +11,14 @@ export const OverlayPositioningContext = React.createContext({
   height: 0,
   width: 0
 });
-export default class OverlayPositioningProvider extends React.Component {
+class OverlayPositioningProvider extends React.Component {
   static propTypes = {
     contentHeight: number,
     contentWidth: number,
     fixedWidth: bool,
     children: node,
-    contentClassName: string
+    contentClassName: string,
+    classes: shape({any})
   };
   static defaultProps = {};
 
@@ -94,9 +96,10 @@ export default class OverlayPositioningProvider extends React.Component {
   render() {
     // clearfix and float are to make sure the "measured child" div sizes
     // exactly to the size of its child content in fixed/fluid width scenarios
+    const { classes } = this.props;
     return (
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
-        <div className={cx({ [styles.clearfix]: this.props.fixedWidth })}>
+        <div className={cx({ [classes.clearfix]: this.props.fixedWidth })}>
           <div
             className={cx(this.props.contentClassName)}
             style={{
@@ -113,3 +116,5 @@ export default class OverlayPositioningProvider extends React.Component {
     );
   }
 }
+
+export default withStyles(styles)(OverlayPositioningProvider);

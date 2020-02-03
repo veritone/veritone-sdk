@@ -1,13 +1,14 @@
 import React from 'react';
-import { bool, string, shape, func, arrayOf } from 'prop-types';
+import { bool, string, shape, func, arrayOf, any } from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
 import { MediaPlayer } from '../';
 import DefaultControlBar from '../DefaultControlBar';
 
 import { Lightbox } from 'veritone-react-common';
-import styles from './styles.scss';
+import styles from './styles';
 
-export default class MediaPlayerLightbox extends React.Component {
+class MediaPlayerLightbox extends React.Component {
   static propTypes = {
     src: string,
     streams: arrayOf(
@@ -24,7 +25,8 @@ export default class MediaPlayerLightbox extends React.Component {
     readOnly: bool,
     onAddBoundingBox: func,
     onDeleteBoundingBox: func,
-    onChangeBoundingBox: func
+    onChangeBoundingBox: func,
+    classes: shape({ any }),
   };
   static defaultProps = {
     open: true,
@@ -55,16 +57,16 @@ export default class MediaPlayerLightbox extends React.Component {
   };
 
   render() {
-    const { live, open, fullscreen, onClose, ...props } = this.props;
+    const { live, open, fullscreen, onClose, classes, ...props } = this.props;
 
     return (
       <Lightbox open={open} fullscreen={fullscreen} onClose={onClose}>
-        <div className={styles.popupContainer}>
+        <div className={classes.popupContainer} data-test="popupContainer">
           <MediaPlayer
             {...props}
             ref={this.playerRef}
-            reactPlayerClassName={styles.reactPlayer}
-            overlayContentClassName={styles.boundingPolyContent}
+            reactPlayerClassName={classes.reactPlayer}
+            overlayContentClassName={classes.boundingPolyContent}
             onAddBoundingBox={this.handleOnAddBoundingBox}
             onDeleteBoundingBox={this.handleOnDeleteBoundingBox}
             onChangeBoundingBox={this.handleOnChangeBoundingBox}
@@ -79,9 +81,12 @@ export default class MediaPlayerLightbox extends React.Component {
             btnFullscreenToggle={false}
             playerRef={this.playerRef}
           />
-          {live && <div className={styles.liveLabel}>LIVE</div>}
+          {live && <div className={classes.liveLabel} data-test="liveLabel">LIVE</div>}
         </div>
       </Lightbox>
     );
   }
 }
+
+
+export default withStyles(styles)(MediaPlayerLightbox);

@@ -2,15 +2,16 @@ import React from 'react';
 import Today from '@material-ui/icons/Today';
 import isValid from 'date-fns/isValid'
 import getYear from 'date-fns/getYear'
-import parse from 'date-fns/parse'
 import format from 'date-fns/format'
 import isDate from 'date-fns/isDate'
 import TextField from '@material-ui/core/TextField';
-import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
+import { instanceOf, func, shape, string, bool, oneOfType, any } from 'prop-types';
+import { withStyles, makeStyles } from '@material-ui/styles';
+import parseISO from 'date-fns/parseISO';
 
-import styles from './styles/dateTimePicker.scss';
-
-export default class DateTimePicker extends React.Component {
+import styles from './styles/dateTimePicker';
+const useStyles = makeStyles(styles);
+class DateTimePicker extends React.Component {
   static propTypes = {
     min: instanceOf(Date),
     max: instanceOf(Date),
@@ -20,7 +21,8 @@ export default class DateTimePicker extends React.Component {
       value: instanceOf(Date).isRequired,
       onChange: func
     }).isRequired,
-    readOnly: bool
+    readOnly: bool,
+    classes: shape({ any })
   };
 
   handleDateChange = ({ target }) => {
@@ -46,7 +48,7 @@ export default class DateTimePicker extends React.Component {
 
   render() {
     const { input, min, max, ...rest } = this.props;
-    let { timeZone } = this.props;
+    let { timeZone, classes } = this.props;
 
     // some components are not passing timezone, so we need to find it out
     // eslint-disable-next-line lodash/prefer-lodash-typecheck
@@ -55,8 +57,8 @@ export default class DateTimePicker extends React.Component {
     }
 
     return (
-      <div className={styles.container}>
-        {this.props.showIcon && <Today className={styles.todayIcon} />}
+      <div className={classes.container}>
+        {this.props.showIcon && <Today className={classes.todayIcon} />}
         <DateSelector
           min={min}
           max={max}
@@ -127,9 +129,10 @@ TimeSelector.propTypes = {
 };
 
 const TimeZoneField = ({ value, ...rest }) => {
+  const classes = useStyles();
   return value ? (
     <TextField
-      className={styles.dateTimeTZ}
+      className={classes.dateTimeTZ}
       value={value}
       InputProps={{
         disableUnderline: true
@@ -144,7 +147,7 @@ TimeZoneField.propTypes = {
 };
 
 function consolidate(dateString, timeString) {
-  return parse(`${dateString}T${timeString}:00`);
+  return parseISO(`${dateString}T${timeString}:00`);
 }
 
 function getDateString(date) {
@@ -169,3 +172,5 @@ function getTimeZone(date) {
   }
   return '';
 }
+
+export default withStyles(styles)(DateTimePicker);

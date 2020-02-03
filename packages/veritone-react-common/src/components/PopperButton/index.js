@@ -13,10 +13,14 @@ import Add from "@material-ui/icons/AddCircle";
 import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/styles';
 
-import styles from './styles.scss';
+import styles from './styles';
+
+const useStyles = makeStyles(styles);
 
 function VuiNewButton({ actions }) {
+  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [usePopper, setUsePopper] = React.useState(false);
   const handleClick = event => {
@@ -45,21 +49,21 @@ function VuiNewButton({ actions }) {
   const openPopper = Boolean(anchorEl);
   const id = openPopper ? 'simple-popover' : undefined;
   return (
-    <div className={cx(styles["container"])}>
+    <div className={cx(classes["container"])}>
       <Button
         aria-describedby={id}
-        className={cx(styles['new-button'])}
+        className={cx(classes['newButton'])}
         onClick={handleClick}
       >
-        <Add className={cx(styles['add-icon'])} />
-        <span className={cx(styles['new-text'])}>NEW</span>
-        {usePopper && <ArrowDown className={cx(styles['arrow-icon'])} />}
+        <Add className={cx(classes['addIcon'])} />
+        <span className={cx(classes['newText'])}>NEW</span>
+        {usePopper && <ArrowDown className={cx(classes['arrowIcon'])} />}
       </Button>
       {usePopper && (<Popper
         id={id}
         open={openPopper}
         anchorEl={anchorEl}
-        className={cx(styles['popper-custom'])}
+        className={cx(classes['popperCustom'])}
         transition
         disablePortal>
         {({ TransitionProps, placement }) => (
@@ -82,14 +86,14 @@ function VuiNewButton({ actions }) {
                       <MenuItem key={action.id} onClick={handleClickItem(action)}>
                         <ListItemIcon>
                           <span
-                            className={cx([icon, styles['list-item-icon']])}
+                            className={cx([icon, classes['listItemIcon']])}
                           />
                         </ListItemIcon>
                         <ListItemText
-                          className={cx(styles['list-item-text'])}
+                          className={cx(classes['listItemText'])}
                           inset
                         >
-                          <span className={cx(styles['list-item-text'])}>
+                          <span className={cx(classes['listItemText'])}>
                             {action.name}
                           </span>
                         </ListItemText>

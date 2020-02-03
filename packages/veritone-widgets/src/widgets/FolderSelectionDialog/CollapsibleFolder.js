@@ -1,14 +1,17 @@
 import React from 'react';
-import { shape, string, number, func } from 'prop-types';
+import { shape, string, number, func, any } from 'prop-types';
 import { connect } from 'react-redux';
-import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import cx from 'classnames';
 import FolderIcon from '@material-ui/icons/Folder';
-import FolderList from './FolderList';
 import ExpandLess from '@material-ui/icons/ArrowDropDown';
 import ExpandMore from '@material-ui/icons/ArrowRight';
-import styles from './styles.scss';
+import { withStyles } from '@material-ui/styles';
 
+import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
+import FolderList from './FolderList';
+import styles from './styles';
+
+@withStyles(styles)
 @connect(
   state => ({
     selectedFolder: folderSelectionModule.selectedFolder(state)
@@ -58,7 +61,8 @@ export default class CollapsibleFolder extends React.Component {
       childFolders: shape({
         count: number
       })
-    })
+    }),
+    classes: shape({ any }),
   };
 
   state = {
@@ -79,7 +83,7 @@ export default class CollapsibleFolder extends React.Component {
 
   render() {
     // the collapsible folder has subfolders which are rendered when open by passing a listId into FolderList component
-    const { folder, selectedFolder } = this.props;
+    const { folder, selectedFolder, classes } = this.props;
     let listId = folder.treeObjectId;
     let selectedId = selectedFolder.treeObjectId;
     let idsMatch = listId === selectedId;
@@ -87,21 +91,21 @@ export default class CollapsibleFolder extends React.Component {
     return (
       <li>
         <div
-          className={cx(styles.folder, idsMatch && styles.selected)}
+          className={cx(classes.folder, idsMatch && classes.selected)}
           onClick={this.handleClick}
         >
           {this.state.open ? (
             <ExpandLess style={{ fontSize: '30px' }} />
           ) : (
-            <ExpandMore style={{ fontSize: '30px' }} />
-          )}
+              <ExpandMore style={{ fontSize: '30px' }} />
+            )}
 
-          <FolderIcon className={styles.collapsibleFolderIcon} />
+          <FolderIcon className={classes.collapsibleFolderIcon} />
 
           <div
             className={cx(
-              styles.folderName,
-              idsMatch && styles.folderNameSelected
+              classes.folderName,
+              idsMatch && classes.folderNameSelected
             )}
           >
             {folder.name}
