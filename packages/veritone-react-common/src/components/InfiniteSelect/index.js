@@ -1,37 +1,36 @@
+/* eslint-disable no-underscore-dangle */
 import React from 'react';
-import { arrayOf, object, node } from 'prop-types';
-
+import {
+  object,
+  node,
+  func,
+  bool,
+  string,
+  oneOfType,
+  arrayOf,
+  any,
+} from 'prop-types';
 import Downshift from 'downshift';
-
-import Select from '@material-ui/core/Select';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Check from '@material-ui/icons/Check';
-import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import Menu from '@material-ui/core/Menu';
-
-import DropDownButton from './DropDownButton';
-
 import cx from 'classnames';
-import styles from './styles.scss';
-
 import { get } from 'lodash';
-
 import Rx from 'rxjs/Rx';
-import { Observable } from 'rxjs/Observable';
+
+import styles from './styles.scss';
+import DropDownButton from './DropDownButton';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/takeUntil';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 
 export default class InfiniteSelect extends React.Component {
   state = {
     // currently selected dropdown item
-    autocompleteValue: !this.props.defaultSelected && get(this.props.selected, 'name') || '',
+    autocompleteValue:
+      (!this.props.defaultSelected && get(this.props.selected, 'name')) || '',
     open: false,
-    highlightedIndex: 0
+    highlightedIndex: 0,
   };
 
   onClick = () => {
@@ -41,22 +40,22 @@ export default class InfiniteSelect extends React.Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (
-      !this.props.selected && prevProps.selected
-    ) {
+    if (!this.props.selected && prevProps.selected) {
       this.setState({
-        autocompleteValue: ''
+        autocompleteValue: '',
       });
     }
 
     if (this.props.defaultSelected && !prevProps.defaultSelected) {
       this.props.resetSelect();
-      this.props.onSelect({name: 'All Schemas'});
+      this.props.onSelect({ name: 'All Schemas' });
     } else if (
-      this.props.selected && !this.props.defaultSelected && get(this.props.selected, 'name') !== get(prevProps.selected, 'name')
+      this.props.selected &&
+      !this.props.defaultSelected &&
+      get(this.props.selected, 'name') !== get(prevProps.selected, 'name')
     ) {
       this.setState({
-        autocompleteValue: get(this.props.selected, 'name')
+        autocompleteValue: get(this.props.selected, 'name'),
       });
     }
   }
@@ -69,7 +68,7 @@ export default class InfiniteSelect extends React.Component {
       this.setState(
         {
           open: true,
-          highlightedIndex: this.props.data.indexOf(this.props.selected) || 0
+          highlightedIndex: this.props.data.indexOf(this.props.selected) || 0,
         },
         () => this.props.loadMoreData(this.state.autocompleteValue)
       );
@@ -77,7 +76,7 @@ export default class InfiniteSelect extends React.Component {
       this.setState(
         {
           open: true,
-          highlightedIndex: this.props.data.indexOf(this.props.selected) || 0
+          highlightedIndex: this.props.data.indexOf(this.props.selected) || 0,
         },
         () => this.props.loadMoreData('')
       );
@@ -100,7 +99,7 @@ export default class InfiniteSelect extends React.Component {
     this.setState(
       {
         autocompleteValue: e.target.value,
-        highlightedIndex: 0
+        highlightedIndex: 0,
       },
       () => {
         if (this.props.handleAutocompleteChange) {
@@ -116,7 +115,7 @@ export default class InfiniteSelect extends React.Component {
     this.setState({
       open: false,
       highlightedIndex: this.props.data.indexOf(row),
-      autocompleteValue: row.name
+      autocompleteValue: row.name,
     });
   };
 
@@ -137,7 +136,7 @@ export default class InfiniteSelect extends React.Component {
       e.preventDefault();
       if (this.state.highlightedIndex > 0) {
         this.setState(prevState => ({
-          highlightedIndex: prevState.highlightedIndex - 1
+          highlightedIndex: prevState.highlightedIndex - 1,
         }));
       }
     } else if (e.keyCode === 40) {
@@ -145,43 +144,44 @@ export default class InfiniteSelect extends React.Component {
       e.preventDefault();
       if (this.state.highlightedIndex < this.props.data.length - 1) {
         this.setState(prevState => ({
-          highlightedIndex: prevState.highlightedIndex + 1
+          highlightedIndex: prevState.highlightedIndex + 1,
         }));
       }
     }
   };
 
-  onSelect = item => e => {
+  onSelect = item => () => {
     this.onChange(item);
-  }
+  };
 
-  infiniteScroll = e => {
+  infiniteScroll = () => {
     if (
-      !this.props.done && this._scrollContainer &&
+      !this.props.done &&
+      this._scrollContainer &&
       this._scrollContainer.scrollTop >=
-      this._scrollContainer.scrollHeight -
-      (250 + this._scrollContainer.clientHeight)
+        this._scrollContainer.scrollHeight -
+          (250 + this._scrollContainer.clientHeight)
     ) {
-      let searchValue =
+      const searchValue =
         this.props.selected &&
-          this.props.selected.name === this.state.autocompleteValue
+        this.props.selected.name === this.state.autocompleteValue
           ? ''
           : this.state.autocompleteValue;
       this.props.loadMoreData(searchValue);
     }
-  }
+  };
 
   onScroll = e => {
-    Rx.Observable.fromEvent(e.target, 'scroll').debounceTime(50).subscribe(this.infiniteScroll);
+    Rx.Observable.fromEvent(e.target, 'scroll')
+      .debounceTime(50)
+      .subscribe(this.infiniteScroll);
   };
 
   setScrollContainer = ref => {
     this._scrollContainer = ref;
   };
 
-  renderValue = value => {
-    return value.name;
-  };
+  renderValue = value => value.name;
 
   close = evt => {
     if (evt) {
@@ -201,96 +201,88 @@ export default class InfiniteSelect extends React.Component {
           selectedItem={this.props.selected}
           itemToString={books => (books ? books.name : '')}
         >
-          {({
-            getInputProps,
-            getItemProps,
-            getLabelProps,
-            getMenuProps,
-            isOpen,
-            inputValue,
-            highlightedIndex,
-            selectedItem
-          }) => (
-              <div>
-                <TextField
-                  fullWidth
-                  inputProps={{
-                    name: this.props.name || 'super_select',
-                    id: this.props.name || 'super_select'
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <DropDownButton open={isOpen} close={this.close} />
-                    ),
-                    onBlur: this.close,
-                    onFocus: this.open
-                  }}
-                  placeholder={
-                    this.props.defaultSelected
-                      ? get(this.props.selected, 'name')
-                      : this.props.placeholder
-                  }
-                  onChange={this.handleAutocompleteChange}
-                  value={this.state.autocompleteValue}
-                  onKeyDown={this.onKeyDown}
-                  onClick={this.onClick}
-                />
-                  {isOpen ? (
-                    <Paper>
-                      <div
-                        ref={this.setScrollContainer}
-                        style={{ maxHeight: '400px', overflowY: 'auto' }}
-                        onScroll={this.onScroll}
-                      >
-                        {this.props.data &&
-                          this.props.data.length === 0 &&
-                          this.props.done && (
-                            <ListItem>{this.props.noChoices}</ListItem>
-                          )}
-                        {this.props.data.map((item, index) => {
-                          return (
-                            <ListItem
-                              className={styles.hover}
-                              style={{
-                                backgroundColor:
-                                  highlightedIndex === index ||
-                                    (selectedItem &&
-                                      selectedItem.name === item.name)
-                                    ? '#eeeeee'
-                                    : null,
-                                borderBottom:
-                                  index === 0 && this.props.selected
-                                    ? '1px dashed #cccccc'
-                                    : null
-                              }}
-                              {...getItemProps({index, item, onMouseDown: this.onSelect(item) })}
-                              key={`${item.name}_${index}`}
-                            >
-                              {this.props.defaultSelected || selectedItem ? (
-                                <Check
-                                  color="primary"
-                                  classes={{
-                                    root: cx({
-                                      [styles['hidden']]:
-                                        !selectedItem ||
-                                        (selectedItem &&
-                                          selectedItem.name !== item.name)
-                                    })
-                                  }}
-                                />
-                              ) : null}
-                              {this.props.display(item)}
-                            </ListItem>
-                          );
+          {({ getItemProps, isOpen, highlightedIndex, selectedItem }) => (
+            <div>
+              <TextField
+                fullWidth
+                inputProps={{
+                  name: this.props.name || 'super_select',
+                  id: this.props.name || 'super_select',
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <DropDownButton open={isOpen} close={this.close} />
+                  ),
+                  onBlur: this.close,
+                  onFocus: this.open,
+                }}
+                placeholder={
+                  this.props.defaultSelected
+                    ? get(this.props.selected, 'name')
+                    : this.props.placeholder
+                }
+                onChange={this.handleAutocompleteChange}
+                value={this.state.autocompleteValue}
+                onKeyDown={this.onKeyDown}
+                onClick={this.onClick}
+              />
+              {isOpen ? (
+                <Paper>
+                  <div
+                    ref={this.setScrollContainer}
+                    style={{ maxHeight: '400px', overflowY: 'auto' }}
+                    onScroll={this.onScroll}
+                  >
+                    {this.props.data &&
+                      this.props.data.length === 0 &&
+                      this.props.done && (
+                        <ListItem>{this.props.noChoices}</ListItem>
+                      )}
+                    {this.props.data.map((item, index) => (
+                      <ListItem
+                        className={styles.hover}
+                        style={{
+                          backgroundColor:
+                            highlightedIndex === index ||
+                            (selectedItem && selectedItem.name === item.name)
+                              ? '#eeeeee'
+                              : null,
+                          borderBottom:
+                            index === 0 && this.props.selected
+                              ? '1px dashed #cccccc'
+                              : null,
+                        }}
+                        {...getItemProps({
+                          index,
+                          item,
+                          onMouseDown: this.onSelect(item),
                         })}
-                        {this.props.loading ? (
-                          <ListItem>{this.props.loader}</ListItem>
+                        key={`${item.name}_${index}`}
+                      >
+                        {this.props.defaultSelected || selectedItem ? (
+                          <Check
+                            color="primary"
+                            classes={{
+                              root: cx({
+                                [styles.hidden]:
+                                  !selectedItem ||
+                                  (selectedItem &&
+                                    selectedItem.name !== item.name),
+                              }),
+                            }}
+                          />
                         ) : null}
-                      </div>
-                    </Paper>
-                  ) : null}
-                </div>
-            )}
+                        {this.props.display(item)}
+                      </ListItem>
+                    ))}
+                    {this.props.loading ? (
+                      <ListItem>{this.props.loader}</ListItem>
+                    ) : null}
+                  </div>
+                </Paper>
+              ) : null}
+            </div>
+          )}
         </Downshift>
       </div>
     );
@@ -299,9 +291,23 @@ export default class InfiniteSelect extends React.Component {
 
 InfiniteSelect.propTypes = {
   loader: node,
-  selected: object
+  selected: object,
+  defaultSelected: any,
+  loading: bool,
+  resetSelect: func,
+  onSelect: func,
+  data: arrayOf(any),
+  loadMoreData: func,
+  handleAutocompleteChange: func,
+  name: string,
+  done: any,
+  placeholder: string,
+  onChange: func,
+  key: any,
+  noChoices: oneOfType([string, node, arrayOf(node)]),
+  display: func,
 };
 
 InfiniteSelect.defaultProps = {
-  type: 'input'
+  type: 'input',
 };

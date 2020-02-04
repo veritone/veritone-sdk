@@ -1,10 +1,12 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import InfoOutlineIcon from '@material-ui/icons/InfoOutline';
+import InfoOutlineIcon from '@material-ui/icons/InfoOutlined';
 import CloseIcon from '@material-ui/icons/Close';
 import Divider from '@material-ui/core/Divider';
 import { findIndex, get, isEqual } from 'lodash';
@@ -23,7 +25,7 @@ class AdvancedPanel extends React.Component {
     handleClose: PropTypes.func.isRequired,
     handleReset: PropTypes.func.isRequired,
     advancedOptions: PropTypes.shape(Object),
-    onAddAdvancedSearchParams: PropTypes.func.isRequired
+    onAddAdvancedSearchParams: PropTypes.func.isRequired,
   };
 
   state = {
@@ -32,7 +34,7 @@ class AdvancedPanel extends React.Component {
     step: 1,
     selectedConfidenceRange: [0, 100],
     parentBoudingPoly: [],
-    parentRange: [0, 100]
+    parentRange: [0, 100],
   };
 
   static getDerivedStateFromProps(nextProps, currentState) {
@@ -40,18 +42,25 @@ class AdvancedPanel extends React.Component {
     const currentParentRange = get(currentState, 'parentRange', [0, 100]);
     const nextBoundingPoly = get(nextProps, 'advancedOptions.boundingPoly', []);
     const nextRange = get(nextProps, 'advancedOptions.range', [0, 100]);
-    if (!isEqual(currentParentBoudingPoly, nextBoundingPoly) || !isEqual(currentParentRange, nextRange)) {
+    if (
+      !isEqual(currentParentBoudingPoly, nextBoundingPoly) ||
+      !isEqual(currentParentRange, nextRange)
+    ) {
       return {
-        boundingBoxes: nextBoundingPoly.length ? [{
-          boundingPoly: nextBoundingPoly,
-          overlayObjectType: 'c',
-          id: id
-        }] : [],
-        step: (nextBoundingPoly && nextBoundingPoly.length) ? 3 : 1,
+        boundingBoxes: nextBoundingPoly.length
+          ? [
+              {
+                boundingPoly: nextBoundingPoly,
+                overlayObjectType: 'c',
+                id,
+              },
+            ]
+          : [],
+        step: nextBoundingPoly && nextBoundingPoly.length ? 3 : 1,
         selectedConfidenceRange: nextRange,
         parentBoudingPoly: nextBoundingPoly,
-        parentRange: nextRange
-      }
+        parentRange: nextRange,
+      };
     }
     return null;
   }
@@ -65,91 +74,94 @@ class AdvancedPanel extends React.Component {
         ...state.boundingBoxes,
         {
           ...newBox,
-        }
-      ]
+        },
+      ],
     }));
   };
 
   handleDeleteBoundingBox = deletedId => {
     this.setState(state => ({
-      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
+      boundingBoxes: state.boundingBoxes.filter(
+        ({ id: idBox }) => idBox !== deletedId
+      ),
     }));
   };
 
   handleChangeBoundingBox = changedBox => {
     this.setState(state => {
       const affectedIndex = findIndex(state.boundingBoxes, {
-        id: changedBox.id
+        id: changedBox.id,
       });
 
-      let newState = {
-        boundingBoxes: [...state.boundingBoxes]
+      const newState = {
+        boundingBoxes: [...state.boundingBoxes],
       };
 
       newState.boundingBoxes[affectedIndex] = changedBox;
 
       return {
-        boundingBoxes: newState.boundingBoxes
+        boundingBoxes: newState.boundingBoxes,
       };
     });
   };
 
   onEditAoI = () => {
     this.setState({
-      step: 2
-    })
-  }
+      step: 2,
+    });
+  };
 
   onRemoveAoI = () => {
     this.setState({
       step: 1,
-      boundingBoxes: []
-    })
-  }
+      boundingBoxes: [],
+    });
+  };
 
-  onUpdateStep = (step) => {
+  onUpdateStep = step => {
     this.setState({
-      step: step,
-      readOnly: step !== 2
-    })
+      step,
+      readOnly: step !== 2,
+    });
     if (step === 2) {
       const defaultBoundingBox = {
         boundingPoly: [
           { x: 0, y: 0 },
           { x: 0, y: 1 },
           { x: 1, y: 1 },
-          { x: 1, y: 0 }
+          { x: 1, y: 0 },
         ],
         overlayObjectType: 'c',
-        id: guid()
-      }
+        id: guid(),
+      };
       this.handleAddBoundingBox(defaultBoundingBox);
     }
-  }
+  };
 
-  onChangeConfidenceRange = (e) => {
+  onChangeConfidenceRange = e => {
     this.setState({
-      selectedConfidenceRange: [...e]
-    })
-  }
+      selectedConfidenceRange: [...e],
+    });
+  };
 
   handleResetAll = () => {
     this.setState({
       step: 1,
       boundingBoxes: [],
-      selectedConfidenceRange: [0, 100]
+      selectedConfidenceRange: [0, 100],
     });
     this.props.handleReset();
-  }
+  };
 
   handleApply = () => {
     const { onAddAdvancedSearchParams } = this.props;
     const { boundingBoxes, selectedConfidenceRange, step } = this.state;
     onAddAdvancedSearchParams({
-      boundingPoly: step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
-      range: selectedConfidenceRange
-    })
-  }
+      boundingPoly:
+        step === 3 ? get(boundingBoxes, [0, 'boundingPoly'], []) : [],
+      range: selectedConfidenceRange,
+    });
+  };
 
   render() {
     const { boundingBoxes, step } = this.state;
@@ -164,7 +176,7 @@ class AdvancedPanel extends React.Component {
           data-veritone-component="advanced-search-panel"
         >
           <div id="advanced-search-panel">
-            <div className={cx(style['title'])}>
+            <div className={cx(style.title)}>
               <div className={cx(style['title-text'])}>Advanced Options</div>
               <div>
                 <IconButton
@@ -186,7 +198,8 @@ class AdvancedPanel extends React.Component {
           <div className={cx(style['dialog-content'])}>
             <div className={cx(style['area-text'])}>Area of Interest</div>
             <div className={cx(style['only-return-text'])}>
-              Only return search results for this {searchByTag} if they appear in a defined region.
+              Only return search results for this {searchByTag} if they appear
+              in a defined region.
             </div>
             <div className={cx(style['location-select-div'])}>
               <LocationSelect
@@ -214,7 +227,7 @@ class AdvancedPanel extends React.Component {
               />
             </div>
           </div>
-          <div className={cx(style['dialog-content'], style['action'])}>
+          <div className={cx(style['dialog-content'], style.action)}>
             <div
               onClick={this.handleResetAll}
               className={cx(style['reset-all'])}
@@ -227,10 +240,10 @@ class AdvancedPanel extends React.Component {
                 className={cx(style['vbtn-black-color'], style['vbtn-cancel'])}
               >
                 CANCEL
-                </Button>
+              </Button>
               <Button
                 onClick={this.handleApply}
-                variant="raised"
+                variant="contained"
                 className={cx(style['vbtn-blue'])}
               >
                 APPLY
@@ -238,13 +251,11 @@ class AdvancedPanel extends React.Component {
             </div>
           </div>
         </Dialog>
-      </div >
+      </div>
     );
   }
 }
 
-export {
-  AdvancedPanel
-}
+export { AdvancedPanel };
 
 export default AdvancedPanel;

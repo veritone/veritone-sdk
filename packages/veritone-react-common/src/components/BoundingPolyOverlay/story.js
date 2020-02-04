@@ -2,11 +2,11 @@ import React from 'react';
 import { findIndex } from 'lodash';
 import { storiesOf } from '@storybook/react';
 import { select, number, text, boolean } from '@storybook/addon-knobs';
-import Slider from '@material-ui/lab/Slider';
+import Slider from '@material-ui/core/Slider';
 import faker from 'faker';
 
 import { guid } from '../../helpers/guid';
-import OverlayPositioningProvider from './OverlayPositioningProvider';
+import { OverlayPositioningProvider } from './OverlayPositioningProvider';
 import Overlay from './Overlay';
 
 const types = ['a', 'b', 'c'];
@@ -22,8 +22,8 @@ function randomPolyBox() {
       .fill()
       .map(() => ({
         x: rand(options),
-        y: rand(options)
-      }))
+        y: rand(options),
+      })),
   };
 }
 
@@ -36,18 +36,18 @@ class Story extends React.Component {
 
   state = {
     boundingBoxes: frames[0],
-    frame: 0
+    frame: 0,
   };
 
   actionMenuItems = [
     {
       label: 'Do action 1',
-      onClick: id => console.log('Action 1 performed on box', id)
+      onClick: id => console.log('Action 1 performed on box', id),
     },
     {
       label: 'Do action 2',
-      onClick: id => console.log('Action 2 performed on box', id)
-    }
+      onClick: id => console.log('Action 2 performed on box', id),
+    },
   ];
 
   handleAddBoundingBox = newBox => {
@@ -59,9 +59,9 @@ class Story extends React.Component {
         {
           ...newBox,
           id: guid(),
-          overlayObjectType: faker.random.arrayElement(types)
-        }
-      ]
+          overlayObjectType: faker.random.arrayElement(types),
+        },
+      ],
     }));
   };
 
@@ -69,7 +69,7 @@ class Story extends React.Component {
     console.log('Deleted box with ID', deletedId);
 
     this.setState(state => ({
-      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
+      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId),
     }));
   };
 
@@ -78,17 +78,17 @@ class Story extends React.Component {
 
     this.setState(state => {
       const affectedIndex = findIndex(state.boundingBoxes, {
-        id: changedBox.id
+        id: changedBox.id,
       });
 
-      let newState = {
-        boundingBoxes: [...state.boundingBoxes]
+      const newState = {
+        boundingBoxes: [...state.boundingBoxes],
       };
 
       newState.boundingBoxes[affectedIndex] = changedBox;
 
       return {
-        boundingBoxes: newState.boundingBoxes
+        boundingBoxes: newState.boundingBoxes,
       };
     });
   };
@@ -127,9 +127,7 @@ class Story extends React.Component {
           />
           <div
             style={{
-              backgroundImage: `url(https://picsum.photos/${
-                this.props.contentWidth
-              }/${this.props.contentHeight})`,
+              backgroundImage: `url(https://picsum.photos/${this.props.contentWidth}/${this.props.contentHeight})`,
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'contain',
@@ -141,7 +139,7 @@ class Story extends React.Component {
               width:
                 this.props.matteType === 'pillarbox'
                   ? this.props.contentWidth + this.props.matteSize
-                  : this.props.contentWidth
+                  : this.props.contentWidth,
             }}
           />
         </OverlayPositioningProvider>
@@ -154,7 +152,7 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
   /* eslint-disable react/jsx-no-bind */
   const options = {
     letterbox: 'Letterbox',
-    pillarbox: 'Pillarbox'
+    pillarbox: 'Pillarbox',
   };
 
   const matteType = select('Matte type', options, 'pillarbox');
@@ -184,18 +182,18 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         matteSize={matteSize}
         stagedBoundingBoxStyles={{
           backgroundColor: overlayBackgroundColor,
-          border: overlayBorderStyle
+          border: overlayBorderStyle,
         }}
         stylesByObjectType={{
           a: {
-            backgroundColor: 'rgba(40, 95, 255, 0.5)'
+            backgroundColor: 'rgba(40, 95, 255, 0.5)',
           },
           b: {
-            backgroundColor: 'rgba(80, 185, 60, 0.5)'
+            backgroundColor: 'rgba(80, 185, 60, 0.5)',
           },
           c: {
-            backgroundColor: 'rgba(255, 140, 40, 0.5)'
-          }
+            backgroundColor: 'rgba(255, 140, 40, 0.5)',
+          },
         }}
         readOnly={readOnly}
         addOnly={addOnly}

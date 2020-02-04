@@ -1,6 +1,23 @@
 import React from 'react';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import blue from 'material-ui/colors/blue';
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
+import variablesCustomTheme from '../styles/modules/_variables';
+
+const themMUI = createMuiTheme({
+  palette: {
+    primary: blue,
+  },
+  typography: {
+    button: {
+      fontWeight: 400,
+    },
+  },
+});
+
+const theme = {
+  ...themMUI,
+  ...variablesCustomTheme,
+};
 
 export default function withMuiThemeProvider(Component) {
   return class WrappedWithMuiTheme extends React.Component {
@@ -8,20 +25,9 @@ export default function withMuiThemeProvider(Component) {
 
     render() {
       return (
-        <MuiThemeProvider
-          theme={createMuiTheme({
-            palette: {
-              primary: blue
-            },
-            typography: {
-              button: {
-                fontWeight: 400
-              }
-            }
-          })}
-        >
+        <ThemeProvider theme={theme}>
           <Component {...this.props} />
-        </MuiThemeProvider>
+        </ThemeProvider>
       );
     }
   };

@@ -1,52 +1,69 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 import React, { Fragment } from 'react';
+import {
+  string,
+  bool,
+  array,
+  func,
+  any,
+  arrayOf,
+  oneOf,
+  object,
+} from 'prop-types';
 import update from 'immutability-helper';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import JssProvider from 'react-jss/lib/JssProvider';
+import {
+  ThemeProvider,
+  createMuiTheme,
+  StylesProvider,
+  createGenerateClassName,
+} from '@material-ui/core/styles';
 
 import {
   TranscriptSearchModal,
   TranscriptDisplay,
-  TranscriptConditionGenerator
+  TranscriptConditionGenerator,
 } from '../TranscriptSearchModal';
 import {
   DocumentSearchModal,
   DocumentDisplay,
-  DocumentConditionGenerator
+  DocumentConditionGenerator,
 } from '../DocumentSearchModal';
 import {
   SentimentSearchModal,
   SentimentDisplay,
-  SentimentConditionGenerator
+  SentimentConditionGenerator,
 } from '../SentimentSearchModal';
 import {
   FingerprintSearchModal,
   FingerprintDisplay,
-  FingerprintConditionGenerator
+  FingerprintConditionGenerator,
 } from '../FingerprintSearchModal';
 import {
   FaceSearchModal,
   FaceDisplay,
-  FaceConditionGenerator
+  FaceConditionGenerator,
 } from '../FaceSearchModal';
 import {
   ObjectSearchModal,
   ObjectDisplay,
-  ObjectConditionGenerator
+  ObjectConditionGenerator,
 } from '../ObjectSearchModal';
 import {
   RecognizedTextSearchModal,
   RecognizedTextDisplay,
-  RecognizedTextConditionGenerator
+  RecognizedTextConditionGenerator,
 } from '../RecognizedTextSearchModal';
 import {
   LogoSearchModal,
   LogoDisplay,
-  LogoConditionGenerator
+  LogoConditionGenerator,
 } from '../LogoSearchModal';
 import {
   TagSearchModal,
   TagDisplay,
-  TagConditionGenerator
+  TagConditionGenerator,
 } from '../TagSearchModal';
 import {
   StructuredDataModal,
@@ -55,18 +72,22 @@ import {
 import {
   TimeSearchModal,
   TimeDisplay,
-  TimeConditionGenerator
+  TimeConditionGenerator,
 } from '../TimeSearchModal';
 import {
   GeolocationModal,
   GeolocationDisplay,
-  GeolocationGenerator
+  GeolocationGenerator,
 } from '../GeolocationModal';
 
+// eslint-disable-next-line import/no-cycle
 import SearchBarContainer from './SearchBarContainer';
-import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSearch';
+import {
+  LoadSavedSearchWidget,
+  SaveSearchWidget,
+} from '../SavedSearch/SavedSearch';
 import VeritoneApp from '../SavedSearch/VeritoneApp';
-import { SearchBar } from '.';
+import variablesCustomTheme from '../../styles/modules/_variables';
 
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
@@ -80,7 +101,7 @@ const transcript = {
   iconClass: 'icon-transcription',
   tooltip: 'Search by Keyword',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const doc = {
   id: 'ba2a423e-99c9-4422-b3a5-0b188d8388ab',
@@ -88,7 +109,7 @@ const doc = {
   iconClass: 'icon-description',
   tooltip: 'Search by Text',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const sentiment = {
   id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
@@ -96,7 +117,7 @@ const sentiment = {
   iconClass: 'icon-sentiment',
   tooltip: 'Search by Sentiment',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const fingerprint = {
   id: '17d62b84-8b49-465b-a6be-fe3ea3bc8f05',
@@ -104,7 +125,7 @@ const fingerprint = {
   iconClass: 'icon-finger_print3',
   tooltip: 'Search by Fingerprint',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const face = {
   id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
@@ -112,7 +133,7 @@ const face = {
   iconClass: 'icon-face',
   tooltip: 'Search by Face',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const obj = {
   id: '088a31be-9bd6-4628-a6f0-e4004e362ea0',
@@ -120,7 +141,7 @@ const obj = {
   iconClass: 'icon-object_detection',
   tooltip: 'Search by Object',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const recognizedText = {
   id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
@@ -128,7 +149,7 @@ const recognizedText = {
   iconClass: 'icon-ocr',
   tooltip: 'Search by Recognized Text',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const logo = {
   id: '5a511c83-2cbd-4f2d-927e-cd03803a8a9c',
@@ -136,7 +157,7 @@ const logo = {
   iconClass: 'icon-logo-detection',
   tooltip: 'Search by Logo',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const tag = {
   id: 'tag-search-id',
@@ -144,7 +165,7 @@ const tag = {
   iconClass: 'icon-tag',
   tooltip: 'Search by Tag',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const structured = {
   id: 'sdo-search-id',
@@ -152,7 +173,7 @@ const structured = {
   iconClass: 'icon-third-party-data',
   tooltip: 'Search by Structured Data',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const time = {
   id: 'time-search-id',
@@ -160,7 +181,7 @@ const time = {
   iconClass: 'icon-calendar',
   tooltip: 'Search by Time',
   enablePill: true,
-  showPill: true
+  showPill: true,
 };
 const geolocation = {
   id: '203ad7c2-3dbd-45f9-95a6-855f911563d0',
@@ -168,11 +189,23 @@ const geolocation = {
   iconClass: 'icon-gps',
   tooltip: 'Search by Geolocation',
   enablePill: true,
-  showPill: true
-}
+  showPill: true,
+};
 
-const appBarColor = '#ff2200';
-const enabledEngineCategories = [transcript, doc, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
+const enabledEngineCategories = [
+  transcript,
+  doc,
+  face,
+  obj,
+  logo,
+  recognizedText,
+  fingerprint,
+  sentiment,
+  geolocation,
+  tag,
+  structured,
+  time,
+];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -181,14 +214,14 @@ const engineCategoryMapping = {
     generateCondition: TranscriptConditionGenerator,
     title: 'Search by Keyword',
     subtitle: 'Search by keyword within our database of transcripts.',
-    dataTag: 'transcript'
+    dataTag: 'transcript',
   },
   'ba2a423e-99c9-4422-b3a5-0b188d8388ab': {
     modal: DocumentSearchModal,
     getLabel: DocumentDisplay,
     generateCondition: DocumentConditionGenerator,
     title: 'Text Search',
-    subtitle: 'Explore and locate words inside text documents.'
+    subtitle: 'Explore and locate words inside text documents.',
   },
   'f2554098-f14b-4d81-9be1-41d0f992a22f': {
     modal: SentimentSearchModal,
@@ -196,7 +229,7 @@ const engineCategoryMapping = {
     generateCondition: SentimentConditionGenerator,
     title: 'Search by Sentiment',
     subtitle: 'Search by positive and negative sentiment in text transcripts.',
-    dataTag: 'sentiment'
+    dataTag: 'sentiment',
   },
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
@@ -204,7 +237,7 @@ const engineCategoryMapping = {
     generateCondition: RecognizedTextConditionGenerator,
     title: 'Search by Recognized Text',
     subtitle: 'Searches within our database for recognized text.',
-    dataTag: 'ocr'
+    dataTag: 'ocr',
   },
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
     modal: FaceSearchModal,
@@ -212,7 +245,7 @@ const engineCategoryMapping = {
     generateCondition: FaceConditionGenerator,
     title: 'Search by Face',
     subtitle: 'Search by known images of people within our database.',
-    dataTag: 'face'
+    dataTag: 'face',
   },
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
     modal: ObjectSearchModal,
@@ -220,7 +253,7 @@ const engineCategoryMapping = {
     generateCondition: ObjectConditionGenerator,
     title: 'Search by Object',
     subtitle: 'Search by objects within our database.',
-    dataTag: 'object'
+    dataTag: 'object',
   },
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': {
     modal: FingerprintSearchModal,
@@ -228,7 +261,7 @@ const engineCategoryMapping = {
     generateCondition: FingerprintConditionGenerator,
     title: 'Search by Fingerprint',
     subtitle: 'Locate a certain song or advertisement inside of audio files.',
-    dataTag: 'fingerprint'
+    dataTag: 'fingerprint',
   },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
@@ -236,7 +269,7 @@ const engineCategoryMapping = {
     generateCondition: LogoConditionGenerator,
     title: 'Search by Logo',
     subtitle: 'Search by logos within our database.',
-    dataTag: 'logo'
+    dataTag: 'logo',
   },
   'tag-search-id': {
     modal: TagSearchModal,
@@ -244,14 +277,14 @@ const engineCategoryMapping = {
     generateCondition: TagConditionGenerator,
     title: 'Search by Tag',
     subtitle: 'Search by tags within our database.',
-    dataTag: 'tag'
+    dataTag: 'tag',
   },
   'sdo-search-id': {
     modal: StructuredDataModal,
     getLabel: StructuredDataDisplay,
     title: 'Search by Structured Data',
     subtitle: 'Search by third party structured data.',
-    dataTag: 'sdo'
+    dataTag: 'sdo',
   },
   'time-search-id': {
     modal: TimeSearchModal,
@@ -259,7 +292,7 @@ const engineCategoryMapping = {
     generateCondition: TimeConditionGenerator,
     title: 'Search by Time',
     subtitle: 'Search by day of week and time within our database.',
-    dataTag: 'time'
+    dataTag: 'time',
   },
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': {
     modal: GeolocationModal,
@@ -267,8 +300,8 @@ const engineCategoryMapping = {
     generateCondition: GeolocationGenerator,
     title: 'Search by Geolocation',
     subtitle: 'Locate by City, ZIP Code or DMA.',
-    dataTag: 'geo'
-  }
+    dataTag: 'geo',
+  },
 };
 
 export const guid = () => {
@@ -279,6 +312,10 @@ export const guid = () => {
   }
   return `${s4()}-${s4()}-${s4()}`;
 };
+
+const generateClassName = createGenerateClassName({
+  productionPrefix: `vsdk_${guid()}`,
+});
 
 export class SampleSearchBar extends React.Component {
   componentWillUnmount() {
@@ -291,17 +328,17 @@ export class SampleSearchBar extends React.Component {
       this.loadSavedSearchWidget.destroy();
       this.loadSavedSearchWidget = undefined;
     }
-  }
+  };
 
   cleanupSavedSearch = () => {
     if (this.savedSearchWidget) {
       this.savedSearchWidget.destroy();
       this.savedSearchWidget = undefined;
     }
-  }
+  };
 
   async componentDidMount() {
-    let auth = this.props.auth;
+    let { auth } = this.props;
     let libraries = [];
     let getEntity = null;
     try {
@@ -310,7 +347,10 @@ export class SampleSearchBar extends React.Component {
       }
 
       if (!window._veritoneApp) {
-        this._veritoneApp = new VeritoneApp({ apiRoot: this.props.api && this.props.api.replace(/\/$/, ""), theme: { typography: { htmlFontSize: this.props.relativeSize } } });
+        this._veritoneApp = new VeritoneApp({
+          apiRoot: this.props.api && this.props.api.replace(/\/$/, ''),
+          theme: { typography: { htmlFontSize: this.props.relativeSize } },
+        });
         this._veritoneApp.login({ sessionToken: auth });
         window._veritoneApp = this._veritoneApp;
       }
@@ -321,61 +361,72 @@ export class SampleSearchBar extends React.Component {
     }
     let searchParameters = [];
 
-    //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
-    if (this.props.toCSP) this.props.toCSP(() => this.convertSearchParametersToCSP(this.state.searchParameters));
+    // if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
+    if (this.props.toCSP)
+      this.props.toCSP(() =>
+        this.convertSearchParametersToCSP(this.state.searchParameters)
+      );
     if (this.props.csp) {
       searchParameters = this.CSPToSearchParameters(this.props.csp);
 
       if (getEntity) {
-        searchParameters = await Promise.all(searchParameters.map(async searchParameter => {
-          if (typeof searchParameter.value === 'object') {
-            if (searchParameter.value.type === 'entity') {
-              let entity = await getEntity(searchParameter.value.id);
-              searchParameter.value.label = entity.name;
-              searchParameter.value.image = entity.profileImageUrl;
-            } else if (searchParameter.value.type === 'library') {
-              let library = libraries.find(library => library.id === searchParameter.value.id);
-              if (library) {
-                searchParameter.value.label = library.name;
-                searchParameter.value.image = library.coverImageUrl;
+        searchParameters = await Promise.all(
+          searchParameters.map(async searchParameter => {
+            if (typeof searchParameter.value === 'object') {
+              if (searchParameter.value.type === 'entity') {
+                const entity = await getEntity(searchParameter.value.id);
+                searchParameter.value.label = entity.name;
+                searchParameter.value.image = entity.profileImageUrl;
+              } else if (searchParameter.value.type === 'library') {
+                const library = libraries.find(
+                  item => item.id === searchParameter.value.id
+                );
+                if (library) {
+                  searchParameter.value.label = library.name;
+                  searchParameter.value.image = library.coverImageUrl;
+                }
               }
             }
-          }
-          return searchParameter;
-        }))
+            return searchParameter;
+          })
+        );
       }
     }
-    this.setState({ auth: auth, searchParameters: searchParameters, libraries: libraries });
+    this.setState({
+      auth,
+      searchParameters,
+      libraries,
+    });
   }
 
   async getAuth() {
     if (this.props.api) {
-      return await fetch(`${this.props.api}v1/admin/current-user`, {
-        credentials: 'include'
+      const result = await fetch(`${this.props.api}v1/admin/current-user`, {
+        credentials: 'include',
       })
-        .then(
-          response => {
-            if (response.status === 200) {
-              return response.json();
-            } else {
-              return false;
-            }
+        .then(response => {
+          if (response.status === 200) {
+            return response.json();
           }
-        )
+          return false;
+        })
         .then(y => y.token);
+
+      return result;
     }
+
+    return '';
   }
 
-  getLibraryPage = async (auth, offset) => {
-    return fetch(`${this.props.api}v3/graphql`, {
+  getLibraryPage = async (auth, offset) =>
+    fetch(`${this.props.api}v3/graphql`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + auth
+        Authorization: `Bearer ${auth}`,
       },
       body: JSON.stringify({
-        query:
-          `query {
+        query: `query {
               libraries(limit: ${LIBRARY_LIMIT}, offset: ${offset}) {
                 records {
                   id
@@ -384,21 +435,20 @@ export class SampleSearchBar extends React.Component {
                   coverImageUrl
                 }
               }
-            }`
-      })
+            }`,
+      }),
     })
       .then(response => {
         if (response.status === 200) {
           return response.json();
         }
-        throw new Error('Can not get libraries')
+        throw new Error('Can not get libraries');
       })
-      .then(y => y.data.libraries ? y.data.libraries.records : [])
-      .catch((err) => {
-        console.log(err)
+      .then(y => (y.data.libraries ? y.data.libraries.records : []))
+      .catch(err => {
+        console.log(err);
         return [];
-      })
-  }
+      });
 
   async getLibraries(auth, offset = 0) {
     const data = await this.getLibraryPage(auth, offset);
@@ -408,102 +458,90 @@ export class SampleSearchBar extends React.Component {
     return [...data, ...(await this.getLibraries(auth, offset + data.length))];
   }
 
-  getEntityFetch = (auth) => {
+  getEntityFetch = auth => {
     if (auth) {
-      return async (entityId) => {
-        return await fetch(`${this.props.api}v3/graphql`, {
+      return async entityId => {
+        const result = await fetch(`${this.props.api}v3/graphql`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + auth
+            Authorization: `Bearer ${auth}`,
           },
           body: JSON.stringify({
-            query:
-              `query {
+            query: `query {
               entity(id: "${entityId}") {
                 id
                 name
                 profileImageUrl
               }
-            }`
-          })
-        }).then(
-          response => {
+            }`,
+          }),
+        })
+          .then(response => {
             if (response.status === 200) {
               return response.json();
-            } else {
-              return false;
             }
-          }
-        ).then(y => y.data.entity)
-      }
+            return false;
+          })
+          .then(y => y.data.entity);
+
+        return result;
+      };
     }
-  }
+
+    return false;
+  };
 
   state = {
     searchParameters: this.props.searchParameters || [],
     showSavedSearch: false,
-    showLoadSavedSearch: false
+    showLoadSavedSearch: false,
   };
 
-  //Pratt parsing algorithm adapted from https://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
+  // Pratt parsing algorithm adapted from https://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
   convertSearchParametersToCSP = searchParameters => {
     const operators = {
-      'pill': (object) => {
-        return {
-          nud: () => {
-            return object;
+      pill: objectPill => ({
+        nud: () => objectPill,
+      }),
+      and: () => ({
+        lbp: 20,
+        led: left => {
+          const right = expression(20);
+          return resolveGroup('and', left, right);
+        },
+      }),
+      or: () => ({
+        lbp: 10,
+        led: left => {
+          const right = expression(10);
+          return resolveGroup('or', left, right);
+        },
+      }),
+      '(': () => ({
+        lbp: 0,
+        nud: () => {
+          const expr = expression();
+          match();
+          if (expr.and) {
+            return {
+              'and(': expr.and,
+            };
           }
-        };
-      },
-      'and': () => {
-        return {
-          lbp: 20,
-          led: (left) => {
-            let right = expression(20);
-            return resolveGroup('and', left, right);
+          if (expr.or) {
+            return {
+              'or(': expr.or,
+            };
           }
-        };
-      },
-      'or': () => {
-        return {
-          lbp: 10,
-          led: (left) => {
-            let right = expression(10);
-            return resolveGroup('or', left, right);
-          }
-        };
-      },
-      '(': () => {
-        return {
-          lbp: 0,
-          nud: () => {
-            const expr = expression();
-            match();
-            if (expr['and']) {
-              return {
-                'and(': expr['and']
-              };
-            } else if (expr['or']) {
-              return {
-                'or(': expr['or']
-              };
-            } else {
-              return expr;
-            }
-          }
-        };
-      },
-      ')': () => {
-        return {
-          lbp: 0
-        };
-      },
-      'end': () => {
-        return {
-          lbp: 0
-        };
-      }
+          return expr;
+        },
+      }),
+      ')': () => ({
+        lbp: 0,
+      }),
+      end: () => ({
+        lbp: 0,
+      }),
     };
 
     const resolveGroup = (operator, left, right) => {
@@ -513,42 +551,55 @@ export class SampleSearchBar extends React.Component {
       const leftType = getNodeType(left);
       const rightType = getNodeType(right);
       let resultGroup;
-      if (leftType === 'implicitGroup' && rightType === 'pill' && left[operator]) {
+      if (
+        leftType === 'implicitGroup' &&
+        rightType === 'pill' &&
+        left[operator]
+      ) {
         resultGroup = {
-          [operator]: [...left[operator], right]
+          [operator]: [...left[operator], right],
         };
-      } else if (leftType === 'pill' && rightType === 'implicitGroup' && right[operator]) {
+      } else if (
+        leftType === 'pill' &&
+        rightType === 'implicitGroup' &&
+        right[operator]
+      ) {
         resultGroup = {
-          [operator]: [left, ...right[operator]]
+          [operator]: [left, ...right[operator]],
         };
-      } else if (leftType === 'implicitGroup' && rightType === 'implicitGroup' && left[operator] && right[operator]) {
+      } else if (
+        leftType === 'implicitGroup' &&
+        rightType === 'implicitGroup' &&
+        left[operator] &&
+        right[operator]
+      ) {
         resultGroup = {
-          [operator]: [...left[operator], ...right[operator]]
+          [operator]: [...left[operator], ...right[operator]],
         };
       } else {
         resultGroup = {
-          [operator]: [left, right]
-        }
+          [operator]: [left, right],
+        };
       }
       return resultGroup;
-    }
+    };
 
-    const getNodeType = (node) => {
+    const getNodeType = node => {
       if (!node) {
         return null;
       }
-      if (node['and'] || node['or']) {
+      if (node.and || node.or) {
         return 'implicitGroup';
-      } else if (node['and('] || node['or(']) {
-        return 'explicitGroup';
-      } else {
-        return 'pill';
       }
+      if (node['and('] || node['or(']) {
+        return 'explicitGroup';
+      }
+      return 'pill';
     };
 
     const match = () => {
       token = getNextToken();
-    }
+    };
 
     const expression = (rbp = 0) => {
       let t = token;
@@ -563,13 +614,13 @@ export class SampleSearchBar extends React.Component {
         left = t.led(left);
       }
       return left;
-    }
+    };
 
     const getNextToken = () => {
       const nextSearchParameter = tokenIterable.next();
       let token;
       if (nextSearchParameter.done) {
-        token = operators['end']();
+        token = operators.end();
       } else {
         const type = nextSearchParameter.value.conditionType;
         if (type === 'join' || type === 'group') {
@@ -577,81 +628,105 @@ export class SampleSearchBar extends React.Component {
         } else {
           const cspNode = {
             state: nextSearchParameter.value.value,
-            engineCategoryId: nextSearchParameter.value.conditionType
+            engineCategoryId: nextSearchParameter.value.conditionType,
           };
-          token = operators['pill'](cspNode);
+          token = operators.pill(cspNode);
         }
       }
       return token;
-    }
+    };
 
     let tokenIterable = searchParameters[Symbol.iterator]();
     let token = getNextToken();
     const csp = expression();
     return csp;
-  }
+  };
 
-  onSearch = (searchParameters) => {
+  // eslint-disable-next-line consistent-return
+  onSearch = searchParameters => {
     if (this.props.onSearch) {
-      this.props.onSearch(this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters));
+      this.props.onSearch(
+        this.convertSearchParametersToCSP(
+          searchParameters || this.state.searchParameters
+        )
+      );
     } else {
-      return this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters);
+      return this.convertSearchParametersToCSP(
+        searchParameters || this.state.searchParameters
+      );
     }
-  }
+  };
 
-  getCSP = () => {
-    return this.convertSearchParametersToCSP(this.state.searchParameters);
-  }
+  getCSP = () => this.convertSearchParametersToCSP(this.state.searchParameters);
 
   CSPToSearchParameters = (cognitiveSearchProfile, parentJoinOperator) => {
-    //handle case where csp is just a single term without any join groups
-    if (cognitiveSearchProfile.state && cognitiveSearchProfile.engineCategoryId) {
+    // handle case where csp is just a single term without any join groups
+    if (
+      cognitiveSearchProfile.state &&
+      cognitiveSearchProfile.engineCategoryId
+    ) {
       return [
         {
           id: guid(),
           conditionType: cognitiveSearchProfile.engineCategoryId,
-          value: cognitiveSearchProfile.state
-        }
-      ]
+          value: cognitiveSearchProfile.state,
+        },
+      ];
     }
 
-    const getJoinOperator = (query) => {
+    const getJoinOperator = query => {
       const operators = Object.keys(query);
       return operators[0];
-    }
+    };
 
     let searchParameters = [];
     const cspJoinOperator = getJoinOperator(cognitiveSearchProfile);
     const joinOperator = cspJoinOperator.replace('(', '');
     const conditions = cognitiveSearchProfile[cspJoinOperator];
-    const shouldAddParens = cspJoinOperator.endsWith('(') || (parentJoinOperator === 'and' && cspJoinOperator === 'or');
+    const shouldAddParens =
+      cspJoinOperator.endsWith('(') ||
+      (parentJoinOperator === 'and' && cspJoinOperator === 'or');
     if (shouldAddParens) {
       searchParameters.push({ id: guid(), conditionType: 'group', value: '(' });
     }
 
-    for (let i = 0; i < conditions.length; i++) {
+    for (let i = 0; i < conditions.length; i += 1) {
       if ('engineCategoryId' in conditions[i]) {
-        const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
+        const newSearchPill = {
+          id: guid(),
+          conditionType: conditions[i].engineCategoryId,
+          value: conditions[i].state,
+        };
         searchParameters.push(newSearchPill);
       } else {
-        const subSearchParameters = this.CSPToSearchParameters(conditions[i], cspJoinOperator);
+        const subSearchParameters = this.CSPToSearchParameters(
+          conditions[i],
+          cspJoinOperator
+        );
         searchParameters = [...searchParameters, ...subSearchParameters];
       }
       if (i < conditions.length - 1) {
-        searchParameters.push({ id: guid(), conditionType: 'join', value: joinOperator });
+        searchParameters.push({
+          id: guid(),
+          conditionType: 'join',
+          value: joinOperator,
+        });
       }
     }
     if (shouldAddParens) {
       searchParameters.push({ id: guid(), conditionType: 'group', value: ')' });
     }
     return searchParameters;
-  }
+  };
 
-  loadCSP = (csp) => {
-    this.setState({
-      searchParameters: this.CSPToSearchParameters(csp)
-    }, this.onSearch);
-  }
+  loadCSP = csp => {
+    this.setState(
+      {
+        searchParameters: this.CSPToSearchParameters(csp),
+      },
+      this.onSearch
+    );
+  };
 
   addOrModifySearchParameter = (parameter, index) => {
     const existing = this.state.searchParameters.findIndex(
@@ -660,69 +735,81 @@ export class SampleSearchBar extends React.Component {
     // existing parameters are modified
     if (existing !== -1) {
       const newSearchParameters = update(this.state.searchParameters, {
-        $splice: [[existing, 1, parameter]]
+        $splice: [[existing, 1, parameter]],
       });
-      this.setState(prevState => ({
-        searchParameters: newSearchParameters
+      this.setState(() => ({
+        searchParameters: newSearchParameters,
       }));
 
       return newSearchParameters;
-    } else if (existing === -1 && typeof (index) === 'number') {
-      // not existing, index given, insert at a given position
-      const newSearchParameter = Array.isArray(parameter) ? parameter.map(x => ({ ...x, id: guid() })) : { ...parameter, id: guid() };
-
-      const newSearchParameters = newSearchParameter.length > 1 ? update(this.state.searchParameters, {
-        $splice: [[index, 0, ...newSearchParameter]]
-      }) : update(this.state.searchParameters, {
-        $splice: [[index, 0, newSearchParameter]]
-      });
-
-      this.setState(prevState => ({
-        searchParameters: newSearchParameters
-      }));
-
-      return newSearchParameters;
-    } else {
-      // add a new parameter
-      const newSearchParameter = { ...parameter, id: guid() };
-      this.setState(prevState => ({
-        searchParameters: [...prevState.searchParameters, newSearchParameter]
-      }));
-
-      return [...this.state.searchParameters, newSearchParameter];
     }
-  };
+    if (existing === -1 && typeof index === 'number') {
+      // not existing, index given, insert at a given position
+      const newSearchParameter = Array.isArray(parameter)
+        ? parameter.map(x => ({ ...x, id: guid() }))
+        : { ...parameter, id: guid() };
 
-  insertMultipleSearchParameters = (parametersToAdd) => {
-    const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, { parameter, index }) => {
-      const newSearchParameter = {
-        ...parameter,
-        id: guid()
-      };
-      return update(latestSearchParameters, {
-        $splice: [[index, 0, newSearchParameter]]
-      });
-    }, this.state.searchParameters);
+      const newSearchParameters =
+        newSearchParameter.length > 1
+          ? update(this.state.searchParameters, {
+              $splice: [[index, 0, ...newSearchParameter]],
+            })
+          : update(this.state.searchParameters, {
+              $splice: [[index, 0, newSearchParameter]],
+            });
 
-    this.setState({
-      searchParameters: newSearchParameters
-    });
-    return newSearchParameters;
-  }
+      this.setState(() => ({
+        searchParameters: newSearchParameters,
+      }));
 
-  removeSearchParameter = id => {
-    let filteredOut = [].concat(id);
+      return newSearchParameters;
+    }
+    // add a new parameter
+    const newSearchParameter = { ...parameter, id: guid() };
     this.setState(prevState => ({
-      searchParameters: prevState.searchParameters.filter(x => filteredOut.indexOf(x.id) === -1)
+      searchParameters: [...prevState.searchParameters, newSearchParameter],
     }));
 
-    return this.state.searchParameters.filter(x => filteredOut.indexOf(x.id) === -1);
+    return [...this.state.searchParameters, newSearchParameter];
+  };
+
+  insertMultipleSearchParameters = parametersToAdd => {
+    const newSearchParameters = parametersToAdd.reduce(
+      (latestSearchParameters, { parameter, index }) => {
+        const newSearchParameter = {
+          ...parameter,
+          id: guid(),
+        };
+        return update(latestSearchParameters, {
+          $splice: [[index, 0, newSearchParameter]],
+        });
+      },
+      this.state.searchParameters
+    );
+
+    this.setState({
+      searchParameters: newSearchParameters,
+    });
+    return newSearchParameters;
+  };
+
+  removeSearchParameter = id => {
+    const filteredOut = [].concat(id);
+    this.setState(prevState => ({
+      searchParameters: prevState.searchParameters.filter(
+        x => filteredOut.indexOf(x.id) === -1
+      ),
+    }));
+
+    return this.state.searchParameters.filter(
+      x => filteredOut.indexOf(x.id) === -1
+    );
   };
 
   resetSearchParameters = () => {
     this.setState({
-      searchParameters: []
-    })
+      searchParameters: [],
+    });
   };
 
   extendEngineCategories = engineCategories => {
@@ -731,77 +818,103 @@ export class SampleSearchBar extends React.Component {
         if (engineCategory.id in engineCategoryMapping) {
           return {
             ...engineCategory,
-            ...engineCategoryMapping[engineCategory.id]
+            ...engineCategoryMapping[engineCategory.id],
           };
         }
+
+        return {};
       }
     );
     return engineCategoriesWithFunctions;
   };
 
   getTheme = ({ color, relativeSize }) => {
-    const theme = createMuiTheme({
+    const themeMUI = createMuiTheme({
       typography: {
         htmlFontSize: relativeSize,
         subheading: {
-          fontSize: "1.2em"
-        }
+          fontSize: '1.2em',
+        },
       },
       palette: {
         primary: {
           light: color,
           main: color,
-        }
-      }
+        },
+      },
     });
+
+    const theme = {
+      ...themeMUI,
+      ...variablesCustomTheme,
+    };
+
     return theme;
-  }
+  };
 
-  showLoadSavedSearch = (e) => {
+  showLoadSavedSearch = () => {
     this.cleanupLoadSavedSearch();
-    this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP });
+    this.loadSavedSearchWidget = new LoadSavedSearchWidget({
+      elId: 'LoadSavedSearch',
+      onSelectSavedSearch: this.loadCSP,
+    });
     this.loadSavedSearchWidget.open();
-  }
+  };
 
-  hideLoadSavedSearch = (e) => {
+  hideLoadSavedSearch = () => {
     if (this.loadSavedSearchWidget) {
       this.loadSavedSearchWidget.close();
       this.cleanupLoadSavedSearch();
     }
-  }
+  };
 
-  showSavedSearch = (e) => {
+  showSavedSearch = () => {
     this.cleanupSavedSearch();
     const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
     this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp });
     this.savedSearchWidget.open();
-  }
+  };
 
-  hideSavedSearch = (e) => {
+  hideSavedSearch = () => {
     if (this.savedSearchWidget) {
       this.savedSearchWidget.close();
       this.cleanupSavedSearch();
     }
-  }
+  };
 
   render() {
     return (
       <Fragment>
-        <JssProvider classNamePrefix={`vsdk_${guid()}`}>
-          <MuiThemeProvider theme={this.getTheme({ color: this.props.color, relativeSize: this.props.relativeSize })}>
+        <StylesProvider generateClassName={generateClassName}>
+          <ThemeProvider
+            theme={this.getTheme({
+              color: this.props.color,
+              relativeSize: this.props.relativeSize,
+            })}
+          >
             <SearchBarContainer
               auth={this.state.auth}
               color={this.props.color}
-              enabledEngineCategories={[...this.extendEngineCategories(
-                this.props.enabledEngineCategories ? enabledEngineCategories.filter(engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-              )]}
+              enabledEngineCategories={[
+                ...this.extendEngineCategories(
+                  this.props.enabledEngineCategories
+                    ? enabledEngineCategories.filter(
+                        engineCategory =>
+                          engineCategory.id in
+                          this.props.enabledEngineCategories
+                      )
+                    : enabledEngineCategories
+                ),
+              ]}
               disableSavedSearch={this.props.disableSavedSearch}
               onSearch={this.onSearch}
               api={this.props.api}
               libraries={this.state.libraries}
               searchParameters={this.state.searchParameters}
               addOrModifySearchParameter={this.addOrModifySearchParameter}
-              insertMultipleSearchParameters={this.insertMultipleSearchParameters}
+              insertMultipleSearchParameters={
+                this.insertMultipleSearchParameters
+              }
               removeSearchParameter={this.removeSearchParameter}
               resetSearchParameters={this.resetSearchParameters}
               getCSP={this.getCSP}
@@ -815,11 +928,31 @@ export class SampleSearchBar extends React.Component {
               isAdvancedSearchEnabled={this.props.isAdvancedSearchEnabled}
               isEditor={this.props.isEditor}
             />
-          </MuiThemeProvider>
-        </JssProvider>
+          </ThemeProvider>
+        </StylesProvider>
         <div id="LoadSavedSearch"> </div>
         <div id="SaveSearch"> </div>
       </Fragment>
     );
   }
 }
+
+SampleSearchBar.propTypes = {
+  menuActions: array,
+  api: string,
+  disableSavedSearch: bool,
+  color: string,
+  enabledEngineCategories: arrayOf(object),
+  presetSDOSchema: string,
+  presetSDOAttribute: any,
+  defaultJoinOperator: oneOf(['and', 'or']),
+  isEditor: bool,
+  sourceFilters: any,
+  isAdvancedSearchEnabled: bool,
+  auth: string,
+  toCSP: func,
+  searchParameters: array,
+  onSearch: func,
+  relativeSize: any,
+  csp: any,
+};

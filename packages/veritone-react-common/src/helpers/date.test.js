@@ -3,59 +3,65 @@ import { subDays, subHours, subMonths } from 'date-fns';
 
 import { Interval, format } from './date';
 
-describe('date interval helpers', function() {
-  describe('Interval class', function() {
+describe('date interval helpers', () => {
+  describe('Interval class', () => {
     let clock;
 
-    beforeEach(function() {
+    beforeEach(() => {
       // ensure date tests are stable by stopping time
       clock = sinon.useFakeTimers(new Date('Apr 01 2017'));
     });
 
-    afterEach(function() {
+    afterEach(() => {
       clock.restore();
     });
 
-    it('throws an error if a malformed interval is passed in', function() {
+    it('throws an error if a malformed interval is passed in', () => {
       let assertions = 6;
 
       try {
+        // eslint-disable-next-line no-new
         new Interval({ start: new Date() });
       } catch (e) {
-        assertions--;
+        assertions -= 1;
       }
 
       try {
+        // eslint-disable-next-line no-new
         new Interval({ end: new Date() });
       } catch (e) {
-        assertions--;
+        assertions -= 1;
       }
 
       try {
+        // eslint-disable-next-line no-new
         new Interval({ window: new Date() });
       } catch (e) {
-        assertions--;
+        assertions -= 1;
       }
 
       try {
+        // eslint-disable-next-line no-new
         new Interval({ _start: new Date(), _end: 5 });
       } catch (e) {
-        assertions--;
+        assertions -= 1;
       }
 
       try {
+        // eslint-disable-next-line no-new
         new Interval({ _start: 5, _end: new Date() });
       } catch (e) {
-        assertions--;
+        assertions -= 1;
       }
 
+      // eslint-disable-next-line no-new
       new Interval({ window: [24, 'h'], start: new Date() });
-      assertions--;
+      assertions -= 1;
 
       expect(assertions).toEqual(0);
     });
 
-    it('translates a window to a concrete start/end', function() {
+    it('translates a window to a concrete start/end', () => {
       const hourRange = new Interval({ window: [12, 'h'] });
       const dayRange = new Interval({ window: [2, 'd'] });
       const monthRange = new Interval({ window: [2, 'm'] });
@@ -70,7 +76,7 @@ describe('date interval helpers', function() {
       expect(monthRange.end).toEqual(new Date());
     });
 
-    it('returns the same interval given a fixed interval', function() {
+    it('returns the same interval given a fixed interval', () => {
       const start = subDays(new Date(), 2);
       const end = subDays(new Date(), 1);
 
@@ -80,29 +86,29 @@ describe('date interval helpers', function() {
       expect(interval.end).toEqual(end);
     });
 
-    it('prioritizes the window if both window and start/end exist in a interval', function() {
+    it('prioritizes the window if both window and start/end exist in a interval', () => {
       const interval = new Interval({
         start: subDays(new Date(), 2),
         end: new Date(),
-        window: [12, 'h']
+        window: [12, 'h'],
       });
 
       expect(interval.start).toEqual(subHours(new Date(), 12));
       expect(interval.end).toEqual(new Date());
     });
 
-    it('returns whether the interval will be treated as static/sliding', function() {
+    it('returns whether the interval will be treated as static/sliding', () => {
       const intervalBoth = new Interval({
         start: subDays(new Date(), 2),
         end: new Date(),
-        window: [12, 'h']
+        window: [12, 'h'],
       });
 
       expect(intervalBoth.isStatic()).toEqual(false);
       expect(intervalBoth.isSliding()).toEqual(true);
 
       const intervalWindow = new Interval({
-        window: [12, 'h']
+        window: [12, 'h'],
       });
 
       expect(intervalWindow.isStatic()).toEqual(false);
@@ -110,46 +116,24 @@ describe('date interval helpers', function() {
 
       const intervalStatic = new Interval({
         start: subDays(new Date(), 2),
-        end: new Date()
+        end: new Date(),
       });
 
       expect(intervalStatic.isStatic()).toEqual(true);
       expect(intervalStatic.isSliding()).toEqual(false);
     });
 
-    it('tests equality across instances with isEqual', function() {
+    it('tests equality across instances with isEqual', () => {
       expect(
         new Interval({
           start: subDays(new Date(), 2),
           end: new Date(),
-          window: [12, 'h']
+          window: [12, 'h'],
         }).isEqual(
           new Interval({
             start: subDays(new Date(), 2),
             end: new Date(),
-            window: [12, 'h']
-          })
-        )
-      ).toEqual(true);
-
-      expect(
-        new Interval({
-          start: subDays(new Date(), 2),
-          end: new Date()
-        }).isEqual(
-          new Interval({
-            start: subDays(new Date(), 2),
-            end: new Date()
-          })
-        )
-      ).toEqual(true);
-
-      expect(
-        new Interval({
-          window: [12, 'h']
-        }).isEqual(
-          new Interval({
-            window: [12, 'h']
+            window: [12, 'h'],
           })
         )
       ).toEqual(true);
@@ -158,12 +142,34 @@ describe('date interval helpers', function() {
         new Interval({
           start: subDays(new Date(), 2),
           end: new Date(),
-          window: [12, 'h']
         }).isEqual(
           new Interval({
             start: subDays(new Date(), 2),
             end: new Date(),
-            window: [13, 'h']
+          })
+        )
+      ).toEqual(true);
+
+      expect(
+        new Interval({
+          window: [12, 'h'],
+        }).isEqual(
+          new Interval({
+            window: [12, 'h'],
+          })
+        )
+      ).toEqual(true);
+
+      expect(
+        new Interval({
+          start: subDays(new Date(), 2),
+          end: new Date(),
+          window: [12, 'h'],
+        }).isEqual(
+          new Interval({
+            start: subDays(new Date(), 2),
+            end: new Date(),
+            window: [13, 'h'],
           })
         )
       ).toEqual(false);
@@ -172,12 +178,12 @@ describe('date interval helpers', function() {
         new Interval({
           start: subDays(new Date(), 2),
           end: new Date(),
-          window: [12, 'h']
+          window: [12, 'h'],
         }).isEqual(
           new Interval({
             start: subDays(new Date(), 3),
             end: new Date(),
-            window: [12, 'h']
+            window: [12, 'h'],
           })
         )
       ).toEqual(true); // if window is present, ignore start/end
@@ -185,11 +191,11 @@ describe('date interval helpers', function() {
       expect(
         new Interval({
           start: subDays(new Date(), 2),
-          end: new Date()
+          end: new Date(),
         }).isEqual(
           new Interval({
             start: subDays(new Date(), 3),
-            end: new Date()
+            end: new Date(),
           })
         )
       ).toEqual(false);
@@ -197,21 +203,21 @@ describe('date interval helpers', function() {
       expect(
         new Interval({
           start: subDays(new Date(), 3),
-          end: new Date()
+          end: new Date(),
         }).isEqual(
           new Interval({
             start: subDays(new Date(), 3),
-            end: subDays(new Date(), 2)
+            end: subDays(new Date(), 2),
           })
         )
       ).toEqual(false);
 
       expect(
         new Interval({
-          window: [12, 'h']
+          window: [12, 'h'],
         }).isEqual(
           new Interval({
-            window: [13, 'h']
+            window: [13, 'h'],
           })
         )
       ).toEqual(false);
@@ -219,30 +225,30 @@ describe('date interval helpers', function() {
       expect(
         new Interval({
           label: 'last 12 hours',
-          window: [12, 'h']
+          window: [12, 'h'],
         }).isEqual(
           new Interval({
             label: 'previous 12 hours',
-            window: [12, 'h']
+            window: [12, 'h'],
           })
         )
       ).toEqual(true); // ignores label
     });
 
-    it('JSON stringifies to start/end, also serializing private properties', function() {
+    it('JSON stringifies to start/end, also serializing private properties', () => {
       const windowInterval = new Interval({
-        window: [12, 'h']
+        window: [12, 'h'],
       });
       const staticInterval = new Interval({
         start: subDays(new Date(), 2),
-        end: new Date()
+        end: new Date(),
       });
 
       expect(JSON.stringify(windowInterval)).toEqual(
         JSON.stringify({
           start: subHours(new Date(), 12),
           end: new Date(),
-          _window: [12, 'h']
+          _window: [12, 'h'],
         })
       );
 
@@ -251,18 +257,18 @@ describe('date interval helpers', function() {
           start: subDays(new Date(), 2),
           end: new Date(),
           _start: subDays(new Date(), 2),
-          _end: new Date()
+          _end: new Date(),
         })
       );
     });
 
-    it('parses back from JSON', function() {
+    it('parses back from JSON', () => {
       const windowInterval = new Interval({
-        window: [12, 'h']
+        window: [12, 'h'],
       });
       const staticInterval = new Interval({
         start: subDays(new Date(), 2),
-        end: new Date()
+        end: new Date(),
       });
 
       expect(
@@ -278,41 +284,41 @@ describe('date interval helpers', function() {
       ).toEqual(true);
     });
 
-    it('sets/gets a label', function() {
+    it('sets/gets a label', () => {
       const interval = new Interval({
         label: 'My Interval',
-        window: [12, 'h']
+        window: [12, 'h'],
       });
 
       expect(interval.label).toEqual('My Interval');
     });
 
-    it('formats the interval as a human-readable string', function() {
+    it('formats the interval as a human-readable string', () => {
       const labelInterval = new Interval({
         label: 'My Interval',
-        window: [12, 'h']
+        window: [12, 'h'],
       });
 
       expect(labelInterval.toString()).toEqual('My Interval');
 
       const windowInterval = new Interval({
-        window: [36, 'h']
+        window: [36, 'h'],
       });
 
       expect(windowInterval.toString()).toEqual('03/30/2017 – 04/01/2017');
 
       const staticInterval = new Interval({
         start: subDays(new Date(), 3),
-        end: new Date()
+        end: new Date(),
       });
 
       expect(staticInterval.toString()).toEqual('03/29/2017 – 04/01/2017');
     });
 
-    it('allows setting start/end', function() {
-      let staticInterval = new Interval({
+    it('allows setting start/end', () => {
+      const staticInterval = new Interval({
         start: subDays(new Date(), 2),
-        end: new Date()
+        end: new Date(),
       });
 
       staticInterval.start = subDays(new Date(), 3);
@@ -322,7 +328,7 @@ describe('date interval helpers', function() {
         staticInterval.isEqual(
           new Interval({
             start: subDays(new Date(), 3),
-            end: subDays(new Date(), 1)
+            end: subDays(new Date(), 1),
           })
         )
       ).toEqual(true);
@@ -331,30 +337,30 @@ describe('date interval helpers', function() {
       try {
         staticInterval.start = 'asdf';
       } catch (e) {
-        validated++;
+        validated += 1;
       }
 
       try {
         staticInterval.end = 'asdf';
       } catch (e) {
-        validated++;
+        validated += 1;
       }
 
       expect(validated).toEqual(2, 'validates when setting start/end');
     });
   });
 
-  describe('format', function() {
-    it('returns empty string if date is null or undefined', function() {
+  describe('format', () => {
+    it('returns empty string if date is null or undefined', () => {
       expect(format(null)).toEqual('');
       expect(format(undefined)).toEqual('');
     });
 
-    it('returns empty string if date is invalid', function() {
+    it('returns empty string if date is invalid', () => {
       expect(format('invalid')).toEqual('');
     });
 
-    it('returns formatted string for valid dates', function() {
+    it('returns formatted string for valid dates', () => {
       expect(format('jan 1, 2018', 'MM/DD/YYYY')).toEqual('01/01/2018');
     });
   });

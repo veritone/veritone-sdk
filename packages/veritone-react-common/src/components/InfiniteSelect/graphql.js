@@ -1,13 +1,17 @@
-const fetchSchemas = function fetchSchemas({api, auth, name="", offset=0}) {
+const fetchSchemas = function fetchSchemas({
+  api,
+  auth,
+  name = '',
+  offset = 0,
+}) {
   return fetch(`${api}v3/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + auth
+      Authorization: `Bearer ${auth}`,
     },
-    body: JSON.stringify(
-      {
-        "query": `
+    body: JSON.stringify({
+      query: `
           query {
             dataRegistries(nameMatch: contains, name: "${name}", offset: ${offset}, orderBy: name, orderDirection: asc) {
               records {
@@ -27,18 +31,15 @@ const fetchSchemas = function fetchSchemas({api, auth, name="", offset=0}) {
               count
             }
           }
-        `
-    })
-  }).then(
-    response => {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        return false;
-      }
+        `,
+    }),
+  }).then(response => {
+    if (response.status === 200) {
+      return response.json();
     }
-  );
-}
+    return false;
+  });
+};
 
 // old query
 /*
@@ -61,21 +62,30 @@ const fetchSchemas = function fetchSchemas({api, auth, name="", offset=0}) {
   }
 */
 
-const fetchProperties = function fetchProperties({api, auth, name="", dataRegistryId, majorVersion, offset=0}) {
-  const dataRegistryFilter = dataRegistryId && majorVersion ? `, dataRegistryVersion: {
+const fetchProperties = function fetchProperties({
+  api,
+  auth,
+  name = '',
+  dataRegistryId,
+  majorVersion,
+  offset = 0,
+}) {
+  const dataRegistryFilter =
+    dataRegistryId && majorVersion
+      ? `, dataRegistryVersion: {
 		id: "${dataRegistryId}",
 		majorVersion: ${majorVersion}
-	}` : '';
+	}`
+      : '';
 
   return fetch(`${api}v3/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + auth
+      Authorization: `Bearer ${auth}`,
     },
-    body: JSON.stringify(
-      {
-        "query": `
+    body: JSON.stringify({
+      query: `
           query {
             schemaProperties(search: "${name}", offset: ${offset} ${dataRegistryFilter}) {
               records {
@@ -99,29 +109,25 @@ const fetchProperties = function fetchProperties({api, auth, name="", dataRegist
               count
             }
           }
-        `
-    })
-  }).then(
-    response => {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        return false;
-      }
+        `,
+    }),
+  }).then(response => {
+    if (response.status === 200) {
+      return response.json();
     }
-  );
-}
+    return false;
+  });
+};
 
-const getAttribute = function getAttribute({api, auth, schemaId}) {
+const getAttribute = function getAttribute({ api, auth, schemaId }) {
   return fetch(`${api}v3/graphql`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + auth
+      Authorization: `Bearer ${auth}`,
     },
-    body: JSON.stringify(
-      {
-        "query": `
+    body: JSON.stringify({
+      query: `
           query getSchema {
             schema(id: "${schemaId}") {
               dataRegistry {
@@ -144,17 +150,14 @@ const getAttribute = function getAttribute({api, auth, schemaId}) {
               }
             }
           }
-        `
-    })
-  }).then(
-    response => {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        return false;
-      }
+        `,
+    }),
+  }).then(response => {
+    if (response.status === 200) {
+      return response.json();
     }
-  );
-}
+    return false;
+  });
+};
 
 export { fetchSchemas, fetchProperties, getAttribute };

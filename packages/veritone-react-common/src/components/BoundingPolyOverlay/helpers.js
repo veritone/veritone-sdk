@@ -9,36 +9,24 @@ export function pixelXYWidthHeightToPercentagePoly(
     // top-left
     {
       x: x / contentWidth,
-      y: y / contentHeight
+      y: y / contentHeight,
     },
     // top-right
     {
       x: (x + width) / contentWidth,
-      y: y / contentHeight
+      y: y / contentHeight,
     },
     // bottom-right
     {
       x: (x + width) / contentWidth,
-      y: (y + height) / contentHeight
+      y: (y + height) / contentHeight,
     },
     // bottom-left
     {
       x: x / contentWidth,
-      y: (y + height) / contentHeight
-    }
+      y: (y + height) / contentHeight,
+    },
   ];
-}
-
-export function percentagePolyToPixelXYWidthHeight(
-  poly,
-  contentWidth,
-  contentHeight
-) {
-  const pixelBoundingBox = boundingBox(poly).map(({ x, y }) =>
-    percentageToPixelCoords({ x, y, contentWidth, contentHeight })
-  );
-
-  return pixelBoundingBoxToXYWidthHeight(pixelBoundingBox);
 }
 
 function boundingBox(vertices) {
@@ -58,22 +46,35 @@ function boundingBox(vertices) {
     // bottom-right
     { x: maxX, y: maxY },
     // bottom-left
-    { x: minX, y: maxY }
+    { x: minX, y: maxY },
   ];
 }
 
 function percentageToPixelCoords({ x, y, contentWidth, contentHeight }) {
   return {
     x: x * contentWidth,
-    y: y * contentHeight
+    y: y * contentHeight,
   };
 }
 
+// eslint-disable-next-line no-unused-vars
 function pixelBoundingBoxToXYWidthHeight([tl, tr, br, bl]) {
   return {
     x: tl.x,
     y: tl.y,
     width: tr.x - tl.x,
-    height: bl.y - tl.y
+    height: bl.y - tl.y,
   };
+}
+
+export function percentagePolyToPixelXYWidthHeight(
+  poly,
+  contentWidth,
+  contentHeight
+) {
+  const pixelBoundingBox = boundingBox(poly).map(({ x, y }) =>
+    percentageToPixelCoords({ x, y, contentWidth, contentHeight })
+  );
+
+  return pixelBoundingBoxToXYWidthHeight(pixelBoundingBox);
 }

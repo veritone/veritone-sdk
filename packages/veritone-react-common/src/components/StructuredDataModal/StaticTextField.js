@@ -1,16 +1,16 @@
 import React from 'react';
 import { withTheme } from '@material-ui/core/styles';
-import Typography  from '@material-ui/core/Typography';
+import Typography from '@material-ui/core/Typography';
 
-export default withTheme()(( {value, theme, marginLeft, marginRight} ) => (
+export default withTheme(({ value, theme, marginLeft, marginRight }) => (
   <Typography
-    variant={ 'subheading' }
+    variant="subtitle1"
     style={{
       paddingTop: theme.spacing.unit * 3,
       marginLeft: marginLeft ? '0.5em' : null,
-      marginRight: marginRight ? "0.5em" : null
+      marginRight: marginRight ? '0.5em' : null,
     }}
   >
-    { value }
+    {value}
   </Typography>
-))
+));

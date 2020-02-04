@@ -16,20 +16,20 @@ export default class OverlayToolBar extends React.PureComponent {
     menuItems: arrayOf(
       shape({
         label: string.isRequired,
-        onClick: func.isRequired
+        onClick: func.isRequired,
       })
     ),
     bottomOffset: number,
-    focusedBoundingBoxId: string
+    focusedBoundingBoxId: string,
   };
 
   static defaultProps = {
     menuItems: [],
-    bottomOffset: 0
+    bottomOffset: 0,
   };
 
   state = {
-    menuAnchorEl: null
+    menuAnchorEl: null,
   };
 
   handleOpenMenu = event => {
@@ -60,7 +60,7 @@ export default class OverlayToolBar extends React.PureComponent {
             alignItems: 'center',
             padding: 4,
             bottom: this.props.bottomOffset,
-            width: '100%'
+            width: '100%',
           }}
         >
           <div style={{ flexGrow: 1 }}>
@@ -76,7 +76,7 @@ export default class OverlayToolBar extends React.PureComponent {
               <div
                 style={{
                   borderRight: '1px solid rgba(0, 0, 0, 0.54)',
-                  height: 25
+                  height: 25,
                 }}
               >
                 {' '}
@@ -92,7 +92,7 @@ export default class OverlayToolBar extends React.PureComponent {
                 onClose={this.handleCloseMenu}
                 transformOrigin={{
                   vertical: 'bottom',
-                  horizontal: 'center'
+                  horizontal: 'center',
                 }}
               >
                 {this.props.menuItems.map((option, i) => (

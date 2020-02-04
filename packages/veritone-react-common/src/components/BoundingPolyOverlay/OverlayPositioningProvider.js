@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React from 'react';
 import { node, number, bool, string } from 'prop-types';
 import { isEqual } from 'lodash';
@@ -8,7 +9,7 @@ export const OverlayPositioningContext = React.createContext({
   top: 0,
   left: 0,
   height: 0,
-  width: 0
+  width: 0,
 });
 export default class OverlayPositioningProvider extends React.Component {
   static propTypes = {
@@ -16,16 +17,18 @@ export default class OverlayPositioningProvider extends React.Component {
     contentWidth: number,
     fixedWidth: bool,
     children: node,
-    contentClassName: string
+    contentClassName: string,
   };
+
   static defaultProps = {};
 
   state = {
-    overlayPosition: { top: 0, left: 0, height: 0, width: 0 }
+    overlayPosition: { top: 0, left: 0, height: 0, width: 0 },
   };
 
   measuredChildRef = null; // eslint-disable-line
   resizeObserver = null; // eslint-disable-line
+
   pollingInterval = null;
 
   componentWillUnmount() {
@@ -41,7 +44,7 @@ export default class OverlayPositioningProvider extends React.Component {
     // calculate the actual size of the element we're going to lay on top of
     const {
       height: screenHeight,
-      width: screenWidth
+      width: screenWidth,
     } = element.getBoundingClientRect();
     const { contentWidth, contentHeight } = this.props;
 
@@ -50,8 +53,8 @@ export default class OverlayPositioningProvider extends React.Component {
 
     const [width, height] =
       ratioScreen > ratioContent
-        ? [contentWidth * screenHeight / contentHeight, screenHeight]
-        : [screenWidth, contentHeight * screenWidth / contentWidth];
+        ? [(contentWidth * screenHeight) / contentHeight, screenHeight]
+        : [screenWidth, (contentHeight * screenWidth) / contentWidth];
 
     // figure out what styles need to be applied to the overlay component so that
     // it aligns with the content (considering letter/pillarboxing)
@@ -59,12 +62,12 @@ export default class OverlayPositioningProvider extends React.Component {
       top: (screenHeight - height) / 2,
       left: (screenWidth - width) / 2,
       height,
-      width
+      width,
     };
 
     if (!isEqual(this.state.overlayPosition, measuredOverlayPosition)) {
       this.setState({
-        overlayPosition: measuredOverlayPosition
+        overlayPosition: measuredOverlayPosition,
       });
     }
   };
@@ -84,7 +87,8 @@ export default class OverlayPositioningProvider extends React.Component {
     }
 
     // use ResizeObserver if available (Chrome only), to avoid polling
-    this.resizeObserver = new ResizeObserver(([entry]) => { // eslint-disable-line
+    this.resizeObserver = new ResizeObserver(([entry]) => {
+      // eslint-disable-line
       this.measureChild(entry.target);
     });
 
@@ -102,7 +106,7 @@ export default class OverlayPositioningProvider extends React.Component {
             style={{
               float: this.props.fixedWidth ? 'left' : 'none',
               position: 'relative',
-              verticalAlign: 'bottom'
+              verticalAlign: 'bottom',
             }}
             ref={this.setMeasuredChildRef}
           >
@@ -114,6 +118,4 @@ export default class OverlayPositioningProvider extends React.Component {
   }
 }
 
-export {
-  OverlayPositioningProvider
-}
+export { OverlayPositioningProvider };

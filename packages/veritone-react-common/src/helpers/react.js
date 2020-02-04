@@ -1,7 +1,7 @@
 import React from 'react';
 
-export function injectInto(children, props) {
-  return React.Children.map(children, child => {
-    return React.cloneElement(child, props);
-  });
+export default function injectInto(children, props) {
+  return React.Children.map(children, child =>
+    React.cloneElement(child, props)
+  );
 }

@@ -1,16 +1,13 @@
+/* eslint-disable react/no-deprecated */
 import React from 'react';
-
 import Checkbox from '@material-ui/core/Checkbox';
-import SearchAutocompleteContainer from '../SearchAutocomplete';
-import attachAutocomplete from '../SearchAutocomplete/helper.js';
-
 import Grid from '@material-ui/core/Grid';
-import FormControlLabel  from '@material-ui/core/FormControlLabel';
-import LinearProgress  from '@material-ui/core/LinearProgress';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { bool, func, string, shape, arrayOf, any } from 'prop-types';
 
-import { bool, func, string, shape, arrayOf } from 'prop-types';
-import update from 'immutability-helper';
-import { isArray } from 'lodash';
+import SearchAutocomplete from '../SearchAutocomplete';
+import attachAutocomplete from '../SearchAutocomplete/helper';
 import 'whatwg-fetch';
 
 // Face Autocomplete config:
@@ -24,14 +21,14 @@ const faceConfig = {
   // enableFullTextSearch: true
 };
 
-
 @attachAutocomplete('api/search/autocomplete', faceConfig)
 export default class FaceSearchModal extends React.Component {
   static defaultProps = {
     modalState: { queryResults: [], queryString: '', exclude: false },
-    cancel: () => console.log('You clicked cancel')
+    cancel: () => console.log('You clicked cancel'),
   };
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(props, defaultProps) {
     super(props, defaultProps);
   }
@@ -46,25 +43,34 @@ export default class FaceSearchModal extends React.Component {
       queryResults: arrayOf(
         shape({
           header: string,
-          items: arrayOf(shape({
-            id: string,
-            type: string,
-            image: string,
-            label: string,
-            description: string
-          }))
+          items: arrayOf(
+            shape({
+              id: string,
+              type: string,
+              image: string,
+              label: string,
+              description: string,
+            })
+          ),
         })
       ),
-      exclude: bool
+      exclude: bool,
     }),
     fetchAutocomplete: func,
-    cancel: func
+    cancel: func,
+    libraries: any,
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false} )));
+  state = JSON.parse(
+    JSON.stringify({
+      ...this.props.modalState,
+      queryString: this.props.modalState.label || '',
+      loading: false,
+    })
+  );
 
   componentWillMount() {
-    if(this.props.modalState.label) {
+    if (this.props.modalState.label) {
       const selectedItem = {
         description: this.props.modalState.description,
         id: this.props.modalState.id,
@@ -74,44 +80,50 @@ export default class FaceSearchModal extends React.Component {
       };
       this.onChange(this.props.modalState.label);
       this.setState({
-        selectedResult: selectedItem
-      })
+        selectedResult: selectedItem,
+      });
     }
   }
 
   onChange = debouncedQueryString => {
-    var modal = this;
     if (debouncedQueryString) {
       this.setState({
         queryResults: [],
-        loading: true
+        loading: true,
       });
-      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
-        this.setState({
-          queryResults: response,
-          queryString: debouncedQueryString,
-          loading: false
+      return this.props
+        .fetchAutocomplete(
+          debouncedQueryString,
+          this.props.auth,
+          this.props.api,
+          this.props.libraries
+        )
+        .then(response => {
+          this.setState({
+            queryResults: response,
+            queryString: debouncedQueryString,
+            loading: false,
+          });
+          return debouncedQueryString;
+        })
+        .catch(() => {
+          this.setState({
+            error: true,
+            queryResults: [],
+            loading: false,
+          });
+          return debouncedQueryString;
         });
-        return debouncedQueryString;
-      }).catch(err => {
-        this.setState({
-          error: true,
-          queryResults: [],
-          loading: false
-        });
-        return debouncedQueryString;
-      });
-    } else {
-      this.setState({
-        queryResults: [],
-        loading: false,
-        queryString: debouncedQueryString
-      });
-      return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
+    this.setState({
+      queryResults: [],
+      loading: false,
+      queryString: debouncedQueryString,
+    });
+    return new Promise(resolve => resolve(debouncedQueryString || ''));
   };
 
-  onClickAutocomplete = event => {
+  onClickAutocomplete = () => {
     this.onChange(this.state.queryString);
   };
 
@@ -119,92 +131,106 @@ export default class FaceSearchModal extends React.Component {
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label
+        queryString: result.label,
       });
     }
   };
 
   returnValue() {
-    if(!this.state.selectedResult) {
-      return;
-    } else {
-      return {
-        exclude: this.state.exclude,
-        ...this.state.selectedResult
-      };
+    if (!this.state.selectedResult) {
+      return {};
     }
+    return {
+      exclude: this.state.exclude,
+      ...this.state.selectedResult,
+    };
   }
 
-  toggleExclude = (event) => {
+  toggleExclude = event => {
     this.setState({
-      exclude: event.target.checked === true
+      exclude: event.target.checked === true,
     });
-  }
+  };
 
   render() {
     return (
       <FaceSearchForm
-        cancel={ this.props.cancel }
-        onChange={ this.onChange }
-        modalState={ this.state }
-        selectResult={ this.selectResult }
-        toggleExclude={ this.toggleExclude }
-        onClickAutocomplete={ this.onClickAutocomplete }
-        loading={ this.state.loading }
+        cancel={this.props.cancel}
+        onChange={this.onChange}
+        modalState={this.state}
+        selectResult={this.selectResult}
+        toggleExclude={this.toggleExclude}
+        onClickAutocomplete={this.onClickAutocomplete}
+        loading={this.state.loading}
       />
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
-  return (
-    <Grid container spacing={8}>
-      <Grid item style={{flex: '1'}}>
-        <SearchAutocompleteContainer
-          id="face_autocomplete_container"
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          cancel={ cancel }
-          componentState={ modalState }
-          selectResult={ selectResult }
-          onClickAutocomplete={onClickAutocomplete}
-        />
-        { loading ? <LinearProgress style={ {height: "0.1em" }}/> : null }
-      </Grid>
-      <Grid item>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={modalState.exclude}
-              onChange={toggleExclude}
-            />
-          }
-          label="Exclude"
-        />
-      </Grid>
+export const FaceSearchForm = ({
+  cancel,
+  onChange,
+  onKeyPress,
+  modalState,
+  selectResult,
+  toggleExclude,
+  onClickAutocomplete,
+  loading,
+}) => (
+  <Grid container spacing={8}>
+    <Grid item style={{ flex: '1' }}>
+      <SearchAutocomplete
+        id="face_autocomplete_container"
+        onChange={onChange}
+        onKeyPress={onKeyPress}
+        cancel={cancel}
+        componentState={modalState}
+        selectResult={selectResult}
+        onClickAutocomplete={onClickAutocomplete}
+      />
+      {loading ? <LinearProgress style={{ height: '0.1em' }} /> : null}
     </Grid>
-  )
+    <Grid item>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={modalState.exclude || false}
+            onChange={toggleExclude}
+          />
+        }
+        label="Exclude"
+      />
+    </Grid>
+  </Grid>
+);
+
+FaceSearchForm.propTypes = {
+  cancel: func,
+  onChange: func,
+  onKeyPress: func,
+  modalState: shape({ any }),
+  selectResult: func,
+  toggleExclude: func,
+  onClickAutocomplete: func,
+  loading: bool,
 };
 
-const FaceConditionGenerator = modalState => {
-  return {
-    operator: 'term',
-    field: 'face-recognition.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
-    value: modalState.id,
-    not: modalState.exclude === true
-  };
-};
+const FaceConditionGenerator = modalState => ({
+  operator: 'term',
+  field: `face-recognition.series.${
+    modalState.type === 'entity' ? 'entityId' : 'libraryId'
+  }`,
+  value: modalState.id,
+  not: modalState.exclude === true,
+});
 
-const FaceDisplay = modalState => {
-  return {
-    abbreviation: modalState && modalState.label && modalState.label.length > 10 ? modalState.label.substring(0, 10) + '...' : modalState.label,
-    exclude: modalState.exclude,
-    thumbnail: modalState.image
-  };
-};
+const FaceDisplay = modalState => ({
+  abbreviation:
+    modalState && modalState.label && modalState.label.length > 10
+      ? `${modalState.label.substring(0, 10)}...`
+      : modalState.label,
+  exclude: modalState.exclude,
+  thumbnail: modalState.image,
+});
 
-export {
-  FaceSearchModal,
-  FaceConditionGenerator,
-  FaceDisplay
-};
+export { FaceSearchModal, FaceConditionGenerator, FaceDisplay };

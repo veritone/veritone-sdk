@@ -1,45 +1,41 @@
 import React from 'react';
+import { func, object, string, any } from 'prop-types';
+import ListItemText from '@material-ui/core/ListItemText';
+import { get, includes } from 'lodash';
 
 import Loader from './Loader';
+// eslint-disable-next-line import/no-cycle
 import { StructuredDataModal } from '../StructuredDataModal';
-import InfiniteSelect from './';
+import InfiniteSelect from './index';
 import { fetchProperties } from './graphql';
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import cx from 'classnames';
-import styles from './styles.scss';
-
-import { get, includes } from 'lodash';
 
 const SchemaAttributes = ({
   name,
   schemaName,
-  type,
   organization,
   dataRegistryId,
-  majorVersion
+  majorVersion,
 }) => {
   if (dataRegistryId && majorVersion) {
     return <ListItemText primary={name} />;
-  } else {
-    return [
-      <ListItemText
-        primary={`${name}`}
-        secondary={`${schemaName} v${majorVersion}`}
-      />,
-      <ListItemText
-        primary={'\u00A0'}
-        secondary={`by ${organization}`}
-        secondaryTypographyProps={{
-          style: {
-            textAlign: 'right'
-          }
-        }}
-      />
-    ];
   }
+  return [
+    <ListItemText
+      key={name}
+      primary={`${name}`}
+      secondary={`${schemaName} v${majorVersion}`}
+    />,
+    <ListItemText
+      key="\u00A0"
+      primary={'\u00A0'}
+      secondary={`by ${organization}`}
+      secondaryTypographyProps={{
+        style: {
+          textAlign: 'right',
+        },
+      }}
+    />,
+  ];
 };
 
 export default class SelectAttributes extends React.Component {
@@ -49,7 +45,7 @@ export default class SelectAttributes extends React.Component {
     selected: this.props.selected,
     offset: 0,
     lastSearch: '',
-    done: false
+    done: false,
   };
 
   componentDidUpdate(prevProps) {
@@ -71,12 +67,16 @@ export default class SelectAttributes extends React.Component {
       if (includes(StructuredDataModal.SUPPORTED_TYPES, get(result, 'type'))) {
         data.push({
           id: get(result, 'schema.id'),
-          name: get(result, 'title') || get(result, 'searchPath').split(".").pop() ,
+          name:
+            get(result, 'title') ||
+            get(result, 'searchPath')
+              .split('.')
+              .pop(),
           field: get(result, 'searchPath'),
           schemaName: get(result, 'schema.dataRegistry.name'),
           organization: get(result, 'schema.dataRegistry.organization.name'),
           type: get(result, 'type'),
-          majorVersion: get(result, 'schema.majorVersion')
+          majorVersion: get(result, 'schema.majorVersion'),
         });
       }
     });
@@ -90,52 +90,51 @@ export default class SelectAttributes extends React.Component {
       propertyName !== get(this.state.selected, 'path')
     ) {
       this.setState({
-        loading: true
+        loading: true,
       });
-      let offset =
+      const offset =
         propertyName === this.state.lastSearch ? this.state.offset : 0;
       let data = propertyName === this.state.lastSearch ? this.state.data : [];
 
-      let results = await fetchProperties({
+      const results = await fetchProperties({
         api: this.props.api,
         auth: this.props.auth,
         name: propertyName,
         dataRegistryId: this.props.dataRegistryId,
         majorVersion: this.props.majorVersion,
-        offset
+        offset,
       });
       data = data.concat(
         this.reduceData(get(results, 'data.schemaProperties.records'))
       );
-      let count = get(results, 'data.schemaProperties.count');
+      const count = get(results, 'data.schemaProperties.count');
 
-      let nextOffset = offset + count;
+      const nextOffset = offset + count;
       this.setState({
-        data: data,
+        data,
         offset: nextOffset,
         lastSearch: propertyName,
         loading: false,
-        done: count === 0
+        done: count === 0,
       });
     }
     return true;
   };
 
   getData() {
-    let data = this.state.data;
+    let { data } = this.state;
 
     // nothing selected, default to all schemas
     if (!this.state.selected) {
       return [].concat(data);
-    } else {
-      // filter out the selected item
-      data = [...data].filter(
-        x => x.name !== (this.state.selected && this.state.selected.name)
-      );
-      // add the selected item to the top
-      data.unshift(this.state.selected);
-      return data;
     }
+    // filter out the selected item
+    data = [...data].filter(
+      x => x.name !== (this.state.selected && this.state.selected.name)
+    );
+    // add the selected item to the top
+    data.unshift(this.state.selected);
+    return data;
   }
 
   onSelect = data => {
@@ -143,7 +142,7 @@ export default class SelectAttributes extends React.Component {
       {
         data: [data],
         selected: data,
-        offset: 0
+        offset: 0,
       },
       () => {
         if (this.props.onSelect) {
@@ -160,13 +159,11 @@ export default class SelectAttributes extends React.Component {
       loading: false,
       offset: 0,
       lastSearch: '',
-      done: false
+      done: false,
     });
   };
 
-  getLabel = data => {
-    return data.name;
-  };
+  getLabel = data => data.name;
 
   render() {
     return (
@@ -193,3 +190,13 @@ export default class SelectAttributes extends React.Component {
     );
   }
 }
+
+SelectAttributes.propTypes = {
+  placeholder: string,
+  selected: object,
+  majorVersion: any,
+  dataRegistryId: string,
+  api: string,
+  auth: string,
+  onSelect: func,
+};

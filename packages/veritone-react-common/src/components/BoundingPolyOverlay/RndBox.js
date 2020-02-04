@@ -1,11 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
-import Rnd from 'react-rnd';
+import { Rnd } from 'react-rnd';
 
 import styles from './overlay.styles.scss';
 
 export default class RndBox extends React.Component {
   static propTypes = {};
+
   static defaultProps = {};
 
   render() {
@@ -22,7 +23,7 @@ export default class RndBox extends React.Component {
           right: { right: -handleShift },
           left: { left: -handleShift },
           top: { top: -handleShift },
-          bottom: { bottom: -handleShift }
+          bottom: { bottom: -handleShift },
         }}
         resizeHandleClasses={{
           topLeft: styles.resizeHandle,
@@ -32,7 +33,7 @@ export default class RndBox extends React.Component {
           right: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
           left: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
           top: cx(styles.resizeHandle, styles.resizeHandleVertical),
-          bottom: cx(styles.resizeHandle, styles.resizeHandleVertical)
+          bottom: cx(styles.resizeHandle, styles.resizeHandleVertical),
         }}
         bounds="parent"
         {...this.props}

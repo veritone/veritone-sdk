@@ -1,40 +1,39 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { func, arrayOf, number } from 'prop-types';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 
-import OverlayPositioningProvider from '../BoundingPolyOverlay/OverlayPositioningProvider';
+import { OverlayPositioningProvider } from '../BoundingPolyOverlay/OverlayPositioningProvider';
 import Overlay from '../BoundingPolyOverlay/Overlay';
 import AreaInterest from '../AreaInterest';
 import styles from './styles.scss';
 
 const stylesByObjectType = {
   a: {
-    backgroundColor: 'rgba(72,147,226,0.7)'
+    backgroundColor: 'rgba(72,147,226,0.7)',
   },
   b: {
-    backgroundColor: 'rgba(72,147,226,0.7)'
+    backgroundColor: 'rgba(72,147,226,0.7)',
   },
   c: {
-    backgroundColor: 'rgba(72,147,226,0.7)'
-  }
+    backgroundColor: 'rgba(72,147,226,0.7)',
+  },
 };
 
 const stagedBoundingBoxStyles = {
   backgroundColor: 'rgba(72,147,226,0.7)',
-  border: '1px solid #4893E2'
+  border: '1px solid #4893E2',
 };
 
 const stepIntro = {
   1: 'Use your mouse to draw a bounding box on the area on the image you would like to return search results.',
-  2: 'Use your mouse to draw a bounding box on the area on the image you would like to return search results.'
-}
+  2: 'Use your mouse to draw a bounding box on the area on the image you would like to return search results.',
+};
 const buttonTextStep = {
   1: 'ADD AREA OF INTEREST',
-  2: 'SAVE AREA OF INTEREST'
-}
+  2: 'SAVE AREA OF INTEREST',
+};
 export default class LocationSelect extends Component {
-
   static propTypes = {
     handleAddBoundingBox: func,
     handleDeleteBoundingBox: func,
@@ -43,8 +42,8 @@ export default class LocationSelect extends Component {
     boundingBoxes: arrayOf(Object),
     step: number,
     onEditAoI: func,
-    onRemoveAoI: func
-  }
+    onRemoveAoI: func,
+  };
 
   state = {
     open: false,
@@ -52,16 +51,16 @@ export default class LocationSelect extends Component {
     frame: 0,
     selected: '',
     step: 1,
-    readOnly: true
+    readOnly: true,
   };
 
-  onUpdateStep = (step) => () => {
+  onUpdateStep = step => () => {
     const { boundingBoxes } = this.props;
     if (step === 3 && !boundingBoxes.length) {
       return;
     }
     this.props.onUpdateStep(step);
-  }
+  };
 
   render() {
     const {
@@ -71,7 +70,7 @@ export default class LocationSelect extends Component {
       boundingBoxes,
       step = 1,
       onEditAoI,
-      onRemoveAoI
+      onRemoveAoI,
     } = this.props;
     return (
       <div className={styles.container}>
@@ -96,11 +95,9 @@ export default class LocationSelect extends Component {
           </OverlayPositioningProvider>
         </div>
         <div className={styles.locationalCheckbox}>
-          {step !== 3 ?
+          {step !== 3 ? (
             <div className={cx(styles['step-item'])}>
-              <div className={styles.introText}>
-                {stepIntro[step]}
-              </div>
+              <div className={styles.introText}>{stepIntro[step]}</div>
               <Button
                 onClick={this.onUpdateStep(step + 1)}
                 className={cx(styles['btn-action-area'])}
@@ -108,7 +105,7 @@ export default class LocationSelect extends Component {
                 {buttonTextStep[step]}
               </Button>
             </div>
-            :
+          ) : (
             <div className={cx(styles['aria-item'])}>
               <AreaInterest
                 areaOfInterest={boundingBoxes[0]}
@@ -116,14 +113,10 @@ export default class LocationSelect extends Component {
                 onRemoveAoI={onRemoveAoI}
               />
             </div>
-          }
+          )}
         </div>
       </div>
     );
   }
 }
-export {
-  LocationSelect,
-  stepIntro,
-  buttonTextStep
-}
+export { stepIntro, buttonTextStep };
