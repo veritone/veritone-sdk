@@ -388,7 +388,7 @@ export default createReducer(defaultFolderState, {
       foldersData: {
         ...state.foldersData,
         rootIds: [...rootFolderId],
-        allId: [...state.foldersData.byId, ...rootFolderId, ...folderIds],
+        allId: uniq([...state.foldersData.allId, ...rootFolderId, ...folderIds]),
         byId: {
           ...state.foldersData.byId,
           ...folderByIds
@@ -562,6 +562,7 @@ export default createReducer(defaultFolderState, {
   }),
   [DELETE_FOLDER_SUCCESS]: (state, action) => {
     const { folderId, parentId } = action.payload;
+    const targetParentFolder = state.foldersData.byId[parentId] || {};
     return {
       ...state,
       processingFolder: [
@@ -573,8 +574,8 @@ export default createReducer(defaultFolderState, {
         byId: {
           ...omit(state.foldersData.byId, folderId),
           [parentId]: {
-            ...state.foldersData.byId[parentId],
-            childs: [...state.foldersData.byId[parentId].childs.filter(child => child !== folderId)]
+            ...targetParentFolder,
+            childs: [...targetParentFolder.childs.filter(child => child !== folderId)]
           }
         }
       }
@@ -593,6 +594,7 @@ export default createReducer(defaultFolderState, {
   [EDIT_FOLDER_SUCCESS]: (state, action) => {
     const { folder } = action.payload;
     const folderId = folder.id;
+    const targetFolder = state.foldersData.byId[folderId] || {};
     return {
       ...state,
       processingFolder: [
@@ -603,7 +605,7 @@ export default createReducer(defaultFolderState, {
         byId: {
           ...state.foldersData.byId,
           [folderId]: {
-            ...state.foldersData.byId[folderId],
+            ...targetFolder,
             ...folder
           }
         }
