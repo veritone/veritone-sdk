@@ -84,9 +84,9 @@ function VuiNewButton({ actions }) {
                     const icon = action.icon;
                     return (
                       <MenuItem key={action.id} onClick={handleClickItem(action)}>
-                        <ListItemIcon>
+                        <ListItemIcon className={classes.listItemIcon}>
                           <span
-                            className={cx([icon, classes['listItemIcon']])}
+                            className={cx([icon])}
                           />
                         </ListItemIcon>
                         <ListItemText

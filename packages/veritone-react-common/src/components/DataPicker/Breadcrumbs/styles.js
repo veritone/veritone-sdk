@@ -6,11 +6,14 @@ export default {
   breadcrumbContainer: {
     display: 'flex',
     fontSize: '1rem',
-    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     borderRadius: 2,
     minWidth: 300,
     flex: 'auto',
+    marginLeft: 10
+  },
+  greyBackround: {
+    backgroundColor: '#F5F5F5',
   },
   iconColor: {
     color: lightBlack,

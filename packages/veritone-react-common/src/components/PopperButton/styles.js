@@ -32,11 +32,13 @@ export default {
   listItemText: {
     padding: '0 !important',
     color: 'rgba(0,0,0,0.87);',
-    fontFamily: 'Roboto;',
-    fontSize: 15,
-    lineHeight: '18px',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: '1rem',
+    lineHeight: '1.5em',
   },
   listItemIcon: {
     fontSize: 20,
+    minWidth: 0,
+    marginRight: 16
   },
 }
