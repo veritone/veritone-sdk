@@ -36,6 +36,9 @@ export default {
     overflowX: 'hidden',
     textTransform: 'none !important',
   },
+  crumbItemDisable: {
+    color: `${lightBlack} !important`
+  },
   fontIcon: {
     fontSize: '1.5rem',
     adding: '0 0.5rem',

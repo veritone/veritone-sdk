@@ -43,7 +43,7 @@ storiesOf('DataPicker', module)
   .add('Breadcrumbs: Custom pathlist', () => {
     const pathList = [
       { id: 'first', name: 'Parent' },
-      { id: 'second', name: 'Child' },
+      { id: 'second', name: 'Child', isDisabled: true },
       { id: 'third', name: 'GrandChild' },
       { id: 'fourth', name: 'Super GrandChild' },
     ]

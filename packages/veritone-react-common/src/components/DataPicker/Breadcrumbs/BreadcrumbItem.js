@@ -9,7 +9,15 @@ import styles from './styles';
 
 const useStyles = makeStyles(styles);
 
-const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) => {
+const BreadcrumbItem = ({
+  name,
+  id,
+  index,
+  icon,
+  onClick,
+  isHidden = false,
+  isDisabled = false
+}) => {
   const classes = useStyles();
   return (
     isHidden ? (
@@ -17,6 +25,7 @@ const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) =>
         onClick={onClick}
         data-id={id}
         data-index={index}
+        disabled={isDisabled}
       >
         {name}
       </MenuItem>
@@ -25,7 +34,8 @@ const BreadcrumbItem = ({ name, id, index, icon, onClick, isHidden = false }) =>
           onClick={onClick}
           data-id={id}
           data-index={index}
-          className={classes['crumbItem']}
+          className={cx(classes.crumbItem, isDisabled ? classes.crumbItemDisable : {})}
+          disabled={isDisabled}
         >
           {icon}
           <span className={cx({
@@ -45,6 +55,7 @@ BreadcrumbItem.propTypes = {
   isHidden: bool,
   icon: node,
   onClick: func,
+  isDisabled: bool
 };
 
 export default BreadcrumbItem;
