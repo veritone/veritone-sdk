@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/react';
 import Dialog from './index';
 
 function StoryComponent() {
-
   const foldersDataDefault = {
     rootIds: [1],
     allId: [1, 11, '121aasd', 3, 4, 5, 6, 7, 8, 9, 10],
@@ -120,37 +119,37 @@ function StoryComponent() {
         id: 121,
         parentId: 1,
         contentType: 'collection',
-        name: 'Content 1',
+        name: 'Content 1'
       },
       122: {
         id: 122,
         parentId: 1,
         contentType: 'collection',
-        name: 'Content 2',
+        name: 'Content 2'
       },
       123: {
         id: 123,
         parentId: 1,
         contentType: 'collection',
-        name: 'Content 3',
+        name: 'Content 3'
       },
       124: {
         id: 124,
         parentId: 2,
         contentType: 'collection',
-        name: 'Content 4',
+        name: 'Content 4'
       },
       125: {
         id: 125,
         parentId: 3,
         contentType: 'collection',
-        name: 'Content 5',
+        name: 'Content 5'
       },
       126: {
         id: 126,
         parentId: 4,
         contentType: 'collection',
-        name: 'Content 6',
+        name: 'Content 6'
       },
       // 127: {
       //   id: 127,
@@ -162,25 +161,25 @@ function StoryComponent() {
         id: 128,
         parentId: 7,
         contentType: 'collection',
-        name: 'Content 8',
+        name: 'Content 8'
       },
       129: {
         id: 129,
         parentId: 8,
         contentType: 'collection',
-        name: 'Content 9',
+        name: 'Content 9'
       },
       1210: {
         id: 1210,
         contentType: 'collection',
-        name: 'Content 10',
+        name: 'Content 10'
       }
     }
-  }
+  };
 
   const selected = {
     3: true
-  }
+  };
 
   const currentFolder = {
     id: 7,
@@ -191,7 +190,7 @@ function StoryComponent() {
     parentId: 3,
     subfolders: [9],
     subcontents: [128]
-  }
+  };
 
   const [open, setOpen] = useState(false);
 
@@ -200,7 +199,7 @@ function StoryComponent() {
   };
 
   const handleSubmit = folderName => {
-    console.log('submit', folderName)
+    console.log('submit', folderName);
   };
 
   const handleOpen = () => {
@@ -214,6 +213,7 @@ function StoryComponent() {
   return (
     <div>
       <Dialog
+        type={2}
         open={open}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
@@ -224,23 +224,21 @@ function StoryComponent() {
         currentFolder={currentFolder}
         processingFolder={[]}
       />
-      <button onClick={handleOpen}>
-        open
-    </button>
+      <button onClick={handleOpen}>open</button>
     </div>
-
-  )
+  );
 }
 
-storiesOf('FolderTree', module)
-  .add('modify folder dialog', () => {
-    return (
-      <div style={{
+storiesOf('FolderTree', module).add('modify folder dialog', () => {
+  return (
+    <div
+      style={{
         padding: 20,
         width: 500,
         height: '100vh'
-      }}>
-        <StoryComponent />
-      </div>
-    );
-  });
+      }}
+    >
+      <StoryComponent />
+    </div>
+  );
+});
