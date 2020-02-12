@@ -21,13 +21,13 @@ const actionType = {
   1: 'New Folder',
   2: 'Move Folder',
   3: 'Edit Folder'
-}
+};
 
 export default function EditFolder({
   open,
   isNewFolder = false,
   type = 'New Folder',
-  isEnableEditName = false,
+  isEnableEditName = true,
   isEnableEditFolder = false,
   currentFolder = {},
   handleClose,
@@ -79,7 +79,7 @@ export default function EditFolder({
     }
   };
 
-  const validate = (folderNameToValid) => {
+  const validate = folderNameToValid => {
     if (folderNameToValid.length === 0) {
       return setError('Folder name must not be empty');
     }
@@ -91,51 +91,47 @@ export default function EditFolder({
       ...foldersData,
       allId: [...foldersData.allId.filter(item => item !== currentFolder.id)],
       byId: omit(foldersData.byId, currentFolder.id)
-    }
+    };
   };
 
   const handlerNewFolder = () => {
     handerClickNewFolder(selectedFolder);
-  }
+  };
 
   const getSubmitStatus = () => {
     if (type === 3) {
       return folderName === '';
     }
     return folderName === '' || isEmpty(selectedFolder);
-  }
+  };
 
   return (
     <div>
       <Dialog
         fullWidth
-        maxWidth='md'
+        maxWidth="sm"
         open={open}
         onClose={handleClose}
         aria-labelledby="create-folder"
       >
-        <DialogTitle id="create-folder">
-          {actionType[type]}
-        </DialogTitle>
+        <DialogTitle id="create-folder">{actionType[type]}</DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          {
-            isEnableEditName && (
-              <div className={classes.folderNameField}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="folder-name"
-                  label="Folder Name"
-                  type="text"
-                  error={error.length !== 0}
-                  helperText={error}
-                  value={folderName}
-                  onChange={onChange}
-                  fullWidth
-                />
-              </div>
-            )
-          }
+          {isEnableEditName && (
+            <div className={classes.folderNameField}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="folder-name"
+                label="Folder Name"
+                type="text"
+                error={error.length !== 0}
+                helperText={error}
+                value={folderName}
+                onChange={onChange}
+                fullWidth
+              />
+            </div>
+          )}
           {isEnableEditFolder && (
             <div className={classes.actionNewField}>
               <div>Choose a Folder</div>
@@ -146,7 +142,7 @@ export default function EditFolder({
                   onClick={handlerNewFolder}
                 >
                   NEW FOLDER
-              </Button>
+                </Button>
               )}
             </div>
           )}
@@ -182,7 +178,7 @@ export default function EditFolder({
             color="primary"
           >
             Submit
-          </Button >
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
@@ -202,4 +198,4 @@ EditFolder.propTypes = {
   handerClickNewFolder: func,
   defaultOpening: arrayOf(Object),
   processingFolder: arrayOf(Object)
-}
+};
