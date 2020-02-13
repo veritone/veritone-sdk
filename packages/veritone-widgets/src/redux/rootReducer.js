@@ -32,6 +32,10 @@ import engineOutputExportReducer, {
   namespace as engineOutputExportNamespace
 } from './modules/engineOutputExport';
 
+import folderTreeReducer, {
+  namespace as folderTreeNamespace
+} from './modules/folder';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -54,6 +58,7 @@ export const reducers = {
   [authNamespace]: authReducer,
   [appNamespace]: appReducer,
   [engineNamespace]: engineReducer,
+  [folderTreeNamespace]: folderTreeReducer,
   player: playerReducer,
   operation: operationReducer,
   form: formReducer
