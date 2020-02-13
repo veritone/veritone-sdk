@@ -215,6 +215,8 @@ function StoryComponent() {
     <div>
       <Dialog
         open={open}
+        type={2}
+        isEnableEditFolder
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         foldersData={foldersDataDefault}
