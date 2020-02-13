@@ -86,7 +86,7 @@ function VuiNewButton({ actions }) {
                       <MenuItem key={action.id} onClick={handleClickItem(action)}>
                         <ListItemIcon className={classes.listItemIcon}>
                           <span
-                            className={cx([icon])}
+                            className={icon}
                           />
                         </ListItemIcon>
                         <ListItemText
