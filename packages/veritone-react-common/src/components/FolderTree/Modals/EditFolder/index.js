@@ -21,7 +21,7 @@ const actionType = {
   1: 'New Folder',
   2: 'Move Folder',
   3: 'Edit Folder'
-}
+};
 
 export default function EditFolder({
   open,
@@ -79,7 +79,7 @@ export default function EditFolder({
     }
   };
 
-  const validate = (folderNameToValid) => {
+  const validate = folderNameToValid => {
     if (folderNameToValid.length === 0) {
       return setError('Folder name must not be empty');
     }
@@ -91,25 +91,25 @@ export default function EditFolder({
       ...foldersData,
       allId: [...foldersData.allId.filter(item => item !== currentFolder.id)],
       byId: omit(foldersData.byId, currentFolder.id)
-    }
+    };
   };
 
   const handlerNewFolder = () => {
     handerClickNewFolder(selectedFolder);
-  }
+  };
 
   const getSubmitStatus = () => {
     if (type === 3) {
       return folderName === '';
     }
     return folderName === '' || isEmpty(selectedFolder);
-  }
+  };
 
   return (
     <div>
       <Dialog
         fullWidth
-        maxWidth='md'
+        maxWidth='sm'
         open={open}
         onClose={handleClose}
         aria-labelledby="create-folder"
