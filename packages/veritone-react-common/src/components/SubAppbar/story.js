@@ -1,22 +1,24 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { boolean } from '@storybook/addon-knobs';
+
 
 import SubAppbar from './';
 
 storiesOf('SubAppbar', module).add('Button multi actions and crumbs', () => {
   const actionsDefaut = [
     {
+      id: 2,
+      name: 'Folder',
+      icon: "icon-folder-closed",
+      actionClick: () => console.log('click action 2')
+    },
+    {
       id: 1,
-      name: 'Action 1',
+      name: 'Collection',
       icon: "icon-watchlist",
       actionClick: () => console.log('click action 1')
     },
-    {
-      id: 2,
-      name: 'Action 2',
-      icon: "icon-watchlist",
-      actionClick: () => console.log('click action 2')
-    }
   ]
 
   const pathList = [
@@ -59,7 +61,7 @@ storiesOf('SubAppbar', module).add('Button multi actions and crumbs', () => {
   /* eslint-disable react/jsx-no-bind */
   return (
     <div>
-      <SubAppbar actions={actionsDefaut} pathList={pathList} onCrumbClick={onCrumbClick} />
+      <SubAppbar actions={actionsDefaut} pathList={pathList} onCrumbClick={onCrumbClick} loading={boolean('loading', false)}/>
     </div>
   );
 });
