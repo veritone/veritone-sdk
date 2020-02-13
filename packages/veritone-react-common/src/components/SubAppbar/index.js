@@ -10,7 +10,7 @@ import styles from './styles';
 
 const useStyles = makeStyles(styles);
 
-function SubAppbar({actions, pathList, onCrumbClick }) {
+function SubAppbar({actions, pathList, onCrumbClick, loading }) {
   const classes = useStyles();
 
   return (
@@ -19,7 +19,14 @@ function SubAppbar({actions, pathList, onCrumbClick }) {
         <PopperButon actions={actions} />
       </div>
       <div className={cx(classes['breadcrumbContainerSubappbar'])}>
-        <BreadCrums onCrumbClick={onCrumbClick} pathList={pathList} />
+        <BreadCrums 
+          loading={loading}
+          onCrumbClick={onCrumbClick}
+          pathList={pathList}
+          isEnableSuiteCase={false}
+          defaultRootTitle="Org collections"
+          isEnableBackground={false}
+        />
       </div>
     </div>
   )
@@ -35,7 +42,8 @@ SubAppbar.propTypes = {
     id: PropTypes.string,
     name: PropTypes.string
   })),
-  onCrumbClick: PropTypes.func
+  onCrumbClick: PropTypes.func,
+  loading: PropTypes.bool
 }
 
 export default SubAppbar;

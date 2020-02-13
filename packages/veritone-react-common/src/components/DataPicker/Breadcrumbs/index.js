@@ -1,9 +1,20 @@
 import React from 'react';
-import { shape, string, number, arrayOf, oneOfType, node, func, bool, any } from 'prop-types';
+import {
+  shape,
+  string,
+  number,
+  arrayOf,
+  oneOfType,
+  node,
+  func,
+  bool,
+  any
+} from 'prop-types';
 import cx from 'classnames';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
 import { withStyles } from '@material-ui/styles';
 
@@ -20,12 +31,16 @@ class Breadcrumbs extends React.Component {
     seperator: oneOfType([string, node]),
     onCrumbClick: func.isRequired,
     isStream: bool,
-    classes: shape({any}),
+    classes: shape({ any }),
+    isEnableSuiteCase: bool,
+    isEnableBackground: bool,
+    defaultRootTitle: string,
+    loading: bool
   }
 
   static defaultProps = {
     maxItems: 5,
-    seperator: <ChevronRight style={{color : lightBlackColor}} />,
+    seperator: <ChevronRight style={{ color: lightBlackColor }} />,
   }
 
   state = {
@@ -59,7 +74,11 @@ class Breadcrumbs extends React.Component {
       maxItems,
       seperator,
       isStream,
-      classes
+      classes,
+      isEnableSuiteCase = true,
+      isEnableBackground = true,
+      defaultRootTitle = 'My Files',
+      loading = false
     } = this.props;
 
     const { anchorEl } = this.state;
@@ -72,20 +91,38 @@ class Breadcrumbs extends React.Component {
     const icon = isStream ? (
       <div className={cx('icon-streams', classes['rootIcon'])} />
     ) : <Work className={classes['rootIcon']} />;
-
+    if (loading) {
+      return (
+        <div
+          className={cx(
+            classes.breadcrumbContainer,
+            isEnableBackground ? classes.greyBackround : {})
+          }
+        >
+          <CircularProgress size={20} />
+        </div>
+      )
+    }
     return (
-      <div className={classes['breadcrumbContainer']}>
-        <React.Fragment key={'root'}>
-          <BreadcrumbItem
-            id={'root'}
-            icon={icon}
-            index={0}
-            key={'root'}
-            name={pathList.length ? '' : 'My Files'}
-            onClick={this.onCrumbClick}
-          />
-        </React.Fragment>
-        { !!pathList.length && seperator }
+      <div
+        className={cx(
+          classes.breadcrumbContainer,
+          isEnableBackground ? classes.greyBackround : {})
+        }
+      >
+        {isEnableSuiteCase && (
+          <React.Fragment key={'root'}>
+            <BreadcrumbItem
+              id={'root'}
+              icon={icon}
+              index={0}
+              key={'root'}
+              name={pathList.length ? '' : defaultRootTitle}
+              onClick={this.onCrumbClick}
+            />
+            {!!pathList.length && seperator}
+          </React.Fragment>
+        )}
         {
           pathList.length < maxItems ? (
             pathList.map((crumb, index) => (
