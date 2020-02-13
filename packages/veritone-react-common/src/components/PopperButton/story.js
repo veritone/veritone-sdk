@@ -6,17 +6,17 @@ import Button from './';
 storiesOf('Popper Button', module).add('button multi actions', () => {
   const actionsDefaut = [
     {
+      id: 2,
+      name: 'Folder',
+      icon: "icon-folder-closed",
+      actionClick: () => console.log('click action 2')
+    },
+    {
       id: 1,
-      name: 'Action 1',
+      name: 'Collection',
       icon: "icon-watchlist",
       actionClick: () => console.log('click action 1')
     },
-    {
-      id: 2,
-      name: 'Action 2',
-      icon: "icon-watchlist",
-      actionClick: () => console.log('click action 2')
-    }
   ]
   /* eslint-disable react/jsx-no-bind */
   return (
