@@ -27,7 +27,7 @@ export default function EditFolder({
   open,
   isNewFolder = false,
   type = 'New Folder',
-  isEnableEditName = true,
+  isEnableEditName = false,
   isEnableEditFolder = false,
   currentFolder = {},
   handleClose,
