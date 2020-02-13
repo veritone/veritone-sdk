@@ -23,7 +23,7 @@ export const folderType = {
     childsType: 'childWatchlists'
   },
   collection: {
-    orgFolderName: 'Shared Collection',
+    orgFolderName: 'Shared Collections',
     ownerFolderName: 'My Collection',
     rootFolderType: 'collection ',
     child: 'collection',
