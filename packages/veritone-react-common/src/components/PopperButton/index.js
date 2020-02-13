@@ -49,21 +49,21 @@ function VuiNewButton({ actions }) {
   const openPopper = Boolean(anchorEl);
   const id = openPopper ? 'simple-popover' : undefined;
   return (
-    <div className={cx(classes["container"])}>
+    <div className={classes["container"]}>
       <Button
         aria-describedby={id}
-        className={cx(classes['newButton'])}
+        className={classes['newButton']}
         onClick={handleClick}
       >
-        <Add className={cx(classes['addIcon'])} />
-        <span className={cx(classes['newText'])}>NEW</span>
-        {usePopper && <ArrowDown className={cx(classes['arrowIcon'])} />}
+        <Add className={classes['addIcon']} />
+        <span className={classes['newText']}>NEW</span>
+        {usePopper && <ArrowDown className={classes['arrowIcon']} />}
       </Button>
       {usePopper && (<Popper
         id={id}
         open={openPopper}
         anchorEl={anchorEl}
-        className={cx(classes['popperCustom'])}
+        className={classes['popperCustom']}
         transition
         disablePortal>
         {({ TransitionProps, placement }) => (
@@ -90,10 +90,10 @@ function VuiNewButton({ actions }) {
                           />
                         </ListItemIcon>
                         <ListItemText
-                          className={cx(classes['listItemText'])}
+                          className={classes['listItemText']}
                           inset
                         >
-                          <span className={cx(classes['listItemText'])}>
+                          <span className={classes['listItemText']}>
                             {action.name}
                           </span>
                         </ListItemText>
