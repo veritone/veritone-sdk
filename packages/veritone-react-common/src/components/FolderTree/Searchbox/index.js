@@ -57,7 +57,7 @@ export default function Searchbox({ onSearch, placeholder = 'Search' }) {
           onClick={handleRemoveText}
           size="small"
         >
-          <CloseIcon fontSize="small" color="action" />
+          <CloseIcon color="action" />
         </IconButton>
       ) : (
         <IconButton
