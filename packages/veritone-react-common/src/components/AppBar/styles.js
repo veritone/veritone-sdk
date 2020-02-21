@@ -69,6 +69,7 @@ export default {
     lineHeight: '16px',
     textDecoration: 'none',
     color: 'white',
+    cursor: 'pointer'
   },
   noSelect: {
     userSelect: 'none',
