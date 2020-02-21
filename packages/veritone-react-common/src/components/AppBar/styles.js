@@ -9,6 +9,7 @@ export default {
       width: 60,
       height: 60,
       padding: 10,
+      cursor: "pointer",
       '& img': {
         width: '100%',
         height: '100%',
@@ -32,6 +33,7 @@ export default {
     },
     '& $left': {
       justifyContent: 'flex-start',
+      cursor: "pointer"
     },
     '& $right': {
       justifyContent: 'flex-end',
