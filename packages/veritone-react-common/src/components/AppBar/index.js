@@ -2,7 +2,7 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import classNames from 'classnames';
 
 import {
@@ -30,6 +30,7 @@ import styles from './styles';
 export const appBarHeight = 60;
 export const defaultAppBarZIndex = 1000;
 
+const classes = withStyles(styles);
 class AppBar extends React.Component {
   static propTypes = {
     title: string,
@@ -84,7 +85,6 @@ class AppBar extends React.Component {
     totalNotification: number,
     showNotifications: func,
     hideNotification: func,
-    classes: shape({any})
   };
   static defaultProps = {
     logo: true,
@@ -149,7 +149,6 @@ class AppBar extends React.Component {
       totalNotification,
       showNotifications,
       hideNotification,
-      classes
     } = this.props;
 
     return (
@@ -276,4 +275,4 @@ class AppBar extends React.Component {
   }
 }
 
-export default withStyles(styles)(AppBar);
+export default AppBar;
