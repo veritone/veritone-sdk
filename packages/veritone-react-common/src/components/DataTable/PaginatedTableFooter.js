@@ -8,11 +8,13 @@ import LastPageIcon from '@material-ui/icons/LastPage';
 import TableCell from '@material-ui/core/TableCell';
 import SelectInput from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
-import { func, number, shape, any } from 'prop-types';
+import { func, number } from 'prop-types';
 import RefreshButton from 'components/RefreshButton';
 import styles from './styles/index';
+
+const classes = withStyles(styles);
 class PaginatedTableFooter extends React.Component {
   static propTypes = {
     page: number.isRequired,
@@ -21,8 +23,7 @@ class PaginatedTableFooter extends React.Component {
     onChangePerPage: func.isRequired,
     onRefreshPageData: func,
     rowCount: number,
-    colSpan: number,
-    classes: shape({any})
+    colSpan: number
   };
 
   static defaultProps = {
@@ -48,7 +49,7 @@ class PaginatedTableFooter extends React.Component {
   };
 
   render() {
-    const { rowCount, page, perPage, classes } = this.props;
+    const { rowCount, page, perPage } = this.props;
     const firstItem = page * perPage + 1;
     const lastItem = Math.min(page * perPage + perPage, rowCount);
 
@@ -128,4 +129,4 @@ class PaginatedTableFooter extends React.Component {
 PaginatedTableFooter.muiName = 'TableFooter';
 
 
-export default withStyles(styles)(PaginatedTableFooter);
+export default PaginatedTableFooter;

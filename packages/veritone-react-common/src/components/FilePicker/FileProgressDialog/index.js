@@ -8,12 +8,13 @@ import green from '@material-ui/core/colors/green';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import FilePickerHeader from '../FilePickerHeader';
 import FileProgressList from '../FileProgressList';
 
 import styles from './styles';
+const classes = withStyles(styles);
 
 class FileProgressDialog extends React.Component {
   static propTypes = {
@@ -34,8 +35,7 @@ class FileProgressDialog extends React.Component {
     // height: number,
     width: number,
     progressMessage: string,
-    completeStatus: oneOf(['success', 'failure', 'warning']),
-    classes: shape({ any }),
+    completeStatus: oneOf(['success', 'failure', 'warning'])
   };
 
   static defaultProps = {
@@ -58,8 +58,7 @@ class FileProgressDialog extends React.Component {
   renderProgress() {
     const {
       percentByFiles,
-      handleAbort,
-      classes
+      handleAbort
     } = this.props;
     const closeFunc = handleAbort ? this.handleClose : null;
 
@@ -79,7 +78,6 @@ class FileProgressDialog extends React.Component {
   }
 
   renderComplete() {
-    const { classes } = this.props;
     const icon = {
       success: (
         <CheckCircle classes={{ root: classes.resolveIcon }}
@@ -138,7 +136,6 @@ class FileProgressDialog extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <Card
         className={classes.container}
@@ -151,4 +148,4 @@ class FileProgressDialog extends React.Component {
   }
 }
 
-export default withStyles(styles)(FileProgressDialog);
+export default FileProgressDialog;

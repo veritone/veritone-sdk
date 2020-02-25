@@ -15,13 +15,13 @@ import {
   arrayOf,
   element,
   number,
-  shape,
-  any
+  shape
 } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import { appBarHeight } from '../AppBar';
 import styles from './styles';
+const classes = withStyles(styles);
 
 export const topBarHeight = 45;
 class TopBar extends React.Component {
@@ -44,8 +44,7 @@ class TopBar extends React.Component {
     leftText: string,
     rightIconButtons: arrayOf(element),
     onRequestOpenMenu: func,
-    onClickBackButton: func,
-    classes: shape({ any }),
+    onClickBackButton: func
   };
   static defaultProps = {
     elevation: 2,
@@ -72,7 +71,6 @@ class TopBar extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <Paper
         style={{
@@ -167,4 +165,4 @@ class TopBar extends React.Component {
   }
 }
 
-export default withStyles(styles)(TopBar);
+export default TopBar;

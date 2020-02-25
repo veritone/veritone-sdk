@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/styles';
-import { bool, func, string, shape, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { bool, func, string } from 'prop-types';
 import cx from 'classnames';
 import styles from './styles';
+const classes = withStyles(styles);
 
 class FilePickerFooter extends Component {
   static propTypes = {
@@ -11,8 +12,7 @@ class FilePickerFooter extends Component {
     onCancel: func,
     onSubmit: func,
     title: string,
-    hasIntercom: bool,
-    classes: shape({ any }),
+    hasIntercom: bool
   };
 
   static defaultProps = {
@@ -25,8 +25,7 @@ class FilePickerFooter extends Component {
       onCancel,
       disabled,
       onSubmit,
-      title,
-      classes
+      title
     } = this.props;
     return (
       <div className={cx(classes.filePickerFooter, {
@@ -52,4 +51,4 @@ class FilePickerFooter extends Component {
   }
 }
 
-export default withStyles(styles)(FilePickerFooter);
+export default FilePickerFooter;

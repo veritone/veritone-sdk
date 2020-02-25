@@ -2,7 +2,6 @@ import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
 import Chip from '@material-ui/core/Chip';
-import Button from '@material-ui/core/Button';
 
 import SectionTree, { SectionTreeTab } from './SectionTree';
 
@@ -203,12 +202,6 @@ describe('SectionTreeTab', function() {
     expect(
       wrapper.containsMatchingElement(<div id="test-right" />)
     ).toBeTruthy();
-  });
-
-  it('adds dark styling with props.dark', function() {
-    const wrapper = mount(<SectionTreeTab {...defaultProps} dark />);
-
-    expect(wrapper.find(Button).props().classes.root).toContain('dark');
   });
 
   it('calls props.onClick with props.id', function() {

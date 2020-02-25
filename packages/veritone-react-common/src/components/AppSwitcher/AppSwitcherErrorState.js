@@ -1,18 +1,17 @@
 import React from 'react';
-import { func, shape, any } from 'prop-types';
+import { func } from 'prop-types';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class AppSwitcherErrorState extends React.Component {
   static propTypes = {
-    onRefresh: func,
-    classes: shape({any}),
+    onRefresh: func
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.appListButtonErrorState}>
         An error occurred loading this content
@@ -24,4 +23,4 @@ class AppSwitcherErrorState extends React.Component {
   }
 }
 
-export default withStyles(styles)(AppSwitcherErrorState);
+export default AppSwitcherErrorState;

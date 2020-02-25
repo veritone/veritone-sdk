@@ -3,16 +3,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import mime from 'mime-types';
-import { func, arrayOf, string, shape, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { func, arrayOf, string } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class UrlUploader extends Component {
   static propTypes = {
     onUpload: func.isRequired,
     acceptedFileTypes: arrayOf(string),
-    classes: shape({ any })
+    
   };
 
   static defaultProps = {
@@ -113,7 +114,6 @@ class UrlUploader extends Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.urlUploader}>
         <FormControl
@@ -162,4 +162,4 @@ class UrlUploader extends Component {
   }
 }
 
-export default withStyles(styles)(UrlUploader);
+export default UrlUploader;

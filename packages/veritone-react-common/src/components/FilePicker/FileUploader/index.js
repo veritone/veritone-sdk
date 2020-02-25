@@ -3,14 +3,15 @@ import { noop, startsWith, endsWith } from 'lodash';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button';
 import { DropTarget } from 'react-dnd';
-import { string, func, arrayOf, bool, shape, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { string, func, arrayOf, bool } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import { NativeTypes } from 'react-dnd-html5-backend';
 const { FILE } = NativeTypes;
 
 import ExtensionPanel from './ExtensionPanel';
 
 import styles from './styles';
+const classes = withStyles(styles);
 
 const boxTarget = {
   drop(props, monitor) {
@@ -58,7 +59,7 @@ const collect = (connect, monitor) => {
 };
 
 @DropTarget(FILE, boxTarget, collect)
-@withStyles(styles)
+
 class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
@@ -68,8 +69,7 @@ class FileUploader extends Component {
     onFilesRejected: func,
     isOver: bool.isRequired,
     connectDropTarget: func.isRequired,
-    multiple: bool,
-    classes: shape({ any }),
+    multiple: bool
   };
 
   static defaultProps = {
@@ -100,7 +100,7 @@ class FileUploader extends Component {
   setInputRef = r => (this._input = r);
 
   render() {
-    const { acceptedFileTypes, connectDropTarget, isOver, classes } = this.props;
+    const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
     const { showExtensionList } = this.state;
 
     const acceptMessage = 'Drag & Drop';

@@ -21,15 +21,15 @@ import {
   string,
   oneOfType,
   oneOf,
-  arrayOf, shape
+  arrayOf
 } from 'prop-types';
-import { withStyles , makeStyles} from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import { LOADING } from './shared';
 import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index';
 
-const useStyles = makeStyles(styles);
+const classes = withStyles(styles);
 /*
  * BASE TABLE
  */
@@ -47,7 +47,6 @@ class _Table extends React.Component {
     emptyRenderer: func,
     children: node, // children should be Columns
     showHeader: bool,
-    classes: shape({any})
   };
 
   static defaultProps = {
@@ -58,7 +57,6 @@ class _Table extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     const restProps = omit(this.props, [
       'onShowCellRange',
       'renderFocusedRowDetails'
@@ -108,7 +106,6 @@ const NormalTableContainer = ({
   showHeader,
   ...rest
 }) => {
-  const classes = useStyles();
   return (
     <Paper elevation={1} className={classes['tableWrapper']}>
       <MuiTable>
@@ -161,7 +158,6 @@ class SplitTableContainer extends React.Component {
     emptyRenderer: func,
     showHeader: bool,
     children: node,
-    classes : shape({any})
   };
 
   render() {
@@ -175,7 +171,6 @@ class SplitTableContainer extends React.Component {
       children,
       rowGetter,
       showHeader,
-      classes,
       ...rest
     } = this.props;
 
@@ -330,7 +325,6 @@ export const Column = ({
   width,
   ...rest
 }) => {
-  const classes = useStyles();
   function renderData() {
     if (data === LOADING) {
       return 'Loading...';
@@ -376,7 +370,6 @@ Column.propTypes = {
 };
 
 const TableHead = ({ children, rowCount }) => {
-  const classes = useStyles();
   return (
     <MuiTableHead>
       <TableRow>
@@ -406,5 +399,5 @@ export { LOADING };
 /*
  * Table with pagination functions
  */
-export const Table = withBasicBehavior(withStyles(styles)(_Table));
-export const PaginatedTable = withBasicBehavior(withPagination(withStyles(styles)(_Table)));
+export const Table = withBasicBehavior(_Table);
+export const PaginatedTable = withBasicBehavior(withPagination(_Table));

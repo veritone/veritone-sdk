@@ -21,10 +21,10 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Search, Clear } from '@material-ui/icons';
 import { isNumber } from 'lodash';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
-
+const classes = withStyles(styles);
 // eslint-disable-next-line
 const Div = ({ className, children }) => (
   <div className={className}>{children}</div>
@@ -100,8 +100,7 @@ class SimpleSearchBarBaseComponent extends React.Component {
         autocomplete,
         isLoading,
         marginTop,
-        width,
-        classes,
+        width
       }
     } = this;
 
@@ -253,11 +252,10 @@ SimpleSearchBarBaseComponent.propTypes = {
   ),
   resetOnClickAway: bool,
   marginTop: string,
-  width: oneOfType([string, number]),
-  classes: shape({ any }),
+  width: oneOfType([string, number])
 };
 
-const SimpleSearchBarBase = withStyles(styles)(SimpleSearchBarBaseComponent);
+const SimpleSearchBarBase = SimpleSearchBarBaseComponent;
 
 export {
   SimpleSearchBarBase

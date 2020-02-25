@@ -5,11 +5,11 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func, number, shape, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { string, func, number } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import classNames from 'classnames';
 import styles from './styles';
-
+const classes = withStyles(styles);
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notifierPropTypes = {
   tooltipTitle: string,
@@ -21,8 +21,7 @@ export const notifierPropTypes = {
   notifications: notificationListPropTypes,
   totalNotification: number,
   showNotifications: func,
-  hideNotification: func,
-  classes: shape({any}),
+  hideNotification: func
 };
 class Notifier extends React.Component {
   static propTypes = notifierPropTypes;
@@ -62,8 +61,7 @@ class Notifier extends React.Component {
       notifications,
       totalNotification,
       showNotifications,
-      hideNotification,
-      classes
+      hideNotification
     } = this.props;
 
 
@@ -129,4 +127,4 @@ class Notifier extends React.Component {
   }
 }
 
-export default withStyles(styles)(Notifier);
+export default Notifier;

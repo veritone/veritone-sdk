@@ -6,17 +6,17 @@ import {
   func,
   bool,
   string,
-  number,
-  any
+  number
 } from 'prop-types';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import GoogleMapsLoader from 'google-maps';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 const MARKER = 'marker';
 const CIRCLE = 'circle';
 const UNIT_OF_DISTANCE = 'm';
@@ -58,7 +58,7 @@ class GeoPicker extends React.Component {
     ]),
     readOnly: bool,
     onSelectGeolocation: func,
-    classes: shape({ any })
+    
   };
 
   static defaultProps = {
@@ -209,7 +209,6 @@ class GeoPicker extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div
         ref={this.loadGoogleMaps}
@@ -230,4 +229,4 @@ class GeoPicker extends React.Component {
   }
 }
 
-export default withStyles(styles)(GeoPicker);     
+export default GeoPicker;     

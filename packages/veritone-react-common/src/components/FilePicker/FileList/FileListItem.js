@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
-import { shape, func, number, string, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { shape, func, number, string } from 'prop-types';
 
 import { formatBytes } from '../../../helpers/format.js';
 
 import styles from './styles';
+const classes = withStyles(styles);
 
 class FileListItem extends Component {
   static propTypes = {
@@ -18,8 +19,7 @@ class FileListItem extends Component {
       type: string,
       webkitRelativePath: string
     }).isRequired,
-    index: number.isRequired,
-    classes: shape({ any }),
+    index: number.isRequired
   };
 
   state = {
@@ -58,7 +58,6 @@ class FileListItem extends Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.item}>
         <div className={classes.itemPreviewContainer}>
@@ -95,4 +94,4 @@ class FileListItem extends Component {
   }
 }
 
-export default withStyles(styles)(FileListItem);
+export default FileListItem;

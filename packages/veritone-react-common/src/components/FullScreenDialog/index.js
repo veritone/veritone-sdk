@@ -1,21 +1,20 @@
 import React from 'react';
 import cx from 'classnames';
-import { node, bool, string, shape, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { node, bool, string } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class FullScreenDialog extends React.Component {
   static propTypes = {
     children: node,
     open: bool,
-    className: string,
-    classes: shape({ any }),
+    className: string
   };
   static defaultProps = {};
 
   render() {
-    const { classes } = this.props;
     const containerClasses = cx(
       classes['dialog'],
       this.props.open && classes['dialogIsOpen'],
@@ -26,4 +25,4 @@ class FullScreenDialog extends React.Component {
   }
 }
 
-export default withStyles(styles)(FullScreenDialog);
+export default FullScreenDialog;

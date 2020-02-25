@@ -1,11 +1,12 @@
 import React from 'react';
-import { string, arrayOf, shape, func, any } from 'prop-types';
+import { string, arrayOf, shape, func } from 'prop-types';
 import { sortBy } from 'lodash';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import AppSwitcherItem from './AppSwitcherItem';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class AppSwitcherList extends React.Component {
   static propTypes = {
     enabledApps: arrayOf(
@@ -16,15 +17,13 @@ class AppSwitcherList extends React.Component {
         applicationIconUrl: string
       })
     ),
-    onSwitchApp: func.isRequired,
-    classes: shape({any})
+    onSwitchApp: func.isRequired
   };
   static defaultProps = {
     enabledApps: []
   };
 
   render() {
-    const { classes } = this.props;
     const apps = sortBy(this.props.enabledApps, 'applicationName');
     return apps.length ? (
       <div>
@@ -44,4 +43,4 @@ class AppSwitcherList extends React.Component {
   }
 }
 
-export default withStyles(styles)(AppSwitcherList);
+export default AppSwitcherList;

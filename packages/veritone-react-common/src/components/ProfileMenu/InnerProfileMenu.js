@@ -8,10 +8,11 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
-import { string, func, shape, arrayOf, element, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { string, func, shape, arrayOf, element } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class InnerProfileMenu extends React.Component {
   static propTypes = {
     onLogout: func.isRequired,
@@ -25,12 +26,10 @@ class InnerProfileMenu extends React.Component {
       }),
       signedImageUrl: string
     }),
-    additionMenuItems: arrayOf(element),
-    classes: shape({ any }),
+    additionMenuItems: arrayOf(element)
   };
 
   render() {
-    const { classes } = this.props;
     const userExists = !!Object.keys(this.props.user).length;
     if (!userExists) {
       return <div className={classes.userNullState}>No user found</div>;
@@ -85,4 +84,4 @@ class InnerProfileMenu extends React.Component {
   }
 }
 
-export default withStyles(styles)(InnerProfileMenu);
+export default InnerProfileMenu;

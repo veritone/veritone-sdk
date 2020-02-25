@@ -1,9 +1,10 @@
 import React from 'react';
-import { string, func, shape, bool, oneOfType, any } from 'prop-types';
+import { string, func, shape, bool, oneOfType } from 'prop-types';
 import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles/timeRangePicker';
+const classes = withStyles(styles);
 
 class TimeRangePicker extends React.Component {
   static propTypes = {
@@ -16,8 +17,7 @@ class TimeRangePicker extends React.Component {
       onChange: func.isRequired
     }).isRequired,
     readOnly: bool,
-    timeZone: oneOfType([string, bool]),
-    classes: shape({ any })
+    timeZone: oneOfType([string, bool])
   };
 
   handleChangeStart = ({ target: { value } }) => {
@@ -52,7 +52,7 @@ class TimeRangePicker extends React.Component {
   }
 
   render() {
-    let { timeZone, classes } = this.props;
+    let { timeZone } = this.props;
 
     // some components are not passing timezone, so we need to find it out
     // eslint-disable-next-line lodash/prefer-lodash-typecheck
@@ -116,4 +116,4 @@ TimeSelector.propTypes = {
   readOnly: bool
 };
 
-export default withStyles(styles)(TimeRangePicker);
+export default TimeRangePicker;

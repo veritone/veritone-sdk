@@ -2,11 +2,12 @@ import React from 'react';
 import { isString } from 'lodash';
 import Clipboard from 'clipboard';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/styles';
-import { node, string, shape, arrayOf, oneOfType, bool, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { node, string, shape, arrayOf, oneOfType, bool } from 'prop-types';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class CopyPrompt extends React.Component {
   static propTypes = {
     children: node,
@@ -15,7 +16,6 @@ class CopyPrompt extends React.Component {
     ),
     fullWidth: bool,
     showPrompt: bool,
-    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -38,7 +38,6 @@ class CopyPrompt extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div
         className={classes['container']}
@@ -84,4 +83,4 @@ class CopyPrompt extends React.Component {
   }
 }
 
-export default withStyles(styles)(CopyPrompt);
+export default CopyPrompt;

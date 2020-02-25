@@ -27,7 +27,7 @@ import {
   FullscreenToggle
 } from 'video-react';
 import cx from 'classnames';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import RestartMediaButton from './RestartMediaButton';
 import BoundingPolyOverlay from './../BoundingPolyOverlay/Overlay';
 import OverlayPositioningProvider from './../BoundingPolyOverlay/OverlayPositioningProvider';
@@ -37,6 +37,7 @@ import { getPolysForTime } from './helpers';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
@@ -102,8 +103,7 @@ class MediaPlayerComponent extends React.Component {
     ctrlProgress: bool,
     displayTime: bool,
     autoHide: bool,
-    autoHideTime: number,
-    classes: shape({ any }),
+    autoHideTime: number
   };
 
   static contextTypes = {
@@ -161,7 +161,6 @@ class MediaPlayerComponent extends React.Component {
       displayTime,
       autoHide,
       autoHideTime,
-      classes,
       ...props
     } = this.props;
 
@@ -235,4 +234,4 @@ class MediaPlayerComponent extends React.Component {
   }
 }
 
-export default withStyles(styles)(MediaPlayerComponent);
+export default MediaPlayerComponent;

@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
-import { string, func, bool, number, node, shape, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { string, func, bool, number, node } from 'prop-types';
 
 import styles from './styles';
+const classes = withStyles(styles);
 
 class FilePickerHeader extends Component {
   static propTypes = {
@@ -19,8 +20,7 @@ class FilePickerHeader extends Component {
     maxFiles: number,
     hideTabs: bool,
     titleIcon: node,
-    message: string,
-    classes: shape({ any }),
+    message: string
   };
 
   static defaultProps = {
@@ -32,7 +32,6 @@ class FilePickerHeader extends Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.filePickerHeader}>
         <span
@@ -95,4 +94,4 @@ class FilePickerHeader extends Component {
   }
 }
 
-export default withStyles(styles)(FilePickerHeader);
+export default FilePickerHeader;

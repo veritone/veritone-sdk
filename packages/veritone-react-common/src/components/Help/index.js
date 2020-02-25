@@ -11,11 +11,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Tooltip from '@material-ui/core/Tooltip';
-import { withStyles } from '@material-ui/styles';
-import { string, func, shape, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { string, func } from 'prop-types';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 export const helpPropTypes = {
   tooltipTitle: string,
   helpDocLabel: string,
@@ -24,8 +25,7 @@ export const helpPropTypes = {
   supportLabel: string,
   supportCallback: func,
   onOpen: func,
-  onClose: func,
-  classes: shape({ any })
+  onClose: func
 };
 
 class Help extends React.Component {
@@ -80,8 +80,7 @@ class Help extends React.Component {
       supportLabel,
       helpDocLink,
       helpDocCallback,
-      supportCallback,
-      classes
+      supportCallback
     } = this.props;
 
     const hasHelpDoc = helpDocLink || helpDocCallback;
@@ -156,4 +155,4 @@ class Help extends React.Component {
   }
 }
 
-export default withStyles(styles)(Help);
+export default Help;

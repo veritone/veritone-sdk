@@ -1,18 +1,18 @@
 import React from 'react';
 import cx from 'classnames';
-import { objectOf, any, func, shape } from 'prop-types';
+import { objectOf, any, func } from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class AppSwitcherItem extends React.Component {
   static propTypes = {
     app: objectOf(any).isRequired,
-    onSelect: func.isRequired,
-    classes: shape({any}),
+    onSelect: func.isRequired
   };
 
   handleSwitchApp = () => {
@@ -20,7 +20,7 @@ class AppSwitcherItem extends React.Component {
   };
 
   render() {
-    const { app, classes } = this.props;
+    const { app } = this.props;
 
     const appListButtonIconClasses = cx(classes['appListButtonIcon'], {
       [`${classes['hasSvg']}`]: app.applicationIconSvg
@@ -57,4 +57,4 @@ class AppSwitcherItem extends React.Component {
   }
 }
 
-export default withStyles(styles)(AppSwitcherItem);
+export default AppSwitcherItem;

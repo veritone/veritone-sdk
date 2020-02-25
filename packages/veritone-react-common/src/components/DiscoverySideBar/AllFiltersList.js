@@ -1,9 +1,10 @@
 import React from 'react';
-import { func, shape, arrayOf, string, number, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { func, shape, arrayOf, string, number } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles/filtersList';
 import FiltersListItem from './FiltersListItem';
 
+const classes = withStyles(styles);
 class AllFiltersList extends React.Component {
   static propTypes = {
     onClearAllFilters: func.isRequired,
@@ -15,7 +16,7 @@ class AllFiltersList extends React.Component {
         id: string.isRequired
       })
     ),
-    classes: shape({ any })
+    
   };
 
   static defaultProps = {
@@ -28,7 +29,6 @@ class AllFiltersList extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.container}>
         <div className={classes.headerContainer}>
@@ -56,4 +56,4 @@ class AllFiltersList extends React.Component {
   }
 }
 
-export default withStyles(styles)(AllFiltersList);
+export default AllFiltersList;

@@ -1,12 +1,13 @@
 import React, { Component, cloneElement } from 'react';
-import { string, bool, func, objectOf, any, node, shape } from 'prop-types';
+import { string, bool, func, objectOf, any, node } from 'prop-types';
 
 import Cancel from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import classNames from 'classnames';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class Lightbox extends Component {
   static propTypes = {
     open: bool,
@@ -21,8 +22,7 @@ class Lightbox extends Component {
     className: string,
     buttonClassName: string,
     contentClassName: string,
-    data: objectOf(any),
-    classes: shape({ any }),
+    data: objectOf(any)
   };
 
   static defaultProps = {
@@ -84,8 +84,7 @@ class Lightbox extends Component {
       closeButton,
       className,
       buttonClassName,
-      contentClassName,
-      classes
+      contentClassName
     } = this.props;
 
     return (
@@ -122,4 +121,4 @@ class Lightbox extends Component {
   }
 }
 
-export default withStyles(styles)(Lightbox);
+export default Lightbox;

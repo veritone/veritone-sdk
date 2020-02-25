@@ -5,12 +5,12 @@ import getYear from 'date-fns/getYear'
 import format from 'date-fns/format'
 import isDate from 'date-fns/isDate'
 import TextField from '@material-ui/core/TextField';
-import { instanceOf, func, shape, string, bool, oneOfType, any } from 'prop-types';
-import { withStyles, makeStyles } from '@material-ui/styles';
+import { instanceOf, func, shape, string, bool, oneOfType } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import parseISO from 'date-fns/parseISO';
 
 import styles from './styles/dateTimePicker';
-const useStyles = makeStyles(styles);
+const classes = withStyles(styles);
 class DateTimePicker extends React.Component {
   static propTypes = {
     min: instanceOf(Date),
@@ -22,7 +22,7 @@ class DateTimePicker extends React.Component {
       onChange: func
     }).isRequired,
     readOnly: bool,
-    classes: shape({ any })
+    
   };
 
   handleDateChange = ({ target }) => {
@@ -48,7 +48,7 @@ class DateTimePicker extends React.Component {
 
   render() {
     const { input, min, max, ...rest } = this.props;
-    let { timeZone, classes } = this.props;
+    let { timeZone } = this.props;
 
     // some components are not passing timezone, so we need to find it out
     // eslint-disable-next-line lodash/prefer-lodash-typecheck
@@ -129,7 +129,6 @@ TimeSelector.propTypes = {
 };
 
 const TimeZoneField = ({ value, ...rest }) => {
-  const classes = useStyles();
   return value ? (
     <TextField
       className={classes.dateTimeTZ}
@@ -173,4 +172,4 @@ function getTimeZone(date) {
   return '';
 }
 
-export default withStyles(styles)(DateTimePicker);
+export default DateTimePicker;

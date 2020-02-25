@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, shape, func, string, oneOf, bool, any } from 'prop-types';
+import { arrayOf, shape, func, string, oneOf, bool } from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Popover from '@material-ui/core/Popover';
@@ -12,12 +12,13 @@ import IconButton from '@material-ui/core/IconButton';
 // import ViewModule from '@material-ui/icons/ViewModule';
 // import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import cx from 'classnames';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import Breadcrumbs from '../Breadcrumbs';
 // import SearchInput from '../SearchInput';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class HeaderBar extends React.Component {
 
   state = {
@@ -62,8 +63,7 @@ class HeaderBar extends React.Component {
       pathList,
       currentPickerType,
       toggleMediaInfoPanel,
-      showMediaInfoPanel,
-      classes
+      showMediaInfoPanel
     } = this.props;
     const { anchorEl } = this.state;
     return (
@@ -162,8 +162,7 @@ HeaderBar.propTypes = {
   onSort: func,
   currentPickerType: oneOf(['folder', 'stream', 'upload']),
   toggleMediaInfoPanel: func,
-  showMediaInfoPanel: bool,
-  classes: shape({ any })
+  showMediaInfoPanel: bool
 };
 
 HeaderBar.defaultProps = {
@@ -174,4 +173,4 @@ HeaderBar.defaultProps = {
   ],
 }
 
-export default withStyles(styles)(HeaderBar);
+export default HeaderBar;

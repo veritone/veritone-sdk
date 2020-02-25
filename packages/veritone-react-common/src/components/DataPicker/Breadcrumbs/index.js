@@ -7,8 +7,7 @@ import {
   oneOfType,
   node,
   func,
-  bool,
-  any
+  bool
 } from 'prop-types';
 import cx from 'classnames';
 import MenuList from '@material-ui/core/MenuList';
@@ -16,10 +15,12 @@ import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ChevronRight, MoreHoriz, Work } from '@material-ui/icons';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import BreadcrumbItem from './BreadcrumbItem';
 import styles, { lightBlackColor } from './styles';
+
+const classes = withStyles(styles);
 
 class Breadcrumbs extends React.Component {
   static propTypes = {
@@ -31,7 +32,6 @@ class Breadcrumbs extends React.Component {
     seperator: oneOfType([string, node]),
     onCrumbClick: func.isRequired,
     isStream: bool,
-    classes: shape({ any }),
     isEnableSuiteCase: bool,
     isEnableBackground: bool,
     defaultRootTitle: string,
@@ -74,7 +74,6 @@ class Breadcrumbs extends React.Component {
       maxItems,
       seperator,
       isStream,
-      classes,
       isEnableSuiteCase = true,
       isEnableBackground = true,
       defaultRootTitle = 'My Files',
@@ -207,4 +206,4 @@ class Breadcrumbs extends React.Component {
   }
 }
 
-export default withStyles(styles)(Breadcrumbs); 
+export default Breadcrumbs; 

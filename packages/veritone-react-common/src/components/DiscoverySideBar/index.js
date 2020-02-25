@@ -7,13 +7,11 @@ import {
   number,
   objectOf,
   element,
-  object,
-  shape,
-  any
+  object
 } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import ClearFiltersIconFixme from '@material-ui/icons/FormatClear';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles/container';
 import Header from './header/Header';
 import SectionTree, { sectionsShape } from './SectionTree';
@@ -27,9 +25,9 @@ import AllFiltersList from './AllFiltersList';
 // the associated redux-form state (by <Field> name/id?)
 
 // animations
-
 export { sectionsShape } from './SectionTree';
 
+const classes = withStyles(styles);
 class DiscoverySideBarContainerPureComponent extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
@@ -38,21 +36,18 @@ class DiscoverySideBarContainerPureComponent extends React.Component {
     onClearAllFilters: func,
     onClearFilter: func,
     clearAllFilters: bool,
-
     // provided by wrapper:
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
     onSelectTab: func.isRequired,
     filtersActivePath: arrayOf(number).isRequired,
     onFiltersNavigate: func.isRequired,
-    classes: shape({ any }),
   };
   static defaultProps = {
     selectedFilters: []
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.container}>
         <Header
@@ -96,7 +91,7 @@ class DiscoverySideBarContainerPureComponent extends React.Component {
   }
 }
 
-export const DiscoverySideBarContainerPure = withStyles(styles)(DiscoverySideBarContainerPureComponent);
+export const DiscoverySideBarContainerPure = DiscoverySideBarContainerPureComponent;
 
 // state provider for top level sidebar state-- selected tabs, sections etc.
 export default class DiscoverySideBarContainer extends React.Component {

@@ -1,15 +1,14 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
-import { arrayOf, string, element, node, shape, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { arrayOf, string, element, node } from 'prop-types';
 
 import styles from './styles';
-
+const classes = withStyles(styles);
 class ModalHeader extends React.Component {
   static propTypes = {
     children: node,
     title: string,
-    icons: arrayOf(element),
-    classes: shape({ any })
+    icons: arrayOf(element)
   };
 
   static defaultProps = {
@@ -17,7 +16,6 @@ class ModalHeader extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.modalHeader}>
         <div className={classes.fullScreenTopBar}>
@@ -30,4 +28,4 @@ class ModalHeader extends React.Component {
   }
 }
 
-export default withStyles(styles)(ModalHeader);
+export default ModalHeader;

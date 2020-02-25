@@ -5,8 +5,8 @@ import { DndProvider } from 'react-dnd';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/styles';
-import { string, arrayOf, oneOfType, number, bool, func, shape, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
@@ -15,6 +15,7 @@ import UrlUploader from './UrlUploader';
 import styles from './styles';
 import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
 
+const classes = withStyles(styles);
 class FilePicker extends Component {
   static propTypes = {
     accept: oneOfType([arrayOf(string), string]), // extension or mimetype
@@ -27,8 +28,7 @@ class FilePicker extends Component {
     maxFiles: number,
     title: string,
     tooManyFilesErrorMessage: func,
-    oneFileOnlyErrorMessage: string,
-    classes: shape({ any }),
+    oneFileOnlyErrorMessage: string
   };
 
   static defaultProps = {
@@ -149,7 +149,6 @@ class FilePicker extends Component {
       ? [this.props.accept]
       : this.props.accept
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
-    const { classes } = this.props;
 
     return (
       <DndProvider backend={HTML}>
@@ -234,4 +233,4 @@ class FilePicker extends Component {
   }
 }
 
-export default withStyles(styles)(FilePicker);
+export default FilePicker;

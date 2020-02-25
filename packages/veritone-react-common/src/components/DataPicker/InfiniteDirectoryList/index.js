@@ -1,6 +1,6 @@
 import React from 'react';
-import { arrayOf, string, shape, func, node } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { arrayOf, string, func, node } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import {
   Folder,
   InsertDriveFile,
@@ -92,13 +92,11 @@ const DefaultLoading = () => (
   </div>
 )
 
+const classes = withStyles(muiStyles);
 class FilesTable extends React.Component {
 
   static propTypes = {
     headers: arrayOf(string),
-    classes: shape(Object.keys(muiStyles).reduce(
-      (classShape, key) => ({ classShape, [key]: string }), {})
-    ),
     onSelectItem: func,
     items: arrayOf(itemShape),
     // eslint-disable-next-line react/no-unused-prop-types
@@ -217,7 +215,6 @@ class FilesTable extends React.Component {
 
   render() {
     const {
-      classes,
       headers,
       items,
       onSelectItem,
@@ -307,4 +304,4 @@ class FilesTable extends React.Component {
   }
 }
 
-export default withStyles(muiStyles)(FilesTable);
+export default FilesTable;

@@ -1,12 +1,13 @@
 import React from 'react';
-import { func, bool, string, shape, any } from 'prop-types';
+import { func, bool, string } from 'prop-types';
 
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import cx from 'classnames';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class SearchPill extends React.PureComponent {
   static propTypes = {
     engineCategoryIcon: string.isRequired,
@@ -16,8 +17,7 @@ class SearchPill extends React.PureComponent {
     highlighted: bool,
     selected: bool,
     exclude: bool,
-    disabled: bool,
-    classes: shape({ any }),
+    disabled: bool
   };
 
   handleDelete = e => {
@@ -26,7 +26,6 @@ class SearchPill extends React.PureComponent {
   };
 
   getBackgroundColor() {
-    const { classes } = this.props;
     let backgroundColor = classes.searchPillBackgroundColor;
     let dataTest = 'searchPillBackgroundColor';
     if (this.props.selected) {
@@ -46,7 +45,6 @@ class SearchPill extends React.PureComponent {
   }
 
   render() {
-    const { classes } = this.props;
     const { backgroundColor, dataTest } = this.getBackgroundColor();
     return (
       <Chip
@@ -81,4 +79,4 @@ class SearchPill extends React.PureComponent {
   }
 }
 
-export default withStyles(styles)(SearchPill);
+export default SearchPill;

@@ -1,10 +1,11 @@
 import React from 'react';
-import { node, number, bool, string, shape, any } from 'prop-types';
+import { node, number, bool, string } from 'prop-types';
 import { isEqual } from 'lodash';
 import cx from 'classnames';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles';
 
+const classes = withStyles(styles);
 export const OverlayPositioningContext = React.createContext({
   top: 0,
   left: 0,
@@ -17,8 +18,7 @@ class OverlayPositioningProvider extends React.Component {
     contentWidth: number,
     fixedWidth: bool,
     children: node,
-    contentClassName: string,
-    classes: shape({any})
+    contentClassName: string
   };
   static defaultProps = {};
 
@@ -96,7 +96,6 @@ class OverlayPositioningProvider extends React.Component {
   render() {
     // clearfix and float are to make sure the "measured child" div sizes
     // exactly to the size of its child content in fixed/fluid width scenarios
-    const { classes } = this.props;
     return (
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
         <div className={cx({ [classes.clearfix]: this.props.fixedWidth })}>
@@ -117,4 +116,4 @@ class OverlayPositioningProvider extends React.Component {
   }
 }
 
-export default withStyles(styles)(OverlayPositioningProvider);
+export default OverlayPositioningProvider;

@@ -1,22 +1,21 @@
 import React from 'react';
-import { arrayOf, string, element, func, bool, shape, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { arrayOf, string, element, func, bool } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import MultipleTabHeader from './MuitipleTabHeader';
 import SingleTabHeader from './SingleTabHeader';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class DiscoverySidebarHeader extends React.Component {
   static propTypes = {
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
     rightIconButton: bool,
     rightIconButtonElement: element,
-    onSelectTab: func.isRequired,
-    classes: shape({ any }),
+    onSelectTab: func.isRequired
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.container}>
         {this.props.tabs.length > 1 ? (
@@ -42,4 +41,4 @@ class DiscoverySidebarHeader extends React.Component {
   }
 }
 
-export default withStyles(styles)(DiscoverySidebarHeader);
+export default DiscoverySidebarHeader;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { func, string, node, shape, any } from 'prop-types';
+import { func, string, node } from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import Grow from '@material-ui/core/Grow';
 
 import cx from 'classnames';
@@ -19,7 +19,7 @@ const styles = {
     }
   }
 };
-
+const classes = withStyles(styles);
 class ExpandableInputField extends React.Component {
   static propTypes = {
     onSearch: func,
@@ -28,8 +28,7 @@ class ExpandableInputField extends React.Component {
     onReset: func,
     icon: node.isRequired,
     onFocus: func,
-    onBlur: func,
-    classes: shape({ any }),
+    onBlur: func
   };
 
   state = {
@@ -73,7 +72,6 @@ class ExpandableInputField extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     if (this.state.expanded) {
       return (
         <Grow in>
@@ -108,4 +106,4 @@ class ExpandableInputField extends React.Component {
   }
 }
 
-export default withStyles(styles)(ExpandableInputField);
+export default ExpandableInputField;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { number, string, oneOf, shape, any } from 'prop-types';
+import { number, string, oneOf } from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CheckCircle from '@material-ui/icons/CheckCircle';
@@ -8,17 +8,17 @@ import Warning from '@material-ui/icons/Warning';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import yellow from '@material-ui/core/colors/yellow';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class ProgressDialog extends React.Component {
   static propTypes = {
     percentComplete: number,
     progressMessage: string,
     height: number,
     width: number,
-    completeStatus: oneOf(['success', 'failure', 'warning']),
-    classes: shape({ any }),
+    completeStatus: oneOf(['success', 'failure', 'warning'])
   };
 
   static defaultProps = {
@@ -29,7 +29,6 @@ class ProgressDialog extends React.Component {
   };
 
   renderProgress() {
-    const { classes } = this.props;
     return (
       <div className={classes.percentageContainer}>
         <div className={classes.percentage}>{this.props.percentComplete}%</div>
@@ -38,7 +37,6 @@ class ProgressDialog extends React.Component {
   }
 
   renderComplete() {
-    const {classes} = this.props;
     const icon = {
       success: (
         <CheckCircle
@@ -82,7 +80,6 @@ class ProgressDialog extends React.Component {
 
   render() {
     // todo: error message, close button (when error is present)
-    const { classes } = this.props;
     return (
       <Paper
         classes={{ root: classes.container }}
@@ -112,4 +109,4 @@ class ProgressDialog extends React.Component {
   }
 }
 
-export default withStyles(styles)(ProgressDialog);
+export default ProgressDialog;

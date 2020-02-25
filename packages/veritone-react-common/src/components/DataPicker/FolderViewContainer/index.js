@@ -1,12 +1,12 @@
 import React from 'react';
-import { oneOf, arrayOf, func, bool, string, shape, any } from 'prop-types';
+import { oneOf, arrayOf, func, bool, string } from 'prop-types';
 import cx from 'classnames';
 import { get } from 'lodash';
 
 import Paper from '@material-ui/core/Paper';
 import Refresh from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import {
   hasCommandModifier
 } from 'helpers/dom';
@@ -31,6 +31,7 @@ const LoadingState = () => (
     size={100}
   />);
 
+const classes = withStyles(styles);
 class FolderViewContainer extends React.Component {
   static propTypes = {
     availablePickerTypes: arrayOf(string),
@@ -49,7 +50,6 @@ class FolderViewContainer extends React.Component {
     showMediaInfoPanel: bool,
     toggleMediaInfoPanel: func,
     multiple: bool,
-    classes: shape({ any })
   }
 
   static defaultProps = {
@@ -280,8 +280,7 @@ class FolderViewContainer extends React.Component {
       toggleContentView,
       isFullScreen,
       showMediaInfoPanel,
-      toggleMediaInfoPanel,
-      classes
+      toggleMediaInfoPanel
     } = this.props;
 
     const { highlightedItems } = this.state;
@@ -394,4 +393,4 @@ class FolderViewContainer extends React.Component {
   }
 }
 
-export default withStyles(styles)(FolderViewContainer);
+export default FolderViewContainer;

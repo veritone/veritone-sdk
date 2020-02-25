@@ -7,12 +7,11 @@ import {
   shape,
   number,
   object,
-  oneOfType,
-  any
+  oneOfType
 } from 'prop-types';
 import { isArray, isUndefined } from 'lodash';
 import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import LeftNavigationPanel from './LeftNavigationPanel';
 import FolderViewContainer from './FolderViewContainer';
 import UploaderViewContainer from './UploaderViewContainer';
@@ -42,6 +41,7 @@ const UNSUPPORTED_FORMAT_ERROR = 'Unsupported format detected';
 const MAX_ITEM_ERROR = 'Max selected items allowed has been exceeded: ';
 const MULTIPLE_ERROR = 'Only one file is allowed';
 
+const classes = withStyles(styles);
 class DataPicker extends React.Component {
   static propTypes = {
     availablePickerTypes: arrayOf(string),
@@ -83,8 +83,7 @@ class DataPicker extends React.Component {
       })
     ),
     height: number,
-    width: number,
-    classes: shape({ any })
+    width: number
   };
 
   static defaultProps = {
@@ -208,8 +207,7 @@ class DataPicker extends React.Component {
       isError,
       onErrorMsg,
       height,
-      width,
-      classes
+      width
     } = this.props;
     const { uploadedFiles, showMediaInfoPanel } = this.state;
     const showHeader = availablePickerTypes.includes('folder');
@@ -301,4 +299,4 @@ class DataPicker extends React.Component {
   }
 }
 
-export default withStyles(styles)(DataPicker);
+export default DataPicker;

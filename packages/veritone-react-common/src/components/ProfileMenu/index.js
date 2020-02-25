@@ -4,13 +4,14 @@ import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func, shape, arrayOf, element, any } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { string, func, shape, arrayOf, element } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
 import classNames from 'classnames';
 
 import InnerProfileMenu from './InnerProfileMenu';
 import styles from './styles';
 
+const classes = withStyles(styles);
 class ProfileMenu extends React.Component {
   static propTypes = {
     className: string,
@@ -25,8 +26,7 @@ class ProfileMenu extends React.Component {
       })
     }),
     tooltipTitle: string,
-    additionMenuItems: arrayOf(element),
-    classes: shape({ any }),
+    additionMenuItems: arrayOf(element)
   };
 
   static defaultProps = {
@@ -58,7 +58,6 @@ class ProfileMenu extends React.Component {
       this.props.user.signedImageUrl ||
       get(this.props.user, 'kvp.image') ||
       '//static.veritone.com/veritone-ui/default-avatar-2.png';
-    const { classes } = this.props;
 
     return (
       <div>
@@ -94,4 +93,4 @@ class ProfileMenu extends React.Component {
   }
 }
 
-export default withStyles(styles)(ProfileMenu);
+export default ProfileMenu;

@@ -1,20 +1,17 @@
 import React from 'react';
-import { shape, any } from 'prop-types';
 import cx from 'classnames';
 import Rnd from 'react-rnd';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
+const classes = withStyles(styles);
 import styles from './styles';
+
 class RndBox extends React.Component {
-  static propTypes = {
-    classes : shape({any})
-  };
   static defaultProps = {};
 
   render() {
     const resizeHandleSize = 6;
     const handleShift = resizeHandleSize / 2;
-    const { classes } = this.props
 
     return (
       <Rnd
@@ -45,4 +42,4 @@ class RndBox extends React.Component {
   }
 }
 
-export default withStyles(styles)(RndBox);
+export default RndBox;

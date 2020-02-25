@@ -1,16 +1,16 @@
 import React from 'react';
-import { func, shape, any } from 'prop-types';
+import { func } from 'prop-types';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class SearchInput extends React.Component {
   static propTypes = {
     onSearch: func.isRequired,
-    onClear: func.isRequired,
-    classes: shape({ any }),
+    onClear: func.isRequired
   }
 
   state = {
@@ -35,7 +35,6 @@ class SearchInput extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classes.search}>
         <div className={classes['searchIcon']}>
@@ -62,4 +61,4 @@ SearchInput.propTypes = {
   onClear: func.isRequired,
 }
 
-export default withStyles(styles)(SearchInput);
+export default SearchInput;

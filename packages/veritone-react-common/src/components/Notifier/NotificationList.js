@@ -6,13 +6,13 @@ import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ErrorIconSvg from 'images/icon_error.svg';
 import CheckIconSvg from 'images/icon_check_circle.svg';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
-import { string, arrayOf, oneOf, shape, func, node, any } from 'prop-types';
+import { string, arrayOf, oneOf, shape, func, node } from 'prop-types';
 
 import classNames from 'classnames';
 import styles from './styles';
-
+const classes = withStyles(styles);
 const TYPE_CUSTOM = 'custom';
 const TYPE_PREPARING = 'preparing';
 const TYPE_PROCESSING = 'processing';
@@ -56,8 +56,7 @@ export const notificationListPropTypes = arrayOf(
 
 class NotificationList extends React.Component {
   static propTypes = {
-    notifications: notificationListPropTypes,
-    classes: shape({any}),
+    notifications: notificationListPropTypes
   }
 
   state = {};
@@ -135,7 +134,6 @@ class NotificationList extends React.Component {
     const entryId = entryData.id;
     const isNewEntry = _.includes(this.state.newEntryIds, entryId);
     const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
-    const { classes } = this.props;
 
     return (
       <div key={entryId} className={
@@ -155,7 +153,6 @@ class NotificationList extends React.Component {
     const entryId = formatedData.id;
     const isNewEntry = _.includes(this.state.newEntryIds, entryId);
     const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
-    const { classes } = this.props;
 
     return (
       <div key={formatedData.id} className={
@@ -214,7 +211,6 @@ class NotificationList extends React.Component {
   }
 
   drawFailedItem = (entryData) => {
-    const { classes } = this.props;
     const failedEntryData = {
       statusIcon: <img src={ErrorIconSvg} />,
       actionIcon: <RefreshIcon className={classNames(classes.icon)} style={{ fontSize: "20px" }} />,
@@ -272,14 +268,12 @@ class NotificationList extends React.Component {
   };
 
   drawSpinner = () => {
-    const { classes } = this.props;
     return (
         <div className={classNames(classes.spinner)} />
     );
   };
 
   render() {
-    const { classes } = this.props;
     return (
       <div className={classNames(classes.notificationList)}>
       {
@@ -310,4 +304,4 @@ class NotificationList extends React.Component {
   }
 }
 
-export default withStyles(styles)(NotificationList);
+export default NotificationList;

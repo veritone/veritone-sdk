@@ -5,8 +5,7 @@ import {
   arrayOf,
   shape,
   bool,
-  func,
-  any
+  func
 } from 'prop-types';
 import { get } from 'lodash';
 import cx from 'classnames';
@@ -18,12 +17,12 @@ import VideoIcon from '@material-ui/icons/LocalMovies';
 import ImageIcon from '@material-ui/icons/Photo';
 import TextIcon from '@material-ui/icons/ShortText';
 import AbortIcon from '@material-ui/icons/Delete';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 
 import { formatBytes } from '../../../helpers/format.js';
 
 import styles from './styles';
-
+const classes = withStyles(styles);
 class FileProgressList extends React.Component {
   static propTypes = {
     percentByFiles: arrayOf(shape({
@@ -38,13 +37,11 @@ class FileProgressList extends React.Component {
       }).isRequired
     })).isRequired,
     showErrors: bool,
-    handleAbort: func,
-    classes: shape({ any }),
+    handleAbort: func
   };
 
   getFileMediaIcon = file => {
     const type = get(file, 'value.type');
-    const { classes } = this.props;
     const icons = {
       audio: (<AudioIcon className={classes.fileIcon} data-test-target="audio" />),
       video: (<VideoIcon className={classes.fileIcon} data-test-target="video" />),
@@ -78,8 +75,7 @@ class FileProgressList extends React.Component {
     const {
       percentByFiles,
       showErrors,
-      handleAbort,
-      classes
+      handleAbort
     } = this.props;
 
     const files = !showErrors
@@ -132,4 +128,4 @@ class FileProgressList extends React.Component {
   };
 }
 
-export default withStyles(styles)(FileProgressList);
+export default FileProgressList;

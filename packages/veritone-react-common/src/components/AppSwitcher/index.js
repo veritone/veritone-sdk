@@ -3,14 +3,15 @@ import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import { withStyles } from '@material-ui/styles';
-import { string, arrayOf, shape, bool, func, any } from 'prop-types';
+import { withStyles } from 'helpers/withStyles';
+import { string, arrayOf, shape, bool, func } from 'prop-types';
 
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 
 import styles from './styles';
 
+const classes = withStyles(styles);
 class AppSwitcher extends React.Component {
   static propTypes = {
     tooltipTitle: string,
@@ -26,8 +27,7 @@ class AppSwitcher extends React.Component {
     ),
     enabledAppsFailedLoading: bool,
     handleRefresh: func,
-    onSwitchApp: func,
-    classes: shape({any}),
+    onSwitchApp: func
   };
   static defaultProps = {
     tooltipTitle: 'Switch Apps'
@@ -53,7 +53,6 @@ class AppSwitcher extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -90,4 +89,4 @@ class AppSwitcher extends React.Component {
   }
 }
 
-export default withStyles(styles)(AppSwitcher);
+export default AppSwitcher;

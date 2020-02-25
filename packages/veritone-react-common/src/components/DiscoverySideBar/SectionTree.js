@@ -9,17 +9,16 @@ import {
   number,
   objectOf,
   element,
-  bool,
-  any
+  bool
 } from 'prop-types';
 import Button from '@material-ui/core/Button';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { withStyles, makeStyles } from '@material-ui/styles';
+import { withStyles } from 'helpers/withStyles';
 import { intersperse } from 'helpers/fp';
 import Chip from '../Chip';
 import styles from './styles/sectiontree';
-
+const classes = withStyles(styles);
 const nodeShape = {
   // formComponentId for a leaf, or label/children for a node
   label: string,
@@ -28,15 +27,13 @@ const nodeShape = {
 nodeShape.children = arrayOf(shape(nodeShape));
 
 export const sectionsShape = shape(nodeShape);
-const useStyles = makeStyles(styles);
 
 class SectionTree extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,
     formComponents: objectOf(element).isRequired,
     activePath: arrayOf(number).isRequired,
-    onNavigate: func.isRequired,
-    classes: shape({ any }),
+    onNavigate: func.isRequired
   };
 
   handleNavigateForward = index => {
@@ -49,7 +46,6 @@ class SectionTree extends React.Component {
 
   render() {
     const currentPath = intersperse(this.props.activePath, 'children');
-    const { classes } = this.props;
     const currentVisibleSection = get(
       this.props.sections.children, // skip root when navigating
       currentPath,
@@ -92,7 +88,7 @@ class SectionTree extends React.Component {
   }
 }
 
-export default withStyles(styles)(SectionTree);
+export default SectionTree;
 
 export const SectionTreeTab = ({
   label,
@@ -103,7 +99,6 @@ export const SectionTreeTab = ({
   dark,
   onClick = noop
 }) => {
-  const classes = useStyles();
   return (
     /* eslint-disable react/jsx-no-bind */
     <Button
