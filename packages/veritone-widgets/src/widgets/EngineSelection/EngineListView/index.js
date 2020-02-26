@@ -7,15 +7,13 @@ import {
   object,
   arrayOf,
   string,
-  shape,
-  any
+  shape
 } from 'prop-types';
 import { isEmpty, debounce } from 'lodash';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/styles'
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
@@ -25,10 +23,9 @@ import SelectedActionBar from './SelectedActionBar/';
 import EngineListContainer from './EngineListContainer';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
+import { withStyles } from '../../../shared/withStyles';
 
 import styles from './styles';
-
-@withStyles(styles)
 @connect(
   (state, { id }) => ({
     currentResults: engineSelectionModule.getCurrentResults(state, id),
@@ -84,7 +81,6 @@ export default class EngineListView extends React.Component {
       })
     ),
     hideActions: bool,
-    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -135,8 +131,8 @@ export default class EngineListView extends React.Component {
   };
 
   render() {
-    const { checkedEngineIds, currentTab, classes } = this.props;
-
+    const { checkedEngineIds, currentTab } = this.props;
+    const classes = withStyles(styles);
     return (
       <div className={classes.engineSelection}>
         <EnginesSideBar id={this.props.id} />

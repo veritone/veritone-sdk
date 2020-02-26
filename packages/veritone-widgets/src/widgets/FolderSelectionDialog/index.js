@@ -1,6 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
-import { bool, func, string, shape, number, any } from 'prop-types';
+import { bool, func, string, shape, number } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import {
@@ -15,14 +15,12 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import WorkIcon from '@material-ui/icons/Work';
-import { withStyles } from '@material-ui/styles';
 import FolderList from './FolderList';
 import NewFolder from './NewFolder';
-import styles from './styles';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import widget from '../../shared/widget';
-
-@withStyles(styles)
+import { withStyles } from '../../shared/withStyles';
+import styles from './styles';
 @connect(
   state => ({
     rootFolder: folderSelectionModule.rootFolder(state),
@@ -73,8 +71,7 @@ class FolderSelectionDialog extends React.Component {
       })
     }),
     onCancel: func,
-    onSelect: func,
-    classes: shape({ any }),
+    onSelect: func
   };
 
   static defaultProps = {
@@ -121,7 +118,9 @@ class FolderSelectionDialog extends React.Component {
   };
 
   renderLoader() {
-    const { loading, classes } = this.props;
+    const { loading } = this.props;
+    const classes = withStyles(styles);
+
     if (loading) {
       return (
         <div className={classes.loadingContainer}>
@@ -132,7 +131,8 @@ class FolderSelectionDialog extends React.Component {
   }
 
   render() {
-    const { rootFolder, selectedFolder, loading, rootFolderType, classes } = this.props;
+    const { rootFolder, selectedFolder, loading, rootFolderType } = this.props;
+    const classes = withStyles(styles);
     const rootId = rootFolder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = rootId === selectedId;

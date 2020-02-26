@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bool, object, func, string, shape, any } from 'prop-types';
+import { bool, object, func, string, shape } from 'prop-types';
 import { get } from 'lodash';
 
 import { Lozenge, Truncate } from 'veritone-react-common';
@@ -9,8 +9,6 @@ import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import Checkbox from '@material-ui/core/Checkbox';
-import { withStyles } from '@material-ui/styles';
-
 import networkIsolatedLogo from '../../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../../images/externalaccess_logo.png';
 import externalProcessingLogo from '../../../images/externalprocessing_logo.png';
@@ -20,9 +18,8 @@ import * as engineSelectionModule from '../../../../../redux/modules/engineSelec
 
 import ToggleButton from '../../../ToggleButton/';
 
+import { withStyles } from '../../../../../shared/withStyles';
 import styles from './styles';
-
-@withStyles(styles)
 @connect(
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
@@ -62,7 +59,6 @@ export default class EngineSelectionRow extends React.Component {
     deselectEngines: func.isRequired,
     checkEngine: func.isRequired,
     uncheckEngine: func.isRequired,
-    classes: shape({ any }),
   };
 
   handleChange = () => {
@@ -76,7 +72,7 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const classes = withStyles(styles);
     const { name, iconClass, color } = this.props.engine.category || {};
 
     const deploymentModelLogo = {

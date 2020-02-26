@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { objectOf, any, func, string, number, shape } from 'prop-types';
+import { objectOf, any, func, string, number } from 'prop-types';
 
 import * as multipleEngineSelectionModule from '../../redux/modules/multipleEngineSelection';
 import widget from '../../shared/widget';
@@ -14,13 +14,11 @@ import StarIcon from '@material-ui/icons/Star';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
-
 import { SelectionButton } from 'veritone-react-common';
 
+import { withStyles } from '../../shared/withStyles';
 import styles from './styles';
 
-@withStyles(styles)
 @connect((state, { ids }) => {
   return {
     selectedEngines: multipleEngineSelectionModule.selectedEngines(state)
@@ -32,8 +30,7 @@ class SelectionInfoPanel extends React.PureComponent {
     toggleEngineSelection: func,
     selectBaseline: func,
     baselineEngineId: string,
-    maxSelections: number,
-    classes: shape({ any }),
+    maxSelections: number
   };
 
   static defaultProps = {
@@ -50,8 +47,7 @@ class SelectionInfoPanel extends React.PureComponent {
   getSelectionHandler = engineId => () => this.props.selectBaseline(engineId);
 
   render() {
-    const { classes } = this.props;
-
+    const classes = withStyles(styles);
     return (
       <Paper elevation={4} style={{ height: '100%', minHeight: '300px' }}>
         <div className={classes.pickerTitle}>

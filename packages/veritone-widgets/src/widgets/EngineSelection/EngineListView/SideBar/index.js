@@ -1,18 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, shape, number, any } from 'prop-types';
+import { func, arrayOf, string, shape, number } from 'prop-types';
 import { without, noop } from 'lodash';
 import { DiscoverySideBarPure as Sidebar } from 'veritone-react-common';
 import { isArray, isString } from 'lodash';
-import { withStyles } from '@material-ui/styles';
-
-import styles from './styles';
 
 import * as Filters from './Filters';
-
 import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
+import { withStyles } from '../../../../shared/withStyles';
 
-@withStyles(styles)
+import styles from './styles';
 @connect(
   (state, { id }) => ({
     filters: engineSelectionModule.getEngineFilters(state, id),
@@ -36,7 +33,6 @@ export default class EnginesSideBar extends React.Component {
     removeEngineFilter: func.isRequired,
     clearAllFilters: func.isRequired,
     setActiveSidebarPath: func.isRequired,
-    classes: shape({ any }),
   };
 
   handleFiltersNavigate = newPath => {
@@ -106,7 +102,7 @@ export default class EnginesSideBar extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const classes = withStyles(styles);
     const engineFilters = {
       children: Object.values(Filters).map(({ label, id }) => {
         return {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { forEach, get, includes, find, kebabCase } from 'lodash';
-import { string, bool, shape, func, arrayOf, number, any } from 'prop-types';
+import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
 import List from '@material-ui/core/List';
@@ -20,15 +20,16 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
-import { withStyles } from '@material-ui/styles';
 
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
-import styles from './styles';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import { withStyles } from '../../shared/withStyles';
 
-@withStyles(styles)
+import styles from './styles';
+
+const classes = withStyles(styles);
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId),
@@ -90,7 +91,6 @@ export default class EngineCategoryConfig extends Component {
     initialSpeakerToggle: shape({
       withSpeakerData: bool
     }),
-    classes: shape({ any }),
   };
 
   state = {
@@ -133,8 +133,7 @@ export default class EngineCategoryConfig extends Component {
       expanded,
       initialSubtitleConfig,
       initialSpeakerToggle,
-      transcriptCategoryType,
-      classes
+      transcriptCategoryType
     } = this.props;
     const isTranscriptionCategory =
       category.categoryType === transcriptCategoryType;

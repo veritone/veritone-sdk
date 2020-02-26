@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { string, bool, oneOf, arrayOf, shape, number, func, any } from 'prop-types';
+import { string, bool, oneOf, arrayOf, shape, number, func } from 'prop-types';
 import { noop, get } from 'lodash';
 
 import { connect } from 'react-redux';
@@ -10,7 +10,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/styles';
 
 import { DataPicker as DataPickerComponent } from 'veritone-react-common';
 
@@ -18,9 +17,10 @@ import * as dataPickerModule from '../../redux/modules/dataPicker';
 import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
+import { withStyles } from '../../shared/withStyles';
 
 import styles from './styles';
-
+const classes = withStyles(styles);
 /*
   Required parameters:
     onPick: (items) => { ... Logic to handle what you picked ... }
@@ -41,7 +41,6 @@ import styles from './styles';
   widget.pick(); // open Picker
   widget.cancel(); // close Picker
 */
-@withStyles(styles)
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
@@ -167,8 +166,7 @@ class DataPicker extends React.Component {
     selectNode: func.isRequired,
     getItemByTypeAndId: func.isRequired,
     height: number,
-    width: number,
-    classes: shape({ any })
+    width: number
   };
 
   static defaultProps = {
@@ -308,7 +306,6 @@ class DataPicker extends React.Component {
       currentDirectoryLoadingState,
       itemRefs,
       getItemByTypeAndId,
-      classes,
       height = 1,
       width = 1
     } = this.props;

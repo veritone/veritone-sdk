@@ -1,6 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
-import { bool, func, string, shape, number, any } from 'prop-types';
+import { bool, func, string, shape, number } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import {
@@ -17,11 +17,9 @@ import {
   Input
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/styles';
-import styles from './styles';
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
-
-@withStyles(styles)
+import { withStyles } from '../../shared/withStyles';
+import styles from './styles';
 @connect(
   state => ({
     rootFolder: folderSelectionModule.rootFolder(state),
@@ -93,7 +91,6 @@ export default class NewFolder extends React.Component {
     }),
     cancel: func,
     resetNewFolder: func,
-    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -164,7 +161,8 @@ export default class NewFolder extends React.Component {
   };
 
   renderLoader() {
-    const { newFolder, classes } = this.props;
+    const classes = withStyles(styles);
+    const { newFolder } = this.props;
     if (newFolder.loading) {
       return (
         <div className={classes.loadingContainer}>
@@ -175,7 +173,8 @@ export default class NewFolder extends React.Component {
   }
 
   render() {
-    const { selectedFolder, newFolder, classes } = this.props;
+    const classes = withStyles(styles);
+    const { selectedFolder, newFolder } = this.props;
     const errorMessage = newFolder.errorMessage;
     const error = newFolder.error;
     const loadingNewFolder = newFolder.loading;

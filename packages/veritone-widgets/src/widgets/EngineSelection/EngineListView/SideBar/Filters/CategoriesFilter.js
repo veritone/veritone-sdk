@@ -1,17 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, shape, bool, any } from 'prop-types';
+import { func, arrayOf, string, shape, bool } from 'prop-types';
 import { without, sortBy } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/styles';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import FailureScreen from '../../EngineListContainer/FailureScreen';
+import { withStyles } from '../../../../../shared/withStyles';
 import styles from '../styles';
-
-@withStyles(styles)
 @connect(
   (state, { id }) => ({
     engineCategories: engineModule.getEngineCategories(state),
@@ -39,7 +37,6 @@ class CategoriesFilter extends React.Component {
     fetchEngineCategories: func.isRequired,
     isFetchingEngineCategories: bool.isRequired,
     failedToFetchEngineCategories: bool.isRequired,
-    classes: shape({ any }),
   };
 
   addCategory = category => {
@@ -72,7 +69,7 @@ class CategoriesFilter extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const classes = withStyles(styles);
     if (this.props.isFetchingEngineCategories) {
       return (
         <div className={classes.isFetching}>

@@ -1,20 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, string, arrayOf, bool, shape, any } from 'prop-types';
+import { func, string, arrayOf, bool } from 'prop-types';
 import { isEmpty, noop } from 'lodash';
 
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/styles'
-
 import EngineList from './EngineList';
 import FailureScreen from './FailureScreen/';
 
-import styles from './styles';
-
 import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
-
-@withStyles(styles)
+import { withStyles } from '../../../../shared/withStyles';
+import styles from './styles';
 @connect(
   (state, ownProps) => ({
     noFilterResultsFound:
@@ -36,7 +32,6 @@ export default class EngineListContainer extends React.Component {
     isFetchingEngines: bool.isRequired,
     failedToFetchEngines: bool.isRequired,
     refetchEngines: func.isRequired,
-    classes: shape({ any }),
   };
 
   handleExploreAllEnginesClick = e => {
@@ -48,7 +43,7 @@ export default class EngineListContainer extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const classes = withStyles(styles);
     if (this.props.failedToFetchEngines) {
       return (
         <FailureScreen

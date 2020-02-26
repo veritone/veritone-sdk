@@ -8,6 +8,7 @@ const captionText = muiText('caption');
 export default {
   popover: {
     marginTop: '18px',
+    backgroundColor: 'transparent !important'
   },
   userNullState: {
     ...body1Text,

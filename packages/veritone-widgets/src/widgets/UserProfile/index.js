@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { startCase, noop, isEmpty, get } from 'lodash';
-import { string, func, bool, shape, any } from 'prop-types';
+import { string, func, bool, shape } from 'prop-types';
 import { withProps, branch, renderNothing } from 'recompose';
 import {
   reduxForm,
@@ -17,7 +17,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import { withStyles } from '@material-ui/styles';
 
 import { Avatar } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
@@ -35,6 +34,7 @@ import PersonalInfoField from './PersonalInfoField';
 import PasswordField from './PasswordField';
 import ChangeNameModal from './Modals/ChangeName';
 import ResetPasswordModal from './Modals/ResetPassword';
+import { withStyles } from '../../shared/withStyles';
 
 import styles from './styles';
 const defaultAvatarImg =
@@ -85,7 +85,6 @@ const defaultAvatarImg =
     return errors;
   }
 })
-@withStyles(styles)
 export class UserProfile extends React.Component {
   static propTypes = {
     user: shape({
@@ -106,8 +105,7 @@ export class UserProfile extends React.Component {
     invalid: bool,
     pristine: bool,
     submitting: bool,
-    enablePasswordReset: bool,
-    classes: shape({ any }),
+    enablePasswordReset: bool
   };
 
   static defaultProps = {
@@ -198,8 +196,7 @@ export class UserProfile extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-
+    const classes = withStyles(styles);
     return (
       <Form
         onSubmit={this.props.handleSubmit(this.handleUpdateUser)}

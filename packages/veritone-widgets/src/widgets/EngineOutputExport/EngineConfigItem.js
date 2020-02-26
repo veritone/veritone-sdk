@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { arrayOf, bool, number, shape, string, func, any } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { includes, get } from 'lodash';
 import cx from 'classnames';
 import { modules } from 'veritone-redux-common';
@@ -17,12 +17,12 @@ import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { withStyles } from '@material-ui/styles';
+
+import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import { withStyles } from '../../shared/withStyles';
 
 import styles from './styles';
-import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
-
-@withStyles(styles)
+const classes = withStyles(styles);
 @connect(
   (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
@@ -67,8 +67,7 @@ export default class EngineConfigItem extends Component {
       })
     ).isRequired,
     selectFileType: func,
-    exportClosedCaptionsEnabled: bool,
-    classes: shape({ any })
+    exportClosedCaptionsEnabled: bool
   };
 
   render() {
@@ -79,8 +78,7 @@ export default class EngineConfigItem extends Component {
       category,
       formats,
       selectFileType,
-      exportClosedCaptionsEnabled,
-      classes
+      exportClosedCaptionsEnabled
     } = this.props;
 
     const selectedFileExtensions = formats.map(format => format.extension);

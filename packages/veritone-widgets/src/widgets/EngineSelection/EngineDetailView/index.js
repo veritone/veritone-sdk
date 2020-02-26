@@ -1,16 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { string, shape, object, func, bool, any } from 'prop-types';
+import { string, shape, object, func, bool } from 'prop-types';
 
 import BackIcon from '@material-ui/icons/KeyboardBackspace';
-import { withStyles } from '@material-ui/styles';
 import InfoSection from './InfoSection';
 
+import * as engineSelectionModule from '../../../redux/modules/engineSelection';
+import { withStyles } from '../../../shared/withStyles';
 import styles from './styles';
 
-import * as engineSelectionModule from '../../../redux/modules/engineSelection';
-
-@withStyles(styles)
 @connect(
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
@@ -38,14 +36,13 @@ export default class EngineDetailView extends React.Component {
     isSelected: bool.isRequired,
     onCloseDetailView: func.isRequired,
     selectEngines: func.isRequired,
-    deselectEngines: func.isRequired,
-    classes: shape({ any })
+    deselectEngines: func.isRequired
   };
 
   static defaultProps = {};
 
   render() {
-    const { classes } = this.props;
+    const classes = withStyles(styles);
     return (
       <div className={classes.detailsContainer}>
         <div className={classes.back}>

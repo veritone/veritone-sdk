@@ -1,14 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cx from 'classnames';
-import { shape, number, string, func, any } from 'prop-types';
+import { shape, number, string, func } from 'prop-types';
 import FolderIcon from '@material-ui/icons/Folder';
-import { withStyles } from '@material-ui/styles';
 
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
+import { withStyles } from '../../shared/withStyles';
 import styles from './styles';
-
-@withStyles(styles)
 @connect(
   state => ({
     selectedFolder: folderSelectionModule.selectedFolder(state)
@@ -56,7 +54,6 @@ export default class Folder extends React.Component {
         count: number
       })
     }),
-    classes: shape({ any }),
   };
 
   handleClick = () => {
@@ -65,7 +62,8 @@ export default class Folder extends React.Component {
   };
 
   render() {
-    const { folder, selectedFolder, classes } = this.props;
+    const classes = withStyles(styles);
+    const { folder, selectedFolder } = this.props;
     const listId = folder.treeObjectId;
     const selectedId = selectedFolder.treeObjectId;
     const idsMatch = listId === selectedId;

@@ -150,7 +150,7 @@ class AppBar extends React.Component {
       showNotifications,
       hideNotification,
     } = this.props;
-
+    
     return (
       <Paper
         component="header"

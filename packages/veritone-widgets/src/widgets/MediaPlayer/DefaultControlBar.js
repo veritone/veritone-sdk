@@ -18,12 +18,9 @@ import {
   FullscreenToggle
 } from 'video-react';
 import { shape, objectOf, any, bool, number } from 'prop-types';
-import { withStyles } from '@material-ui/styles';
-
 import { RestartMediaButton } from 'veritone-react-common';
+import { withStyles } from '../../shared/withStyles';
 import styles from './styles';
-
-@withStyles(styles)
 @connect(
   state => ({
     playerState: state.player,
@@ -52,7 +49,6 @@ export default class DefaultControlBar extends React.Component {
     displayTime: bool,
     autoHide: bool,
     autoHideTime: number,
-    classes: shape({ any }),
   };
   static defaultProps = {
     btnRestart: true,
@@ -91,9 +87,9 @@ export default class DefaultControlBar extends React.Component {
       ctrlProgress,
       displayTime,
       autoHide,
-      autoHideTime,
-      classes
+      autoHideTime
     } = this.props;
+    const classes = withStyles(styles);
 
     return (
       <div

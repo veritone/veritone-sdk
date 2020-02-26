@@ -47,11 +47,11 @@
     "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
     "build:es":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+      "NODE_OPTIONS=--max_old_space_size=4096 cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
     "build:cjs":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+      "NODE_OPTIONS=--max_old_space_size=4096 cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production rollup -c --watch",
+      "NODE_OPTIONS=--max_old_space_size=4096 cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook":
       "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
     "test": "NODE_ENV=test jest",

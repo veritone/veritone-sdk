@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { get, isArray } from 'lodash';
-import { bool, func, string, arrayOf, shape, number, any } from 'prop-types';
+import { bool, func, string, arrayOf, shape, number } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import Card from '@material-ui/core/Card';
@@ -13,15 +13,15 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import CloseIcon from '@material-ui/icons/Close';
-import { withStyles } from '@material-ui/styles';
-
-import styles from './styles';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 import widget from '../../shared/widget';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
-@withStyles(styles)
+import { withStyles } from '../../shared/withStyles';
+
+import styles from './styles';
+const classes = withStyles(styles);
 @connect(
   state => ({
     includeMedia: engineOutputExportModule.getIncludeMedia(state),
@@ -64,8 +64,7 @@ class EngineOutputExport extends Component {
     exportAndDownload: func.isRequired,
     errorSnackBars: arrayOf(shape({})),
     closeSnackBar: func,
-    fetchEngineRunsFailed: bool,
-    classes: shape({ any }),
+    fetchEngineRunsFailed: bool
   };
 
   handleIncludeMediaChange = event => {
@@ -90,8 +89,7 @@ class EngineOutputExport extends Component {
       onCancel,
       errorSnackBars,
       closeSnackBar,
-      fetchEngineRunsFailed,
-      classes
+      fetchEngineRunsFailed
     } = this.props;
 
     const disableExportButton =

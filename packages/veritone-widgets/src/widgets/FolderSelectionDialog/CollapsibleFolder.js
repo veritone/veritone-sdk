@@ -1,17 +1,15 @@
 import React from 'react';
-import { shape, string, number, func, any } from 'prop-types';
+import { shape, string, number, func } from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
 import FolderIcon from '@material-ui/icons/Folder';
 import ExpandLess from '@material-ui/icons/ArrowDropDown';
 import ExpandMore from '@material-ui/icons/ArrowRight';
-import { withStyles } from '@material-ui/styles';
 
 import * as folderSelectionModule from '../../redux/modules/folderSelectionDialog';
 import FolderList from './FolderList';
+import { withStyles } from '../../shared/withStyles';
 import styles from './styles';
-
-@withStyles(styles)
 @connect(
   state => ({
     selectedFolder: folderSelectionModule.selectedFolder(state)
@@ -62,7 +60,6 @@ export default class CollapsibleFolder extends React.Component {
         count: number
       })
     }),
-    classes: shape({ any }),
   };
 
   state = {
@@ -83,7 +80,8 @@ export default class CollapsibleFolder extends React.Component {
 
   render() {
     // the collapsible folder has subfolders which are rendered when open by passing a listId into FolderList component
-    const { folder, selectedFolder, classes } = this.props;
+    const classes = withStyles(styles);
+    const { folder, selectedFolder } = this.props;
     let listId = folder.treeObjectId;
     let selectedId = selectedFolder.treeObjectId;
     let idsMatch = listId === selectedId;
