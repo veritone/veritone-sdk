@@ -8,7 +8,7 @@ import ErrorIconSvg from 'images/icon_error.svg';
 import CheckIconSvg from 'images/icon_check_circle.svg';
 import { withStyles } from '@material-ui/styles';
 
-import { string, arrayOf, oneOf, shape, func, node, any } from 'prop-types';
+import { string, arrayOf, oneOf, shape, func, node, any, oneOfType, element } from 'prop-types';
 
 import classNames from 'classnames';
 import styles from './styles';
@@ -37,7 +37,7 @@ export const notificationListPropTypes = arrayOf(
       TYPE_COMPLETE
     ]).isRequired,
     customNode: node,
-    description1: string,
+    description1: oneOfType([string, element]),
     description2: string,
     statusDescription: string,
     onActionClick: func,
