@@ -23,6 +23,7 @@ export default {
     ...Object.keys(mui).map(name => `@material-ui/core/${name}`),
     ...Object.keys(mui.colors).map(name => `@material-ui/core/colors/${name}`),
     '@material-ui/core/styles',
+    '@material-ui/styles',
     'mime-types',
     'pluralize',
     'prop-types',
@@ -83,7 +84,7 @@ export default {
         '../../node_modules/react-dnd/lib/index.js': [
           'DndProvider',
           'DropTarget'
-        ], 
+        ],
         '../../node_modules/@material-ui/utils/node_modules/react-is/index.js': [
           'ForwardRef'
         ]
