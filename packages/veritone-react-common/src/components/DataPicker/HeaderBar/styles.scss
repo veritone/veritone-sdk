@@ -4,8 +4,8 @@
   z-index: 9;
   min-width: 870px;
 }
-.headerBar{
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24) !important;
+.headerBar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
 }
 .header {
   background-color: white;
@@ -16,48 +16,48 @@
   min-height: 60px;
 }
 
+.searchBar {
+  padding: 0 10px;
+}
+
+.headerUploadButton {
+  margin-right: 20px !important;
+}
 
 .button {
   flex-basis: 108px !important;
 }
 
-
 .upload-button {
-  border: 1px solid #2196F3 !important;
+  border: 1px solid #2196f3 !important;
   border-radius: 1px !important;
-  color: #2196F3 !important;
+  color: #2196f3 !important;
 }
-
 
 .back-button {
   color: rgba(0, 0, 0, 0.54) !important;
 }
 
-
 .icon-button {
   margin-right: 8px;
 }
 
-
 .icon {
-  color: rgba(0,0,0,0.26)
+  color: rgba(0, 0, 0, 0.26);
 }
-
 
 .divider {
   width: 1px;
-  background-color: rgba(0,0,0,0.26);
+  background-color: rgba(0, 0, 0, 0.26);
   margin-top: 5px;
   margin-bottom: 5;
   align-self: stretch;
 }
 
-
 .button-group {
   display: flex;
   align-items: center;
 }
-
 
 .sort {
   display: flex;
@@ -65,18 +65,15 @@
   cursor: pointer;
 }
 
-
 .view {
   display: flex;
   align-items: center;
   cursor: pointer;
 }
 
-
 .spacer {
-  width: 1rem
+  width: 1rem;
 }
-
 
 .disabled {
   pointer-events: none;

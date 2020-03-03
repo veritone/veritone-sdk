@@ -7,6 +7,11 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import Button from '@material-ui/core/Button';
+import SortIcon from '@material-ui/icons/Sort';
 // import Sort from '@material-ui/icons/Sort';
 // import ViewList from '@material-ui/icons/ViewList';
 // import ViewModule from '@material-ui/icons/ViewModule';
@@ -17,12 +22,10 @@ import Breadcrumbs from '../Breadcrumbs';
 // import SearchInput from '../SearchInput';
 import styles from './styles.scss';
 
-
 class HeaderBar extends React.Component {
-
   state = {
-    anchorEl: null,
-  }
+    anchorEl: null
+  };
 
   sortAbilities = [
     {
@@ -37,19 +40,24 @@ class HeaderBar extends React.Component {
       text: 'Modified date',
       type: 'modifiedDatetime'
     }
-  ]
+  ];
 
-  onOpenSort = (event) => {
+  onOpenSort = event => {
     this.setState({
       anchorEl: event.currentTarget
-    })
-  }
+    });
+  };
+
+  onSearchInputChange = event => {
+    const { onSearch } = this.props;
+    onSearch(event.currentTarget.value);
+  };
 
   clickAway = () => {
     this.setState({
       anchorEl: null
-    })
-  }
+    });
+  };
 
   render() {
     const {
@@ -58,6 +66,7 @@ class HeaderBar extends React.Component {
       onSort,
       // onSearch,
       // onClear,
+      toggleContentView,
       onCrumbClick,
       pathList,
       currentPickerType,
@@ -73,21 +82,39 @@ class HeaderBar extends React.Component {
           className={styles['headerBar']}
         >
           <Toolbar className={styles.header}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => toggleContentView('upload')}
+              className={styles.headerUploadButton}
+            >
+              Upload
+            </Button>
             <Breadcrumbs
               pathList={pathList}
               onCrumbClick={onCrumbClick}
-              isStream={currentPickerType==='stream'}
+              isStream={currentPickerType === 'stream'}
             />
-            { currentPickerType !== 'upload' && (<div style={{ flexGrow: 1 }} />)}
-            { currentPickerType !== 'upload' && (
-              <div 
+            {currentPickerType !== 'upload' && (
+              <div className={styles.searchBar}>
+                <TextField
+                  onChange={this.onSearchInputChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <SearchIcon />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </div>
+            )}
+            {currentPickerType !== 'upload' && (
+              <div
                 id="media-info-toggle"
-                className={cx(
-                  styles['button-group'],
-                  styles.icon,
-                  { [styles.disabled]: currentPickerType === 'upload' }
-                  )
-                }
+                className={cx(styles['button-group'], styles.icon, {
+                  [styles.disabled]: currentPickerType === 'upload'
+                })}
               >
                 {
                   // <SearchInput
@@ -111,8 +138,12 @@ class HeaderBar extends React.Component {
                   data-veritone-element="media-panel-toggle"
                   color={showMediaInfoPanel ? 'primary' : 'default'}
                   /* eslint-disable react/jsx-no-bind */
-                  onClick={() => toggleMediaInfoPanel()}>
+                  onClick={() => toggleMediaInfoPanel()}
+                >
                   <InfoOutlined />
+                </IconButton>
+                <IconButton>
+                  <SortIcon />
                 </IconButton>
               </div>
             )}
@@ -124,21 +155,19 @@ class HeaderBar extends React.Component {
           onClick={this.clickAway}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
         >
           <MenuList role="menu">
-            {
-              this.sortAbilities.map(({ text, type }) => (
-                <MenuItem key={type} data-type={type} onClick={onSort}>
-                  {text}
-                </MenuItem>
-              ))
-            }
+            {this.sortAbilities.map(({ text, type }) => (
+              <MenuItem key={type} data-type={type} onClick={onSort}>
+                {text}
+              </MenuItem>
+            ))}
           </MenuList>
         </Popover>
       </div>
@@ -147,17 +176,20 @@ class HeaderBar extends React.Component {
 }
 
 HeaderBar.propTypes = {
-  pathList: arrayOf(shape({
-    label: string,
-    id: string
-  })),
+  pathList: arrayOf(
+    shape({
+      label: string,
+      id: string
+    })
+  ),
   onCrumbClick: func,
-  // onSearch: func,
+  onSearch: func,
   // onClear: func,
   // onBack: func,
   // viewType: oneOf(['list', 'grid']),
   // onToggleView: func,
   // onUpload: func,
+  toggleContentView: func,
   onSort: func,
   currentPickerType: oneOf(['folder', 'stream', 'upload']),
   toggleMediaInfoPanel: func,
@@ -169,7 +201,7 @@ HeaderBar.defaultProps = {
     {
       label: ''
     }
-  ],
-}
+  ]
+};
 
 export default HeaderBar;

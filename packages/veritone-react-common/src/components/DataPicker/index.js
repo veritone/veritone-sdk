@@ -210,7 +210,7 @@ class DataPicker extends React.Component {
     return (
       <div 
         className={styles['data-picker-container']}>
-        { showLeftNav && (
+        { true && (
           <LeftNavigationPanel
             availablePickerTypes={availablePickerTypes}
             currentPickerType={currentPickerType}
@@ -221,6 +221,7 @@ class DataPicker extends React.Component {
           { showHeader && (
             <HeaderBar
               viewType={viewType}
+              toggleContentView={this.toggleContentView}
               onToggleView={this.toggleViewType}
               currentPickerType={currentPickerType}
               pathList={pathList}

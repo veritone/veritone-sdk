@@ -180,7 +180,8 @@ class DataPicker extends React.Component {
 
   state = {
     showError: false,
-    errorMsg: ''
+    errorMsg: '',
+    searchString: ''
   };
 
   handlePick = () => {
@@ -295,8 +296,11 @@ class DataPicker extends React.Component {
   };
 
   handleOnSearch = searchValue => {
-    const { id, setSearchValue} = this.props;
-    setSearchValue && setSearchValue(id, searchValue);
+    // const { id, setSearchValue} = this.props;
+    // setSearchValue && setSearchValue(id, searchValue);
+    this.setState({
+      searchString: searchValue
+    })
   };
 
   handleOnClear = () => {
@@ -328,9 +332,11 @@ class DataPicker extends React.Component {
     } = this.props;
     const {
       showError,
-      errorMsg
+      errorMsg,
+      searchString
     } = this.state;
     const items = itemRefs.map(item => getItemByTypeAndId(item.type, item.id));
+    const searchedItems = items.filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()));
     const isFullScreen = !height && !width;
     const dimensionOverride = isFullScreen ? {} : {
       height,
@@ -346,7 +352,7 @@ class DataPicker extends React.Component {
         >
           <DataPickerComponent
             {...this.props}
-            items={items}
+            items={searchedItems}
             onErrorMsg={this.handleShowErrorMsg}
             isError={currentDirectoryLoadingState.error}
             isLoading={currentDirectoryLoadingState.isLoading}
