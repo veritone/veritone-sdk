@@ -30,6 +30,7 @@ export default {
     ...Object.keys(muiIcons).map(name => `material-ui-icons/${name}`),
     ...Object.keys(mui).map(name => `@material-ui/core/${name}`),
     ...Object.keys(mui.colors).map(name => `material-ui/colors/${name}`),
+    '@material-ui/styles',
     'prop-types',
     'veritone-react-common',
     'veritone-redux-common',
