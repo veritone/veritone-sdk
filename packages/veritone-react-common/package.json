@@ -6,11 +6,11 @@
   "jsnext:main": "dist/bundle-es.js",
   "dependencies": {
     "@date-io/date-fns": "^1.3.11",
-    "@material-ui/core": "^4.8.0",
-    "@material-ui/icons": "^4.5.1",
-    "@material-ui/lab": "^4.0.0-alpha.36",
-    "@material-ui/pickers": "^3.2.8",
-    "@material-ui/styles": "^4.7.1",
+    "@material-ui/core": "^4.9.5",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.45",
+    "@material-ui/pickers": "^3.2.10",
+    "@material-ui/styles": "^4.9.0",
     "classnames": "^2.2.5",
     "clipboard": "^2.0.4",
     "date-fns": "^2.1.0",
@@ -46,14 +46,10 @@
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
-    "build:es":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
-    "build:cjs":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
-    "build:watch":
-      "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production rollup -c --watch",
-    "build:storybook":
-      "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
+    "build:es": "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs": "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+    "build:watch": "NODE_OPTIONS=--max_old_space_size=2048 cross-env NODE_ENV=production rollup -c --watch",
+    "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "lint": "yarn run lint:js && yarn run lint:styles",
@@ -121,13 +117,18 @@
   },
   "license": "Apache-2.0",
   "jest": {
-    "moduleFileExtensions": ["js", "jsx"],
-    "moduleDirectories": ["node_modules", "../../node_modules"],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "../../node_modules"
+    ],
     "moduleNameMapper": {
       "^helpers(.*)$": "<rootDir>/src/helpers$1",
       "^components(.*)$": "<rootDir>/src/components$1",
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
       "\\.(css|scss)$": "identity-obj-proxy",
       "^dnd-core$": "dnd-core/dist/cjs",
       "^react-dnd$": "react-dnd/dist/cjs",
