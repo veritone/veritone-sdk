@@ -7,7 +7,8 @@ import {
   reduxForm,
   Form,
   reset as resetForm,
-  submit as submitForm
+  submit as submitForm,
+  reducer as formReducer
 } from 'redux-form';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -39,6 +40,7 @@ import ResetPasswordModal from './Modals/ResetPassword';
 import styles from './styles';
 const defaultAvatarImg =
   'https://static.veritone.com/veritone-ui/default-avatar.png';
+  const formNameSpace = 'form';
 
 @connect(
   state => ({
@@ -352,4 +354,4 @@ class UserProfileDialog extends React.Component {
 }
 
 const UserProfileWidget = widget(UserProfileDialog);
-export { UserProfileDialog as default, UserProfileWidget };
+export { UserProfileDialog as default, UserProfileWidget, formNameSpace, formReducer };
