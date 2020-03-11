@@ -36,7 +36,7 @@ export EngineOutputExport, {
 } from './widgets/EngineOutputExport';
 export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
 export engineOutputExportSaga from './redux/modules/engineOutputExport/saga';
-export { UserProfileWidget } from './widgets/UserProfile';
+export { UserProfileWidget, formNameSpace, formReducer } from './widgets/UserProfile';
 export multipleEngineSelectionReducer, * as multipleEngineSelectionModule from './redux/modules/multipleEngineSelection';
 export EnginePicker, {
   EnginePickerWidget,
