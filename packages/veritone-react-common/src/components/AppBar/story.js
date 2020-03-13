@@ -358,6 +358,9 @@ const mockCustomNotifications = {
   headerText: 'Custom Header Text Goes Here',
   showMoreLabel: 'Custom Show More Button',
   showLessLabel: 'Custom Show Less Button',
+  subheader1: 'Engine',
+  subheader2: 'Type',
+  subheader3: 'Status',
   onOpen: action('on open'),
   onClose: action('on close'),
   totalUnread: 2,
@@ -366,15 +369,17 @@ const mockCustomNotifications = {
       id: '1234',
       type: 'preparing',
       description1: 'Top Description Goes Here',
+      description3: 'preparing',
       description2: 'Bottom Description Goes Here',
-      unread: true
+      unread: false
     },
     {
       id: '2234',
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
-      unread: true,
+      description3: 'complete',
+      unread: false,
       callback: action()
     },
     {
