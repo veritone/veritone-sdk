@@ -270,12 +270,13 @@ const mockHelpPropsFull = {
   supportLabel: 'Custom - Chat With Support',
   supportCallback: action('open support'),
   onOpen: action('open help'),
-  onClose: action('close help')
+  onClose: action('close help'),
 }
 
 const mockNotifications = {
   onOpen: action('on open'),
   onClose: action('on close'),
+  totalUnread: 0,
   notifications: [
     {
       id: '1234',
@@ -326,7 +327,8 @@ const mockNotifications = {
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
       onActionClick: action(),
-      onRemoveClick: action()
+      onRemoveClick: action(),
+      onItemClick: action(),
     },
     {
       id: '8234',
@@ -358,18 +360,21 @@ const mockCustomNotifications = {
   showLessLabel: 'Custom Show Less Button',
   onOpen: action('on open'),
   onClose: action('on close'),
+  totalUnread: 2,
   notifications: [
     {
       id: '1234',
       type: 'preparing',
       description1: 'Top Description Goes Here',
-      description2: 'Bottom Description Goes Here'
+      description2: 'Bottom Description Goes Here',
+      unread: true
     },
     {
       id: '2234',
       type: 'failed',
       description1: 'Failed Description 1 Goes Here',
       description2: 'Failed Description 2 Goes Here',
+      unread: true,
       callback: action()
     },
     {

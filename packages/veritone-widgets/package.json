@@ -19,7 +19,7 @@
     "redux-thunk": "^2.2.0",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "veritone-react-common": "^8.0.2",
+    "veritone-react-common": "https://dev-sdk-build-artifacts.s3.amazonaws.com/veritone-react-common-20200309-172333.tar.gz",
     "veritone-redux-common": "^3.7.0",
     "video-react": "~0.13.3"
   },

@@ -5,10 +5,10 @@ import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func } from 'prop-types';
+import { string, number, func } from 'prop-types';
 
 import classNames from 'classnames';
-import styles from './styles.scss';  
+import styles from './styles.scss';
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
 export const notifierPropTypes = {
@@ -18,7 +18,8 @@ export const notifierPropTypes = {
   onClose: func,
   headerBackgroundColor: string,
   bodyBackgroundColor: string,
-  notifications: notificationListPropTypes
+  notifications: notificationListPropTypes,
+  totalUnread: number,
 };
 
 export default class Notifier extends React.Component {
@@ -56,28 +57,29 @@ export default class Notifier extends React.Component {
       headerText,
       headerBackgroundColor,
       bodyBackgroundColor,
-      notifications
+      notifications,
+      totalUnread,
     } = this.props;
 
 
     const displayEntries = notifications.concat([]);
     const numNotifications = notifications.length || 0;
-
+    const numUnreadNotifications = totalUnread || 0;
     //TODO: remove "numNotifications > 0 ?" condition when material-ui is updated to a later version
     return (
       <div className={classNames(styles.notification)}>
         <Tooltip title={tooltipTitle || ''}>
           <span className={styles.toolTipWrapper}>
-            <IconButton 
+            <IconButton
               onClick={this.showNotifications}
               disabled={numNotifications === 0}
               data-veritone-element="notification-button"
             >
               {
-                numNotifications > 0 && !anchorEl ?
-                  <Badge 
-                    color="primary" 
-                    badgeContent={numNotifications}
+                numUnreadNotifications > 0 && !anchorEl ?
+                  <Badge
+                    color="primary"
+                    badgeContent={numUnreadNotifications}
                     classes={{ badge: styles.badge }}
                   >
                     <NotificationIcon nativeColor="white" />
@@ -107,12 +109,12 @@ export default class Notifier extends React.Component {
           <div className={classNames(styles.notificationWindow)}>
             <div className={classNames(styles.header)} style={{backgroundColor: headerBackgroundColor}}>
               <div className={classNames(styles.label)}>{headerText}</div>
-              <div className={classNames(styles.chip)}>{numNotifications}</div>
+              <div className={classNames(styles.chip)}>{numUnreadNotifications}</div>
               <IconButton className={classNames(styles.controls)} onClick={this.hideNotification}>
                 <KeyboardArrowUpIcon nativeColor="white" />
               </IconButton>
             </div>
-            
+
             <div className={classNames(styles.body)} style={{backgroundColor: bodyBackgroundColor}}>
               <NotificationList notifications={displayEntries}/>
             </div>

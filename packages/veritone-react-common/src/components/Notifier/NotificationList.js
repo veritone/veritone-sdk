@@ -121,9 +121,12 @@ export default class NotificationList extends React.Component {
       }
     }
   }
-  
+
   handleEntryActionClicked = entry => event => {
     entry.onActionClick && entry.onActionClick(entry);
+  }
+  handleRowClicked = entry => event => {
+    entry.onItemClick && entry.onItemClick(entry);
   }
 
   handleEntryRemoveClick = entry => event => {
@@ -155,10 +158,11 @@ export default class NotificationList extends React.Component {
     const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
 
     return (
-      <div key={formatedData.id} className={
+      <div onClick={this.handleRowClicked(originalData)} key={formatedData.id} className={
         classNames(
           styles.entry,
           {
+            [styles.unread]: originalData.unread,
             [styles.fadeIn]: isNewEntry && formatedData.introAnimation === INTRO_FADE_IN,
             [styles.fadeOut]: isRemoved && formatedData.outroAnimation === OUTRO_FADE_OUT,
             [styles.slideOut]: isRemoved && formatedData.outroAnimation === OUTRO_SLIDE_OUT,
@@ -179,8 +183,8 @@ export default class NotificationList extends React.Component {
           </div>
           <div className={classNames(styles.actions)}>
           {
-            formatedData.onActionClick && 
-            <IconButton 
+            formatedData.onActionClick &&
+            <IconButton
               color="default"
               className={classNames(styles.iconButton)}
               onClick={this.handleEntryActionClicked(originalData)}
@@ -191,7 +195,7 @@ export default class NotificationList extends React.Component {
           }
           {
             formatedData.onRemoveClick &&
-            <IconButton 
+            <IconButton
               color="default"
               className={classNames(styles.iconButton)}
               onClick={this.handleEntryRemoveClick(originalData)}
@@ -279,7 +283,7 @@ export default class NotificationList extends React.Component {
           switch (entry.type) {
             case TYPE_PREPARING:
               return this.drawPreparingItem(entry);
-            
+
             case TYPE_PROCESSING:
               return this.drawProcessingItem(entry);
 
@@ -288,10 +292,10 @@ export default class NotificationList extends React.Component {
 
             case TYPE_COMPLETE:
               return this.drawCompleteItem(entry);
-            
+
             case TYPE_CUSTOM:
               return this.drawCustomItem(entry);
-            
+
             default:
               return null;
           }
