@@ -32,4 +32,7 @@ export default {
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
   },
+  focusedColor: {
+    backgroundColor: '#fff'
+  }
 }

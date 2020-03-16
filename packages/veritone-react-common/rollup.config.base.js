@@ -38,7 +38,8 @@ export default {
     'redux-form',
     'react-dotdotdot',
     'video-react',
-    'shaka-player'
+    'shaka-player',
+    'date-fns'
   ],
   plugins: [
     replace({

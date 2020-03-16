@@ -38,7 +38,8 @@ export default {
     'redux-thunk',
     'video-react',
     'shaka-player',
-    'immutability-helper'
+    'immutability-helper',
+    'date-fns'
   ],
   plugins: [
     replace({

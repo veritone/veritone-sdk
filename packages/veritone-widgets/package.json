@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "8.0.4",
+  "version": "8.0.7",
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",

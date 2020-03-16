@@ -1,10 +1,12 @@
 import React from 'react';
 import Today from '@material-ui/icons/Today';
-import isValid from 'date-fns/isValid'
-import getYear from 'date-fns/getYear'
-import format from 'date-fns/format'
-import isDate from 'date-fns/isDate'
+import isValid from 'date-fns/isValid';
+import getYear from 'date-fns/getYear';
+import format from 'date-fns/format';
+import toDate from 'date-fns/toDate';
+import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
+import isString from 'lodash/isString';
 import { instanceOf, func, shape, string, bool, oneOfType, any } from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/styles';
 import parseISO from 'date-fns/parseISO';
@@ -151,11 +153,18 @@ function consolidate(dateString, timeString) {
 }
 
 function getDateString(date) {
-  return format(date, 'yyyy-MM-dd');
+  console.log('get date String', date, typeof date);
+  if(isString(date)){
+    return format(new Date(date), 'yyyy-MM-dd');
+  }
+  return format(toDate(date), 'yyyy-MM-dd');
 }
 
 function getTimeString(date) {
-  return format(date, 'HH:mm');
+  if(isString(date)){
+    return format(new Date(date), 'yyyy-MM-dd');
+  }
+  return format(toDate(date), 'HH:mm');
 }
 
 function getTimeZone(date) {

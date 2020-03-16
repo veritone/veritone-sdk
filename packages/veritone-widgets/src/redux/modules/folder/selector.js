@@ -1,5 +1,9 @@
 import { createSelector } from 'reselect';
 
+export const namespace = 'folderTree';
+
+export const folderSelector = state => state[namespace];
+
 export const folderData = state => state.folderTree.foldersData;
 
 export const folderFetching = state => state.folderTree.fetching;
