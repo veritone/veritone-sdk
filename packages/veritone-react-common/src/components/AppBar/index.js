@@ -2,6 +2,8 @@ import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 import {
   objectOf,
@@ -12,7 +14,9 @@ import {
   arrayOf,
   shape,
   number,
-  element
+  element,
+  oneOfType,
+  oneOf
 } from 'prop-types';
 
 import AppSwitcher from 'components/AppSwitcher';
@@ -21,11 +25,12 @@ import Notifier, { notifierPropTypes } from 'components/Notifier';
 import Help, { helpPropTypes } from 'components/Help';
 
 import SmallVeritoneLogo from 'images/header-veritone-icon.svg';
-
-import styles from './styles.scss';
+import styles from './styles';
 
 export const appBarHeight = 60;
-export default class AppBar extends React.Component {
+export const defaultAppBarZIndex = 1000;
+
+class AppBar extends React.Component {
   static propTypes = {
     title: string,
     titleColor: string,
@@ -63,7 +68,23 @@ export default class AppBar extends React.Component {
     onSwitchApp: func,
     additionMenuItems: arrayOf(element),
     help: shape(helpPropTypes),
-    notification: shape(notifierPropTypes)
+    notification: shape(notifierPropTypes),
+    searchBar: oneOfType([bool, element]),
+    searchBarJustification: oneOf(['flex-start', 'center', 'flex-end']),
+    searchBarLeftMargin: oneOfType([string, number]),
+    searchBarAlignSelf: oneOf([
+      'baseline',
+      'auto',
+      'inherit',
+      'center',
+      'flex-start',
+      'flex-end'
+    ]),
+    zIndex: number,
+    totalNotification: number,
+    showNotifications: func,
+    hideNotification: func,
+    classes: shape({ any })
   };
   static defaultProps = {
     logo: true,
@@ -76,16 +97,25 @@ export default class AppBar extends React.Component {
     onLogout: () => {},
     onEditProfile: () => {},
     fetchEnabledApps: () => {},
-    onSwitchApp: () => {}
+    onSwitchApp: () => {},
+    searchBarJustification: 'center',
+    searchBarLeftMargin: 0,
+    zIndex: defaultAppBarZIndex,
+    searchBarAlignSelf: 'center'
   };
 
   handleRefresh = () => {
     this.props.fetchEnabledApps();
   };
 
-  render () {
+  goHome = () => {
+    window.location.pathname = '/';
+  };
+
+  render() {
     const {
       elevation,
+      zIndex,
 
       logo,
       logoSrc,
@@ -94,6 +124,11 @@ export default class AppBar extends React.Component {
       logoBackgroundColor,
       title,
       titleColor,
+
+      searchBar,
+      searchBarJustification,
+      searchBarLeftMargin,
+      searchBarAlignSelf,
 
       rightActions,
 
@@ -110,7 +145,11 @@ export default class AppBar extends React.Component {
       user,
       onLogout,
       onEditProfile,
-      additionMenuItems
+      additionMenuItems,
+      totalNotification,
+      showNotifications,
+      hideNotification,
+      classes
     } = this.props;
 
     return (
@@ -118,103 +157,123 @@ export default class AppBar extends React.Component {
         component="header"
         square
         elevation={elevation}
-        className={styles.appBar}
-        style={{ height: appBarHeight, background: backgroundColor }}
+        className={classes.appBar}
+        style={{
+          height: appBarHeight,
+          background: backgroundColor,
+          zIndex: zIndex
+        }}
       >
-        <div 
-          className={styles.logo}
+        <div
+          className={classes.logo}
           style={{ backgroundColor: logoBackgroundColor }}
+          onClick={this.goHome}
         >
-          { logo && <img src={logoSrc} draggable="false"/> }
+          {logo && <img src={logoSrc} draggable="false" />}
         </div>
-        <div className={styles.content} style={{color: titleColor}}>
-          <div className={styles.left}>
-            {
-              appLogoSrc ?
-                <img className={styles.appLogo} src={appLogoSrc} draggable="false" /> :
-                <div className={styles.title}>{title}</div>
-            }
+        <div className={classes.content} style={{ color: titleColor }}>
+          <div
+            className={classNames(classes.left, classes.noSelect)}
+            onClick={this.goHome}
+          >
+            {appLogoSrc ? (
+              <img
+                className={classes.appLogo}
+                src={appLogoSrc}
+                draggable="false"
+              />
+            ) : (
+              <div className={classes.title}>{title}</div>
+            )}
           </div>
-          <div className={styles.center} />
-          <div className={styles.right}>
-            <div className={styles.controllers}>
-              {
-                //Custom Controllers (Copy over from the previous app bar version)
-                rightActions && rightActions.length > 0 && (
-                  <div className={styles['iconGroup']}> 
-                  {
-                    rightActions.map(({ label, onClick }) => (
-                      <div className={styles['iconGroup__icon']} key={label}>
-                        <a
-                          href="#"
-                          onClick={onClick}
-                          className={styles['rightAction-label']}
-                        >
-                          {label}
-                        </a>
-                      </div>
-                    ))
-                  }
-                  </div>
-                )
-              }
+          <div
+            className={classes.searchBarHolder}
+            data-target={'search-bar-holder'}
+            style={{
+              justifyContent: searchBarJustification,
+              marginLeft: searchBarLeftMargin,
+              alignSelf: searchBarAlignSelf
+            }}
+          >
+            {searchBar || <div id="veritone-search-bar" />}
+          </div>
+          <div className={classes.right}>
+            <div className={classes.controllers}>
+              {//Custom Controllers (Copy over from the previous app bar version)
+              rightActions && rightActions.length > 0 && (
+                <div
+                  className={classNames(classes.iconGroup, classes.noSelect)}
+                >
+                  {rightActions.map(({ label, onClick, isActive }) => (
+                    <div className={classes.iconGroupIcon} key={label}>
+                      <span
+                        onClick={onClick}
+                        className={classNames(
+                          classes.rightActionLabel,
+                          isActive ? classes.active : classes.passive
+                        )}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-              {
-                //Notifications
-                notification && <Notifier {...notification} />
-              }
+              {//Notifications
+              notification && (
+                <Notifier
+                  {...notification}
+                  totalNotification={totalNotification}
+                  showNotifications={showNotifications}
+                  hideNotification={hideNotification}
+                />
+              )}
 
-              {
-                //Help
-                help && <Help {...help} />
-              }
+              {//Help
+              help && <Help {...help} />}
 
-              {
-                //App Switcher
-                appSwitcher && (
-                  <div>
-                    <AppSwitcher
-                      enabledApps={enabledApps}
-                      isFetchingApps={isFetchingApps}
-                      onSwitchApp={onSwitchApp}
-                      handleRefresh={this.handleRefresh}
-                      enabledAppsFailedLoading={enabledAppsFailedLoading}
-                    />
-                  </div>
-                )
-              }
+              {//App Switcher
+              appSwitcher && (
+                <div>
+                  <AppSwitcher
+                    enabledApps={enabledApps}
+                    isFetchingApps={isFetchingApps}
+                    onSwitchApp={onSwitchApp}
+                    handleRefresh={this.handleRefresh}
+                    enabledAppsFailedLoading={enabledAppsFailedLoading}
+                  />
+                </div>
+              )}
 
-              {
-                //User Profile
-                profileMenu && (
-                  <div>
-                    <ProfileMenu
-                      onLogout={onLogout}
-                      onEditProfile={onEditProfile}
-                      user={user}
-                      additionMenuItems={additionMenuItems}
-                    />
-                  </div>
-                )
-              }
+              {//User Profile
+              profileMenu && (
+                <div>
+                  <ProfileMenu
+                    onLogout={onLogout}
+                    onEditProfile={onEditProfile}
+                    user={user}
+                    additionMenuItems={additionMenuItems}
+                  />
+                </div>
+              )}
 
-              {
-                //Close Button
-                this.props.closeButton && this.props.onClose && 
-                (
+              {//Close Button
+              this.props.closeButton && this.props.onClose && (
                 <div>
                   <div style={{ marginLeft: 'auto' }}>
                     <IconButton onClick={this.props.onClose}>
-                      <CloseIcon nativeColor="white" />
+                      <CloseIcon htmlColor="white" />
                     </IconButton>
                   </div>
                 </div>
-                )
-              }
+              )}
             </div>
           </div>
         </div>
       </Paper>
-    )
+    );
   }
 }
+
+export default withStyles(styles)(AppBar);
