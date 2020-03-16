@@ -241,3 +241,6 @@ const MyPage = () => (
 
 ## 8.0.3
 * Fixed AppBar css overridden issue
+
+## 8.0.10
+* Add simple search bar

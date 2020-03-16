@@ -227,3 +227,6 @@
 
 ## 8.0.2
 * Fixed AppBar css overridden issue
+
+## 8.0.10
+* Add simple search bar

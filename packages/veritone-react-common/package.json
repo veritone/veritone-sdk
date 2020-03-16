@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "8.0.5",
+  "version": "8.0.10",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -49,8 +49,7 @@
     "test:watch": "NODE_ENV=test jest --watch",
     "lint": "yarn run lint:js && yarn run lint:styles",
     "lint:js": "eslint src/** --ext .js --max-warnings 0",
-    "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
-    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
+    "lint:styles": "stylelint \"src/**/*.{scss, css}\""
   },
   "devDependencies": {
     "@material-ui/lab": "^1.0.0-alpha.5",

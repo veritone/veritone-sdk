@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "8.0.3",
+  "version": "8.0.10",
   "dependencies": {
     "@material-ui/core": "^1.0.0",
     "@material-ui/icons": "^2.0.0",
@@ -43,8 +43,7 @@
     "lint:js": "eslint src/** --ext .js --max-warnings 0",
     "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
     "clean:build": "rimraf dist",
-    "prebuild": "yarn run clean:build",
-    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
+    "prebuild": "yarn run clean:build"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.9",
