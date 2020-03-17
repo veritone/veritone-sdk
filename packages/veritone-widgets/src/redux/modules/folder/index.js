@@ -12,7 +12,7 @@ export {
   unSelectFolder,
   unSelectAllFolder,
   unSelectCurrentFolder,
-  initFolderFromAppError
+  eventChannel
 } from './actions';
 
 export { folderSaga } from './sagas';

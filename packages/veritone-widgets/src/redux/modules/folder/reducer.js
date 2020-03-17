@@ -51,7 +51,8 @@ const defaultFolderState = {
   searchFolderData: {
     allId: [],
     byId: {}
-  }
+  },
+  event: {}
 };
 
 export const folderReducer = createReducer(defaultFolderState, {
@@ -329,7 +330,17 @@ export const folderReducer = createReducer(defaultFolderState, {
         [workSpace]: {}
       }
     }
-  }
+  },
+  [actions.EVENT_CHANNEL]: (state, action) => ({
+    ...state,
+    event: {
+      ...state.event,
+      [action.payload.workSpace]: {
+        eventType: action.payload.eventType,
+        data: action.payload.data
+      }
+    }
+  })
 });
 
 

@@ -39,6 +39,7 @@ export const INIT_FOLDER_FROM_APP_ERROR = `${namespace}/INIT_FOLDER_FROM_APP_ERR
 export const UNSELECT_FOLDER = `${namespace}/UNSELECT_FOLDER`;
 export const UNSELECT_ALL_FOLDER = `${namespace}/UNSELECT_ALL_FOLDER`;
 export const UNSELECT_CURRENT_FOLDER = `${namespace}/UNSELECT_CURRENT_FOLDER`;
+export const EVENT_CHANNEL = `${namespace}/EVENT_CHANNEL`;
 
 export const init = config => ({
   type: INIT,
@@ -305,5 +306,14 @@ export const initFolderFromAppError = folderId => ({
   type: INIT_FOLDER_FROM_APP_ERROR,
   payload: {
     folderId
+  }
+});
+
+export const eventChannel = (workSpace, eventType, data) => ({
+  type: EVENT_CHANNEL,
+  payload: {
+    workSpace,
+    eventType,
+    data
   }
 });

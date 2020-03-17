@@ -61,7 +61,6 @@ class AppBar extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       <Fragment>
         <LibAppBar

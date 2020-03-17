@@ -47,7 +47,6 @@ function FolderTreeWrapper({
   isEnableSearch,
   isEnableSelectRoot,
   isEnableShowRootFolder,
-  subjectObservable,
   selectable = true,
   showingType = ['org'],
   onSelectMenuItem,
@@ -74,7 +73,9 @@ function FolderTreeWrapper({
   initFolderFromApp,
   unSelectFolder,
   unSelectAllFolder,
-  unSelectCurrentFolder
+  unSelectCurrentFolder,
+  eventSelector,
+  setEventData
 }) {
   const [openNew, setOpenNew] = useState(false);
   const [selectedFolder, setSelected] = useState({});
@@ -87,8 +88,8 @@ function FolderTreeWrapper({
   const [selectedInModify, setSelectedInModify] = useState({});
   const [defaultOpening, setDefaultOpening] = useState([]);
   const [folderSelectedFromApp, setFolderSelectedFromApp] = useState();
-  const [subscribed, setSubscribed] = useState(false);
   const [folderInitFromApp, setFolderInitFromApp] = useState();
+  const [event, setEvent] = useState({});
 
   useEffect(() => {
     if (initialStatus && !isEmpty(selectedFolders)) {
@@ -115,6 +116,17 @@ function FolderTreeWrapper({
       setDefaultOpening(foldersData.rootIds);
     }
   }, [foldersData]);
+
+  useEffect(() => {
+    const currentEvent = get(eventSelector, [workSpace], {});
+    if(event.eventType !== currentEvent.eventType && currentEvent.eventType !== ''){
+      setEvent(currentEvent);
+      const { eventType, data } = currentEvent;
+      processEventReducer(eventType, data);
+      setEventData(workSpace, '', null);
+      setEvent({});
+    }
+  }, [eventSelector, event])
 
   useEffect(() => {
     if (isEnableSelectRoot) {
@@ -177,20 +189,6 @@ function FolderTreeWrapper({
       setDefaultOpening(pathList.map(item => item.id));
     }
   }, [folderSelectedFromApp]);
-
-  useEffect(() => {
-    let subscription;
-    if (!subscribed) {
-      subscription = subjectObservable.subscribe({
-        next: v => processEvent(v)
-      });
-      setSubscribed(true);
-    }
-    return () => {
-      subscription.unsubscribe();
-      setSubscribed(false);
-    };
-  }, [subjectObservable]);
 
   const getPathList = selectedFolder => {
     if (selectable) {
@@ -312,20 +310,18 @@ function FolderTreeWrapper({
     unSelectCurrentFolder(workSpace);
   };
 
-  const processEvent = event => {
-    const eventKey = event.split(' ')[0];
-    const eventPayload = event.split(' ').length > 1 ? event.split(' ')[1] : '';
-    switch (eventKey) {
+  const processEventReducer = (eventType, data) => {
+    switch (eventType) {
       case 'action/newfolder':
         handlerOpenFolder();
         break;
       case 'action/select':
         setFolderSelectedFromApp({
-          [eventPayload]: true
+          [data]: true
         });
         break;
       case 'action/initselect':
-        initFolderSelectedFromApp(eventPayload);
+        initFolderSelectedFromApp(data);
         break;
       case 'action/unSelectCurrent':
         unSelectCurentFolderWrapper();
@@ -426,7 +422,6 @@ FolderTreeWrapper.propTypes = {
   errorStatus: bool,
   handleSelectedFoler: func,
   processingFolder: arrayOf(string),
-  subjectObservable: shape(Object),
   folderById: func,
   rootFolderIds: arrayOf(string),
   createFolder: func,
@@ -439,7 +434,12 @@ FolderTreeWrapper.propTypes = {
   initSuccess: func,
   unSelectFolder: func,
   unSelectCurrentFolder: func,
-  unSelectAllFolder: func
+  unSelectAllFolder: func,
+  eventSelector: shape({
+    eventType: string,
+    data: string
+  }),
+  setEventData: func
 };
 
 const FolderTree = connect(
@@ -452,7 +452,8 @@ const FolderTree = connect(
     folderById: folderSelector.folderById(state),
     rootFolderIds: folderSelector.rootFolderIds(state),
     processingFolder: folderSelector.processingFolderSelector(state),
-    initialStatus: folderSelector.getInitialStatus(state)
+    initialStatus: folderSelector.getInitialStatus(state),
+    eventSelector: folderSelector.eventSelector(state)
   }),
   {
     expandFolder: folderModule.fetchMore,
@@ -466,7 +467,8 @@ const FolderTree = connect(
     initFolderFromApp: folderModule.initFolderFromApp,
     unSelectAllFolder: folderModule.unSelectAllFolder,
     unSelectCurrentFolder: folderModule.unSelectCurrentFolder,
-    unSelectFolder: folderModule.unSelectFolder
+    unSelectFolder: folderModule.unSelectFolder,
+    setEventData: folderModule.eventChannel
   },
   null,
   { forwardRef: true }
