@@ -153,7 +153,6 @@ function consolidate(dateString, timeString) {
 }
 
 function getDateString(date) {
-  console.log('get date String', date, typeof date);
   if(isString(date)){
     return format(new Date(date), 'yyyy-MM-dd');
   }

@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "8.0.7",
+  "version": "9.0.0",
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
@@ -24,7 +24,7 @@
     "redux-thunk": "^2.3.0",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "veritone-react-common": "^9.0.1",
+    "veritone-react-common": "^9.0.3",
     "veritone-redux-common": "^3.11.4",
     "video-react": "~0.13.3"
   },
