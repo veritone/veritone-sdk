@@ -40,8 +40,9 @@ export default class Notifier extends React.Component {
   };
 
   showNotifications = event => {
+    const target = event.currentTarget;
     this.setState({
-      anchorEl: event.currentTarget
+      anchorEl: target
     });
 
     this.props.onOpen && this.props.onOpen();
@@ -101,11 +102,11 @@ export default class Notifier extends React.Component {
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center'
+            horizontal: 'left'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'center'
+            horizontal: 'right'
           }}
           onClose={this.hideNotification}
           className={classNames(styles.popover)}

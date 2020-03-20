@@ -37,7 +37,8 @@
 }
 
 .popover {
-  margin-top: 18px;
+  top: -10px !important;
+  left: 20px !important;
 }
 
 .notificationWindow {
@@ -191,8 +192,8 @@
     }
 
     .description {
-      flex: 1;
-      min-width: 0;
+      min-width: 180px !important;
+      width: 180px;
 
       div {
         white-space: nowrap;
@@ -223,7 +224,7 @@
     }
 
     .extra {
-      width: 130px;
+      width: 100px;
       font-size: 12px;
       line-height: 32px;
       color: rgba(255, 255, 255, 0.54);
@@ -233,7 +234,7 @@
 
       .description {
         flex: 1;
-        min-width: 0;
+        min-width: 0 !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
