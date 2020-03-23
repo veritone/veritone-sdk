@@ -5,11 +5,11 @@ import {
   select
 } from 'redux-saga/effects';
 import { get } from 'lodash';
-import { handleRequest } from './helper';
-import * as folderReducer from './index';
-import * as folderSelector from './selector';
+import { handleRequest } from '../helper';
+import * as actions from '../actions';
+import * as folderSelector from '../selector';
 export default function* modifyFolderSaga() {
-  yield takeEvery(folderReducer.EDIT_FOLDER, modifyFolder);
+  yield takeEvery(actions.EDIT_FOLDER, modifyFolder);
 }
 function* modifyFolder(action) {
   const {
@@ -20,7 +20,7 @@ function* modifyFolder(action) {
     parentId
   } = action.payload;
   let folder;
-  yield put(folderReducer.modifyFolderStart(folderId));
+  yield put(actions.modifyFolderStart(folderId));
   const { type: rootFolderType } = yield select(folderSelector.config);
   //get tree object and parent tree object
   const queryFolder = `query folder($id:ID!){
@@ -43,7 +43,7 @@ function* modifyFolder(action) {
     variables: variablesFolder
   });
   if (error) {
-    return yield put(folderReducer.deleteFolderError(folderId));
+    return yield put(actions.deleteFolderError(folderId));
   }
   const {
     treeObjectId,
@@ -79,10 +79,10 @@ function* modifyFolder(action) {
       variables
     });
     if (errorEditName) {
-      yield put(folderReducer.modifyFolderError(folderId));
+      yield put(actions.modifyFolderError(folderId));
     }
     folder = get(responseEditName, 'data.updateFolder', {});
-    yield put(folderReducer.modifyFolderSuccess({
+    yield put(actions.modifyFolderSuccess({
       id: folder.id,
       name: folder.name
     }));
@@ -100,7 +100,7 @@ function* modifyFolder(action) {
       variables: newParentVariables
     });
     if (newParentError) {
-      return yield put(folderReducer.deleteFolderError(folderId));
+      return yield put(actions.deleteFolderError(folderId));
     }
     const { treeObjectId: newParentTreeObjectId } = get(newParentResponse, 'data.folder', {});
     const { treeObjectId: prevParentTreeObjectId } = oldParent;
@@ -145,15 +145,15 @@ function* modifyFolder(action) {
       variables: moveVariables
     });
     if (moveError) {
-      return yield put(folderReducer.modifyFolderError(folderId));
+      return yield put(actions.modifyFolderError(folderId));
     }
     folder = get(moveRespone, 'data.moveFolder', {});
-    yield put(folderReducer.modifyFolderSuccess({
+    yield put(actions.modifyFolderSuccess({
       id: folder.id,
       name: folder.name
     }));
-    yield put(folderReducer.fetchMore(oldParent.id, true));
-    yield put(folderReducer.fetchMore(parentId, true));
+    yield put(actions.fetchMore(oldParent.id, true));
+    yield put(actions.fetchMore(parentId, true));
   }
-  yield put(folderReducer.fetchMore(oldParent.id, true));
+  yield put(actions.fetchMore(oldParent.id, true));
 }

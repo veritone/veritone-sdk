@@ -288,3 +288,16 @@
 * **POTENTIONALLY BREAKING UPDATES** that may or may not affect existing styles / behaviours
   * React version updated to 16.9.0
   * Material-ui version updated to 4.4
+
+## 9.0.4
+
+* Upgrade redux and related package to latest.
+* Add folder tree components
+
+* **POTENTIONALLY BREAKING UPDATES** that may or may not affect existing styles / behaviours
+  * Material-ui version updated to lastest
+  * Redux version updated to 4.0.4
+  * React-redux version updated to 7.1.3
+  * Redux-form version updated to 8.2.6
+  * Redux-saga version updated to 1.1.3
+  * Using css-in-js

@@ -293,3 +293,16 @@ const MyPage = () => (
 
 * Exposed `open` prop for DataPicker component
 * Default DataPicker to modal view
+
+## 9.0.0
+
+* Add folder tree widgets
+* Upgrade redux and related package to latest
+
+* **POTENTIONALLY BREAKING UPDATES** that may or may not affect existing styles / behaviours
+  * Material-ui version updated to lastest
+  * Redux version updated to 4.0.4
+  * React-redux version updated to 7.1.3
+  * Redux-form version updated to 8.2.6
+  * Redux-saga version updated to 1.1.3
+  * Using css-in-js

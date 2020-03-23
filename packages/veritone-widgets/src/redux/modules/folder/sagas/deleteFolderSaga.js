@@ -6,16 +6,16 @@ import {
 } from 'redux-saga/effects';
 import get from 'lodash/get';
 import omit from 'lodash/omit';
-import { handleRequest } from './helper';
-import * as folderReducer from './index';
-import * as folderSelector from './selector';
+import { handleRequest } from '../helper';
+import * as actions from '../actions';
+import * as folderSelector from '../selector';
 export default function* deleteFolderSaga() {
-  yield takeEvery(folderReducer.DELETE_FOLDER, deleteFolder);
+  yield takeEvery(actions.DELETE_FOLDER, deleteFolder);
 }
 
 function* deleteFolder(action) {
   const { folderId, workSpace } = action.payload;
-  yield put(folderReducer.deleteFolderStart(folderId));
+  yield put(actions.deleteFolderStart(folderId));
   const foldersData = yield select(folderSelector.folderData);
   const folderSelected = yield select(folderSelector.selected);
   const { selectable } = yield select(folderSelector.config);
@@ -40,7 +40,7 @@ function* deleteFolder(action) {
   }
   const { error, response } = yield call(handleRequest, { query: queryFolder, variables: variablesFolder });
   if (error) {
-    return yield put(folderReducer.deleteFolderError(folderId));
+    return yield put(actions.deleteFolderError(folderId));
   }
   const { orderIndex, parent, treeObjectId } = get(response, 'data.folder', {});
   const query = `
@@ -60,19 +60,19 @@ function* deleteFolder(action) {
   }
   const { error: errorDelete } = yield call(handleRequest, { query, variables });
   if (errorDelete) {
-    yield put(folderReducer.deleteFolderError(folderId));
+    yield put(actions.deleteFolderError(folderId));
   }
-  yield put(folderReducer.initFolder(parent.id));
+  yield put(actions.initFolder(parent.id));
   if (get(folderSelected, [workSpace, folderId])) {
     if (!selectable) {
-      yield put(folderReducer.selectFolder(workSpace, {
+      yield put(actions.selectFolder(workSpace, {
         [rootIds[0]]: true
       }))
     } else {
       const newSelected = omit(folderSelected, [folderId]);
-      yield put(folderReducer.selectFolder(workSpace, newSelected));
+      yield put(actions.selectFolder(workSpace, newSelected));
     }
   }
 
-  return yield put(folderReducer.deleteFolderSuccess(folderId, parent.id));
+  return yield put(actions.deleteFolderSuccess(folderId, parent.id));
 }

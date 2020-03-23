@@ -1,30 +1,36 @@
 import { createSelector } from 'reselect';
 
-export const folderData = state => state.folderTree.foldersData;
+export const namespace = 'folderTree';
 
-export const folderFetching = state => state.folderTree.fetching;
+export const folderSelector = state => state[namespace];
 
-export const folderFetched = state => state.folderTree.fetched;
+export const folderData = state => state[namespace].foldersData;
 
-export const folderError = state => state.folderTree.error;
+export const folderFetching = state => state[namespace].fetching;
 
-export const rootFolderIds = state => state.folderTree.foldersData.rootIds;
+export const folderFetched = state => state[namespace].fetched;
 
-export const folderById = state => folderId => state.folderTree.foldersData.byId[folderId];
+export const folderError = state => state[namespace].error;
 
-export const folderExpanded = state => state.folderTree.expandedFolderIds;
+export const rootFolderIds = state => state[namespace].foldersData.rootIds;
 
-export const selected = state => state.folderTree.selectedFolder;
+export const folderById = state => folderId => state[namespace].foldersData.byId[folderId];
 
-export const processingFolder = state => state.folderTree.processingFolder;
+export const folderExpanded = state => state[namespace].expandedFolderIds;
 
-export const config = state => state.folderTree.config;
+export const selected = state => state[namespace].selectedFolder;
 
-export const searchValue = state => state.folderTree.currentSearchValue;
+export const processingFolder = state => state[namespace].processingFolder;
 
-export const searchData = state => state.folderTree.searchFolderData;
+export const config = state => state[namespace].config;
 
-export const initialSuccess = state => state.folderTree.initialSuccess;
+export const searchValue = state => state[namespace].currentSearchValue;
+
+export const searchData = state => state[namespace].searchFolderData;
+
+export const initialSuccess = state => state[namespace].initialSuccess;
+
+export const eventSelector = state => state[namespace].event;
 
 export const foldersDataSelector = createSelector(
   [folderData, searchValue, searchData],

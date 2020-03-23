@@ -3,14 +3,14 @@ import {
   fork,
   all
 } from 'redux-saga/effects';
-import expandFolderSaga from './expandFolderSaga';
-import initFolderSaga from './initFolderSaga';
-import createFolderSaga from './createFolderSagas';
-import deleteFolderSaga from './deleteFolderSaga';
-import modifyFolderSaga from './editFolderSaga';
-import searchFolderSaga from './searchFolderSaga';
+import expandFolderSaga from './sagas/expandFolderSaga';
+import initFolderSaga from './sagas/initFolderSaga';
+import createFolderSaga from './sagas/createFolderSagas';
+import deleteFolderSaga from './sagas/deleteFolderSaga';
+import modifyFolderSaga from './sagas/editFolderSaga';
+import searchFolderSaga from './sagas/searchFolderSaga';
 
-export default function* root() {
+export function* folderSaga() {
   yield all([
     fork(initFolderSaga),
     fork(expandFolderSaga),
@@ -20,3 +20,5 @@ export default function* root() {
     fork(modifyFolderSaga)
   ])
 }
+
+export default folderSaga;

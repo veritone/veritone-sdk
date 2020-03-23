@@ -8,11 +8,12 @@ import {
 import includes from 'lodash/includes';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
-import { handleRequest } from './helper';
-import * as folderReducer from './index';
-import * as folderSelector from './selector';
+import { handleRequest } from '../helper';
+import * as actions from '../actions';
+import * as folderSelector from '../selector';
+import { folderType } from '../reducer';
 export default function* expandFolder() {
-  yield takeEvery(folderReducer.FETCH_MORE, function* (action) {
+  yield takeEvery(actions.FETCH_MORE, function* (action) {
     const { folderId, isReload } = action.payload;
     const config = yield select(folderSelector.config);
     const rootFolderIds = yield select(folderSelector.rootFolderIds);
@@ -21,7 +22,7 @@ export default function* expandFolder() {
       return;
     }
     if (includes(expandedFolder, folderId)) {
-      return yield put(folderReducer.initFolder(folderId));
+      return yield put(actions.initFolder(folderId));
     }
     const { selectable, workSpace } = config;
     return yield expandFolderInFunction(folderId, workSpace, selectable);
@@ -29,7 +30,7 @@ export default function* expandFolder() {
 }
 
 export function* expandFolderInFunction(folderId, workSpace, selectable) {
-  yield put(folderReducer.fetchMoreStart(folderId));
+  yield put(actions.fetchMoreStart(folderId));
   const folders = yield fetchMore(folderId);
   const folderReprocess = folders.map(folder => {
     const childs = get(folder, 'childFolders.records', []);
@@ -39,7 +40,7 @@ export function* expandFolderInFunction(folderId, workSpace, selectable) {
       childs: childs.map(item => item.id)
     }
   });
-  yield put(folderReducer.fetchMoreSuccess(folderReprocess, folderId));
+  yield put(actions.fetchMoreSuccess(folderReprocess, folderId));
   const folderChildId = folderReprocess.map(folder => folder.id);
   const selected = yield select(folderSelector.selected);
   if (get(selected, [workSpace, folderId]) && selectable) {
@@ -50,7 +51,7 @@ export function* expandFolderInFunction(folderId, workSpace, selectable) {
         [value]: true
       }), {})
     }
-    yield put(folderReducer.selectFolder(workSpace, newSelected));
+    yield put(actions.selectFolder(workSpace, newSelected));
   }
 }
 export function* fetchMore(folderId) {
@@ -63,8 +64,8 @@ export function* fetchMore(folderId) {
   const pageSize = 30;
   let results = [];
   let contentResult = [];
-  const childType = folderReducer.folderType[type].childsType;
-  const childContentType = isEnableShowContent ? folderReducer.folderType[type].childs : '';
+  const childType = folderType[type].childsType;
+  const childContentType = isEnableShowContent ? folderType[type].childs : '';
   const queryFolder = `query folder($id:ID!, $offset: Int, $limit: Int){
       folder(id: $id){
         id
@@ -116,7 +117,7 @@ export function* fetchMore(folderId) {
     }`
   function* getChildFolder(offset) {
     if (!Number.isInteger(parseInt(offset))) {
-      return yield put(folderReducer.initFolderError('Something wrong'));
+      return yield put(actions.initFolderError('Something wrong'));
     }
     const variables = {
       id: folderId,
@@ -125,7 +126,7 @@ export function* fetchMore(folderId) {
     }
     const { error, response } = yield call(handleRequest, { query: queryFolder, variables });
     if (error) {
-      yield put(folderReducer.initFolderError(error));
+      yield put(actions.initFolderError(error));
       return results;
     }
     const count = get(response, 'data.folder.childFolders.count', 0);
@@ -151,7 +152,7 @@ export function* fetchMore(folderId) {
       return [];
     }
     if (!Number.isInteger(parseInt(offset))) {
-      yield put(folderReducer.initFolderError('Something wrong'));
+      yield put(actions.initFolderError('Something wrong'));
       return [];
     }
     const variables = {
@@ -161,7 +162,7 @@ export function* fetchMore(folderId) {
     }
     const { error, response } = yield call(handleRequest, { query: queryContent, variables });
     if (error) {
-      yield put(folderReducer.initFolderError(error));
+      yield put(actions.initFolderError(error));
       return contentResult;
     }
     const records = get(response, ['data', 'folder', childType, 'records'], []);

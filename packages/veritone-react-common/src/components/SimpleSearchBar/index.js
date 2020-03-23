@@ -133,7 +133,10 @@ class SimpleSearchBarBaseComponent extends React.Component {
             style={{
               borderRadius: 8
             }}
-            className={cx(classes.colorContainer)}
+            className={cx({
+              [classes.colorContainer]: true,
+              [classes.focusedColor]: focused
+            })}
           >
             <div className={classes.searchBarContainer} style={{ width: _width }}>
               <IconButton disabled={!focused} onClick={onSubmit}>
@@ -168,7 +171,7 @@ class SimpleSearchBarBaseComponent extends React.Component {
             {showExtension && (
               <Fragment>
                 <Divider />
-                <div style={{ overflow: 'scroll' }}>
+                <div style={{ overflow: 'scroll', background: 'white' }}>
                   {autocompleteResults.map(result => {
                     // if we have plain string array
                     // eslint-disable-next-line lodash/prefer-lodash-typecheck

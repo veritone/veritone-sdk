@@ -2,7 +2,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { get, isNil, omit, isEmpty } from 'lodash';
-import { shape, bool, func, arrayOf, string } from 'prop-types';
+import { shape, bool, func, arrayOf, number } from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -193,7 +193,7 @@ EditFolder.propTypes = {
   isEnableEditName: bool,
   isEnableEditFolder: bool,
   isNewFolder: bool,
-  type: string,
+  type: number,
   currentFolder: shape(Object),
   handleClose: func,
   handleSubmit: func,
