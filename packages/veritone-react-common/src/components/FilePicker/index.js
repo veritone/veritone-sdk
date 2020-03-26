@@ -12,8 +12,9 @@ import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
-import styles from './styles';
 import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
+import ResizePanel from './ResizePanel';
+import styles from './styles';
 
 class FilePicker extends Component {
   static propTypes = {
@@ -28,7 +29,9 @@ class FilePicker extends Component {
     title: string,
     tooManyFilesErrorMessage: func,
     oneFileOnlyErrorMessage: string,
-    classes: shape({ any }),
+    enableResize: bool,
+    classes: shape({ any })
+
   };
 
   static defaultProps = {
@@ -39,11 +42,16 @@ class FilePicker extends Component {
     title: 'File Picker',
     tooManyFilesErrorMessage: maxFiles =>
       `You can select up to and including ${maxFiles} files. Please remove any unnecessary files.`,
-    oneFileOnlyErrorMessage: `Only one file can be selected at a time`
+    oneFileOnlyErrorMessage: `Only one file can be selected at a time`,
+    enableResize: true
   };
 
   state = {
     selectedTab: 'upload',
+    resize: {
+      showing: false,
+      targetFile: null
+    },
     files: [],
     errorMessage: ''
   };
@@ -127,6 +135,16 @@ class FilePicker extends Component {
     );
   };
 
+  onFileResize = (file) => {
+    console.log(file);
+    this.setState({
+      resize: {
+        showing: true,
+        targetFile: file
+      }
+    })
+  }
+
   clearErrorMessage() {
     this.setState({
       errorMessage: ''
@@ -144,12 +162,23 @@ class FilePicker extends Component {
     }
   }
 
+  onSubmitResize = (file) => {
+    console.log(file);
+  }
+
   render() {
     const acceptedFileTypes = (isString(this.props.accept)
       ? [this.props.accept]
       : this.props.accept
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
     const { classes } = this.props;
+    const { resize: {
+      showing: resizeShowing,
+      targetFile
+    } } = this.state;
+
+    console.log(resizeShowing);
+    console.log(targetFile);
 
     return (
       <DndProvider backend={HTML}>
@@ -195,19 +224,31 @@ class FilePicker extends Component {
 
             {this.state.selectedTab === 'upload' && (
               <div className={classes.filePickerBody} data-test="filePickerBody">
-                <FileUploader
-                  useFlatStyle={!this.props.onRequestClose}
-                  onFilesSelected={this.handleFilesSelected}
-                  onFilesRejected={this.handleFilesRejected}
-                  acceptedFileTypes={acceptedFileTypes}
-                  multiple={this.props.multiple}
-                />
-                {this.state.files.length > 0 && (
-                  <FileList
-                    files={this.state.files}
-                    onRemoveFile={this.handleRemoveFile}
+                {resizeShowing ?
+                  <ResizePanel
+                  file={targetFile}
+                  onSubmit={this.onSubmitResize}
                   />
-                )}
+                  :
+                  <React.Fragment>
+                    <FileUploader
+                      useFlatStyle={!this.props.onRequestClose}
+                      onFilesSelected={this.handleFilesSelected}
+                      onFilesRejected={this.handleFilesRejected}
+                      acceptedFileTypes={acceptedFileTypes}
+                      multiple={this.props.multiple}
+                    />
+                    {this.state.files.length > 0 && (
+                      <FileList
+                        enableResize={this.props.enableResize}
+                        onFileResize={this.onFileResize}
+                        files={this.state.files}
+                        onRemoveFile={this.handleRemoveFile}
+                      />
+                    )}
+                  </React.Fragment>
+                }
+
               </div>
             )}
 

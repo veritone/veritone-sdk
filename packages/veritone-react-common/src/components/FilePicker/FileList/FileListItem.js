@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
+import CropIcon from '@material-ui/icons/Crop';
 import { withStyles } from '@material-ui/styles';
-import { shape, func, number, string, any } from 'prop-types';
+import { shape, func, number, string, any, bool } from 'prop-types';
 
 import { formatBytes } from '../../../helpers/format.js';
 
@@ -11,6 +12,8 @@ import styles from './styles';
 class FileListItem extends Component {
   static propTypes = {
     onRemoveFile: func.isRequired,
+    onFileResize: func.isRequired,
+    enableResize: bool,
     file: shape({
       lastModified: number,
       name: string,
@@ -36,6 +39,13 @@ class FileListItem extends Component {
     }
   }
 
+  get isImageFile() {
+    const { file } = this.props;
+    const fileType = file['type'];
+    const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
+    return validImageTypes.includes(fileType);
+  }
+
   readImageFile = file => {
     const fileReader = new FileReader();
     fileReader.onload = () => {
@@ -57,8 +67,13 @@ class FileListItem extends Component {
     this.props.onRemoveFile(this.props.index);
   };
 
+  onResizeImage = () => {
+    const { file } = this.props;
+    this.props.onFileResize(file);
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, enableResize } = this.props;
     return (
       <div className={classes.item}>
         <div className={classes.itemPreviewContainer}>
@@ -75,13 +90,24 @@ class FileListItem extends Component {
         </div>
 
         <div className={classes.itemTextContainer}>
-          <span className={classes.itemNameText} data-test="itemNameText">{this.props.file.name}</span>
+          <span className={classes.itemNameText} data-test="itemNameText">
+            {this.props.file.name}
+          </span>
           <span className={classes.itemFileSizeText} data-test="itemFileSizeText">
             {formatBytes(this.props.file.size)}
           </span>
         </div>
 
         <div className={classes.itemActionContainer}>
+          {this.isImageFile && enableResize && (
+            <IconButton
+              className={classes.itemDeleteIcon}
+              aria-label="Resize"
+              onClick={this.onResizeImage}
+            >
+              <CropIcon />
+            </IconButton>
+          )}
           <IconButton
             className={classes.itemDeleteIcon}
             aria-label="Delete"

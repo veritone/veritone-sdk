@@ -63,5 +63,10 @@ export default {
   },
   itemDeleteIcon: {
     width: previewSize,
+    height: previewSize,
+    padding: 8
   },
+  itemActionContainer: {
+    display: 'flex'
+  }
 }
