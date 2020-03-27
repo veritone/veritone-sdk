@@ -166,6 +166,7 @@ class Story extends React.Component {
   };
 
   onPlayerRefReady = ref => {
+    console.log('-----------');
     this.mediaPlayer = ref;
     if (!this.mediaPlayer) {
       console.log(
