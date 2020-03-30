@@ -46,11 +46,9 @@ class MediaPlayerComponent extends React.Component {
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
     onPlayerRefReady: func,
-
     defaultBoundingBoxStyles: objectOf(any),
     stagedBoundingBoxStyles: objectOf(any),
     stylesByObjectType: objectOf(objectOf(any)),
-
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -71,7 +69,7 @@ class MediaPlayerComponent extends React.Component {
     paused: bool,
     currentTime: number,
     autofocus: bool,
-    forwardedRef: objectOf(any)
+    myForwardedRef: objectOf(any)
   };
 
   static contextTypes = {
@@ -88,11 +86,10 @@ class MediaPlayerComponent extends React.Component {
   };
 
   render() {
-    const { forwardedRef, ...rest } = this.props;
-    console.log('-------------------', this.props);
+    const { myForwardedRef, ...rest } = this.props;
     return (
       <LibMediaPlayer
-        forwardedRef={forwardedRef}
+        myForwardedRef={myForwardedRef}
         {...rest}
       />
     );

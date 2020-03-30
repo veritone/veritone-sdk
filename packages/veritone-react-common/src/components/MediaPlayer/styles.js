@@ -5,8 +5,8 @@ export default {
         '.video-react-big-play-button.video-react-big-play-button-center': {
           top: '50%',
           left: '50%',
-          marginLeft: '-0.75em',
-          marginTop: '-0.75em',
+          marginLeft: '-0.75em !important',
+          marginTop: '-0.75em !important',
           height: '1.5em',
           width: '1.5em',
           borderRadius: '1em',
