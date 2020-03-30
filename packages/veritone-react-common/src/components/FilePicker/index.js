@@ -30,8 +30,8 @@ class FilePicker extends Component {
     tooManyFilesErrorMessage: func,
     oneFileOnlyErrorMessage: string,
     enableResize: bool,
+    aspectRatio: number,
     classes: shape({ any })
-
   };
 
   static defaultProps = {
@@ -43,7 +43,8 @@ class FilePicker extends Component {
     tooManyFilesErrorMessage: maxFiles =>
       `You can select up to and including ${maxFiles} files. Please remove any unnecessary files.`,
     oneFileOnlyErrorMessage: `Only one file can be selected at a time`,
-    enableResize: true
+    enableResize: false,
+    aspectRatio: 16 / 9
   };
 
   state = {
@@ -136,7 +137,6 @@ class FilePicker extends Component {
   };
 
   onFileResize = (file) => {
-    console.log(file);
     this.setState({
       resize: {
         showing: true,
@@ -155,16 +155,38 @@ class FilePicker extends Component {
     if (this.props.multiple && this.props.maxFiles) {
       return (
         this.state.files.length > this.props.maxFiles ||
-        this.state.files.length === 0
+        this.state.files.length === 0 || this.state.resize.showing
       );
     } else {
-      return this.state.files.length === 0;
+      return this.state.files.length === 0 || this.state.resize.showing;
     }
   }
 
-  onSubmitResize = (file) => {
-    console.log(file);
-  }
+  onSubmitResize = (croppedFile) => {
+    this.setState(state => ({
+      files: state.files.map(file => {
+        if (`cropped-${file.name}` === croppedFile.name) {
+          return croppedFile;
+        }
+        return file;
+      })
+    }));
+    this.setState({
+      resize: {
+        showing: false,
+        targetFile: null
+      }
+    })
+  };
+
+  onCancalResize = () => {
+    this.setState({
+      resize: {
+        showing: false,
+        targetFile: null
+      }
+    });
+  };
 
   render() {
     const acceptedFileTypes = (isString(this.props.accept)
@@ -176,9 +198,6 @@ class FilePicker extends Component {
       showing: resizeShowing,
       targetFile
     } } = this.state;
-
-    console.log(resizeShowing);
-    console.log(targetFile);
 
     return (
       <DndProvider backend={HTML}>
@@ -226,8 +245,10 @@ class FilePicker extends Component {
               <div className={classes.filePickerBody} data-test="filePickerBody">
                 {resizeShowing ?
                   <ResizePanel
-                  file={targetFile}
-                  onSubmit={this.onSubmitResize}
+                    file={targetFile}
+                    aspectRatio={this.props.aspectRatio}
+                    onSubmit={this.onSubmitResize}
+                    onCancel={this.onCancalResize}
                   />
                   :
                   <React.Fragment>
