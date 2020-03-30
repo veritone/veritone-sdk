@@ -90,7 +90,7 @@ class MediaPlayerComponent extends React.Component {
     paused: bool,
     currentTime: number,
     autofocus: bool,
-    forwardedRef: objectOf(any),
+    myForwardedRef: objectOf(any),
     useOverlayControlBar: bool,
     isFullscreen: bool,
     btnRestart: bool,
@@ -132,7 +132,7 @@ class MediaPlayerComponent extends React.Component {
 
   componentDidMount() {
     if (this.props.onPlayerRefReady) {
-      const playerRef = get(this.props.forwardedRef, 'current');
+      const playerRef = get(this.props.myForwardedRef, 'current');
       if (playerRef) {
         this.props.onPlayerRefReady(playerRef);
       }
@@ -198,7 +198,7 @@ class MediaPlayerComponent extends React.Component {
         )}
         <Player
           className={cx(classes.mediaPlayer, reactPlayerClassName)}
-          ref={this.props.forwardedRef}
+          ref={this.props.myForwardedRef}
           store={this.context.store}
           {...props}
         >
