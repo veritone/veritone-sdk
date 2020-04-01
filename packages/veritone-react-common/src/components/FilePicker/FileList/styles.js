@@ -20,7 +20,7 @@ export default {
   },
   item: {
     display: 'flex',
-    justifyContent: 'spaceBetween',
+    justifyContent: 'space-between',
     height: 50,
     borderBottom: `1px solid ${grey4}`,
   },
@@ -31,8 +31,8 @@ export default {
   itemImage: {
     ...filePickerRoundImage(previewSize),
     backgroundPosition: 'center',
-    backgroundSize: '$previewSize auto',
-    backgroundRepeat: 'noRepeat',
+    backgroundSize: `${previewSize}px auto`,
+    backgroundRepeat: 'no-repeat',
   },
 
   itemFolderIcon: {
