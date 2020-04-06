@@ -149,6 +149,7 @@ storiesOf('FilePicker', module)
       accept={allFormats}
       onPickFiles={action('upload files')}
       onRequestClose={action('close modal')}
+      multiple
     />
   )).add('File Progress Dialog', () => (
     <FileProgressDialog
