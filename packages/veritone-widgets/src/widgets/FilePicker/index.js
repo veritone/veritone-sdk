@@ -74,7 +74,9 @@ class FilePicker extends React.Component {
     onPickCancelled: func,
     onPick: func,
     height: number,
-    width: number
+    width: number,
+    enableResize: bool,
+    aspectRatio: number,
   };
 
   static defaultProps = {
@@ -83,7 +85,9 @@ class FilePicker extends React.Component {
     onPick: noop,
     percentByFiles: [],
     height: 450,
-    width: 600
+    width: 600,
+    enableResize: false,
+    aspectRatio: 16/9,
   };
 
   handlePick = () => {

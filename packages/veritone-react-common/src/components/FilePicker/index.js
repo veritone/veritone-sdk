@@ -12,8 +12,9 @@ import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
-import styles from './styles';
 import FilePickerFlatHeader from './FilePickerHeader/FilePickerFlatHeader';
+import ResizePanel from './ResizePanel';
+import styles from './styles';
 
 class FilePicker extends Component {
   static propTypes = {
@@ -28,7 +29,9 @@ class FilePicker extends Component {
     title: string,
     tooManyFilesErrorMessage: func,
     oneFileOnlyErrorMessage: string,
-    classes: shape({ any }),
+    enableResize: bool,
+    aspectRatio: number,
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -39,11 +42,17 @@ class FilePicker extends Component {
     title: 'File Picker',
     tooManyFilesErrorMessage: maxFiles =>
       `You can select up to and including ${maxFiles} files. Please remove any unnecessary files.`,
-    oneFileOnlyErrorMessage: `Only one file can be selected at a time`
+    oneFileOnlyErrorMessage: `Only one file can be selected at a time`,
+    enableResize: false,
+    aspectRatio: 16 / 9
   };
 
   state = {
     selectedTab: 'upload',
+    resize: {
+      showing: false,
+      targetFile: null
+    },
     files: [],
     errorMessage: ''
   };
@@ -127,6 +136,15 @@ class FilePicker extends Component {
     );
   };
 
+  onFileResize = (file) => {
+    this.setState({
+      resize: {
+        showing: true,
+        targetFile: file
+      }
+    })
+  }
+
   clearErrorMessage() {
     this.setState({
       errorMessage: ''
@@ -137,12 +155,38 @@ class FilePicker extends Component {
     if (this.props.multiple && this.props.maxFiles) {
       return (
         this.state.files.length > this.props.maxFiles ||
-        this.state.files.length === 0
+        this.state.files.length === 0 || this.state.resize.showing
       );
     } else {
-      return this.state.files.length === 0;
+      return this.state.files.length === 0 || this.state.resize.showing;
     }
   }
+
+  onSubmitResize = (croppedFile) => {
+    this.setState(state => ({
+      files: state.files.map(file => {
+        if (`cropped-${file.name}` === croppedFile.name) {
+          return croppedFile;
+        }
+        return file;
+      })
+    }));
+    this.setState({
+      resize: {
+        showing: false,
+        targetFile: null
+      }
+    })
+  };
+
+  onCancalResize = () => {
+    this.setState({
+      resize: {
+        showing: false,
+        targetFile: null
+      }
+    });
+  };
 
   render() {
     const acceptedFileTypes = (isString(this.props.accept)
@@ -150,6 +194,10 @@ class FilePicker extends Component {
       : this.props.accept
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
     const { classes } = this.props;
+    const { resize: {
+      showing: resizeShowing,
+      targetFile
+    } } = this.state;
 
     return (
       <DndProvider backend={HTML}>
@@ -195,19 +243,33 @@ class FilePicker extends Component {
 
             {this.state.selectedTab === 'upload' && (
               <div className={classes.filePickerBody} data-test="filePickerBody">
-                <FileUploader
-                  useFlatStyle={!this.props.onRequestClose}
-                  onFilesSelected={this.handleFilesSelected}
-                  onFilesRejected={this.handleFilesRejected}
-                  acceptedFileTypes={acceptedFileTypes}
-                  multiple={this.props.multiple}
-                />
-                {this.state.files.length > 0 && (
-                  <FileList
-                    files={this.state.files}
-                    onRemoveFile={this.handleRemoveFile}
+                {resizeShowing ?
+                  <ResizePanel
+                    file={targetFile}
+                    aspectRatio={this.props.aspectRatio}
+                    onSubmit={this.onSubmitResize}
+                    onCancel={this.onCancalResize}
                   />
-                )}
+                  :
+                  <React.Fragment>
+                    <FileUploader
+                      useFlatStyle={!this.props.onRequestClose}
+                      onFilesSelected={this.handleFilesSelected}
+                      onFilesRejected={this.handleFilesRejected}
+                      acceptedFileTypes={acceptedFileTypes}
+                      multiple={this.props.multiple}
+                    />
+                    {this.state.files.length > 0 && (
+                      <FileList
+                        enableResize={this.props.enableResize}
+                        onFileResize={this.onFileResize}
+                        files={this.state.files}
+                        onRemoveFile={this.handleRemoveFile}
+                      />
+                    )}
+                  </React.Fragment>
+                }
+
               </div>
             )}
 
