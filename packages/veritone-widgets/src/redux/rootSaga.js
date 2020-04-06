@@ -11,7 +11,7 @@ import engineSelectionRootSaga from './modules/engineSelection/saga';
 import engineOutputExportSaga from './modules/engineOutputExport/saga';
 import editProfileRootSaga from './modules/userProfile/saga';
 import folderTreeSaga from './modules/folder/sagas';
-
+import uploadRootSaga from './modules/uploadFile/uploadFileSaga';
 export default function* root() {
   yield all([
     fork(authRootSaga),
@@ -21,6 +21,7 @@ export default function* root() {
     fork(engineSelectionRootSaga),
     fork(engineOutputExportSaga),
     fork(editProfileRootSaga),
-    fork(folderTreeSaga)
+    fork(folderTreeSaga),
+    fork(uploadRootSaga)
   ]);
 }

@@ -36,6 +36,10 @@ import folderTreeReducer, {
   namespace as folderTreeNamespace
 } from './modules/folder';
 
+import upLoadFileReducer, {
+  namespace as uploadFileNamespace
+} from './modules/uploadFile';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -61,7 +65,8 @@ export const reducers = {
   [folderTreeNamespace]: folderTreeReducer,
   player: playerReducer,
   operation: operationReducer,
-  form: formReducer
+  form: formReducer,
+  [uploadFileNamespace]: upLoadFileReducer,
 };
 
 export default function createReducer(asyncReducers) {
