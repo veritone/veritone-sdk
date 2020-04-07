@@ -110,6 +110,7 @@ class AppBar extends React.Component {
 
   goHome = () => {
     window.location.pathname = '/';
+    window.location.hash = '';
   };
 
   render() {
