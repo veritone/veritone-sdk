@@ -38,8 +38,7 @@ export default {
     'redux-thunk',
     'video-react',
     'shaka-player',
-    'immutability-helper',
-    'react-cropper'
+    'immutability-helper'
   ],
   plugins: [
     replace({
@@ -84,6 +83,7 @@ export default {
 
     postcss({
       modules: true,
+      extract: true,
       loaders: [sass]
     }),
 

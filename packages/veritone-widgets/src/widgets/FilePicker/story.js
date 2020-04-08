@@ -3,7 +3,6 @@ import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import 'cropperjs/dist/cropper.css';
 
 import FilePicker, { FilePickerWidget } from './';
 
