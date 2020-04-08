@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { noop } from 'lodash';
 import {
   arrayOf,
@@ -18,15 +18,6 @@ import {
   MediaPlayer as LibMediaPlayer
 } from 'veritone-react-common';
 
-@connect(state => ({
-  videoHeight: state.player.videoHeight,
-  videoWidth: state.player.videoWidth,
-  hasStarted: state.player.hasStarted,
-  isActive: state.player.isActive,
-  currentTime: state.player.currentTime,
-  paused: state.player.paused,
-  isFullscreen: state.player.isFullscreen
-}))
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
@@ -55,11 +46,9 @@ class MediaPlayerComponent extends React.Component {
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
     onPlayerRefReady: func,
-
     defaultBoundingBoxStyles: objectOf(any),
     stagedBoundingBoxStyles: objectOf(any),
     stylesByObjectType: objectOf(objectOf(any)),
-
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -80,7 +69,7 @@ class MediaPlayerComponent extends React.Component {
     paused: bool,
     currentTime: number,
     autofocus: bool,
-    forwardedRef: objectOf(any)
+    myForwardedRef: objectOf(any)
   };
 
   static contextTypes = {
@@ -97,15 +86,33 @@ class MediaPlayerComponent extends React.Component {
   };
 
   render() {
+    const { myForwardedRef, ...rest } = this.props;
     return (
       <LibMediaPlayer
-        {...this.props} />
+        myForwardedRef={myForwardedRef}
+        {...rest}
+      />
     );
   }
 }
 
-const MediaPlayer = React.forwardRef((props, ref) => {
-  return <MediaPlayerComponent {...props} forwardedRef={ref} />;
+const MediaPlayerComponentWrapper = connect(
+  state => ({
+    videoHeight: state.player.videoHeight,
+    videoWidth: state.player.videoWidth,
+    hasStarted: state.player.hasStarted,
+    isActive: state.player.isActive,
+    currentTime: state.player.currentTime,
+    paused: state.player.paused,
+    isFullscreen: state.player.isFullscreen
+  }),
+  null,
+  null,
+  { forwardRef: true }
+)(MediaPlayerComponent);
+
+const MediaPlayer = forwardRef((props, ref) => {
+  return <MediaPlayerComponentWrapper {...props} myForwardedRef={ref} />;
 });
 MediaPlayer.displayName = 'MediaPlayer';
 

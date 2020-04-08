@@ -96,6 +96,7 @@ export default class EngineConfigItem extends Component {
             <Icon className={cx(classes['defaultEngineicon'], 'icon-engines')} />
           )}
         <ListItemText
+          className={classes.engineNameListText}
           classes={{ primary: classes.engineNameText }}
           primary={
             engine ? (

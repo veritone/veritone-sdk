@@ -58,6 +58,7 @@ export default {
       width: 24,
       height: 24,
       backgroundColor: grey3,
+      marginTop: 16
     },
     '& $defaultEngineIcon': {
       marginLeft: 30,
@@ -65,6 +66,7 @@ export default {
     '& $engineNameText': {
       ...body1Text,
       alignItems: 'center',
+      marginTop: 16,
       '& $allEnginesText': {
         display: 'flex',
         alignItems: 'center',
@@ -102,8 +104,8 @@ export default {
     marginRight: 5,
   },
   formControl: {
-    minWidth: '65% !important',
-    top: 5,
+    minWidth: '60% !important',
+    top: 0,
   },
   selectStyles: {
     width: '100% !important',
@@ -139,6 +141,10 @@ export default {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  engineNameListText: {
+    marginTop: 20,
+    padding: '0 10px'
+  },
   title: {},
   subtitle: {},
   closeButton: {},
@@ -154,6 +160,6 @@ export default {
   customizeButton: {},
   subtitleFieldLabel: {},
   subtitleFieldInput: {},
-  subtitleFieldLabelShrink: {},
+  subtitleFieldLabelShrink: {}
 }
 

@@ -21,6 +21,8 @@ import { shape, objectOf, any, bool, number } from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 
 import { RestartMediaButton } from 'veritone-react-common';
+import 'video-react/dist/video-react.css';
+
 import styles from './styles';
 
 @withStyles(styles)
@@ -52,7 +54,7 @@ export default class DefaultControlBar extends React.Component {
     displayTime: bool,
     autoHide: bool,
     autoHideTime: number,
-    classes: shape({ any }),
+    classes: shape({ any })
   };
   static defaultProps = {
     btnRestart: true,
@@ -100,7 +102,7 @@ export default class DefaultControlBar extends React.Component {
         className={cx(
           'video-react',
           {
-            'video-react-has-started': hasStarted
+            'video-react-has-started': hasStarted || get(player, 'hasStarted', false)
           },
           classes.externalStyles
         )}

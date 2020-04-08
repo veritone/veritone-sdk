@@ -2,7 +2,7 @@ export default {
   '@global': {
     '.video-react': {
       '@global': {
-        '.video-react-control-bar': {
+        '.video-react-control-bar.mediaPlayerControls': {
           position: 'relative !important',
         },
         '.mediaPlayerControls': {
