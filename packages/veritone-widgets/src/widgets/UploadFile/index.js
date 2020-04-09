@@ -6,7 +6,8 @@ import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
 import {
   FilePicker as FilePickerComponent,
-  FileProgressDialog
+  FileProgressDialog,
+  UploadFileOverview
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/uploadFile';
@@ -39,9 +40,9 @@ import Edit from '@material-ui/icons/Edit';
 import Delete from '@material-ui/icons/Delete';
 
 
-
 import styles from './styles.scss';
 import ListFileUpload from './listFile';
+import EditFileUpload from './editFile';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -85,7 +86,8 @@ const DialogActions = withStyles((theme) => ({
     statusMessage: filePickerModule.statusMessage(state, id),
     isShowListFile: filePickerModule.isShowListFile(state, id),
     uploadResult: filePickerModule.uploadResult(state, id),
-    checkedFile: filePickerModule.checkedFile(state, id)
+    checkedFile: filePickerModule.checkedFile(state, id),
+    isShowEditFileUpload: filePickerModule.isShowEditFileUpload(state, id)
   }),
   {
     pick: filePickerModule.pick,
@@ -95,7 +97,9 @@ const DialogActions = withStyles((theme) => ({
     retryRequest: filePickerModule.retryRequest,
     retryDone: filePickerModule.retryDone,
     onSelectionChange: filePickerModule.onSelectionChange,
-    removeFileUpload: filePickerModule.removeFileUpload
+    removeFileUpload: filePickerModule.removeFileUpload,
+    showEditFileUpload: filePickerModule.showEditFileUpload,
+    hideEditFileUpload: filePickerModule.hideEditFileUpload
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -152,7 +156,8 @@ class FilePicker extends React.Component {
     openUpload: false,
     activeStep: 0,
     skipped: new Set(),
-    currentScreen: 'overviewUpload'
+    currentScreen: 'overviewUpload',
+    uploadResultSelected: []
   }
 
   handlePick = () => {
@@ -297,6 +302,16 @@ class FilePicker extends React.Component {
      const { id, removeFileUpload, checkedFile } = this.props;
      removeFileUpload(id, checkedFile);
   }
+  handleEditFile = () => {
+    const { id, showEditFileUpload, checkedFile, uploadResult } = this.props;
+    const uploadResultSelected = uploadResult.filter((item, key) => checkedFile.includes(key));
+    this.setState({ uploadResultSelected })
+    showEditFileUpload(id);
+  }
+  handleCloseEditFileUpload = () => {
+    const { id, hideEditFileUpload } = this.props;
+    hideEditFileUpload(id);
+  }
   render() {
     const pickerComponent = {
       overview: this.overviewUploadFile,
@@ -305,8 +320,8 @@ class FilePicker extends React.Component {
       complete: this.listFile
     }[this.props.pickerState]();
     const steps = this.getSteps();
-    const { classes, isShowListFile, uploadResult, checkedFile } = this.props;
-    const { activeStep, currentScreen } = this.state;
+    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload } = this.props;
+    const { activeStep, uploadResultSelected } = this.state;
     console.log('isShowListFile', isShowListFile)
     return (
       <Fragment>
@@ -341,7 +356,7 @@ class FilePicker extends React.Component {
                       <IconButton onClick={this.handlePick}>
                         <Add />
                       </IconButton>
-                      <IconButton onClick={this.onClose} disabled={!checkedFile.length}>
+                      <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
                         <Edit />
                       </IconButton>
                       <IconButton onClick={this.handleRemoveFile} disabled={!checkedFile.length}>
@@ -391,7 +406,14 @@ class FilePicker extends React.Component {
           </DialogActions>
         </Dialog>
 
-
+        <EditFileUpload
+         open={isShowEditFileUpload}
+         title={'Edit Media'}
+         handleClose={this.handleCloseEditFileUpload}
+         data={uploadResultSelected}
+        />
+{/* 
+<UploadFileOverview title={'Upload Media'} handlePick={this.handlePick} /> */}
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}
       </Fragment>

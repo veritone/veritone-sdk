@@ -14,6 +14,9 @@ export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
 export const CLEAR_FILEPICKER_DATA = 'CLEAR_FILEPICKER_DATA';
 export const ON_SELECTION_CHANGE = 'ON_SELECTION_CHANGE';
 export const REMOVE_FILE_UPLOAD = 'REMOVE_FILE_UPLOAD';
+export const SHOW_EDIT_FILE_UPLOAD = 'SHOW_EDIT_FILE_UPLOAD';
+export const HIDE_EDIT_FILE_UPLOAD = 'HIDE_EDIT_FILE_UPLOAD';
+
 
 export const namespace = 'filePicker';
 
@@ -24,7 +27,7 @@ const defaultPickerState = {
   success: false,
   error: false,
   warning: false,
-  //uploadResult: null,
+  uploadResult: [],
   //isShowListFile: false
   checkedFile: []
 };
@@ -247,7 +250,26 @@ export default createReducer(defaultState, {
         ...state[id],
         checkedFile: newCheckedFile,
         uploadResult: newUploadResult,
-        state: newUploadResult.length ? 'complete' : 'overview'
+        state: newUploadResult.length ? 'complete' : 'overview',
+        isShowListFile: newUploadResult.length ? true : false
+      }
+    }
+  },
+  [SHOW_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        isShowEditFileUpload: true
+      }
+    }
+  },
+  [HIDE_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        isShowEditFileUpload: false
       }
     }
   }
@@ -313,6 +335,17 @@ export const removeFileUpload = (id, value) => ({
   type: REMOVE_FILE_UPLOAD,
   payload: { id, value }
 })
+
+export const showEditFileUpload = id => ({
+  type: SHOW_EDIT_FILE_UPLOAD,
+  payload: { id }
+})
+
+export const hideEditFileUpload = id => ({
+  type: HIDE_EDIT_FILE_UPLOAD,
+  payload: { id }
+})
+
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const state = (state, id) =>
   get(local(state), [id, 'state'], 'overview');
@@ -351,3 +384,4 @@ export const statusMessage = (state, id) =>
   get(local(state), [id, 'warning']) || get(local(state), [id, 'error']) || '';
 export const isShowListFile = (state, id) => get(local(state), [id, 'isShowListFile'], false);
 export const checkedFile = (state, id) => get(local(state), [id, 'checkedFile'], []);
+export const isShowEditFileUpload = (state, id) => get(local(state), [id, 'isShowEditFileUpload'], false);
