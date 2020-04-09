@@ -38,7 +38,12 @@ function* deleteFolder(action) {
   const variablesFolder = {
     id: folderId
   }
-  const { error, response } = yield call(handleRequest, { query: queryFolder, variables: variablesFolder });
+  const { error, response } = yield call(handleRequest,
+    {
+      query: queryFolder,
+      variables: variablesFolder
+    }
+  );
   if (error) {
     return yield put(actions.deleteFolderError(folderId));
   }
@@ -73,6 +78,6 @@ function* deleteFolder(action) {
       yield put(actions.selectFolder(workSpace, newSelected));
     }
   }
-
-  return yield put(actions.deleteFolderSuccess(folderId, parent.id));
+  yield put(actions.deleteFolderSuccess(folderId, parent.id));
+  return yield put(actions.updateSearchData());
 }

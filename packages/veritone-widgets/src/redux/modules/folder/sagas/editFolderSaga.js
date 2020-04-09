@@ -156,4 +156,5 @@ function* modifyFolder(action) {
     yield put(actions.fetchMore(parentId, true));
   }
   yield put(actions.fetchMore(oldParent.id, true));
+  yield put(actions.updateSearchData());
 }

@@ -80,6 +80,6 @@ export default {
     fontSize: '13px !important',
     fontFamily: 'Roboto',
     paddingLeft: '5px',
+    userSelect: 'none'
   }
-
 }

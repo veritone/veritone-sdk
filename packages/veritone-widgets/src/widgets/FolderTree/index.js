@@ -49,12 +49,14 @@ function FolderTreeWrapper({
   isEnableShowRootFolder,
   selectable = true,
   showingType = ['org'],
+  showAll = false,
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
   initFolder,
   expandFolder,
   foldersData,
+  originFolderData,
   onSelectFolder,
   initSuccess,
   onSelectAllFolder,
@@ -119,7 +121,7 @@ function FolderTreeWrapper({
 
   useEffect(() => {
     const currentEvent = get(eventSelector, [workSpace], {});
-    if(event.eventType !== currentEvent.eventType && currentEvent.eventType !== ''){
+    if (event.eventType !== currentEvent.eventType && currentEvent.eventType !== '') {
       setEvent(currentEvent);
       const { eventType, data } = currentEvent;
       processEventReducer(eventType, data);
@@ -162,9 +164,8 @@ function FolderTreeWrapper({
   useEffect(() => {
     const folder = get(foldersData, ['byId', folderInitFromApp]);
     if (folderInitFromApp && initialStatus && !isNil(folder)) {
-      const parentId = getAllParentId(folder, foldersData)
-        .map(item => item.id)
-        .filter(item => item !== folderInitFromApp);
+      const parentId = getAllParentId(folder, originFolderData)
+        .map(item => item.id);
       setDefaultOpening(parentId);
     }
   }, [initialStatus, foldersData, folderInitFromApp]);
@@ -196,7 +197,7 @@ function FolderTreeWrapper({
     }
     const folderId = Object.keys(selectedFolder);
     const folder = folderById(folderId[0]);
-    return flattenDeep(getAllParentId(folder, foldersData)).reverse();
+    return flattenDeep(getAllParentId(folder, originFolderData)).reverse();
   };
 
   const onSelectMenu = (item, action) => {
@@ -354,7 +355,7 @@ function FolderTreeWrapper({
         errorStatus={errorStatus}
         loaded={fetchedFolderStatus}
         selected={selectedFolder}
-        foldersData={foldersData}
+        foldersData={showAll ? originFolderData : foldersData}
         onChange={onChange}
         onExpand={onExpand}
         isEnableShowContent={isEnableShowContent}
@@ -378,7 +379,7 @@ function FolderTreeWrapper({
         isNewFolder={!modifyFromAction && !openEdit}
         handleClose={handleCloseModify}
         handleSubmit={handleSubmitModify}
-        foldersData={foldersData}
+        foldersData={originFolderData}
         onExpand={onExpand}
         selected={selectedFolder}
         defaultOpening={rootFolderIds}
@@ -406,6 +407,7 @@ FolderTreeWrapper.propTypes = {
   isEnableShowRootFolder: bool,
   isEnableSelectRoot: bool,
   showingType: arrayOf(string).isRequired,
+  showAll: bool,
   folderAction: arrayOf(
     shape({
       id: number,
@@ -413,6 +415,7 @@ FolderTreeWrapper.propTypes = {
       name: string
     })
   ),
+  originFolderData: shape(Object),
   foldersData: shape(Object),
   selectedFolders: shape(Object),
   initFolder: func,
@@ -444,6 +447,7 @@ FolderTreeWrapper.propTypes = {
 
 const FolderTree = connect(
   state => ({
+    originFolderData: folderSelector.folderData(state),
     foldersData: folderSelector.foldersDataSelector(state),
     fetchingFolderStatus: folderSelector.folderFetchingStatus(state),
     fetchedFolderStatus: folderSelector.folderFetchedStatus(state),

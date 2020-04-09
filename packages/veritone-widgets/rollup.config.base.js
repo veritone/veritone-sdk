@@ -82,7 +82,7 @@ export default {
     }),
 
     postcss({
-      modules: true,
+      modules: false,
       extract: true,
       loaders: [sass]
     }),
