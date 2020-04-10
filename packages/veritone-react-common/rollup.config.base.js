@@ -39,8 +39,7 @@ export default {
     'react-dotdotdot',
     'video-react',
     'shaka-player',
-    'date-fns',
-    'react-cropper'
+    'date-fns'
   ],
   plugins: [
     replace({

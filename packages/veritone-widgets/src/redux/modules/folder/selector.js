@@ -24,6 +24,8 @@ export const processingFolder = state => state[namespace].processingFolder;
 
 export const config = state => state[namespace].config;
 
+export const searching = state => state[namespace].searching;
+
 export const searchValue = state => state[namespace].currentSearchValue;
 
 export const searchData = state => state[namespace].searchFolderData;

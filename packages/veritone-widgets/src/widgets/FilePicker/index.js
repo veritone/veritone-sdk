@@ -12,8 +12,8 @@ import {
 import * as filePickerModule from '../../redux/modules/filePicker';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
+import 'cropperjs/dist/cropper.css';
 
-// provide id prop on mount
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))

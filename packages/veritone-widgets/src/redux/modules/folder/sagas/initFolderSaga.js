@@ -160,7 +160,10 @@ function* initFolderFromApp(action) {
   const folderExpanded = yield select(folderSelector.folderExpanded);
   yield put(actions.initFolderFromAppStart(folderId));
   const data = yield initAllParent(folderId);
-  const folderFromRoot = uniq(data.reverse().filter(item => !includes(folderExpanded, item)));
+  const folderFromRoot = [
+    ...uniq(data.reverse().filter(item => !includes(folderExpanded, item))),
+    folderId
+  ];
   for (const folderIdForInit of folderFromRoot) {
     yield expandFolderInFunction(folderIdForInit, selectable, workSpace);
   }

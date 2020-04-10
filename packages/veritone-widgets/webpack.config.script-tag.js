@@ -51,6 +51,10 @@ module.exports = {
         include: path.resolve('./src')
       },
       {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader'],
+      },
+      {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
         loader: 'url-loader',
         query: {
