@@ -38,11 +38,12 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 import Delete from '@material-ui/icons/Delete';
-
+import Grid from "@material-ui/core/Grid";
 
 import styles from './styles.scss';
 import ListFileUpload from './listFile';
 import EditFileUpload from './editFile';
+import ListEngine from './listEngine';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -157,7 +158,44 @@ class FilePicker extends React.Component {
     activeStep: 0,
     skipped: new Set(),
     currentScreen: 'overviewUpload',
-    uploadResultSelected: []
+    uploadResultSelected: [],
+    libraries: [
+      'libraries'
+    ],
+    engines: [
+      {
+        title: 'TRANSCRIPTION',
+        des: 'Convert the spoken word into readable text'
+      },
+      {
+        title: 'SENTIMENT',
+        des: 'Infer the sentiment or emotion being emitted in media'
+      },
+      {
+        title: 'FINGERPRINT',
+        des: 'Find the same audio by using audio fingerprints'
+      },
+      {
+        title: 'FACIAL DETECTION',
+        des: 'Detect and Identify multiple faces within rich media content'
+      },
+      {
+        title: 'TRANSCRIPTION',
+        des: 'Convert the spoken word into readable text'
+      },
+      {
+        title: 'SENTIMENT',
+        des: 'Infer the sentiment or emotion being emitted in media'
+      },
+      {
+        title: 'FINGERPRINT',
+        des: 'Find the same audio by using audio fingerprints'
+      },
+      {
+        title: 'FACIAL DETECTION',
+        des: 'Detect and Identify multiple faces within rich media content'
+      },
+    ]
   }
 
   handlePick = () => {
@@ -299,8 +337,8 @@ class FilePicker extends React.Component {
     onSelectionChange(id, Number(key), type);
   }
   handleRemoveFile = () => {
-     const { id, removeFileUpload, checkedFile } = this.props;
-     removeFileUpload(id, checkedFile);
+    const { id, removeFileUpload, checkedFile } = this.props;
+    removeFileUpload(id, checkedFile);
   }
   handleEditFile = () => {
     const { id, showEditFileUpload, checkedFile, uploadResult } = this.props;
@@ -321,7 +359,7 @@ class FilePicker extends React.Component {
     }[this.props.pickerState]();
     const steps = this.getSteps();
     const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload } = this.props;
-    const { activeStep, uploadResultSelected } = this.state;
+    const { activeStep, uploadResultSelected, libraries, engines } = this.state;
     console.log('isShowListFile', isShowListFile)
     return (
       <Fragment>
@@ -345,44 +383,68 @@ class FilePicker extends React.Component {
             </div>
 
             <div className={styles.main}>
-              <div className={styles['main-header']}>
-                <List>
-                  <ListItem className={styles['icon-upload-header']}>
-                    <ListItemIcon>
-                      <CloudUpload />
-                    </ListItemIcon>
-                    <ListItemText primary="Upload Media" />
-                    <ListItemSecondaryAction className={styles['action-upload-header']}>
-                      <IconButton onClick={this.handlePick}>
-                        <Add />
-                      </IconButton>
-                      <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
-                        <Edit />
-                      </IconButton>
-                      <IconButton onClick={this.handleRemoveFile} disabled={!checkedFile.length}>
-                        <Delete />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </div>
-              <div className={styles['main-body']}>
-                {
-                  pickerComponent
-                }
-                {
-                  isShowListFile &&
-                  <ListFileUpload
-                    data={uploadResult}
-                    checked={checkedFile}
-                    handleToggle={this.handleToggle}
-                    indeterminate={checkedFile.length && checkedFile.length < uploadResult.length}
-                    checkedAll={checkedFile.length}
-                  />
-                }
-              </div>
-
+              {
+                activeStep === 0 && (
+                  <div>
+                    <div className={styles['main-header']}>
+                      <List>
+                        <ListItem className={styles['icon-upload-header']}>
+                          <ListItemIcon>
+                            <CloudUpload />
+                          </ListItemIcon>
+                          <ListItemText primary="Upload Media" />
+                          <ListItemSecondaryAction className={styles['action-upload-header']}>
+                            <IconButton onClick={this.handlePick}>
+                              <Add />
+                            </IconButton>
+                            <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
+                              <Edit />
+                            </IconButton>
+                            <IconButton onClick={this.handleRemoveFile} disabled={!checkedFile.length}>
+                              <Delete />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      </List>
+                    </div>
+                    <div className={styles['main-body']}>
+                      {
+                        pickerComponent
+                      }
+                      {
+                        isShowListFile &&
+                        <ListFileUpload
+                          data={uploadResult}
+                          checked={checkedFile}
+                          handleToggle={this.handleToggle}
+                          indeterminate={checkedFile.length && checkedFile.length < uploadResult.length}
+                          checkedAll={checkedFile.length}
+                        />
+                      }
+                    </div>
+                  </div>
+                )
+              }
             </div>
+            {
+              activeStep === 1 && (
+                <Grid container spacing={3} style={{ marginTop: 10 }}>
+                  {
+                    engines.map(item => {
+                      return (
+                        <Grid item xs={3}>
+                          <ListEngine title={item.title} des={item.des} libraries={libraries} />
+                        </Grid>
+                      )
+                    })
+                  }
+
+                </Grid>
+              )
+            }
+
+
+
 
           </DialogContent>
           <DialogActions>
@@ -407,12 +469,12 @@ class FilePicker extends React.Component {
         </Dialog>
 
         <EditFileUpload
-         open={isShowEditFileUpload}
-         title={'Edit Media'}
-         handleClose={this.handleCloseEditFileUpload}
-         data={uploadResultSelected}
+          open={isShowEditFileUpload}
+          title={'Edit Media'}
+          handleClose={this.handleCloseEditFileUpload}
+          data={uploadResultSelected}
         />
-{/* 
+        {/* 
 <UploadFileOverview title={'Upload Media'} handlePick={this.handlePick} /> */}
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}
