@@ -40,7 +40,7 @@ import ResetPasswordModal from './Modals/ResetPassword';
 import styles from './styles';
 const defaultAvatarImg =
   'https://static.veritone.com/veritone-ui/default-avatar.png';
-  const formNameSpace = 'form';
+const formNameSpace = 'form';
 
 @connect(
   state => ({
@@ -291,9 +291,10 @@ export class UserProfile extends React.Component {
   }
 }
 
-function SlideDown(props) {
-  return <Slide direction="down" {...props} />;
-}
+const SlideDown =
+  React.forwardRef((slideProps, ref) => (
+    <Slide ref={ref} direction="down" {...slideProps} />
+  ));
 
 class UserProfileDialog extends React.Component {
   static propTypes = {
