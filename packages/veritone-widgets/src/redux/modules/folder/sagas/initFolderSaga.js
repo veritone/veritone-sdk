@@ -39,28 +39,41 @@ function* initRootFolderSagas(action) {
     return;
   }
   const orgRootFolder = isEnableOrgFolder
-    ? [get(rootFolderResponse, ['data', 'rootFolders', 0], {})] : [];
+    ? [get(rootFolderResponse, ['data', 'createRootFolders', 0], {})] : [];
   const ownerRootFolder = isEnableOwnerFolder
-    ? [get(rootFolderResponse, ['data', 'rootFolders', 1], {})] : [];
-
-  const rootFolderReprocess = [...orgRootFolder, ...ownerRootFolder]
-    .map(rootFolder => {
-      const childFolderCounts = get(rootFolder, 'childFolders.count', 0);
-      const childContentCounts = get(rootFolder, [childType, 'count'], 0);
-      let folderName = includes(rootFolder.name, config.type) ?
-        folderType[config.type].orgFolderName :
-        folderType[config.type].ownerFolderName;
-      return {
-        ...rootFolder,
-        id: rootFolder.id,
-        name: folderName,
-        contentType: 'folder',
-        parentId: null,
-        hasContent: childFolderCounts > 0 || childContentCounts > 0,
-        childs: []
-      }
-    });
+    ? [get(rootFolderResponse, ['data', 'createRootFolders', 1], {})] : [];
+  console.log(orgRootFolder);
+  console.log(ownerRootFolder);
+  const orgRootFolderReprocess = orgRootFolder.map(item => ({
+    ...item,
+    rootType: 'org'
+  }));
+  const ownerRootFolderReprocess = ownerRootFolder.map(item => ({
+    ...item,
+    rootType: 'owner'
+  }));
+  const rootFolderReprocess = [
+    ...orgRootFolderReprocess,
+    ...ownerRootFolderReprocess
+  ].map(rootFolder => {
+    const childFolderCounts = get(rootFolder, 'childFolders.count', 0);
+    const childContentCounts = get(rootFolder, [childType, 'count'], 0);
+    let folderName = includes(rootFolder.name, config.type) ?
+      folderType[config.type].orgFolderName :
+      folderType[config.type].ownerFolderName;
+    return {
+      ...rootFolder,
+      id: rootFolder.id,
+      name: folderName,
+      contentType: 'folder',
+      parentId: null,
+      hasContent: childFolderCounts > 0 || childContentCounts > 0,
+      childs: []
+    }
+  });
+  console.log(rootFolderReprocess);
   const rootFolderId = [...orgRootFolder, ...ownerRootFolder].map(folder => folder.id);
+  console.log(rootFolderId);
   yield all(rootFolderId.map(rootFolderId => {
     return put(actions.fetchMore(rootFolderId, true));
   }));
@@ -72,8 +85,8 @@ function* getRootFolder(action) {
   const { type, isEnableShowContent } = config;
   const initialOffset = 0;
   const childType = folderType[config.type].childsType;
-  const query = `query rootFolders($type: RootFolderType){
-      rootFolders(type: $type){
+  const query = `mutation createRootFolder($type: RootFolderType){
+      createRootFolders(rootFolderType: $type){
         id
         name
         treeObjectId

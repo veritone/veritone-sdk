@@ -50,6 +50,7 @@ function FolderTreeWrapper({
   selectable = true,
   showingType = ['org'],
   showAll = false,
+  searchValue,
   onSelectMenuItem,
   folderAction,
   handleSelectedFoler,
@@ -190,6 +191,12 @@ function FolderTreeWrapper({
       setDefaultOpening(pathList.map(item => item.id));
     }
   }, [folderSelectedFromApp]);
+
+  useEffect(() => {
+    if (searchValue !== undefined) {
+      onSearch(searchValue);
+    }
+  }, [searchValue])
 
   const getPathList = selectedFolder => {
     if (selectable) {
@@ -408,6 +415,7 @@ FolderTreeWrapper.propTypes = {
   isEnableSelectRoot: bool,
   showingType: arrayOf(string).isRequired,
   showAll: bool,
+  searchValue: string,
   folderAction: arrayOf(
     shape({
       id: number,
