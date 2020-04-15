@@ -2,6 +2,7 @@ import { helpers } from 'veritone-redux-common';
 import omit from 'lodash/omit';
 import uniq from 'lodash/uniq';
 import includes from 'lodash/includes';
+import get from 'lodash/get';
 import * as actions from './actions';;
 
 const { createReducer } = helpers;
@@ -25,7 +26,7 @@ export const folderType = {
   },
   collection: {
     orgFolderName: 'Shared Collections',
-    ownerFolderName: 'My Collection',
+    ownerFolderName: 'My Collections',
     rootFolderType: 'collection ',
     child: 'collection',
     childsType: 'childCollections'
@@ -112,6 +113,7 @@ export const folderReducer = createReducer(defaultFolderState, {
         childs: uniq([...state.foldersData.byId[parentId].childs, folderId])
       }
     } : {}
+    const folderToReducer = get(state, ["foldersData","byId",folderId], {});
     return {
       ...state,
       fetching: false,
@@ -124,7 +126,8 @@ export const folderReducer = createReducer(defaultFolderState, {
           ...state.foldersData.byId,
           [folderId]: {
             ...state.foldersData.byId[folderId],
-            ...folder
+            ...folder,
+            name: folderToReducer.rootType ? folderToReducer.name : folder.name
           },
           ...newParent
         }

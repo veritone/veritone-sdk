@@ -9,7 +9,7 @@ import {
   LoadingState
 } from 'veritone-react-common';
 import { DeleteFolder, CreateFolder, EditFolder } from 'veritone-react-common';
-import { isEmpty, isNil, flattenDeep, get } from 'lodash';
+import { isEmpty, isNil, flattenDeep, get, includes } from 'lodash';
 import * as folderModule from '../../redux/modules/folder';
 import * as folderSelector from '../../redux/modules/folder/selector';
 import widget from '../../shared/widget';
@@ -48,6 +48,7 @@ function FolderTreeWrapper({
   isEnableSelectRoot,
   isEnableShowRootFolder,
   selectable = true,
+  folderConfigType = ['org'],
   showingType = ['org'],
   showAll = false,
   searchValue,
@@ -106,7 +107,7 @@ function FolderTreeWrapper({
       type,
       isEnableShowContent,
       selectable,
-      showingType,
+      folderConfigType,
       workSpace
     };
     if (!initialStatus) {
@@ -340,14 +341,23 @@ function FolderTreeWrapper({
   };
 
   const getModifyType = () => {
-    if (openEdit) {
-      return 3;
-    }
-    if (openModify && modifyFromAction) {
-      return 2;
-    }
-    return 1;
+    return openEdit ? 3 : ((openModify && modifyFromAction) ? 2 : 1);
   };
+
+  const getFolderData = () => {
+    if (showAll) {
+      return originFolderData;
+    }
+    const { rootIds = [], byId = {} } = foldersData;
+    const rootFolderToShow = rootIds.map(id => byId[id]).filter(rootFolder => {
+      return includes(showingType, rootFolder.rootType);
+    });
+    return {
+      ...foldersData,
+      rootIds: rootFolderToShow.map(item => item.id)
+    };
+  }
+  
   return (
     <React.Fragment>
       {isEnableSearch && <SearchBox onSearch={onSearch} />}
@@ -362,7 +372,7 @@ function FolderTreeWrapper({
         errorStatus={errorStatus}
         loaded={fetchedFolderStatus}
         selected={selectedFolder}
-        foldersData={showAll ? originFolderData : foldersData}
+        foldersData={getFolderData()}
         onChange={onChange}
         onExpand={onExpand}
         isEnableShowContent={isEnableShowContent}
@@ -413,7 +423,8 @@ FolderTreeWrapper.propTypes = {
   isEnableSearch: bool,
   isEnableShowRootFolder: bool,
   isEnableSelectRoot: bool,
-  showingType: arrayOf(string).isRequired,
+  folderConfigType: arrayOf(string).isRequired,
+  showingType: arrayOf(string),
   showAll: bool,
   searchValue: string,
   folderAction: arrayOf(
@@ -481,9 +492,7 @@ const FolderTree = connect(
     unSelectCurrentFolder: folderModule.unSelectCurrentFolder,
     unSelectFolder: folderModule.unSelectFolder,
     setEventData: folderModule.eventChannel
-  },
-  null,
-  { forwardRef: true }
+  }
 )(FolderTreeWrapper);
 
 const FolderTreeWidget = widget(FolderTree);

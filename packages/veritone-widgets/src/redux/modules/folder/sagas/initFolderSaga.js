@@ -26,8 +26,8 @@ export default function* initFolder() {
 function* initRootFolderSagas(action) {
   const { config } = action.payload;
   const childType = folderType[config.type].childsType;
-  const isEnableOrgFolder = includes(config.showingType, 'org');
-  const isEnableOwnerFolder = includes(config.showingType, 'owner');
+  const isEnableOrgFolder = includes(config.folderConfigType, 'org');
+  const isEnableOwnerFolder = includes(config.folderConfigType, 'owner');
   yield put(actions.initConfig({
     ...config,
     isEnableOrgFolder,
@@ -42,8 +42,6 @@ function* initRootFolderSagas(action) {
     ? [get(rootFolderResponse, ['data', 'createRootFolders', 0], {})] : [];
   const ownerRootFolder = isEnableOwnerFolder
     ? [get(rootFolderResponse, ['data', 'createRootFolders', 1], {})] : [];
-  console.log(orgRootFolder);
-  console.log(ownerRootFolder);
   const orgRootFolderReprocess = orgRootFolder.map(item => ({
     ...item,
     rootType: 'org'
@@ -71,9 +69,7 @@ function* initRootFolderSagas(action) {
       childs: []
     }
   });
-  console.log(rootFolderReprocess);
   const rootFolderId = [...orgRootFolder, ...ownerRootFolder].map(folder => folder.id);
-  console.log(rootFolderId);
   yield all(rootFolderId.map(rootFolderId => {
     return put(actions.fetchMore(rootFolderId, true));
   }));
