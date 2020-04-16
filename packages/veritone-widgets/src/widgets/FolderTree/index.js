@@ -56,6 +56,7 @@ function FolderTreeWrapper({
   initFolder,
   expandFolder,
   foldersData,
+  searchValue,
   originFolderData,
   onSelectFolder,
   initSuccess,
@@ -76,6 +77,7 @@ function FolderTreeWrapper({
   unSelectFolder,
   unSelectAllFolder,
   unSelectCurrentFolder,
+  clearSearchData,
   eventSelector,
   setEventData
 }) {
@@ -232,6 +234,13 @@ function FolderTreeWrapper({
     searchFolder(data);
   };
 
+  //clear search
+  const onClearSearch = () => {
+    if (searchValue) {
+      clearSearchData();
+    }
+  }
+
   //new folder
   const handleSubmitNewFolder = (data, parentId) => {
     createFolder(data, parentId);
@@ -245,6 +254,7 @@ function FolderTreeWrapper({
 
   //modify folder
   const handleSubmitModify = (selectedFolder = {}, folderName) => {
+    handleCloseModify();
     const currentFolderId = currentFolderForAction.id;
     const newParentId = Object.keys(selectedFolder)[0];
     if (openEdit) {
@@ -252,12 +262,13 @@ function FolderTreeWrapper({
     } else {
       editFolder(currentFolderId, folderName, false, true, newParentId);
     }
-    handleCloseModify();
   };
 
   const handleCloseModify = () => {
     setOpenModify(false);
-    setOpenEdit(false);
+    setTimeout(() => {
+      setOpenEdit(false);
+    }, 500)
   };
 
   //delete folder
@@ -333,17 +344,17 @@ function FolderTreeWrapper({
   };
 
   const getModifyType = () => {
-    if (openEdit) {
-      return 3;
-    }
-    if (openModify && modifyFromAction) {
-      return 2;
-    }
-    return 1;
+    return openEdit ? 3 : ((openModify && modifyFromAction) ? 2 : 1);
   };
   return (
     <React.Fragment>
-      {isEnableSearch && <SearchBox onSearch={onSearch} />}
+      {isEnableSearch && (
+        <SearchBox
+          onSearch={onSearch}
+          onClearSearch={onClearSearch}
+          placeholder="Search Folders"
+        />
+      )}
       {fetchingFolderStatus && <LoadingState />}
       {fetchedFolderStatus && foldersData.allId.length === 0 && (
         <FolderNullState
@@ -417,6 +428,7 @@ FolderTreeWrapper.propTypes = {
   ),
   originFolderData: shape(Object),
   foldersData: shape(Object),
+  searchValue: string,
   selectedFolders: shape(Object),
   initFolder: func,
   expandFolder: func,
@@ -438,6 +450,7 @@ FolderTreeWrapper.propTypes = {
   unSelectFolder: func,
   unSelectCurrentFolder: func,
   unSelectAllFolder: func,
+  clearSearchData: func,
   eventSelector: shape({
     eventType: string,
     data: string
@@ -457,7 +470,8 @@ const FolderTree = connect(
     rootFolderIds: folderSelector.rootFolderIds(state),
     processingFolder: folderSelector.processingFolderSelector(state),
     initialStatus: folderSelector.getInitialStatus(state),
-    eventSelector: folderSelector.eventSelector(state)
+    eventSelector: folderSelector.eventSelector(state),
+    searchValue: folderSelector.searchValue(state)
   }),
   {
     expandFolder: folderModule.fetchMore,
@@ -472,7 +486,8 @@ const FolderTree = connect(
     unSelectAllFolder: folderModule.unSelectAllFolder,
     unSelectCurrentFolder: folderModule.unSelectCurrentFolder,
     unSelectFolder: folderModule.unSelectFolder,
-    setEventData: folderModule.eventChannel
+    setEventData: folderModule.eventChannel,
+    clearSearchData: folderModule.clearSearchData
   },
   null,
   { forwardRef: true }

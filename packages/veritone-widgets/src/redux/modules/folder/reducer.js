@@ -244,6 +244,10 @@ export const folderReducer = createReducer(defaultFolderState, {
     searching: false,
     error: true
   }),
+  [actions.CLEAR_SEARCH]: (state) => ({
+    ...state,
+    currentSearchValue: ''
+  }),
   [actions.DELETE_FOLDER_START]: (state, action) => ({
     ...state,
     processingFolder: [...state.processingFolder, action.payload.folderId]

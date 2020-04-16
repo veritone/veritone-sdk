@@ -11,7 +11,11 @@ const useStyles = makeStyles(() => ({
   ...styles
 }));
 
-export default function Searchbox({ onSearch, placeholder = 'Search' }) {
+export default function Searchbox({
+  onSearch,
+  onClearSearch,
+  placeholder = 'Search'
+}) {
   const classes = useStyles();
   const inputRef = React.createRef();
   const [focusing, setFocusing] = React.useState(false);
@@ -31,14 +35,23 @@ export default function Searchbox({ onSearch, placeholder = 'Search' }) {
   function handleChangeInput(event) {
     setData(event.target.value);
   }
+
   function handleKeyDown(e) {
     if (e.key === 'Enter') {
+      if(!data && onClearSearch) {
+        onClearSearch();
+        return;
+      }
       onSearch(data);
     }
   }
   function handleRemoveText() {
     setData('');
-    onSearch('');
+    if (onClearSearch) {
+      onClearSearch();
+    } else {
+      onSearch('');
+    }
   }
   return (
     <div className={classes.searchBoxRoot}>
@@ -60,18 +73,19 @@ export default function Searchbox({ onSearch, placeholder = 'Search' }) {
           <CloseIcon color="action" />
         </IconButton>
       ) : (
-        <IconButton
-          onClick={handleSearch}
-          className={classes.iconButton}
-          aria-label="search-button"
-        >
-          <SearchIcon />
-        </IconButton>
-      )}
+          <IconButton
+            onClick={handleSearch}
+            className={classes.iconButton}
+            aria-label="search-button"
+          >
+            <SearchIcon />
+          </IconButton>
+        )}
     </div>
   );
 }
 Searchbox.propTypes = {
   onSearch: func.isRequired,
-  placeholder: string
+  placeholder: string,
+  onClearSearch: func,
 };

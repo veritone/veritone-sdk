@@ -9,12 +9,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './styles';
 
 const useStyles = makeStyles(theme => ({
   ...styles
-})); 
+}));
 
 export default function CreateFolder({
   open,
@@ -33,6 +34,9 @@ export default function CreateFolder({
   }, [open])
   const onChange = event => {
     const { value } = event.target;
+    if (value.length > 50) {
+      return;
+    }
     setFolderName(value);
     validate(value);
   };
@@ -65,6 +69,10 @@ export default function CreateFolder({
     return `Create folder within "${parentFolderName}"`
   };
 
+  const getCounter = () => {
+    return `${folderName.length}/50`;
+  };
+
   return (
     <Dialog
       fullWidth
@@ -73,7 +81,9 @@ export default function CreateFolder({
       onClose={handleClose}
       aria-labelledby="create-folder"
     >
-      <DialogTitle id="create-folder">Create Folder</DialogTitle>
+      <DialogTitle id="create-folder">
+        <Typography className={classes.title}>Create Folder</Typography>
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
           {getContent()}
@@ -91,6 +101,9 @@ export default function CreateFolder({
             onChange={onChange}
             fullWidth
           />
+          <div className={classes.counterText}>
+            {getCounter()}
+          </div>
         </div>
       </DialogContent>
       <DialogActions>

@@ -10,7 +10,8 @@ export default {
     borderRadius: 2,
     minWidth: 300,
     flex: 'auto',
-    marginLeft: 10
+    marginLeft: 10,
+    width: '100%'
   },
   greyBackround: {
     backgroundColor: '#F5F5F5',
@@ -20,6 +21,12 @@ export default {
   },
   iconSpacer: {
     marginLeft: 10,
+  },
+  textItem: {
+    whiteSpace: 'nowrap',
+    width: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   },
   rootIcon: {
     color: blue1,

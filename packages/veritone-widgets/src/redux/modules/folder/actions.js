@@ -19,6 +19,7 @@ export const SEARCH_START = `${namespace}/SEARCH_START`;
 export const SEARCH_SUCCESS = `${namespace}/SEARCH_SUCCESS`;
 export const SEARCH_ERROR = `${namespace}/SEARCH_ERROR`;
 export const SEARCH_UPDATE_DATA = `${namespace}/SEARCH_UPDATE_DATA`;
+export const CLEAR_SEARCH = `${namespace}/CLEAR_SEARCH`;
 export const SELECT_FOLDER = `${namespace}/SELECT_FOLDER`;
 export const SELECT_ALL_FOLDER = `${namespace}/SELECT_ALL_FOLDER`;
 export const CREATE_FOLDER = `${namespace}/CREATE_FOLDER`;
@@ -166,9 +167,13 @@ export const searchFolderError = searchValue => ({
   }
 });
 
+export const clearSearchData = () => ({
+  type: CLEAR_SEARCH
+});
+
 export const updateSearchData = () => ({
   type: SEARCH_UPDATE_DATA
-})
+});
 
 export const selectFolder = (workSpace, selected) => ({
   type: SELECT_FOLDER,

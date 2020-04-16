@@ -7,6 +7,7 @@ export {
   modifyFolder,
   searchFolder,
   updateSearchData,
+  clearSearchData,
   selectFolder,
   selectAllFolder,
   initFolderFromApp,

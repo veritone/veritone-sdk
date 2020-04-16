@@ -1,6 +1,7 @@
 export default {
   folderTreeContainer: {
     height: '100%',
+    backgroundColor: '#FFF',
     overflow: 'auto',
   },
   folderItemContainer: {
