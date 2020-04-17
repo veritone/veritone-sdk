@@ -1,24 +1,25 @@
-import { clamp, mean, isNaN, get, isArray } from 'lodash';
+import { clamp, mean, isNaN, get, isArray, isEmpty} from 'lodash';
 import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
-
-export const PICK_START = 'PICK_START';
-export const PICK_END = 'PICK_END';
-export const RETRY_REQUEST = 'RETRY_REQUEST';
-export const RETRY_DONE = 'RETRY_DONE';
-export const ABORT_REQUEST = 'ABORT_REQUEST';
-export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
-export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
-export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
-export const CLEAR_FILEPICKER_DATA = 'CLEAR_FILEPICKER_DATA';
-export const ON_SELECTION_CHANGE = 'ON_SELECTION_CHANGE';
-export const REMOVE_FILE_UPLOAD = 'REMOVE_FILE_UPLOAD';
-export const SHOW_EDIT_FILE_UPLOAD = 'SHOW_EDIT_FILE_UPLOAD';
-export const HIDE_EDIT_FILE_UPLOAD = 'HIDE_EDIT_FILE_UPLOAD';
-
-
-export const namespace = 'filePicker';
+export const namespace = 'uploadFile';
+// export const PICK_START = `${namespace}_PICK_START`;
+// export const PICK_END = `${namespace}_PICK_END`;
+// export const RETRY_REQUEST = `${namespace}_RETRY_REQUEST`;
+// export const RETRY_DONE = `${namespace}_RETRY_DONE`;
+// export const ABORT_REQUEST = `${namespace}_ABORT_REQUEST`;
+// export const UPLOAD_REQUEST = `${namespace}_UPLOAD_REQUEST`;
+// export const UPLOAD_PROGRESS = `${namespace}_UPLOAD_PROGRESS`;
+// export const UPLOAD_COMPLETE = `${namespace}_UPLOAD_COMPLETE`;
+// export const CLEAR_FILEPICKER_DATA = `${namespace}_CLEAR_FILEPICKER_DATA`;
+// export const ON_SELECTION_CHANGE = `${namespace}_ON_SELECTION_CHANGE`;
+// export const REMOVE_FILE_UPLOAD = `${namespace}_REMOVE_FILE_UPLOAD`;
+// export const SHOW_EDIT_FILE_UPLOAD = `${namespace}_SHOW_EDIT_FILE_UPLOAD`;
+// export const HIDE_EDIT_FILE_UPLOAD = `${namespace}_HIDE_EDIT_FILE_UPLOAD`;
+// export const FETCH_ENGINE_CATEGORIES_REQUEST = `${namespace}_FETCH_ENGINE_CATEGORIES_REQUEST`;
+// export const FETCH_ENGINE_CATEGORIES_SUCCESS = `${namespace}_FETCH_ENGINE_CATEGORIES_SUCCESS`;
+// export const FETCH_ENGINE_CATEGORIES_FAILURE = `${namespace}_FETCH_ENGINE_CATEGORIES_FAILURE`;
+import * as actions from './actions';
 
 const defaultPickerState = {
   open: false,
@@ -29,7 +30,8 @@ const defaultPickerState = {
   warning: false,
   uploadResult: [],
   //isShowListFile: false
-  checkedFile: []
+  checkedFile: [],
+  currentEngineCategory: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
 };
 
 const defaultState = {
@@ -37,9 +39,35 @@ const defaultState = {
   // [pickerId]: { ...defaultPickerState }
 
 };
+const currentEngineCategoryDefault = '67cd4dd0-2f75-445d-a6f0-2f297d6cd182';
+const makeLibrariesByCategories = (
+  entityIdentifierTypes,
+  libraries
+) => {
+  const availableLibraries = libraries
+    .filter(library =>
+      (
+        get(
+          library,
+          'libraryType.entityIdentifierTypes',
+          []
+        ) || []
+      ).some(({ id }) => entityIdentifierTypes.includes(id))
+    )
+    .reduce(
+      (libraries, library) => ({
+        ...libraries,
+        [library.id]: library
+      }),
+      {}
+    );
+  return isEmpty(availableLibraries)
+    ? null
+    : availableLibraries;
+}
 
 export default createReducer(defaultState, {
-  [PICK_START](
+  [actions.PICK_START](
     state,
     {
       meta: { id }
@@ -54,7 +82,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [PICK_END](
+  [actions.PICK_END](
     state,
     {
       payload: { type },
@@ -70,7 +98,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [CLEAR_FILEPICKER_DATA](
+  [actions.CLEAR_FILEPICKER_DATA](
     state,
     {
       meta: { id }
@@ -80,7 +108,7 @@ export default createReducer(defaultState, {
       $unset: [id]
     });
   },
-  [ABORT_REQUEST](
+  [actions.ABORT_REQUEST](
     state,
     {
       meta: { id, fileKey }
@@ -110,7 +138,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [RETRY_REQUEST](
+  [actions.RETRY_REQUEST](
     state,
     {
       meta: { id }
@@ -128,7 +156,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [RETRY_DONE](
+  [actions.RETRY_DONE](
     state,
     {
       meta: { id }
@@ -142,7 +170,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_REQUEST](
+  [actions.UPLOAD_REQUEST](
     state,
     {
       meta: { id }
@@ -162,7 +190,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_PROGRESS](
+  [actions.UPLOAD_PROGRESS](
     state,
     {
       payload,
@@ -184,7 +212,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_COMPLETE](
+  [actions.UPLOAD_COMPLETE](
     state,
     {
       payload,
@@ -215,7 +243,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [ON_SELECTION_CHANGE](state, { payload: { id, value, type }}) {
+  [actions.ON_SELECTION_CHANGE](state, { payload: { id, value, type }}) {
     let newChecked = [...state[id].checkedFile];
     const currentIndex = newChecked.indexOf(value);
     if(type === 'all'){
@@ -240,7 +268,7 @@ export default createReducer(defaultState, {
       } 
     }
   },
-  [REMOVE_FILE_UPLOAD](state, { payload: { id, value } }) {
+  [actions.REMOVE_FILE_UPLOAD](state, { payload: { id, value } }) {
     const newCheckedFile = [...state[id].checkedFile].filter(item => !value.includes(item));
     const newUploadResult = [...state[id].uploadResult].filter((item, key) => !value.includes(key));
 
@@ -255,7 +283,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [SHOW_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+  [actions.SHOW_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
     return {
       ...state,
       [id]: {
@@ -264,7 +292,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [HIDE_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+  [actions.HIDE_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
     return {
       ...state,
       [id]: {
@@ -272,79 +300,153 @@ export default createReducer(defaultState, {
         isShowEditFileUpload: false
       }
     }
+  },
+  [actions.FETCH_ENGINE_CATEGORIES_SUCCESS](state, { payload: { id, engineCategories }}) {
+    const newEngineCategories = engineCategories.filter(item => !actions.CATEGORY_IDS_TO_EXCLUDE.includes(item.id) && item.categoryType && item.engines.records.filter(engine => engine.runtimeType === "edge")
+    .length)
+    console.log('newEngineCategories', newEngineCategories)
+    const librariesCategory = [...newEngineCategories].filter(
+      ({ libraryEntityIdentifierTypeIds, engines }) =>
+        Array.isArray(libraryEntityIdentifierTypeIds) &&
+        libraryEntityIdentifierTypeIds.length > 0 &&
+        engines.records.filter(item => item.libraryRequired).length > 0
+    );
+    const libraries = get(state[id], 'libraries', {});
+    const librariesByCategories = [...librariesCategory].reduce(
+      (acc, { id, libraryEntityIdentifierTypeIds }) => ({
+        ...acc,
+        [id]: makeLibrariesByCategories(
+          libraryEntityIdentifierTypeIds,
+          Object.values(libraries)
+        )
+      }),
+      {}
+    );
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        engineCategories: newEngineCategories,
+        librariesByCategories
+      }
+    }
+  },
+  [actions.FETCH_LIBRARIES_SUCCESS](state, { payload: { id, libraries }}){
+    const newLibraries = libraries.reduce(
+      (res, value) => {
+        if (value.libraryId && value.version > 0) {
+          return {
+            ...res,
+            [value.id]: {
+              ...value
+            }
+          };
+        }
+        return res
+      },
+      {}
+    );
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        libraries: newLibraries
+      }
+    }
+  },
+  [actions.FETCH_ENGINES_SUCCESS](state, { payload: { id, engines } }) {
+    const engineByCategories = engines.reduce((res, value) => {
+      if(!res[value.category.id]){
+        res[value.category.id] = [
+          ...value
+        ];
+      }else {
+        res[value.category.id] = [
+          ...res[value.category.id],
+          value
+        ]
+      }
+      return res;
+    }, {})
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        engineByCategories
+      }
+    }
+  },
+  [actions.ADD_ENGINE](state, { payload: { id, engineId } }) {
+    const currentEngineCategory = get(state[id], 'currentEngineCategory', currentEngineCategoryDefault);
+    const category = get(state[id], 'engineCategories', []).find(item => item.id === currentEngineCategory);
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    let newEnginesSelected = [...enginesSelected];
+    if(!newEnginesSelected.length){
+      newEnginesSelected.push({
+        categoryId: currentEngineCategory,
+        categoryName: category.name,
+        engineIds: [engineId]
+      })
+    }else {
+      if(!newEnginesSelected.some(item => item.categoryId === currentEngineCategory)){
+        newEnginesSelected.push({
+          categoryId: currentEngineCategory,
+          categoryName: category.name,
+          engineIds: [engineId]
+        })
+      }else {
+        const index = newEnginesSelected.findIndex(item => item.categoryId === currentEngineCategory);
+        newEnginesSelected[index] = {
+          ...newEnginesSelected[index],
+          engineIds: [
+            ...newEnginesSelected[index].engineIds,
+            engineId
+          ]
+        }
+      }
+    }
+
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
+      }
+    }
+  },
+  [actions.CHANGE_ENGINE](state, { payload: { id, engineId } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        currentEngineCategory: engineId
+      }
+    }
+  },
+  [actions.REMOVE_ENGINE](state, { payload: { id, engineId } }) {
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    const newEnginesSelected = [...enginesSelected].map(item => {
+      if(item.engineIds.includes(engineId)){
+        return {
+          ...item,
+          engineIds: [
+            ...item.engineIds.filter(item => item !== engineId)
+          ]
+        }
+      }
+      return item;
+    }).filter(item => item.engineIds.length)
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
+      }
+    }
   }
 });
 
 const local = state => state[namespace];
-
-export const pick = id => ({
-  type: PICK_START,
-  meta: { id }
-});
-
-export const endPick = (id, type) => ({
-  type: PICK_END,
-  payload: { type },
-  meta: { id }
-});
-
-export const retryRequest = (id, callback) => ({
-  type: RETRY_REQUEST,
-  payload: { callback },
-  meta: { id }
-});
-
-export const abortRequest = (id, fileKey) => ({
-  type: ABORT_REQUEST,
-  meta: { id, fileKey }
-});
-
-export const retryDone = (id, callback) => ({
-  type: RETRY_DONE,
-  payload: { callback },
-  meta: { id }
-});
-
-export const uploadRequest = (id, files, callback) => ({
-  type: UPLOAD_REQUEST,
-  payload: { files, callback },
-  meta: { id }
-});
-
-export const uploadProgress = (id, fileKey, data) => ({
-  type: UPLOAD_PROGRESS,
-  payload: {
-    ...data,
-    percent: clamp(Math.round(data.percent), 100)
-  },
-  meta: { fileKey, id }
-});
-
-export const uploadComplete = (id, result, { warning, error }) => ({
-  type: UPLOAD_COMPLETE,
-  payload: result,
-  meta: { warning, error, id }
-});
-
-export const onSelectionChange = (id, value, type) => ({
-  type: ON_SELECTION_CHANGE,
-  payload: { id, value, type }
-})
-
-export const removeFileUpload = (id, value) => ({
-  type: REMOVE_FILE_UPLOAD,
-  payload: { id, value }
-})
-
-export const showEditFileUpload = id => ({
-  type: SHOW_EDIT_FILE_UPLOAD,
-  payload: { id }
-})
-
-export const hideEditFileUpload = id => ({
-  type: HIDE_EDIT_FILE_UPLOAD,
-  payload: { id }
-})
 
 export const isOpen = (state, id) => get(local(state), [id, 'open']);
 export const state = (state, id) =>
@@ -385,3 +487,8 @@ export const statusMessage = (state, id) =>
 export const isShowListFile = (state, id) => get(local(state), [id, 'isShowListFile'], false);
 export const checkedFile = (state, id) => get(local(state), [id, 'checkedFile'], []);
 export const isShowEditFileUpload = (state, id) => get(local(state), [id, 'isShowEditFileUpload'], false);
+export const engineCategories = (state, id) => get(local(state), [id, 'engineCategories'], []);
+export const librariesByCategories = (state, id) => get(local(state), [id, 'librariesByCategories'], {});
+export const engineByCategories = (state, id) => get(local(state), [id, 'engineByCategories'], {});
+export const currentEngineCategory = (state, id) => get(local(state), [id, 'currentEngineCategory'], currentEngineCategoryDefault);
+export const enginesSelected = (state, id) => get(local(state), [id, 'enginesSelected'], []);

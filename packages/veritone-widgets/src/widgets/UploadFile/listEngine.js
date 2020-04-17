@@ -13,24 +13,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import styles from "./styles";
-const useStyles = makeStyles({
-  root: {
-    minWidth: 275,
-    height: 250
-  },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)"
-  },
-  title: {
-    fontSize: 14
-  },
-  pos: {
-    marginBottom: 12
-  },
-  ...styles
-});
+const useStyles = makeStyles(styles);
 const MenuProps = {
   PaperProps: {
     style: {
@@ -41,9 +24,10 @@ const MenuProps = {
 };
 
 export default function ListEngine({
-    title,
-    des,
-    libraries
+  title,
+  des,
+  libraries,
+  icon
 }) {
   const classes = useStyles();
   const [personName, setPersonName] = React.useState([]);
@@ -51,43 +35,50 @@ export default function ListEngine({
     setPersonName(event.target.value);
   };
   return (
-    <Card className={classes.root}>
-        <CardContent className={classes.cardContent}>
-        <GraphicEq className={classes.icon} />
+    <Card className={classes.ListEngineCategories}>
+      <CardContent className={classes.cardContent}>
+        {/* <GraphicEq className={classes.icon} /> */}
+        <div className={classes.icon}>
+          <i className={icon} />
+        </div>
         <Typography component="p" className={classes.cardTitle}>
-            {title}
+          {title}
         </Typography>
         <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
+          className={classes.cardDes}
+          color="textSecondary"
+          gutterBottom
         >
-            {des}
+          {des}
         </Typography>
-        <FormControl className={classes.formControl}>
-            <InputLabel className={classes.labelInput}>
-            Choose Libraries
+        {
+          libraries && (
+            <FormControl className={classes.formControl}>
+              <InputLabel className={classes.labelInput}>
+                Choose Libraries
             </InputLabel>
-            <Select
-            labelId="demo-mutiple-checkbox-label"
-            id="demo-mutiple-checkbox"
-            multiple
-            value={personName}
-            onChange={handleChange}
-            input={<Input />}
-            renderValue={selected => selected.join(", ")}
-            MenuProps={MenuProps}
-            className={classes.selectLibraries}
-            >
-            {libraries.map(name => (
-                <MenuItem key={name} value={name}>
-                <Checkbox checked={personName.indexOf(name) > -1} />
-                <ListItemText primary={name} />
-                </MenuItem>
-            ))}
-            </Select>
-        </FormControl>
-        </CardContent>
+              <Select
+                labelId="demo-mutiple-checkbox-label"
+                id="demo-mutiple-checkbox"
+                multiple
+                value={personName}
+                onChange={handleChange}
+                input={<Input />}
+                renderValue={selected => selected.join(", ")}
+                MenuProps={MenuProps}
+                className={classes.selectLibraries}
+              >
+                {Object.values(libraries).map(item => (
+                  <MenuItem key={item.name} value={item.name}>
+                    <Checkbox checked={personName.indexOf(item.name) > -1} />
+                    <ListItemText primary={item.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )
+        }
+      </CardContent>
     </Card>
   );
 }

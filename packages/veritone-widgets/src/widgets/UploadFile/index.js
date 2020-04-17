@@ -11,6 +11,7 @@ import {
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/uploadFile';
+import * as uploadFileAction from '../../redux/modules/uploadFile/actions';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
 
@@ -39,18 +40,30 @@ import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 import Delete from '@material-ui/icons/Delete';
 import Grid from "@material-ui/core/Grid";
-
-import styles from './styles.scss';
+import Forward from '@material-ui/icons/Forward';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import Security from '@material-ui/icons/Security';
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from "@material-ui/core/CardContent";
+import styles from './styles';
 import ListFileUpload from './listFile';
 import EditFileUpload from './editFile';
 import ListEngine from './listEngine';
+
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6" className={styles.title}>{children}</Typography>
+    <MuiDialogTitle disableTypography {...other}>
+      <Typography variant="h6" className={classes.title}>{children}</Typography>
       {onClose ? (
-        <IconButton aria-label="close" className={styles.iconClose} onClick={onClose}>
+        <IconButton aria-label="close" className={classes.iconClose} onClick={onClose}>
           <CloseIcon />
         </IconButton>
       ) : null}
@@ -88,19 +101,29 @@ const DialogActions = withStyles((theme) => ({
     isShowListFile: filePickerModule.isShowListFile(state, id),
     uploadResult: filePickerModule.uploadResult(state, id),
     checkedFile: filePickerModule.checkedFile(state, id),
-    isShowEditFileUpload: filePickerModule.isShowEditFileUpload(state, id)
+    isShowEditFileUpload: filePickerModule.isShowEditFileUpload(state, id),
+    engineCategories: filePickerModule.engineCategories(state, id),
+    librariesByCategories: filePickerModule.librariesByCategories(state, id),
+    engineByCategories: filePickerModule.engineByCategories(state, id),
+    currentEngineCategory: filePickerModule.currentEngineCategory(state, id),
+    enginesSelected: filePickerModule.enginesSelected(state, id)
   }),
   {
-    pick: filePickerModule.pick,
-    endPick: filePickerModule.endPick,
-    abortRequest: filePickerModule.abortRequest,
-    uploadRequest: filePickerModule.uploadRequest,
-    retryRequest: filePickerModule.retryRequest,
-    retryDone: filePickerModule.retryDone,
-    onSelectionChange: filePickerModule.onSelectionChange,
-    removeFileUpload: filePickerModule.removeFileUpload,
-    showEditFileUpload: filePickerModule.showEditFileUpload,
-    hideEditFileUpload: filePickerModule.hideEditFileUpload
+    pick: uploadFileAction.pick,
+    endPick: uploadFileAction.endPick,
+    abortRequest: uploadFileAction.abortRequest,
+    uploadRequest: uploadFileAction.uploadRequest,
+    retryRequest: uploadFileAction.retryRequest,
+    retryDone: uploadFileAction.retryDone,
+    onSelectionChange: uploadFileAction.onSelectionChange,
+    removeFileUpload: uploadFileAction.removeFileUpload,
+    showEditFileUpload: uploadFileAction.showEditFileUpload,
+    hideEditFileUpload: uploadFileAction.hideEditFileUpload,
+    fetchEngineCategories: uploadFileAction.fetchEngineCategories,
+    fetchLibraries: uploadFileAction.fetchLibraries,
+    onChangeEngine: uploadFileAction.onChangeEngine,
+    addEngine: uploadFileAction.addEngine,
+    removeEngine: uploadFileAction.removeEngine
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -142,7 +165,8 @@ class FilePicker extends React.Component {
     onPickCancelled: func,
     onPick: func,
     height: number,
-    width: number
+    width: number,
+    fetchEngineCategories: func
   };
 
   static defaultProps = {
@@ -195,7 +219,14 @@ class FilePicker extends React.Component {
         title: 'FACIAL DETECTION',
         des: 'Detect and Identify multiple faces within rich media content'
       },
-    ]
+    ],
+    showAdvancedCognitive: false
+  }
+
+  componentDidMount() {
+    const { id, fetchEngineCategories, fetchLibraries } = this.props;
+    // fetchEngineCategories(id);
+    fetchLibraries(id);
   }
 
   handlePick = () => {
@@ -307,20 +338,21 @@ class FilePicker extends React.Component {
   };
 
   overviewUploadFile = () => {
+    const { classes } = this.props;
     return (
       <Fragment>
-        <div className={styles['upload-header']}>
-          <div className={styles['icon-upload-body']}>
+        <div className={classes.uploadHeader}>
+          <div className={classes.iconUploadBody}>
             <CloudUpload />
           </div>
-          <div className={styles['title-upload']} onClick={this.handlePick} >
+          <div className={classes.titleUpload} onClick={this.handlePick} >
             Upload Media
           </div>
-          <div className={styles['title-select']}>
+          <div className={classes.titleSelect}>
             Select Video, Audio, Image, or Text files to upload
           </div>
         </div>
-        <div className={styles['upload-foolter']}>
+        <div className={classes.uploadFoolter}>
           <span>Recommended file formats:</span>
           <span>.mp4, .mp3, .jpg, and .png</span>
         </div>
@@ -350,6 +382,46 @@ class FilePicker extends React.Component {
     const { id, hideEditFileUpload } = this.props;
     hideEditFileUpload(id);
   }
+  handleShowAdvancedCognitive = () => {
+    const { showAdvancedCognitive } = this.state;
+    this.setState({ showAdvancedCognitive: !showAdvancedCognitive })
+  }
+  handleChangeEngine = event => {
+    const { id, onChangeEngine } = this.props;
+    onChangeEngine(id, event.target.value);
+  }
+
+  renderLogoEngine = (src, showSecurity, type) => {
+    const { classes } = this.props;
+    return (
+      <div className={type === 'header' ? classes.iconHeaderEngines : type === 'content' ? classes.iconContentEngines : classes.iconHeaderSelectedEngines}>
+        {
+          showSecurity && (
+            <Security />
+          )
+        }
+        {
+          src && (
+            <img
+              src={src}
+              width="100"
+              height="50"
+            />
+          )
+        }
+      </div>
+    )
+  }
+  handleAddEngine = (event) => {
+    const { id, addEngine } = this.props;
+    const engineId = event.currentTarget.getAttribute('data-id');
+    addEngine(id, engineId);
+  }
+  handleRemoveEngine = (event) => {
+    const engineId = event.currentTarget.getAttribute('data-id');
+    const { id, removeEngine } = this.props;
+    removeEngine(id, engineId)
+  }
   render() {
     const pickerComponent = {
       overview: this.overviewUploadFile,
@@ -358,8 +430,8 @@ class FilePicker extends React.Component {
       complete: this.listFile
     }[this.props.pickerState]();
     const steps = this.getSteps();
-    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload } = this.props;
-    const { activeStep, uploadResultSelected, libraries, engines } = this.state;
+    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected } = this.props;
+    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive } = this.state;
     console.log('isShowListFile', isShowListFile)
     return (
       <Fragment>
@@ -367,79 +439,282 @@ class FilePicker extends React.Component {
           <DialogTitle onClose={this.handleClose} style={{ background: '#1976d2' }}>
             Upload
           </DialogTitle>
-          <DialogContent dividers>
-            <div className={classes.root}>
-              <Stepper activeStep={this.state.activeStep}>
-                {steps.map((label, index) => {
-                  const stepProps = {};
-                  const labelProps = {};
-                  return (
-                    <Step key={label} {...stepProps}>
-                      <StepLabel {...labelProps}>{label}</StepLabel>
-                    </Step>
-                  );
-                })}
-              </Stepper>
-            </div>
+          <DialogContent dividers className={classes.dialogContent}>
+            <Stepper activeStep={this.state.activeStep}>
+              {steps.map((label, index) => {
+                const stepProps = {};
+                const labelProps = {};
+                return (
+                  <Step key={label} {...stepProps}>
+                    <StepLabel {...labelProps}>{label}</StepLabel>
+                  </Step>
+                );
+              })}
+            </Stepper>
 
-            <div className={styles.main}>
-              {
-                activeStep === 0 && (
-                  <div>
-                    <div className={styles['main-header']}>
-                      <List>
-                        <ListItem className={styles['icon-upload-header']}>
-                          <ListItemIcon>
-                            <CloudUpload />
-                          </ListItemIcon>
-                          <ListItemText primary="Upload Media" />
-                          <ListItemSecondaryAction className={styles['action-upload-header']}>
-                            <IconButton onClick={this.handlePick}>
-                              <Add />
-                            </IconButton>
-                            <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
-                              <Edit />
-                            </IconButton>
-                            <IconButton onClick={this.handleRemoveFile} disabled={!checkedFile.length}>
-                              <Delete />
-                            </IconButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      </List>
-                    </div>
-                    <div className={styles['main-body']}>
-                      {
-                        pickerComponent
-                      }
-                      {
-                        isShowListFile &&
-                        <ListFileUpload
-                          data={uploadResult}
-                          checked={checkedFile}
-                          handleToggle={this.handleToggle}
-                          indeterminate={checkedFile.length && checkedFile.length < uploadResult.length}
-                          checkedAll={checkedFile.length}
-                        />
-                      }
-                    </div>
+            {
+              activeStep === 0 && (
+                <div className={classes.mainUpload}>
+                  <div className={classes.mainUploadHeader}>
+                    <List>
+                      <ListItem className={classes.iconUploadHeader}>
+                        <ListItemIcon>
+                          <CloudUpload />
+                        </ListItemIcon>
+                        <ListItemText primary="Upload Media" />
+                        {
+                          isShowListFile && (
+                            <ListItemSecondaryAction>
+                              <IconButton onClick={this.handlePick}>
+                                <Add />
+                              </IconButton>
+                              <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
+                                <Edit />
+                              </IconButton>
+                              <IconButton onClick={this.handleRemoveFile} disabled={!checkedFile.length}>
+                                <Delete />
+                              </IconButton>
+                            </ListItemSecondaryAction>
+                          )
+                        }
+                      </ListItem>
+                    </List>
                   </div>
-                )
-              }
-            </div>
+                  <div className={classes.mainUploadBody}>
+                    {
+                      pickerComponent
+                    }
+                    {
+                      isShowListFile &&
+                      <ListFileUpload
+                        data={uploadResult}
+                        checked={checkedFile}
+                        handleToggle={this.handleToggle}
+                        indeterminate={checkedFile.length && checkedFile.length < uploadResult.length}
+                        checkedAll={checkedFile.length}
+                      />
+                    }
+                  </div>
+                </div>
+              )
+            }
+
             {
               activeStep === 1 && (
-                <Grid container spacing={3} style={{ marginTop: 10 }}>
+                <div>
                   {
-                    engines.map(item => {
-                      return (
-                        <Grid item xs={3}>
-                          <ListEngine title={item.title} des={item.des} libraries={libraries} />
+                    !showAdvancedCognitive ? (
+                      <div>
+                        <Grid container spacing={3} style={{ marginTop: 10 }}>
+                          <Grid item xs={8}>
+                            <Typography component="p" className={classes.titleProcessing}>
+                              Simple Cognitive Workflow
+                           </Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography component="p" className={classes.showAdvanced} onClick={this.handleShowAdvancedCognitive}>
+                              Show Advanced Cognitive Workflow
+                            </Typography>
+                          </Grid>
                         </Grid>
-                      )
-                    })
-                  }
 
-                </Grid>
+                        <Typography
+                          color="textSecondary"
+                          gutterBottom
+                        >
+                          Build a workflow by selecting from the classes of cognition below to extract, analyze and discovery valuable insight on your ingested files.
+                        </Typography>
+                        <Grid container spacing={3} style={{ marginTop: 10 }}>
+                          {
+                            engineCategories.map(item => {
+                              return (
+                                <Grid item xs={3}>
+                                  <ListEngine title={item.name} des={item.description} libraries={librariesByCategories[item.id]} icon={item.iconClass} />
+                                </Grid>
+                              )
+                            })
+                          }
+
+                        </Grid>
+                      </div>
+                    ) : (
+                        <Fragment>
+                          <Grid container spacing={3} style={{ marginTop: 10 }}>
+                            <Grid item xs={8}>
+                              <Typography component="p" className={classes.titleProcessing}>
+                                Advanced Cognitive Workflow
+                           </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography component="p" className={classes.showAdvanced} onClick={this.handleShowAdvancedCognitive}>
+                                Show Simple Cognitive Workflow
+                            </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Typography
+                            color="textSecondary"
+                            gutterBottom
+                          >
+                            Build out the exact workflow you need by selecting from available categories and engines on the left and adding them to your new workflow on the right.
+                        </Typography>
+
+                          <Grid container spacing={3} style={{ marginTop: 10 }}>
+                            <Grid item xs={5} className={classes.availableEngines}>
+                              <FormControl className={classes.formEngines}>
+                                <InputLabel shrink className={classes.titleFormSelectEngine}>
+                                  Available Engines
+                              </InputLabel>
+                                <Select
+                                  value={currentEngineCategory}
+                                  onChange={this.handleChangeEngine}
+                                  displayEmpty
+                                >
+                                  {
+                                    engineCategories.map(item => {
+                                      return (
+                                        <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                      )
+                                    })
+                                  }
+                                </Select>
+                              </FormControl>
+                              <FormControl className={classes.formEngines}>
+                                <TextField label="Search by Engine name" />
+                              </FormControl>
+                              <Paper variant="outlined" square className={classes.listEngines}>
+                                {
+                                  engineByCategories && engineByCategories[currentEngineCategory].filter(item => !enginesSelected.some(engine => engine.engineIds.includes(item.id))).map(item => {
+                                    return (
+                                      <Card className={classes.cardEngines}>
+                                        <CardHeader
+                                          key={item.id}
+                                          avatar={
+                                            item.logoPath || item.deploymentModel === 'FullyNetworkIsolated' ?
+                                              this.renderLogoEngine(item.logoPath, item.deploymentModel === 'FullyNetworkIsolated', 'header') :
+                                              null
+                                          }
+                                          action={
+                                            <IconButton className={classes.iconAddEngines} data-id={item.id} onClick={this.handleAddEngine}>
+                                              <AddCircleOutline />
+                                            </IconButton>
+                                          }
+                                          title={
+                                            !item.logoPath && (
+                                              <Typography component="p" className={classes.titleHeaderEngines}>
+                                                {item.name}
+                                              </Typography>
+                                            )
+                                          }
+                                          className={classes.cardHeaderEngines}
+                                        />
+
+                                        <CardContent className={classes.cardContentEngines}>
+                                          {
+                                            this.renderLogoEngine(item.logoPath, item.deploymentModel === 'FullyNetworkIsolated', 'content')
+                                          }
+                                          {
+                                            !item.logoPath && (
+                                              <Typography component="p" className={classes.titleContentEngines}>
+                                                {item.name}
+                                              </Typography>
+                                            )
+                                          }
+                                          <Typography component="p" className={classes.desContentEngines}>
+                                            {item.description}
+                                          </Typography>
+                                          <Typography component="p" className={classes.ratingEngines}>
+                                            Rating
+                                        </Typography>
+                                          <Typography component="p" className={classes.priceEngines}>
+                                            {`Price: $${item.price / 100}/hour`}
+                                          </Typography>
+                                        </CardContent>
+                                      </Card>
+                                    )
+                                  })
+                                }
+                              </Paper>
+                            </Grid>
+                            <Grid item xs={2} className={classes.iconSelectedEngines}>
+                              <Forward />
+                            </Grid>
+                            <Grid item xs={5} className={classes.selectedEngines}>
+                              <FormControl className={classes.formEngines}>
+                                <InputLabel shrink className={classes.titleFormSelectEngine}>
+                                  Your Selected Engines
+                              </InputLabel>
+                                <Select
+                                  value="1"
+                                  displayEmpty
+                                >
+                                  <MenuItem value="1">{'Select Existing Template'}</MenuItem>
+                                  <MenuItem value="2">{'Speechmatics English'}</MenuItem>
+                                  <MenuItem value="3">{'myTemplate'}</MenuItem>
+                                </Select>
+                              </FormControl>
+                              <Paper variant="outlined" square className={classes.listSelectedEngines}>
+                                {
+                                  enginesSelected && enginesSelected.map(item => {
+                                    return (
+                                      <Fragment>
+                                        <Typography component="p" className={classes.titleCategorySelected}>
+                                          {item.categoryName}
+                                        </Typography>
+                                        {
+                                          item.engineIds.map(engine => {
+                                            const engineFilter = engineByCategories[item.categoryId].find(item => item.id === engine);
+                                            return (
+                                              <Card className={classes.cardEngines}>
+                                                <CardHeader
+                                                  key={engine}
+                                                  avatar={
+                                                    engineFilter.logoPath || engineFilter.deploymentModel === 'FullyNetworkIsolated' ?
+                                                      this.renderLogoEngine(engineFilter.logoPath, engineFilter.deploymentModel === 'FullyNetworkIsolated', 'selected') :
+                                                      null
+                                                  }
+                                                  action={
+                                                    <IconButton data-id={engineFilter.id} onClick={this.handleRemoveEngine}>
+                                                      <CloseIcon />
+                                                    </IconButton>
+                                                  }
+                                                  title={
+                                                    !engineFilter.logoPath && (
+                                                      <Typography component="p" className={classes.titleHeaderEngines}>
+                                                        {engineFilter.name}
+                                                      </Typography>
+                                                    )
+                                                  }
+                                                  className={classes.cardHeaderEngines}
+                                                />
+
+                                                <CardContent className={classes.cardContentEngines}>
+                                                  <Typography component="p" color="textSecondary">
+                                                    {engineFilter.description}
+                                                  </Typography>
+
+                                                  <Typography component="p" >
+                                                    {`Price: $${engineFilter.price / 100}/hour`}
+                                                  </Typography>
+                                                </CardContent>
+                                              </Card>
+                                            )
+                                          })
+                                        }
+
+                                      </Fragment>
+                                    )
+                                  })
+                                }
+                              </Paper>
+                            </Grid>
+
+                          </Grid>
+                        </Fragment>
+                      )
+                  }
+                </div>
+
               )
             }
 
