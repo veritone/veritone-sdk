@@ -27,7 +27,7 @@ const actionType = {
 export default function EditFolder({
   open,
   isNewFolder = false,
-  type = 'New Folder',
+  type,
   isEnableEditName = false,
   isEnableEditFolder = false,
   currentFolder = {},
@@ -111,7 +111,9 @@ export default function EditFolder({
 
   const handleCloseWrapper = (e) => {
     setOpen(false);
-    handleClose(e);
+    setTimeout(() => {
+      handleClose(e);
+    }, 500)
   }
 
   const getSubmitStatus = () => {
