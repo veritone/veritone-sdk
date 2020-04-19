@@ -1,4 +1,4 @@
-import { clamp, mean, isNaN, get, isArray, isEmpty} from 'lodash';
+import { clamp, mean, isNaN, get, isArray, isEmpty, orderBy, lowerCase } from 'lodash';
 import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -355,16 +355,16 @@ export default createReducer(defaultState, {
     }
   },
   [actions.FETCH_ENGINES_SUCCESS](state, { payload: { id, engines } }) {
-    const engineByCategories = engines.reduce((res, value) => {
+    let engineByCategories = engines.filter(item => item.runtimeType === "edge").reduce((res, value) => {
       if(!res[value.category.id]){
         res[value.category.id] = [
-          ...value
+          value
         ];
       }else {
         res[value.category.id] = [
           ...res[value.category.id],
           value
-        ]
+        ].sort((a, b) => a.name.localeCompare(b.name))
       }
       return res;
     }, {})
