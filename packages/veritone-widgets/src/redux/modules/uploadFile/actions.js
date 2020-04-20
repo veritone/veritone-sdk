@@ -25,6 +25,16 @@ export const FETCH_ENGINES_FAILURE = `${namespace}_FETCH_ENGINES_FAILURE`;
 export const ADD_ENGINE = `${namespace}_ADD_ENGINE`;
 export const REMOVE_ENGINE = `${namespace}_REMOVE_ENGINE`;
 export const CHANGE_ENGINE = `${namespace}_CHANGE_ENGINE`;
+export const SEARCH_ENGINE = `${namespace}_SEARCH_ENGINE`;
+export const SHOW_MODAL_SAVE_TEMPLATE = `${namespace}_SHOW_MODAL_SAVE_TEMPLATE`;
+export const HIDE_MODAL_SAVE_TEMPLATE = `${namespace}_HIDE_MODAL_SAVE_TEMPLATE`;
+export const SAVE_TEMPLATE_REQUEST = `${namespace}_SAVE_TEMPLATE_REQUEST`;
+export const SAVE_TEMPLATE_SUCCESS = `${namespace}_SAVE_TEMPLATE_SUCCESS`;
+export const SAVE_TEMPLATE_FAILURE = `${namespace}_SAVE_TEMPLATE_FAILURE`;
+export const FETCH_TEMPLATES_REQUEST = `${namespace}_FETCH_TEMPLATES_REQUEST`;
+export const FETCH_TEMPLATES_SUCCESS = `${namespace}_FETCH_TEMPLATES_SUCCESS`;
+export const FETCH_TEMPLATES_FAILURE = `${namespace}_FETCH_TEMPLATES_FAILURE`;
+export const CHANGE_TEMPLATE = `${namespace}_CHANGE_TEMPLATE`;
 export const CATEGORY_IDS_TO_EXCLUDE = [
     '4fef6040-3fb6-4757-9aae-4044e8b46bc9', // Search
     '4be1a1b2-653d-4eaa-ba18-747a265305d8', // Ingestion
@@ -157,4 +167,49 @@ export const onChangeEngine = (id, engineId) => ({
 export const removeEngine = (id, engineId) => ({
     type: REMOVE_ENGINE,
     payload: { id, engineId }
+})
+
+export const searchEngine = (id, engineName) => ({
+    type: SEARCH_ENGINE,
+    payload: { id, engineName }
+})
+
+export const showModalSaveTemplate = (id, value) => ({
+    type: SHOW_MODAL_SAVE_TEMPLATE,
+    payload: { id, value }
+})
+export const hideModalSaveTemplate = (id, value) => ({
+    type: HIDE_MODAL_SAVE_TEMPLATE,
+    payload: { id, value }
+})
+
+export const saveTemplate = (id, value) => ({
+    type: SAVE_TEMPLATE_REQUEST,
+    payload: { id, value }
+})
+export const saveTemplateSuccess = (id) => ({
+    type: SAVE_TEMPLATE_SUCCESS,
+    payload: { id }
+})
+export const saveTemplateFailure = (id) => ({
+    type: SAVE_TEMPLATE_FAILURE,
+    payload: { id }
+})
+
+export const fetchTemplates = (id) => ({
+    type: FETCH_TEMPLATES_REQUEST,
+    payload: { id }
+})
+export const fetchTemplatesSuccess = (id, templates) => ({
+    type: FETCH_TEMPLATES_SUCCESS,
+    payload: { id, templates }
+})
+export const fetchTemplatesFailure = (id) => ({
+    type: FETCH_TEMPLATES_FAILURE,
+    payload: { id }
+})
+
+export const onChangeTemplate = (id, templateId) => ({
+    type: CHANGE_TEMPLATE,
+    payload: { id, templateId }
 })

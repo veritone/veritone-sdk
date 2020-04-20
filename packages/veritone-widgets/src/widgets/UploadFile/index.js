@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { noop } from 'lodash';
+import { noop, debounce } from 'lodash';
 import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -49,6 +49,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import Security from '@material-ui/icons/Security';
+import Save from '@material-ui/icons/Save';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -56,6 +57,7 @@ import styles from './styles';
 import ListFileUpload from './listFile';
 import EditFileUpload from './editFile';
 import ListEngine from './listEngine';
+import SaveTemplate from './saveTemplate';
 
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
@@ -106,7 +108,9 @@ const DialogActions = withStyles((theme) => ({
     librariesByCategories: filePickerModule.librariesByCategories(state, id),
     engineByCategories: filePickerModule.engineByCategories(state, id),
     currentEngineCategory: filePickerModule.currentEngineCategory(state, id),
-    enginesSelected: filePickerModule.enginesSelected(state, id)
+    enginesSelected: filePickerModule.enginesSelected(state, id),
+    isShowModalSaveTemplate: filePickerModule.isShowModalSaveTemplate(state, id),
+    templates: filePickerModule.templates(state, id)
   }),
   {
     pick: uploadFileAction.pick,
@@ -123,7 +127,13 @@ const DialogActions = withStyles((theme) => ({
     fetchLibraries: uploadFileAction.fetchLibraries,
     onChangeEngine: uploadFileAction.onChangeEngine,
     addEngine: uploadFileAction.addEngine,
-    removeEngine: uploadFileAction.removeEngine
+    removeEngine: uploadFileAction.removeEngine,
+    searchEngine: uploadFileAction.searchEngine,
+    showModalSaveTemplate: uploadFileAction.showModalSaveTemplate,
+    hideModalSaveTemplate: uploadFileAction.hideModalSaveTemplate,
+    saveTemplate: uploadFileAction.saveTemplate,
+    fetchTemplates: uploadFileAction.fetchTemplates,
+    onChangeTemplate: uploadFileAction.onChangeTemplate
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -177,6 +187,10 @@ class FilePicker extends React.Component {
     height: 450,
     width: 600
   };
+  constructor(props) {
+    super(props);
+    this.onChangeTemplateName = debounce(this.onChangeTemplateName, 500);
+  }
   state = {
     openUpload: false,
     activeStep: 0,
@@ -220,13 +234,16 @@ class FilePicker extends React.Component {
         des: 'Detect and Identify multiple faces within rich media content'
       },
     ],
-    showAdvancedCognitive: false
+    showAdvancedCognitive: false,
+    templateName: '',
+    currentTemplate: 0
   }
 
   componentDidMount() {
-    const { id, fetchEngineCategories, fetchLibraries } = this.props;
+    const { id, fetchEngineCategories, fetchLibraries, fetchTemplates } = this.props;
     // fetchEngineCategories(id);
     fetchLibraries(id);
+    fetchTemplates(id);
   }
 
   handlePick = () => {
@@ -422,6 +439,36 @@ class FilePicker extends React.Component {
     const { id, removeEngine } = this.props;
     removeEngine(id, engineId)
   }
+  handleSearchEngine = (event) => {
+    const { id, searchEngine } = this.props;
+    const engineName = event.target.value;
+    searchEngine(id, engineName);
+  }
+  handleShowModalSaveTemplate = (event) => {
+    const { id, showModalSaveTemplate } = this.props;
+    showModalSaveTemplate(id, true);
+  }
+  handleHideModalSaveTemplate = (event) => {
+    const { id, hideModalSaveTemplate } = this.props;
+    hideModalSaveTemplate(id, false);
+  }
+  handleSaveTemplate = (event) => {
+    const { templateName } = this.state;
+    const { id, saveTemplate } = this.props;
+    saveTemplate(id, templateName);
+  }
+  hanldeOnChangeTemPlate = (event) => {
+    this.onChangeTemplateName(event.target.value)
+  }
+  onChangeTemplateName = (templateName) => {
+    this.setState({ templateName })
+  }
+  handleChangeTemplates = event => {
+    const templateId  = event.target.value;
+    const { id, onChangeTemplate } = this.props;
+    this.setState({ currentTarget: templateId });
+    onChangeTemplate(id, templateId)
+  }
   render() {
     const pickerComponent = {
       overview: this.overviewUploadFile,
@@ -430,8 +477,8 @@ class FilePicker extends React.Component {
       complete: this.listFile
     }[this.props.pickerState]();
     const steps = this.getSteps();
-    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected } = this.props;
-    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive } = this.state;
+    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates } = this.props;
+    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate } = this.state;
     console.log('isShowListFile', isShowListFile)
     return (
       <Fragment>
@@ -580,7 +627,7 @@ class FilePicker extends React.Component {
                                 </Select>
                               </FormControl>
                               <FormControl className={classes.formEngines}>
-                                <TextField label="Search by Engine name" />
+                                <TextField label="Search by Engine name" onChange={this.handleSearchEngine} />
                               </FormControl>
                               <Paper variant="outlined" square className={classes.listEngines}>
                                 {
@@ -640,19 +687,32 @@ class FilePicker extends React.Component {
                               <Forward />
                             </Grid>
                             <Grid item xs={5} className={classes.selectedEngines}>
-                              <FormControl className={classes.formEngines}>
-                                <InputLabel shrink className={classes.titleFormSelectEngine}>
-                                  Your Selected Engines
+                              <div className={classes.contentSelectedEngine}>
+                                <FormControl className={classes.formEngines}>
+                                  <InputLabel shrink className={classes.titleFormSelectEngine}>
+                                    Your Selected Engines
                               </InputLabel>
-                                <Select
-                                  value="1"
-                                  displayEmpty
-                                >
-                                  <MenuItem value="1">{'Select Existing Template'}</MenuItem>
-                                  <MenuItem value="2">{'Speechmatics English'}</MenuItem>
-                                  <MenuItem value="3">{'myTemplate'}</MenuItem>
-                                </Select>
-                              </FormControl>
+                                  <Select
+                                    value={currentTemplate}
+                                    displayEmpty
+                                    onChange={this.handleChangeTemplates}
+                                  >
+                                     <MenuItem value={0}>{'Select Existing Template'}</MenuItem>
+                                    {
+                                      templates.map(item => {
+                                        return (
+                                          <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                        )
+                                      })
+                                    }
+                                  </Select>
+                                </FormControl>
+                                <IconButton className={classes.iconSaveTemplate} onClick={this.handleShowModalSaveTemplate} >
+                                  <Save />
+                                </IconButton>
+
+                              </div>
+
                               <Paper variant="outlined" square className={classes.listSelectedEngines}>
                                 {
                                   enginesSelected && enginesSelected.map(item => {
@@ -742,6 +802,12 @@ class FilePicker extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
+        <SaveTemplate
+          open={isShowModalSaveTemplate}
+          handleSave={this.handleSaveTemplate}
+          handleClose={this.handleHideModalSaveTemplate}
+          onChange={this.hanldeOnChangeTemPlate}
+        />
 
         <EditFileUpload
           open={isShowEditFileUpload}

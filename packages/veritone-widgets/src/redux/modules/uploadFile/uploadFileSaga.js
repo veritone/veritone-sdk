@@ -16,6 +16,9 @@ import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { handleRequest } from '../../../shared/util';
+import {
+  enginesSelected
+} from './';
 // import {
 //   ABORT_REQUEST,
 //   UPLOAD_REQUEST,
@@ -379,6 +382,63 @@ function* watchFetchEngines() {
   })
 }
 
+function* watchSaveTemplate() {
+  yield takeEvery(actions.SAVE_TEMPLATE_REQUEST, function* (action) {
+    const { id } = action.payload;
+    const query = `mutation($name: String!, $taskList: JSONData!) {
+      createProcessTemplate(input: {
+          name: $name
+          taskList: $taskList
+      }) {
+        process_template_id: id
+      }
+    }
+    `;
+    const enginesSelecteds = yield select(enginesSelected, id);
+    console.log('enginesSelected', enginesSelecteds);
+    const variables = {
+      name: action.payload.value,
+      taskList: JSON.stringify(enginesSelecteds)
+    };
+    const { error, response } = yield call(handleRequest, { query, variables })
+    //const { records } = get(response, 'data.libraries', []);
+    if(error){
+      yield put(actions.saveTemplateFailure(id))
+    }
+    yield put(actions.saveTemplateSuccess(id))
+  })
+}
+
+function* fetchTemplate(action) {
+    const { id } = action.payload;
+    const query = `query {
+      processTemplates (
+              limit: 100
+              offset: 0,
+  
+          ) {
+              records {
+                  id
+                  organizationId
+                  name
+                  taskList
+              
+              }
+          }
+      }
+    `;
+
+    const { error, response } = yield call(handleRequest, { query })
+    const { records } = get(response, 'data.processTemplates', []);
+    if(error){
+      yield put(actions.fetchTemplatesFailure(id))
+    }
+    yield put(actions.fetchTemplatesSuccess(id, records))
+}
+function* watchSaveTemplateSuccess() {
+  yield takeEvery(actions.SAVE_TEMPLATE_SUCCESS, fetchTemplate);
+  yield takeEvery(actions.FETCH_ENGINES_SUCCESS, fetchTemplate);
+}
 export default function* root() {
   yield all([
     fork(watchUploadRequest),
@@ -387,6 +447,8 @@ export default function* root() {
     fork(watchAbortions),
     fork(watchFetchEngineCategories),
     fork(watchFetchLibraries),
-    fork(watchFetchEngines)
+    fork(watchFetchEngines),
+    fork(watchSaveTemplate),
+    fork(watchSaveTemplateSuccess)
   ]);
 }

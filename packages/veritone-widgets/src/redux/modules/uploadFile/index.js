@@ -243,17 +243,17 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [actions.ON_SELECTION_CHANGE](state, { payload: { id, value, type }}) {
+  [actions.ON_SELECTION_CHANGE](state, { payload: { id, value, type } }) {
     let newChecked = [...state[id].checkedFile];
     const currentIndex = newChecked.indexOf(value);
-    if(type === 'all'){
+    if (type === 'all') {
       if (newChecked.length < state[id].uploadResult.length) {
         newChecked = Object.keys([...state[id].uploadResult]).map(Number);
       } else {
         newChecked = [];
       }
-     
-    }else {
+
+    } else {
       if (currentIndex === -1) {
         newChecked.push(value);
       } else {
@@ -265,7 +265,7 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         checkedFile: newChecked
-      } 
+      }
     }
   },
   [actions.REMOVE_FILE_UPLOAD](state, { payload: { id, value } }) {
@@ -283,7 +283,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.SHOW_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+  [actions.SHOW_EDIT_FILE_UPLOAD](state, { payload: { id } }) {
     return {
       ...state,
       [id]: {
@@ -292,7 +292,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.HIDE_EDIT_FILE_UPLOAD](state, { payload: {id} }) {
+  [actions.HIDE_EDIT_FILE_UPLOAD](state, { payload: { id } }) {
     return {
       ...state,
       [id]: {
@@ -301,9 +301,9 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.FETCH_ENGINE_CATEGORIES_SUCCESS](state, { payload: { id, engineCategories }}) {
+  [actions.FETCH_ENGINE_CATEGORIES_SUCCESS](state, { payload: { id, engineCategories } }) {
     const newEngineCategories = engineCategories.filter(item => !actions.CATEGORY_IDS_TO_EXCLUDE.includes(item.id) && item.categoryType && item.engines.records.filter(engine => engine.runtimeType === "edge")
-    .length)
+      .length)
     console.log('newEngineCategories', newEngineCategories)
     const librariesCategory = [...newEngineCategories].filter(
       ({ libraryEntityIdentifierTypeIds, engines }) =>
@@ -331,7 +331,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.FETCH_LIBRARIES_SUCCESS](state, { payload: { id, libraries }}){
+  [actions.FETCH_LIBRARIES_SUCCESS](state, { payload: { id, libraries } }) {
     const newLibraries = libraries.reduce(
       (res, value) => {
         if (value.libraryId && value.version > 0) {
@@ -355,12 +355,13 @@ export default createReducer(defaultState, {
     }
   },
   [actions.FETCH_ENGINES_SUCCESS](state, { payload: { id, engines } }) {
-    let engineByCategories = engines.filter(item => item.runtimeType === "edge").reduce((res, value) => {
-      if(!res[value.category.id]){
+    const enginesFilter = engines.filter(item => item.runtimeType === "edge");
+    let engineByCategories = enginesFilter.reduce((res, value) => {
+      if (!res[value.category.id]) {
         res[value.category.id] = [
           value
         ];
-      }else {
+      } else {
         res[value.category.id] = [
           ...res[value.category.id],
           value
@@ -372,7 +373,8 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        engineByCategories
+        engineByCategories,
+        enginesDefault: enginesFilter
       }
     }
   },
@@ -381,20 +383,20 @@ export default createReducer(defaultState, {
     const category = get(state[id], 'engineCategories', []).find(item => item.id === currentEngineCategory);
     const enginesSelected = get(state[id], 'enginesSelected', []);
     let newEnginesSelected = [...enginesSelected];
-    if(!newEnginesSelected.length){
+    if (!newEnginesSelected.length) {
       newEnginesSelected.push({
         categoryId: currentEngineCategory,
         categoryName: category.name,
         engineIds: [engineId]
       })
-    }else {
-      if(!newEnginesSelected.some(item => item.categoryId === currentEngineCategory)){
+    } else {
+      if (!newEnginesSelected.some(item => item.categoryId === currentEngineCategory)) {
         newEnginesSelected.push({
           categoryId: currentEngineCategory,
           categoryName: category.name,
           engineIds: [engineId]
         })
-      }else {
+      } else {
         const index = newEnginesSelected.findIndex(item => item.categoryId === currentEngineCategory);
         newEnginesSelected[index] = {
           ...newEnginesSelected[index],
@@ -426,7 +428,7 @@ export default createReducer(defaultState, {
   [actions.REMOVE_ENGINE](state, { payload: { id, engineId } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const newEnginesSelected = [...enginesSelected].map(item => {
-      if(item.engineIds.includes(engineId)){
+      if (item.engineIds.includes(engineId)) {
         return {
           ...item,
           engineIds: [
@@ -436,6 +438,93 @@ export default createReducer(defaultState, {
       }
       return item;
     }).filter(item => item.engineIds.length)
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
+      }
+    }
+  },
+  [actions.SEARCH_ENGINE](state, { payload: { id, engineName } }) {
+    const currentEngineCategory = get(state[id], 'currentEngineCategory', currentEngineCategoryDefault);
+    let engineByCategories = { ...get(state[id], 'engineByCategories', {}) };
+    const engines = engineByCategories[currentEngineCategory].filter(item => JSON.stringify(item.name).toLowerCase().indexOf(engineName.toLowerCase()) !== -1);
+    engineByCategories = {
+      ...engineByCategories,
+      [currentEngineCategory]: engines
+    }
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        engineByCategories
+      }
+    }
+  },
+
+  [actions.SHOW_MODAL_SAVE_TEMPLATE](state, { payload: { id, value } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        isShowModalSaveTemplate: value
+      }
+    }
+  },
+
+  [actions.HIDE_MODAL_SAVE_TEMPLATE](state, { payload: { id, value } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        isShowModalSaveTemplate: value
+      }
+    }
+  },
+
+  [actions.SAVE_TEMPLATE_SUCCESS](state, { payload: { id }}) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        isShowModalSaveTemplate: false
+      }
+    }
+  },
+
+  [actions.FETCH_TEMPLATES_SUCCESS](state, { payload: { id, templates } }) {
+    const enginesDefault = get(state[id], 'enginesDefault', []);
+    const newTemplates = templates.map(item => {
+      const newTaskList = [];
+      if (!item.taskList[0].engineIds) {
+        item.taskList.forEach(element => {
+          if (!element.engineIds) {
+            newTaskList.push({
+              categoryId: element.category.engineCategoryId,
+              categoryName: element.category.engineCategoryName,
+              engineIds: newTaskList.engineIds ? newTaskList.engineIds.push(element.engineId) : [element.engineId]
+            })
+          }
+        })
+        return {
+          ...item,
+          taskList: newTaskList
+        };
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        templates: newTemplates
+      }
+    }
+  },
+  [actions.CHANGE_TEMPLATE](state, { payload: {id, templateId }}) {
+    const templates = get(state[id], 'templates', []);
+    const newEnginesSelected = [...templates].find(item => item.id === templateId).taskList
     return {
       ...state,
       [id]: {
@@ -492,3 +581,5 @@ export const librariesByCategories = (state, id) => get(local(state), [id, 'libr
 export const engineByCategories = (state, id) => get(local(state), [id, 'engineByCategories'], {});
 export const currentEngineCategory = (state, id) => get(local(state), [id, 'currentEngineCategory'], currentEngineCategoryDefault);
 export const enginesSelected = (state, id) => get(local(state), [id, 'enginesSelected'], []);
+export const isShowModalSaveTemplate = (state, id) => get(local(state), [id, 'isShowModalSaveTemplate'], false);
+export const templates = (state, id) => get(local(state), [id, 'templates'], []);

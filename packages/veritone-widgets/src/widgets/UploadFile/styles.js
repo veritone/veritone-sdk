@@ -320,5 +320,16 @@ export default {
     fontWeight: 500,
     color: '#333333',
     fontSize: '18px'
+  },
+
+  contentSelectedEngine: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+
+  iconSaveTemplate: {
+    marginTop: '10px',
+    marginLeft: '20px'
   }
+
 }
