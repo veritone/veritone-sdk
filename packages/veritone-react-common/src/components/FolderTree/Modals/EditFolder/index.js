@@ -86,7 +86,10 @@ export default function EditFolder({
   const onUpdate = () => {
     validate(folderName);
     if (error === '') {
-      handleSubmit(selectedFolder, folderName);
+      setOpen(false);
+      setTimeout(() => {
+        handleSubmit(selectedFolder, folderName);
+      }, 500);
     }
   };
 
@@ -113,7 +116,7 @@ export default function EditFolder({
     setOpen(false);
     setTimeout(() => {
       handleClose(e);
-    }, 500)
+    }, 500);
   }
 
   const getSubmitStatus = () => {

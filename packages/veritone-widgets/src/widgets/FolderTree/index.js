@@ -183,7 +183,7 @@ function FolderTreeWrapper({
       folder,
       pathList
     });
-  }, [selectedFolder]);
+  }, [selectedFolder, originFolderData]);
 
   useEffect(() => {
     if (!isEmpty(folderSelectedFromApp) && !isNil(folderSelectedFromApp)) {

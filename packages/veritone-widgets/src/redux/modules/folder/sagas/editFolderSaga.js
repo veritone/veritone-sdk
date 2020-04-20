@@ -83,8 +83,10 @@ function* modifyFolder(action) {
     }
     folder = get(responseEditName, 'data.updateFolder', {});
     yield put(actions.modifyFolderSuccess({
+      ...folder,
       id: folder.id,
-      name: folder.name
+      name: folder.name,
+      parentId: get(folder, 'parent.id', '')
     }));
   }
   //move folder
@@ -149,10 +151,11 @@ function* modifyFolder(action) {
     }
     folder = get(moveRespone, 'data.moveFolder', {});
     yield put(actions.modifyFolderSuccess({
+      ...folder,
       id: folder.id,
-      name: folder.name
+      name: folder.name,
+      parentId: get(folder, 'parent.id', '')
     }));
-    yield put(actions.fetchMore(oldParent.id, true));
     yield put(actions.fetchMore(parentId, true));
   }
   yield put(actions.fetchMore(oldParent.id, true));
