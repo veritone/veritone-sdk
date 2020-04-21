@@ -29,10 +29,9 @@ class DateTimePicker extends React.Component {
 
   handleDateChange = ({ target }) => {
     const newDate = target.value;
-
     if (
-      !isValid(new Date(newDate)) ||
-      getYear(newDate) > 9999
+      !isValid(parseISO(newDate)) ||
+      getYear(parseISO(newDate)) > 9999
     ) {
       return;
     }
