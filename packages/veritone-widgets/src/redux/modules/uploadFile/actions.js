@@ -35,6 +35,13 @@ export const FETCH_TEMPLATES_REQUEST = `${namespace}_FETCH_TEMPLATES_REQUEST`;
 export const FETCH_TEMPLATES_SUCCESS = `${namespace}_FETCH_TEMPLATES_SUCCESS`;
 export const FETCH_TEMPLATES_FAILURE = `${namespace}_FETCH_TEMPLATES_FAILURE`;
 export const CHANGE_TEMPLATE = `${namespace}_CHANGE_TEMPLATE`;
+export const ON_CLICK_ENGINE_CATEGORY = `${namespace}_ON_CLICK_ENGINE_CATEGORY`;
+export const FETCH_CONTENT_TEMPLATES_REQUEST = `${namespace}_FETCH_CONTENT_TEMPLATES_REQUEST`;
+export const FETCH_CONTENT_TEMPLATES_SUCCESS = `${namespace}_FETCH_CONTENT_TEMPLATES_SUCCESS`;
+export const FETCH_CONTENT_TEMPLATES_FAILURE = `${namespace}_FETCH_CONTENT_TEMPLATES_FAILURE`;
+export const ADD_CONTENT_TEMPLATE = `${namespace}_ADD_CONTENT_TEMPLATE`;
+export const REMOVE_CONTENT_TEMPLATE = `${namespace}_REMOVE_CONTENT_TEMPLATE`;
+export const ON_CHANGE_FORM_CONTENT_TEMPLATE = `${namespace}_ON_CHANGE_FORM_CONTENT_TEMPLATE`;
 export const CATEGORY_IDS_TO_EXCLUDE = [
     '4fef6040-3fb6-4757-9aae-4044e8b46bc9', // Search
     '4be1a1b2-653d-4eaa-ba18-747a265305d8', // Ingestion
@@ -212,4 +219,36 @@ export const fetchTemplatesFailure = (id) => ({
 export const onChangeTemplate = (id, templateId) => ({
     type: CHANGE_TEMPLATE,
     payload: { id, templateId }
+})
+
+export const onClickEngineCategory = (id, engineCategoryId) => ({
+    type: ON_CLICK_ENGINE_CATEGORY,
+    payload: { id, engineCategoryId }
+})
+
+export const fetchContentTemplates = (id) => ({
+    type: FETCH_CONTENT_TEMPLATES_REQUEST,
+    payload: { id }
+})
+export const fetchContentTemplatesSuccess = (id, contentTemplates) => ({
+    type: FETCH_CONTENT_TEMPLATES_SUCCESS,
+    payload: { id, contentTemplates }
+})
+export const fetchContentTemplatesFailure = (id) => ({
+    type: FETCH_CONTENT_TEMPLATES_SUCCESS,
+    payload: { id }
+})
+
+export const addContentTemplate = (id, contentTemplateId) => ({
+    type: ADD_CONTENT_TEMPLATE,
+    payload: { id, contentTemplateId }
+})
+export const removeContentTemplate = (id, contentTemplateId) => ({
+    type: REMOVE_CONTENT_TEMPLATE,
+    payload: { id, contentTemplateId}
+})
+
+export const onChangeFormContentTemplate = (id, contentTemplateId, name, value) => ({
+    type: ON_CHANGE_FORM_CONTENT_TEMPLATE,
+    payload: { id, contentTemplateId, name, value }
 })

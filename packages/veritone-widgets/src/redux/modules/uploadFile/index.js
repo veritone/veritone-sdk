@@ -499,12 +499,18 @@ export default createReducer(defaultState, {
       const newTaskList = [];
       if (!item.taskList[0].engineIds) {
         item.taskList.forEach(element => {
-          if (!element.engineIds) {
+          if (!newTaskList.some(item => item.categoryId ===  element.category.engineCategoryId)) {
             newTaskList.push({
               categoryId: element.category.engineCategoryId,
               categoryName: element.category.engineCategoryName,
-              engineIds: newTaskList.engineIds ? newTaskList.engineIds.push(element.engineId) : [element.engineId]
-            })
+              engineIds: [element.engineId]
+            });
+          }else if(!newTaskList.some(item => item.engineIds.includes(element.engineId))) {
+            const index = newTaskList.findIndex(item => item.categoryId === element.category.engineCategoryId)
+            newTaskList[index].engineIds = [
+              ...newTaskList[index].engineIds,
+              element.engineId
+            ]
           }
         })
         return {
@@ -530,6 +536,100 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         enginesSelected: newEnginesSelected
+      }
+    }
+  },
+  [actions.ON_CLICK_ENGINE_CATEGORY](state, { payload: { id, engineCategoryId }}) {
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    const engineByCategories = get(state[id], 'engineByCategories', {});
+    let newEnginesSelected = [];
+    if(enginesSelected.some(item => item.categoryId === engineCategoryId)){
+      newEnginesSelected = [...enginesSelected].filter(item => item.categoryId !== engineCategoryId)
+    }else {
+      newEnginesSelected = [
+        ...enginesSelected,
+        {
+          categoryId: engineCategoryId,
+          categoryName: engineByCategories[engineCategoryId][0].category.name,
+          engineIds: [engineByCategories[engineCategoryId][0].id]
+        }
+      ]
+    }
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
+      }
+    }
+  },
+  [actions.FETCH_CONTENT_TEMPLATES_SUCCESS](state, { payload: { id, contentTemplates }}) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        contentTemplates
+      }
+    }
+  },
+  [actions.ADD_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId }}) {
+    const contentTemplates = get(state[id], 'contentTemplates', []);
+    const contentTemplate = contentTemplates.find(item => item.id === contentTemplateId);
+    let contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
+    const records = get(contentTemplate, 'schemas.records', []).find(item => item.status === 'published');
+    const { properties = {} } = get(records, 'definition', {});
+    const { required = [] } = get(records, 'definition', {});
+    const data = Object.keys(properties).reduce((res, value) => ({
+      ...res,
+      [value]: ''
+    }), {})
+    contentTemplateSelected = [
+      ...contentTemplateSelected,
+      {
+        ...contentTemplate,
+        data,
+        validate: required
+      }
+    ]
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        contentTemplateSelected
+      }
+    }
+  },
+  [actions.REMOVE_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId }}) {
+    const contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
+    const newContentTemplateSelected = contentTemplateSelected.filter(item => item.id !== contentTemplateId);
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        contentTemplateSelected: newContentTemplateSelected
+      }
+    }
+  },
+  [actions.ON_CHANGE_FORM_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId, name, value }}) {
+    let contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
+    const newContentTemplateSelected = [...contentTemplateSelected].map(item => {
+      if(item.id === contentTemplateId){
+        return {
+          ...item,
+          data: {
+            ...item.data,
+            [name]: value
+          },
+          validate: value.length ? item.validate.filter(element => element !== name) : item.validate
+        }
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        contentTemplateSelected: newContentTemplateSelected
       }
     }
   }
@@ -583,3 +683,5 @@ export const currentEngineCategory = (state, id) => get(local(state), [id, 'curr
 export const enginesSelected = (state, id) => get(local(state), [id, 'enginesSelected'], []);
 export const isShowModalSaveTemplate = (state, id) => get(local(state), [id, 'isShowModalSaveTemplate'], false);
 export const templates = (state, id) => get(local(state), [id, 'templates'], []);
+export const contentTemplates = (state, id) => get(local(state), [id, 'contentTemplates'], []);
+export const contentTemplateSelected = (state, id) => get(local(state), [id, 'contentTemplateSelected'], []);

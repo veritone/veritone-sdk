@@ -1,6 +1,6 @@
 export default {
   // list engine 
-  ListEngineCategories: {
+  listEngineCategories: {
     height: 250
   },
   closeButton: {
@@ -91,7 +91,7 @@ export default {
     padding: '15px 15px 0 15px',
     overflowY: 'auto',
     marginTop: '10px',
-    height: '440px',
+    height: 'calc(100vh - 438px)'
   },
   ss: {
     marginBottom: '15px'
@@ -313,7 +313,7 @@ export default {
     padding: '15px 15px 0 15px',
     overflowY: 'auto',
     marginTop: '10px',
-    height: '500px',
+    height: 'calc(100vh - 400px)'
   },
 
   titleFormSelectEngine: {
@@ -330,6 +330,108 @@ export default {
   iconSaveTemplate: {
     marginTop: '10px',
     marginLeft: '20px'
-  }
+  },
 
+  cardEngineSelected: {
+    border: '1px solid #3E89CA',
+    backgroundColor: 'rgba(225, 241, 255, 0.52)',
+    height: 250
+  },
+
+  //edit file
+  dialogEditFileContent: {
+    padding: '0px !important',
+    minWidth: '700px',
+    maxWidth: '700px !important',
+  },
+
+  tabsContent: {
+    padding: '0 16px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '0 !important',
+  },
+
+  tabs: {
+    minHeight: '38px !important',
+    maxWidth: '300px',
+  },
+
+  tab: {
+      fontSize: '12px !important',
+      minHeight: '38px !important',
+  },
+
+  generalContent: {
+      padding: '0 16px'
+  },
+
+  generalInfo: {
+    fontSize: '18px',
+    color: '#808080'
+  },
+
+  generalText: {
+      color: '#808080',
+  },
+
+  uploadImage: {
+      height: '200px',
+      border: '1px dashed #808080',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
+      textAlign: 'center',
+  },
+
+  uploadImageContent: {
+      height: '100%',
+      padding: '55px 0px',
+      cursor: 'pointer',
+      backgroundColor: 'white',
+      opacity: '.8',
+      transition: 'all 0.5s',
+  },
+
+  iconUpload: {
+      fontSize: '60px !important',
+  },
+
+  fileName: {
+      marginTop: '20px'
+  },
+   
+  //content templates
+  cardContentTemplate: {
+    marginTop: '10px'
+  },
+  formContentTemplate: {
+    width: '100%',
+    marginBottom: '10px'
+  },
+  cardHeaderContentTemplate: {
+    padding: '10px 16px 0px 16px',
+
+    '& span': {
+      fontSize: '18px'
+    }
+  },
+  cardMainContentTemplate: {
+    padding: '0 16px 0px 16px',
+  },
+
+  listContentTemplateLeft: {
+    height: 'calc(100vh - 198px)',
+    overflow: 'auto'
+  },
+
+  listContentTemplateRight: {
+    height: 'calc(100vh - 198px)',
+    overflow: 'auto'
+  },
+
+  titleSelectContentTemplate: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
+  }
 }

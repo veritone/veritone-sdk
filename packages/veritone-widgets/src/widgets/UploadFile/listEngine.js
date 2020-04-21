@@ -27,7 +27,8 @@ export default function ListEngine({
   title,
   des,
   libraries,
-  icon
+  icon,
+  isSelected
 }) {
   const classes = useStyles();
   const [personName, setPersonName] = React.useState([]);
@@ -35,7 +36,7 @@ export default function ListEngine({
     setPersonName(event.target.value);
   };
   return (
-    <Card className={classes.ListEngineCategories}>
+    <Card className={isSelected ? classes.cardEngineSelected : classes.listEngineCategories} >
       <CardContent className={classes.cardContent}>
         {/* <GraphicEq className={classes.icon} /> */}
         <div className={classes.icon}>

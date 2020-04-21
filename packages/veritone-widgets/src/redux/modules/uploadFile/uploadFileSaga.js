@@ -439,6 +439,40 @@ function* watchSaveTemplateSuccess() {
   yield takeEvery(actions.SAVE_TEMPLATE_SUCCESS, fetchTemplate);
   yield takeEvery(actions.FETCH_ENGINES_SUCCESS, fetchTemplate);
 }
+
+function* watchFetchContentTemplates() {
+  yield takeEvery(actions.FETCH_CONTENT_TEMPLATES_REQUEST, function* (action) {
+    const { id } = action.payload;
+    const query = `query contentTemplates {
+      dataRegistries {
+        records {
+          id
+          name
+          description
+          schemas {
+            records {
+              id
+              status
+              definition
+              majorVersion
+              minorVersion
+              validActions
+            }
+          }
+          organizationId
+        }
+      }
+    }
+    `;
+    const { error, response } = yield call(handleRequest, { query })
+    const { records } = get(response, 'data.dataRegistries', []);
+    if(error){
+      yield put(actions.fetchContentTemplatesFailure(id))
+    }
+    yield put(actions.fetchContentTemplatesSuccess(id, records))
+  })
+}
+
 export default function* root() {
   yield all([
     fork(watchUploadRequest),
@@ -449,6 +483,7 @@ export default function* root() {
     fork(watchFetchLibraries),
     fork(watchFetchEngines),
     fork(watchSaveTemplate),
-    fork(watchSaveTemplateSuccess)
+    fork(watchSaveTemplateSuccess),
+    fork(watchFetchContentTemplates)
   ]);
 }
