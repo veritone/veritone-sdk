@@ -217,6 +217,7 @@ function StoryComponent() {
         open={open}
         type={2}
         isEnableEditFolder
+        isEnableEditName
         handleClose={handleClose}
         handleSubmit={handleSubmit}
         foldersData={foldersDataDefault}

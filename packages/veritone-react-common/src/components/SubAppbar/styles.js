@@ -18,4 +18,7 @@ export default {
     width: 239,
     padding: 0,
   },
+  breadcrumbContainerSubappbar: {
+    width: 'calc(100% - 240px)'
+  }
 }

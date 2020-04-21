@@ -39,7 +39,8 @@ const BreadcrumbItem = ({
         >
           {icon}
           <span className={cx({
-            [classes['iconSpacer']]: icon && name
+            [classes['iconSpacer']]: icon && name,
+            [classes.textItem]: true
           })}>
             {name}
           </span>

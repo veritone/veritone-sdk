@@ -8,12 +8,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './styles';
 
 const useStyles = makeStyles(theme => ({
   ...styles
-})); 
+}));
 
 export default function DeleteFolder({
   open,
@@ -35,10 +36,13 @@ export default function DeleteFolder({
   }
 
   const getContent = () => {
+    const folderName = get(folder, 'name', '');
+    const folderNameToDisplay =
+      folderName.length > 50 ? `${folderName.substring(0, 50)}...` : folderName;
     if (isFolderWithContent()) {
       return 'You will delete this Folder and its collection(s). Performing this action will delete all infomation including folders and contents.';
     }
-    return `You will delete "${folder.name}" and its contents. Would you like to continue?`
+    return `You will delete "${folderNameToDisplay}" and its contents. Would you like to continue?`
   }
   const onDelete = () => {
     handleSubmit(folder);
@@ -59,7 +63,7 @@ export default function DeleteFolder({
         aria-labelledby="create-folder"
       >
         <DialogTitle id="create-folder">
-          {getDialogTitle()}
+          <Typography className={classes.title}>{getDialogTitle()}</Typography>
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <div className={classes.actionNewField}>

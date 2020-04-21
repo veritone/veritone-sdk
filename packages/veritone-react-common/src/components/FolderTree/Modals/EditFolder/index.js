@@ -8,6 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import FolderTree from '../../index';
@@ -26,7 +27,7 @@ const actionType = {
 export default function EditFolder({
   open,
   isNewFolder = false,
-  type = 'New Folder',
+  type,
   isEnableEditName = false,
   isEnableEditFolder = false,
   currentFolder = {},
@@ -40,6 +41,7 @@ export default function EditFolder({
 }) {
   const classes = useStyles();
   const [folderName, setFolderName] = React.useState('');
+  const [stateOpen, setOpen] = React.useState(false);
   const [error, setError] = React.useState('');
   const [selectedFolder, setSelectedFolder] = React.useState({});
   React.useEffect(() => {
@@ -54,6 +56,12 @@ export default function EditFolder({
   }, [currentFolder]);
 
   React.useEffect(() => {
+    if (stateOpen !== open) {
+      setOpen(open);
+    }
+  }, [open]);
+
+  React.useEffect(() => {
     setFolderName('');
     setError('');
     return () => {
@@ -64,6 +72,9 @@ export default function EditFolder({
 
   const onChange = event => {
     const { value } = event.target;
+    if (value.length > 50) {
+      return;
+    }
     setFolderName(value);
     validate(value);
   };
@@ -75,7 +86,10 @@ export default function EditFolder({
   const onUpdate = () => {
     validate(folderName);
     if (error === '') {
-      handleSubmit(selectedFolder, folderName);
+      setOpen(false);
+      setTimeout(() => {
+        handleSubmit(selectedFolder, folderName);
+      }, 500);
     }
   };
 
@@ -98,6 +112,13 @@ export default function EditFolder({
     handerClickNewFolder(selectedFolder);
   };
 
+  const handleCloseWrapper = (e) => {
+    setOpen(false);
+    setTimeout(() => {
+      handleClose(e);
+    }, 500);
+  }
+
   const getSubmitStatus = () => {
     if (type === 3) {
       return folderName === '';
@@ -105,17 +126,21 @@ export default function EditFolder({
     return folderName === '' || isEmpty(selectedFolder);
   };
 
+  const getCounter = () => {
+    return `${folderName.length}/50`;
+  }
+
   return (
     <div>
       <Dialog
         fullWidth
         maxWidth='sm'
-        open={open}
-        onClose={handleClose}
+        open={stateOpen}
+        onClose={handleCloseWrapper}
         aria-labelledby="create-folder"
       >
         <DialogTitle id="create-folder">
-          {actionType[type]}
+          <Typography className={classes.title}>{actionType[type]}</Typography>
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
           {
@@ -133,6 +158,9 @@ export default function EditFolder({
                   onChange={onChange}
                   fullWidth
                 />
+                <div className={classes.counterText}>
+                  {getCounter()}
+                </div>
               </div>
             )
           }
@@ -146,7 +174,7 @@ export default function EditFolder({
                   onClick={handlerNewFolder}
                 >
                   NEW FOLDER
-              </Button>
+                </Button>
               )}
             </div>
           )}
@@ -170,7 +198,7 @@ export default function EditFolder({
         <DialogActions>
           <Button
             className={classes.buttonStyles}
-            onClick={handleClose}
+            onClick={handleCloseWrapper}
             color="primary"
           >
             Cancel
