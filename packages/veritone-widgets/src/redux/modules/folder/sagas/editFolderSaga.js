@@ -8,6 +8,8 @@ import { get } from 'lodash';
 import { handleRequest } from '../helper';
 import * as actions from '../actions';
 import * as folderSelector from '../selector';
+import { showNotification } from '../../notifications';
+
 export default function* modifyFolderSaga() {
   yield takeEvery(actions.EDIT_FOLDER, modifyFolder);
 }
@@ -80,6 +82,7 @@ function* modifyFolder(action) {
     });
     if (errorEditName) {
       yield put(actions.modifyFolderError(folderId));
+      yield put(showNotification("Cannot edit the folder"));
     }
     folder = get(responseEditName, 'data.updateFolder', {});
     yield put(actions.modifyFolderSuccess({
@@ -147,6 +150,7 @@ function* modifyFolder(action) {
       variables: moveVariables
     });
     if (moveError) {
+      yield put(showNotification("Cannot move the folder"));
       return yield put(actions.modifyFolderError(folderId));
     }
     folder = get(moveRespone, 'data.moveFolder', {});
