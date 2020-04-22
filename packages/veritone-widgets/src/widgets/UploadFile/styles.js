@@ -433,5 +433,25 @@ export default {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%'
+  },
+  // customize
+  titleCustomize: {
+    fontSize: '20px',
+    lineHeight: '24px',
+    display: 'block',
+    paddingBottom: '5px',
+    fontWeight: '400',
+  },
+
+  contentCustomize: {
+    marginBottom: '45px'
+  },
+  listTagsCustomize: {
+    marginTop: '20px',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: '5px'
+    }
   }
+
 }

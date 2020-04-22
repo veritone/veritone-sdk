@@ -301,6 +301,15 @@ export default createReducer(defaultState, {
       }
     }
   },
+  [actions.FETCH_LIBRARIES_REQUEST](state, { meta: { id }} ) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        loadingUpload: true
+      }
+    }
+  },
   [actions.FETCH_ENGINE_CATEGORIES_SUCCESS](state, { payload: { id, engineCategories } }) {
     const newEngineCategories = engineCategories.filter(item => !actions.CATEGORY_IDS_TO_EXCLUDE.includes(item.id) && item.categoryType && item.engines.records.filter(engine => engine.runtimeType === "edge")
       .length)
@@ -374,7 +383,8 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         engineByCategories,
-        enginesDefault: enginesFilter
+        enginesDefault: enginesFilter,
+        loadingUpload: false
       }
     }
   },
@@ -483,7 +493,7 @@ export default createReducer(defaultState, {
     }
   },
 
-  [actions.SAVE_TEMPLATE_SUCCESS](state, { payload: { id }}) {
+  [actions.SAVE_TEMPLATE_SUCCESS](state, { payload: { id } }) {
     return {
       ...state,
       [id]: {
@@ -499,13 +509,13 @@ export default createReducer(defaultState, {
       const newTaskList = [];
       if (!item.taskList[0].engineIds) {
         item.taskList.forEach(element => {
-          if (!newTaskList.some(item => item.categoryId ===  element.category.engineCategoryId)) {
+          if (!newTaskList.some(item => item.categoryId === element.category.engineCategoryId)) {
             newTaskList.push({
               categoryId: element.category.engineCategoryId,
               categoryName: element.category.engineCategoryName,
               engineIds: [element.engineId]
             });
-          }else if(!newTaskList.some(item => item.engineIds.includes(element.engineId))) {
+          } else if (!newTaskList.some(item => item.engineIds.includes(element.engineId))) {
             const index = newTaskList.findIndex(item => item.categoryId === element.category.engineCategoryId)
             newTaskList[index].engineIds = [
               ...newTaskList[index].engineIds,
@@ -528,7 +538,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.CHANGE_TEMPLATE](state, { payload: {id, templateId }}) {
+  [actions.CHANGE_TEMPLATE](state, { payload: { id, templateId } }) {
     const templates = get(state[id], 'templates', []);
     const newEnginesSelected = [...templates].find(item => item.id === templateId).taskList
     return {
@@ -539,13 +549,13 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ON_CLICK_ENGINE_CATEGORY](state, { payload: { id, engineCategoryId }}) {
+  [actions.ON_CLICK_ENGINE_CATEGORY](state, { payload: { id, engineCategoryId } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const engineByCategories = get(state[id], 'engineByCategories', {});
     let newEnginesSelected = [];
-    if(enginesSelected.some(item => item.categoryId === engineCategoryId)){
+    if (enginesSelected.some(item => item.categoryId === engineCategoryId)) {
       newEnginesSelected = [...enginesSelected].filter(item => item.categoryId !== engineCategoryId)
-    }else {
+    } else {
       newEnginesSelected = [
         ...enginesSelected,
         {
@@ -563,7 +573,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.FETCH_CONTENT_TEMPLATES_SUCCESS](state, { payload: { id, contentTemplates }}) {
+  [actions.FETCH_CONTENT_TEMPLATES_SUCCESS](state, { payload: { id, contentTemplates } }) {
     return {
       ...state,
       [id]: {
@@ -572,7 +582,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ADD_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId }}) {
+  [actions.ADD_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId } }) {
     const contentTemplates = get(state[id], 'contentTemplates', []);
     const contentTemplate = contentTemplates.find(item => item.id === contentTemplateId);
     let contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
@@ -599,7 +609,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.REMOVE_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId }}) {
+  [actions.REMOVE_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId } }) {
     const contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
     const newContentTemplateSelected = contentTemplateSelected.filter(item => item.id !== contentTemplateId);
     return {
@@ -610,10 +620,10 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ON_CHANGE_FORM_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId, name, value }}) {
+  [actions.ON_CHANGE_FORM_CONTENT_TEMPLATE](state, { payload: { id, contentTemplateId, name, value } }) {
     let contentTemplateSelected = get(state[id], 'contentTemplateSelected', []);
     const newContentTemplateSelected = [...contentTemplateSelected].map(item => {
-      if(item.id === contentTemplateId){
+      if (item.id === contentTemplateId) {
         return {
           ...item,
           data: {
@@ -630,6 +640,52 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         contentTemplateSelected: newContentTemplateSelected
+      }
+    }
+  },
+  [actions.SELECT_FOLDER](state, { payload: { id, selectedFolder } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        selectedFolder: {
+          ...selectedFolder,
+          name: selectedFolder.treeObjectId === 'c548f7e5-a174-4d4f-8660-839048546aab' ? 'My Organization' : selectedFolder.name
+        }
+      }
+    }
+  },
+  [actions.ADD_TAGS_CUSTOMIZE](state, { payload: { id, value } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        tagsCustomize: state[id].tagsCustomize ? [
+          ...state[id].tagsCustomize,
+          {
+            value
+          }
+        ] : [{value}]
+      }
+    }
+  },
+  [actions.REMOVE_TAGS_CUSTOMIZE](state, { payload: { id, value }}) {
+    const tagsCustomize = get(state[id], 'tagsCustomize', []).filter(item => item.value !== value);
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        tagsCustomize
+      }
+    }
+  },
+  [actions.FETCH_CREATE_JOB_SUCCESS](state, { payload: { id }}) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        ...defaultPickerState,
+        state: 'selecting'
       }
     }
   }
@@ -685,3 +741,6 @@ export const isShowModalSaveTemplate = (state, id) => get(local(state), [id, 'is
 export const templates = (state, id) => get(local(state), [id, 'templates'], []);
 export const contentTemplates = (state, id) => get(local(state), [id, 'contentTemplates'], []);
 export const contentTemplateSelected = (state, id) => get(local(state), [id, 'contentTemplateSelected'], []);
+export const selectedFolder = (state, id) => get(local(state), [id, 'selectedFolder'], { name: 'My Organization', treeObjectId: "c548f7e5-a174-4d4f-8660-839048546aab" });
+export const tagsCustomize = (state, id) => get(local(state), [id, 'tagsCustomize'], []);
+export const loadingUpload = (state, id) => get(local(state), [id, 'loadingUpload'], false);

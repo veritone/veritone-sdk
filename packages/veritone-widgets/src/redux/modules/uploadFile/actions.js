@@ -42,6 +42,15 @@ export const FETCH_CONTENT_TEMPLATES_FAILURE = `${namespace}_FETCH_CONTENT_TEMPL
 export const ADD_CONTENT_TEMPLATE = `${namespace}_ADD_CONTENT_TEMPLATE`;
 export const REMOVE_CONTENT_TEMPLATE = `${namespace}_REMOVE_CONTENT_TEMPLATE`;
 export const ON_CHANGE_FORM_CONTENT_TEMPLATE = `${namespace}_ON_CHANGE_FORM_CONTENT_TEMPLATE`;
+export const SELECT_FOLDER = `${namespace}_SELECT_FOLDER`;
+export const ADD_TAGS_CUSTOMIZE = `${namespace}_ADD_TAGS_CUSTOMIZE`;
+export const REMOVE_TAGS_CUSTOMIZE = `${namespace}_REMOVE_TAGS_CUSTOMIZE`;
+export const FETCH_CREATE_TDO_REQUEST = `${namespace}_FETCH_CREATE_TDO_REQUEST`;
+export const FETCH_CREATE_TDO_SUCCESS = `${namespace}_FETCH_CREATE_TDO_SUCCESS`;
+export const FETCH_CREATE_TDO_FAILURE = `${namespace}_FETCH_CREATE_TDO_FAILURE`;
+export const FETCH_CREATE_JOB_REQUEST = `${namespace}_FETCH_CREATE_JOB_REQUEST`;
+export const FETCH_CREATE_JOB_SUCCESS = `${namespace}_FETCH_CREATE_JOB_SUCCESS`;
+export const FETCH_CREATE_JOB_FAILURE = `${namespace}_FETCH_CREATE_JOB_FAILURE`;
 export const CATEGORY_IDS_TO_EXCLUDE = [
     '4fef6040-3fb6-4757-9aae-4044e8b46bc9', // Search
     '4be1a1b2-653d-4eaa-ba18-747a265305d8', // Ingestion
@@ -251,4 +260,41 @@ export const removeContentTemplate = (id, contentTemplateId) => ({
 export const onChangeFormContentTemplate = (id, contentTemplateId, name, value) => ({
     type: ON_CHANGE_FORM_CONTENT_TEMPLATE,
     payload: { id, contentTemplateId, name, value }
+})
+
+export const selectFolder = (id, selectedFolder) => ({
+    type: SELECT_FOLDER,
+    payload: { id, selectedFolder }
+})
+
+export const addTagsCustomize = (id, value) => ({
+    type: ADD_TAGS_CUSTOMIZE,
+    payload: { id, value }
+})
+
+export const removeTagsCustomize = (id, value) => ({
+    type: REMOVE_TAGS_CUSTOMIZE,
+    payload: { id, value }
+})
+
+export const fetchCreateTdo = (id) => ({
+    type: FETCH_CREATE_TDO_REQUEST,
+    payload: { id }
+})
+export const fetchCreateTdoSuccess = (id, tdoId, jobConfig) => ({
+    type: FETCH_CREATE_TDO_SUCCESS,
+    payload: { id, tdoId, jobConfig }
+})
+export const fetchCreateTdoFailure = (id) => ({
+    type: FETCH_CREATE_TDO_FAILURE,
+    payload: { id }
+})
+
+export const fetchCreateJobSuccess = (id) => ({
+    type: FETCH_CREATE_JOB_SUCCESS,
+    payload: { id }
+})
+export const fetchCreateJobFailure = (id) => ({
+    type: FETCH_CREATE_TDO_FAILURE,
+    payload: { id }
 })

@@ -7,7 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop, get } from 'lodash';
+import { isArray, noop, get, pickBy, identity } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
@@ -17,7 +17,11 @@ const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { handleRequest } from '../../../shared/util';
 import {
-  enginesSelected
+  enginesSelected,
+  uploadResult,
+  tagsCustomize,
+  contentTemplateSelected,
+  selectedFolder
 } from './';
 // import {
 //   ABORT_REQUEST,
@@ -32,6 +36,7 @@ import {
 //   FETCH_ENGINE_CATEGORIES_REQUEST
 // } from './';
 import * as actions from './actions';
+import { engineIsSelected } from '../engineSelection';
 let requestMap;
 
 function* finishUpload(id, result, { warning, error }, callback) {
@@ -44,7 +49,7 @@ function* finishUpload(id, result, { warning, error }, callback) {
   yield put(actions.endPick(id, 'complete'));
   // Get accumulated results, not just what's in the current upload/retry request
   // If there's no results, then the user must have aborted them all
-  const totalResults = yield select(actions.uploadResult, id);
+  const totalResults = yield select(uploadResult, id);
   yield call(callback, totalResults, { warning, error, cancelled: !totalResults.length });
 }
 
@@ -206,7 +211,7 @@ function* watchRetryDone() {
   yield takeEvery(actions.RETRY_DONE, function* (action) {
     const { callback } = action.payload;
     const { id } = action.meta;
-    const uploads = yield select(actions.uploadResult, id) || [];
+    const uploads = yield select(uploadResult, id) || [];
     const completedUploads = uploads.filter(upload => !upload.error);
 
     yield put(actions.endPick(id));
@@ -278,7 +283,7 @@ function* watchFetchEngineCategories() {
     `;
     const { error, response } = yield call(handleRequest, { query })
     const { records } = get(response, 'data.engineCategories', []);
-    if(error){
+    if (error) {
       yield put(actions.fetchEngineCategoriesFailure(id))
     }
     yield put(actions.fetchEngineCategoriesSuccess(id, records))
@@ -315,7 +320,7 @@ function* watchFetchLibraries() {
     `;
     const { error, response } = yield call(handleRequest, { query })
     const { records } = get(response, 'data.libraries', []);
-    if(error){
+    if (error) {
       yield put(actions.fetchLibrariesFailure(id))
     }
     yield put(actions.fetchLibrariesSuccess(id, records))
@@ -361,20 +366,20 @@ function* watchFetchEngines() {
     const results = [];
     const pageSize = 200;
     const initialOffset = 0;
-    function* fetchEngines(offset){
+    function* fetchEngines(offset) {
       const variables = {
         limit: pageSize,
         offset: offset
       };
       const { error, response } = yield call(handleRequest, { query, variables })
-      if(error){
+      if (error) {
         yield put(actions.fetchEnginesFailure(id))
       }
       const { records } = get(response, 'data.engines', []);
       results.push(...records);
-      if(records.length === pageSize){
+      if (records.length === pageSize) {
         return yield fetchEngines(offset + pageSize)
-      }else {
+      } else {
         yield put(actions.fetchEnginesSuccess(id, results));
       }
     }
@@ -402,7 +407,7 @@ function* watchSaveTemplate() {
     };
     const { error, response } = yield call(handleRequest, { query, variables })
     //const { records } = get(response, 'data.libraries', []);
-    if(error){
+    if (error) {
       yield put(actions.saveTemplateFailure(id))
     }
     yield put(actions.saveTemplateSuccess(id))
@@ -410,8 +415,8 @@ function* watchSaveTemplate() {
 }
 
 function* fetchTemplate(action) {
-    const { id } = action.payload;
-    const query = `query {
+  const { id } = action.payload;
+  const query = `query {
       processTemplates (
               limit: 100
               offset: 0,
@@ -428,12 +433,12 @@ function* fetchTemplate(action) {
       }
     `;
 
-    const { error, response } = yield call(handleRequest, { query })
-    const { records } = get(response, 'data.processTemplates', []);
-    if(error){
-      yield put(actions.fetchTemplatesFailure(id))
-    }
-    yield put(actions.fetchTemplatesSuccess(id, records))
+  const { error, response } = yield call(handleRequest, { query })
+  const { records } = get(response, 'data.processTemplates', []);
+  if (error) {
+    yield put(actions.fetchTemplatesFailure(id))
+  }
+  yield put(actions.fetchTemplatesSuccess(id, records))
 }
 function* watchSaveTemplateSuccess() {
   yield takeEvery(actions.SAVE_TEMPLATE_SUCCESS, fetchTemplate);
@@ -466,13 +471,162 @@ function* watchFetchContentTemplates() {
     `;
     const { error, response } = yield call(handleRequest, { query })
     const { records } = get(response, 'data.dataRegistries', []);
-    if(error){
+    if (error) {
       yield put(actions.fetchContentTemplatesFailure(id))
     }
     yield put(actions.fetchContentTemplatesSuccess(id, records))
   })
 }
 
+function* watchFetchCreateTdo() {
+  yield takeEvery(actions.FETCH_CREATE_TDO_REQUEST, function* (action) {
+    const { id } = action.payload;
+    const query = `mutation createTDO($input: CreateTDO){
+      createTDO(input:$input){
+        id
+      }
+    }  
+    `;
+    const dataUploadResult = yield select(uploadResult, id);
+    const dataTagsCustomize = yield select(tagsCustomize, id);
+    const dataContentTemplateSelected = yield select(contentTemplateSelected, id);
+    const contentTemplates = dataContentTemplateSelected.map(item => {
+      return {
+        schemaId: get(item, 'schemas.records[0].id', null),
+        data: pickBy(item.data, identity)
+      }
+    })
+    const dataSelectedFolder = yield select(selectedFolder, id);
+    const date = new Date().toISOString();
+    yield yield all( dataUploadResult.map(item => {
+      const dataDetail = {
+        'veritone-program': {
+          programImage: '',
+          data: '',
+          programId: '-1',
+          programName: ''
+        },
+        'veritone-permissions': {
+          acls: [],
+          isPublic: false
+        },
+        tags: dataTagsCustomize,
+        date,
+        'veritone-file': {
+          fileName: item.fileName,
+          size: item.size,
+          mimetype: item.type
+        },
+        'veritone-media-source': {
+          mediaSourceTypeId: -5,
+          mediaSourceId: -1
+        }
+      };
+      const input = {
+        startDateTime: date,
+        stopDateTime: date,
+        addToIndex: true,
+        details: dataDetail,
+        name: item.fileName,
+        contentTemplates,
+        parentFolderId: dataSelectedFolder.treeObjectId,
+        sourceData: {
+          sourceId: -1
+        }
+      }
+      const variables = {
+        input
+      };
+      const jobConfig = {
+        details: dataDetail,
+        parentFolderId: dataSelectedFolder.treeObjectId,
+        sourceData: {
+          sourceId: -1
+        }
+      }
+      // const { error, response } = yield call(handleRequest, { query, variables })
+      // const { tdoId } = get(response, 'data.createTDO', null);
+      // // if (error) {
+      // //   yield put(actions.fetchCreateTdoFailure(id))
+      // // }
+      // yield put(actions.fetchCreateTdoSuccess(id, tdoId, jobConfig))
+      return call(callCreateTdo, { id, query, variables, jobConfig })
+    })
+    )
+  })
+}
+
+function* callCreateTdo({ id, query, variables, jobConfig }) {
+  const { error, response } = yield call(handleRequest, { query, variables })
+      const { tdoId } = get(response, 'data.createTDO', null);
+      if (error) {
+        yield put(actions.fetchCreateTdoFailure(id))
+      }
+      yield put(actions.fetchCreateTdoSuccess(id, tdoId, jobConfig))
+}
+function* watchFetchCreateJob() {
+  yield takeEvery(actions.FETCH_CREATE_TDO_SUCCESS, function* (action) {
+    const { id, tdoId, jobConfig } = action.payload;
+    const query = `mutation createJob($input: CreateJob){
+      createJob(input: $input) {
+        id
+      }
+    }  
+    `;
+
+    const dataUploadResult = yield select(uploadResult, id);
+    const dataEnginesSelecteds = yield select(enginesSelected, id);
+  
+    yield yield all( dataUploadResult.map(item => {
+      const tasks = [
+        {
+          engineId: "9e611ad7-2d3b-48f6-a51b-0a1ba40feab4",
+          payload: {
+            tdoId: tdoId,
+            url: item.getUrl,
+            startTimeOverride: 1587524429
+          }
+        }
+      ];
+      dataEnginesSelecteds.forEach(element => {
+        element.engineIds.forEach(engine => {
+          tasks.push({
+            engineId: engine,
+            payload: {
+              diarise: "true"
+            }
+          })
+        })
+      })
+      const input = {
+        targetId: tdoId,
+        tasks,
+        jobConfig: {
+          createTDOInput: jobConfig
+        }
+      }
+      const variables = {
+        input
+      };
+      return call(callCreateJob, { id, query, variables })
+      // const { error, response } = yield call(handleRequest, { query, variables })
+      // const { records } = get(response, 'data.createJob.tasks', []);
+      // if (error) {
+      //   yield put(actions.fetchCreateJobFailure(id))
+      // }
+      // yield put(actions.fetchCreateJobSuccess(id, records))
+    })
+    )
+  })
+}
+function* callCreateJob({ id, query, variables }){
+  const { error, response } = yield call(handleRequest, { query, variables })
+  const { records } = get(response, 'data.createJob.tasks', []);
+  if (error) {
+    yield put(actions.fetchCreateJobFailure(id))
+  }
+  yield put(actions.fetchCreateJobSuccess(id, records))
+}
 export default function* root() {
   yield all([
     fork(watchUploadRequest),
@@ -484,6 +638,8 @@ export default function* root() {
     fork(watchFetchEngines),
     fork(watchSaveTemplate),
     fork(watchSaveTemplateSuccess),
-    fork(watchFetchContentTemplates)
+    fork(watchFetchContentTemplates),
+    fork(watchFetchCreateTdo),
+    fork(watchFetchCreateJob)
   ]);
 }
