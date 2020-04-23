@@ -45,3 +45,7 @@ export EnginePicker, {
 } from './widgets/EnginePicker';
 export { InfinitePicker } from './widgets/EnginePicker/InfinitePicker';
 export { reducers, rootSaga } from './redux/configureStore';
+
+export UploadFile, { UploadFileWidget } from './widgets/UploadFile';
+export uploadFileReducer, * as uploadFileModule from './redux/modules/uploadFile';
+export uploadFileSaga from './redux/modules/uploadFile/uploadFileSaga';

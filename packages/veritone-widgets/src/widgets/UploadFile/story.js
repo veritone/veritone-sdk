@@ -3,7 +3,7 @@ import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import FilePicker, { FilePickerWidget } from './';
+import UploadFile, { UploadFileWidget } from './';
 
 const FilePickerButton = (
   { handleOpenModal } // eslint-disable-line
@@ -26,7 +26,7 @@ class FilePickerComponentStory extends React.Component {
   render() {
     return (
       <Fragment>
-        <FilePicker {...this.props} onPick={this.handlePickResult} />
+        <UploadFile {...this.props} onPick={this.handlePickResult} />
         {this.state.result && (
           <pre>
             Latest result:
@@ -60,7 +60,7 @@ storiesOf('UploadFile', module).add('Base', () => {
 
   return (
     <BaseStory
-      widget={FilePickerWidget}
+      widget={UploadFileWidget}
       widgetProps={props}
       widgetInstanceMethods={{
         pick: instance => instance.pick(logPickResult)

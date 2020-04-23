@@ -165,7 +165,7 @@ const DialogActions = withStyles((theme) => ({
   })
 )
 
-class FilePicker extends React.Component {
+class UploadFile extends React.Component {
   static propTypes = {
     id: string.isRequired,
     open: bool,
@@ -1089,7 +1089,7 @@ class FilePicker extends React.Component {
   null,
   { forwardRef: true }
 )
-class FilePickerWidgetComponent extends React.Component {
+class UploadFileWidgetComponent extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
     pick: func.isRequired,
@@ -1131,7 +1131,7 @@ class FilePickerWidgetComponent extends React.Component {
 
   render() {
     return (
-      <FilePicker
+      <UploadFile
         id={this.props._widgetId}
         {...this.props}
         uploadRequest={this.handleUploadRequest}
@@ -1143,5 +1143,5 @@ class FilePickerWidgetComponent extends React.Component {
   }
 }
 
-const FilePickerWidget = widget(FilePickerWidgetComponent);
-export { FilePicker as default, FilePickerWidget };
+const UploadFileWidget = widget(UploadFileWidgetComponent);
+export { UploadFile as default, UploadFileWidget };
