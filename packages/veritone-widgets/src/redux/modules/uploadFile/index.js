@@ -1,24 +1,8 @@
-import { clamp, mean, isNaN, get, isArray, isEmpty, orderBy, lowerCase } from 'lodash';
+import { mean, isNaN, get, isArray, isEmpty } from 'lodash';
 import update from 'immutability-helper';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 export const namespace = 'uploadFile';
-// export const PICK_START = `${namespace}_PICK_START`;
-// export const PICK_END = `${namespace}_PICK_END`;
-// export const RETRY_REQUEST = `${namespace}_RETRY_REQUEST`;
-// export const RETRY_DONE = `${namespace}_RETRY_DONE`;
-// export const ABORT_REQUEST = `${namespace}_ABORT_REQUEST`;
-// export const UPLOAD_REQUEST = `${namespace}_UPLOAD_REQUEST`;
-// export const UPLOAD_PROGRESS = `${namespace}_UPLOAD_PROGRESS`;
-// export const UPLOAD_COMPLETE = `${namespace}_UPLOAD_COMPLETE`;
-// export const CLEAR_FILEPICKER_DATA = `${namespace}_CLEAR_FILEPICKER_DATA`;
-// export const ON_SELECTION_CHANGE = `${namespace}_ON_SELECTION_CHANGE`;
-// export const REMOVE_FILE_UPLOAD = `${namespace}_REMOVE_FILE_UPLOAD`;
-// export const SHOW_EDIT_FILE_UPLOAD = `${namespace}_SHOW_EDIT_FILE_UPLOAD`;
-// export const HIDE_EDIT_FILE_UPLOAD = `${namespace}_HIDE_EDIT_FILE_UPLOAD`;
-// export const FETCH_ENGINE_CATEGORIES_REQUEST = `${namespace}_FETCH_ENGINE_CATEGORIES_REQUEST`;
-// export const FETCH_ENGINE_CATEGORIES_SUCCESS = `${namespace}_FETCH_ENGINE_CATEGORIES_SUCCESS`;
-// export const FETCH_ENGINE_CATEGORIES_FAILURE = `${namespace}_FETCH_ENGINE_CATEGORIES_FAILURE`;
 import * as actions from './actions';
 
 const defaultPickerState = {
@@ -29,7 +13,6 @@ const defaultPickerState = {
   error: false,
   warning: false,
   uploadResult: [],
-  //isShowListFile: false
   checkedFile: [],
   currentEngineCategory: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
 };
@@ -40,6 +23,7 @@ const defaultState = {
 
 };
 const currentEngineCategoryDefault = '67cd4dd0-2f75-445d-a6f0-2f297d6cd182';
+const folderSelectedDefault = { name: 'My Organization', treeObjectId: "c548f7e5-a174-4d4f-8660-839048546aab" };
 const makeLibrariesByCategories = (
   entityIdentifierTypes,
   libraries
@@ -185,8 +169,7 @@ export default createReducer(defaultState, {
         progressPercentByFileKey: {},
         success: null,
         error: null,
-        warning: null,
-        //uploadResult: null
+        warning: null
       }
     };
   },
@@ -456,22 +439,6 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.SEARCH_ENGINE](state, { payload: { id, engineName } }) {
-    const currentEngineCategory = get(state[id], 'currentEngineCategory', currentEngineCategoryDefault);
-    let engineByCategories = { ...get(state[id], 'engineByCategories', {}) };
-    const engines = engineByCategories[currentEngineCategory].filter(item => JSON.stringify(item.name).toLowerCase().indexOf(engineName.toLowerCase()) !== -1);
-    engineByCategories = {
-      ...engineByCategories,
-      [currentEngineCategory]: engines
-    }
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        engineByCategories
-      }
-    }
-  },
 
   [actions.SHOW_MODAL_SAVE_TEMPLATE](state, { payload: { id, value } }) {
     return {
@@ -684,8 +651,25 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        ...defaultPickerState,
-        state: 'selecting'
+        uploadResult: [],
+        state: 'overview',
+        enginesSelected: [],
+        contentTemplateSelected: [],
+        tagsCustomize: [],
+        selectedFolder: folderSelectedDefault
+      }
+    }
+  },
+  [actions.ON_CHANGE_LIBRARIES](state, { payload: { id, categoryId, value} }) {
+    const librariesSelected = get(state[id], 'librariesSelected', []);
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        librariesSelected: [
+          ...librariesSelected,
+          value
+        ]
       }
     }
   }
@@ -741,6 +725,7 @@ export const isShowModalSaveTemplate = (state, id) => get(local(state), [id, 'is
 export const templates = (state, id) => get(local(state), [id, 'templates'], []);
 export const contentTemplates = (state, id) => get(local(state), [id, 'contentTemplates'], []);
 export const contentTemplateSelected = (state, id) => get(local(state), [id, 'contentTemplateSelected'], []);
-export const selectedFolder = (state, id) => get(local(state), [id, 'selectedFolder'], { name: 'My Organization', treeObjectId: "c548f7e5-a174-4d4f-8660-839048546aab" });
+export const selectedFolder = (state, id) => get(local(state), [id, 'selectedFolder'], folderSelectedDefault);
 export const tagsCustomize = (state, id) => get(local(state), [id, 'tagsCustomize'], []);
 export const loadingUpload = (state, id) => get(local(state), [id, 'loadingUpload'], false);
+export const librariesSelected = (state, id) => get(local(state), [id, 'librariesSelected'], []);

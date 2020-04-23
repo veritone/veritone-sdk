@@ -6,7 +6,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-export default function SaveTemplate({
+import { bool, func } from 'prop-types';
+function SaveTemplate({
     open,
     handleSave,
     handleClose,
@@ -38,3 +39,10 @@ export default function SaveTemplate({
       </Dialog>
   );
 }
+SaveTemplate.propTypes = {
+  open: bool,
+  handleSave: func,
+  handleClose: func,
+  onChange: func
+}
+export default SaveTemplate;

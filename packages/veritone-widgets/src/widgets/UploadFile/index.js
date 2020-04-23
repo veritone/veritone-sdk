@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react';
 import { noop, debounce } from 'lodash';
-import { bool, func, oneOf, number, string, arrayOf, shape } from 'prop-types';
+import { bool, func, oneOf, number, string, arrayOf, shape, objectOf } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
 import Dialog from '@material-ui/core/Dialog';
 import {
   FilePicker as FilePickerComponent,
-  FileProgressDialog,
-  UploadFileOverview
+  FileProgressDialog
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/uploadFile';
@@ -19,13 +18,9 @@ import Button from '@material-ui/core/Button';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -49,7 +44,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import Security from '@material-ui/icons/Security';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Save from '@material-ui/icons/Save';
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -118,7 +113,8 @@ const DialogActions = withStyles((theme) => ({
     contentTemplateSelected: filePickerModule.contentTemplateSelected(state, id),
     selectedFolder: filePickerModule.selectedFolder(state, id),
     tagsCustomize: filePickerModule.tagsCustomize(state, id),
-    loadingUpload: filePickerModule.loadingUpload(state, id)
+    loadingUpload: filePickerModule.loadingUpload(state, id),
+    librariesSelected: filePickerModule.librariesSelected(state, id)
   }),
   {
     pick: uploadFileAction.pick,
@@ -136,11 +132,9 @@ const DialogActions = withStyles((theme) => ({
     onChangeEngine: uploadFileAction.onChangeEngine,
     addEngine: uploadFileAction.addEngine,
     removeEngine: uploadFileAction.removeEngine,
-    searchEngine: uploadFileAction.searchEngine,
     showModalSaveTemplate: uploadFileAction.showModalSaveTemplate,
     hideModalSaveTemplate: uploadFileAction.hideModalSaveTemplate,
     saveTemplate: uploadFileAction.saveTemplate,
-    fetchTemplates: uploadFileAction.fetchTemplates,
     onChangeTemplate: uploadFileAction.onChangeTemplate,
     onClickEngineCategory: uploadFileAction.onClickEngineCategory,
     fetchContentTemplates: uploadFileAction.fetchContentTemplates,
@@ -150,7 +144,8 @@ const DialogActions = withStyles((theme) => ({
     selectFolder: uploadFileAction.selectFolder,
     addTagsCustomize: uploadFileAction.addTagsCustomize,
     removeTagsCustomize: uploadFileAction.removeTagsCustomize,
-    fetchCreateTdo: uploadFileAction.fetchCreateTdo
+    fetchCreateTdo: uploadFileAction.fetchCreateTdo,
+    onChangeLibraries: uploadFileAction.onChangeLibraries
 
   },
   (stateProps, dispatchProps, ownProps) => ({
@@ -194,7 +189,103 @@ class UploadFile extends React.Component {
     onPick: func,
     height: number,
     width: number,
-    fetchEngineCategories: func
+    fetchEngineCategories: func,
+    fetchLibraries: func,
+    onChangeEngine: func,
+    addEngine: func,
+    removeEngine: func,
+    showModalSaveTemplate: func,
+    hideModalSaveTemplate: func,
+    saveTemplate: func,
+    onChangeTemplate: func,
+    onClickEngineCategory: func,
+    fetchContentTemplates: func,
+    addContentTemplate: func,
+    removeContentTemplate: func,
+    onChangeFormContentTemplate: func,
+    selectFolder: func,
+    addTagsCustomize: func,
+    removeTagsCustomize: func,
+    fetchCreateTdo: func,
+    isShowListFile: bool,
+    uploadResult: arrayOf(shape({})),
+    checkedFile: arrayOf(number),
+    isShowEditFileUpload: bool,
+    engineCategories: arrayOf(shape({
+      id: string,
+      name: string,
+      description: string,
+      iconClass: string
+    })),
+    librariesByCategories: objectOf(
+      shape({
+        id: string,
+        name: string,
+      })
+    ),
+    engineByCategories: objectOf(
+      arrayOf(
+        shape({
+          id: string,
+          name: string,
+          description: string,
+          category: shape({
+            id: string,
+            name: string
+          }),
+          isPublic: bool,
+          price: string
+        })
+      )
+    ),
+    currentEngineCategory: string,
+    enginesSelected: arrayOf(
+      shape({
+        categoryId: string,
+        categoryName: string,
+        engineIds: arrayOf(string)
+      })
+    ),
+    isShowModalSaveTemplate: bool,
+    templates: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        taskLisk: arrayOf(
+          shape({
+            categoryId: string,
+            categoryName: string,
+            engineIds: arrayOf(string)
+          })
+        )
+      })
+    ),
+    contentTemplates: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        description: string
+      })
+    ),
+    contentTemplateSelected: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        description: string,
+        data: arrayOf(string)
+      })
+    ),
+    selectedFolder: shape({
+      name: string,
+      treeObjectId: string
+    }),
+    tagsCustomize: arrayOf(
+      shape({
+        value: string
+      })
+    ),
+    loadingUpload: bool,
+    onChangeLibraries: func
   };
 
   static defaultProps = {
@@ -217,58 +308,18 @@ class UploadFile extends React.Component {
     skipped: new Set(),
     currentScreen: 'overviewUpload',
     uploadResultSelected: [],
-    libraries: [
-      'libraries'
-    ],
-    engines: [
-      {
-        title: 'TRANSCRIPTION',
-        des: 'Convert the spoken word into readable text'
-      },
-      {
-        title: 'SENTIMENT',
-        des: 'Infer the sentiment or emotion being emitted in media'
-      },
-      {
-        title: 'FINGERPRINT',
-        des: 'Find the same audio by using audio fingerprints'
-      },
-      {
-        title: 'FACIAL DETECTION',
-        des: 'Detect and Identify multiple faces within rich media content'
-      },
-      {
-        title: 'TRANSCRIPTION',
-        des: 'Convert the spoken word into readable text'
-      },
-      {
-        title: 'SENTIMENT',
-        des: 'Infer the sentiment or emotion being emitted in media'
-      },
-      {
-        title: 'FINGERPRINT',
-        des: 'Find the same audio by using audio fingerprints'
-      },
-      {
-        title: 'FACIAL DETECTION',
-        des: 'Detect and Identify multiple faces within rich media content'
-      },
-    ],
     showAdvancedCognitive: false,
     templateName: '',
     currentTemplate: 0,
     engineNameSearch: '',
     validate: null,
     isOpenFolder: false,
-    selectedFolder: 'Selected: My Organization',
     tagsCustomizeName: ''
   }
 
   componentDidMount() {
-    const { id, fetchEngineCategories, fetchLibraries, fetchTemplates, fetchContentTemplates } = this.props;
-    // fetchEngineCategories(id);
+    const { id, fetchLibraries, fetchContentTemplates } = this.props;
     fetchLibraries(id);
-    fetchTemplates(id);
     fetchContentTemplates(id);
   }
 
@@ -487,10 +538,8 @@ class UploadFile extends React.Component {
     removeEngine(id, engineId)
   }
   handleSearchEngine = (event) => {
-    const { id, searchEngine } = this.props;
     const engineName = event.target.value;
     this.onChangeSearchEngine(engineName);
-    //searchEngine(id, engineName);
   }
   onChangeSearchEngine = engineNameSearch => {
     this.setState({ engineNameSearch })
@@ -576,6 +625,12 @@ class UploadFile extends React.Component {
     const { id, removeTagsCustomize } = this.props;
     removeTagsCustomize(id, name);
   }
+  handleChangeLibraries = (event, categoryId) => () => {
+    event.stopPropagation();
+    const { value } = event.target;
+    const { id, onChangeLibraries } = this.props;
+    onChangeLibraries(id, categoryId, value);
+  }
   render() {
     const pickerComponent = {
       overview: this.overviewUploadFile,
@@ -584,7 +639,7 @@ class UploadFile extends React.Component {
       complete: this.listFile
     }[this.props.pickerState]();
     const steps = this.getSteps();
-    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload } = this.props;
+    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload, librariesSelected } = this.props;
     const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName } = this.state;
     return (
       <Fragment>
@@ -654,10 +709,12 @@ class UploadFile extends React.Component {
 
             {
               activeStep === 1 && (
-                <div>
+                <Fragment>
                   {
                     loadingUpload ? (
-                      <div>Loading...</div>
+                      <div className={classes.loadingUpload}>
+                        <CircularProgress />
+                      </div>
                     ) : (
                         <Fragment>
                           {
@@ -687,7 +744,16 @@ class UploadFile extends React.Component {
                                     engineCategories.map(item => {
                                       return (
                                         <Grid item xs={3} onClick={this.onClickEngine} data-id={item.id} >
-                                          <ListEngine title={item.name} des={item.description} libraries={librariesByCategories[item.id]} icon={item.iconClass} isSelected={enginesSelected.some(engine => engine.categoryId === item.id)} />
+                                          <ListEngine 
+                                          title={item.name} 
+                                          des={item.description} 
+                                          libraries={librariesByCategories[item.id]} 
+                                          icon={item.iconClass} 
+                                          isSelected={enginesSelected.some(engine => engine.categoryId === item.id)}
+                                          onChange={event => this.handleChangeLibraries(event, item.id)}
+                                          librariesSelected={librariesSelected}
+                                          categoryId={item.id}
+                                          />
                                         </Grid>
                                       )
                                     })
@@ -892,7 +958,7 @@ class UploadFile extends React.Component {
                       )
                   }
 
-                </div>
+                </Fragment>
 
               )
             }
@@ -1011,20 +1077,9 @@ class UploadFile extends React.Component {
                       }
                     </div>
                   </div>
-
-
-
-
-
-
                 </Fragment>
-
               )
             }
-
-
-
-
           </DialogContent>
           <DialogActions>
             <Button
@@ -1067,8 +1122,6 @@ class UploadFile extends React.Component {
           onSelect={this.onSelect}
         />
 
-        {/* 
-<UploadFileOverview title={'Upload Media'} handlePick={this.handlePick} /> */}
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}
       </Fragment>

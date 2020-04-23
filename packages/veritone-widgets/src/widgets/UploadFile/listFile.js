@@ -6,8 +6,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import CommentIcon from '@material-ui/icons/Comment';
 import { arrayOf, shape, string } from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -19,21 +17,6 @@ const useStyles = makeStyles((theme) => ({
 
 function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll }) {
   const classes = useStyles();
-  //const [checked, setChecked] = React.useState([0]);
-
-  // const handleToggle = (value) => () => {
-  //   const currentIndex = checked.indexOf(value);
-  //   const newChecked = [...checked];
-
-  //   if (currentIndex === -1) {
-  //     newChecked.push(value);
-  //   } else {
-  //     newChecked.splice(currentIndex, 1);
-  //   }
-
-  //   setChecked(newChecked);
-  // };
-
   return (
     <List className={classes.root}>
       <ListItem
@@ -47,8 +30,6 @@ function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll
           <Checkbox
             edge="start"
             checked={checkedAll}
-            //tabIndex={-1}
-            //disableRipple
             indeterminate={indeterminate}
           />
         </ListItemIcon>
@@ -61,7 +42,6 @@ function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll
               <span>{`${data.length} files`}</span>
             )
           }
-
         </ListItemSecondaryAction>
       </ListItem>
       {data.map((item, key) => {

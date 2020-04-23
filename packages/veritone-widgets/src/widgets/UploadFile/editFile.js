@@ -14,6 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import { string, func, bool, shape, arrayOf } from 'prop-types';
 import styles from './styles';
 const useStyles = makeStyles(styles);
 const DialogTitle = ({ children, onClose, ...other }) => {
@@ -30,7 +31,7 @@ const DialogTitle = ({ children, onClose, ...other }) => {
     );
 };
 
-export default function EditFileUpload({ open, title, handleClose, data }) {
+function EditFileUpload({ open, title, handleClose, data }) {
     const [value, setValue] = React.useState('general');
     const classes = useStyles();
     const handleChange = (event, newValue) => {
@@ -123,3 +124,13 @@ export default function EditFileUpload({ open, title, handleClose, data }) {
         </Dialog >
     );
 }
+
+EditFileUpload.propTypes = {
+    open: bool, 
+    title: string, 
+    handleClose: func,
+    data: arrayOf(shape({
+        fileName: string
+    }))
+}
+export default EditFileUpload;

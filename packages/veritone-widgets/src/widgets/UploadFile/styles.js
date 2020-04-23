@@ -399,6 +399,12 @@ export default {
       marginTop: '20px'
   },
    
+  loadingUpload: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 'calc(100% - 74px)'
+  },
   //content templates
   cardContentTemplate: {
     marginTop: '10px'

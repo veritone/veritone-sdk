@@ -3,8 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import GraphicEq from "@material-ui/icons/GraphicEq";
-import Grid from "@material-ui/core/Grid";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -12,6 +10,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
+import { string, bool, instanceOf, object } from 'prop-types';
 import styles from "./styles";
 const useStyles = makeStyles(styles);
 const MenuProps = {
@@ -23,12 +22,14 @@ const MenuProps = {
   }
 };
 
-export default function ListEngine({
+function ListEngine({
   title,
   des,
   libraries,
   icon,
-  isSelected
+  isSelected,
+  onChange,
+  librariesSelected
 }) {
   const classes = useStyles();
   const [personName, setPersonName] = React.useState([]);
@@ -38,7 +39,6 @@ export default function ListEngine({
   return (
     <Card className={isSelected ? classes.cardEngineSelected : classes.listEngineCategories} >
       <CardContent className={classes.cardContent}>
-        {/* <GraphicEq className={classes.icon} /> */}
         <div className={classes.icon}>
           <i className={icon} />
         </div>
@@ -59,11 +59,9 @@ export default function ListEngine({
                 Choose Libraries
             </InputLabel>
               <Select
-                labelId="demo-mutiple-checkbox-label"
-                id="demo-mutiple-checkbox"
                 multiple
-                value={personName}
-                onChange={handleChange}
+                value={librariesSelected}
+                onChange={onChange}
                 input={<Input />}
                 renderValue={selected => selected.join(", ")}
                 MenuProps={MenuProps}
@@ -71,7 +69,7 @@ export default function ListEngine({
               >
                 {Object.values(libraries).map(item => (
                   <MenuItem key={item.name} value={item.name}>
-                    <Checkbox checked={personName.indexOf(item.name) > -1} />
+                    <Checkbox checked={librariesSelected.indexOf(item.name) > -1} />
                     <ListItemText primary={item.name} />
                   </MenuItem>
                 ))}
@@ -83,3 +81,11 @@ export default function ListEngine({
     </Card>
   );
 }
+ListEngine.propTypes = {
+  title: string,
+  des: string,
+  // libraries: instanceOf(objec),
+  icon: string,
+  isSelected: bool
+}
+export default ListEngine;

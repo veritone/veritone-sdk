@@ -8,9 +8,10 @@ import TextField from "@material-ui/core/TextField";
 import Delete from "@material-ui/icons/Delete";
 import { makeStyles } from '@material-ui/core/styles';
 import { get } from 'lodash';
+import { shape, func, string } from 'prop-types';
 import styles from './styles';
 const useStyles = makeStyles(styles);
-export default function FormAddContentTemplate({
+function FormAddContentTemplate({
     contentTemplate,
     onChange,
     removeContentTemplate,
@@ -55,3 +56,13 @@ export default function FormAddContentTemplate({
         </Card>
     )
 }
+FormAddContentTemplate.propTypes = {
+    contentTemplate: shape({
+        id: string,
+        name: string
+    }),
+    onChange: func,
+    removeContentTemplate: func,
+    validate: shape({})
+}
+export default FormAddContentTemplate;
