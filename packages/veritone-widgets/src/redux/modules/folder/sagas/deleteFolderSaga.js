@@ -9,6 +9,8 @@ import omit from 'lodash/omit';
 import { handleRequest } from '../helper';
 import * as actions from '../actions';
 import * as folderSelector from '../selector';
+import { showNotification } from '../../notifications';
+
 export default function* deleteFolderSaga() {
   yield takeEvery(actions.DELETE_FOLDER, deleteFolder);
 }
@@ -66,6 +68,7 @@ function* deleteFolder(action) {
   const { error: errorDelete } = yield call(handleRequest, { query, variables });
   if (errorDelete) {
     yield put(actions.deleteFolderError(folderId));
+    yield put(showNotification("Cannot delete the folder"));
   }
   yield put(actions.initFolder(parent.id));
   if (get(folderSelected, [workSpace, folderId])) {

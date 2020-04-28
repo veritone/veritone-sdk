@@ -8,6 +8,7 @@ import get from 'lodash/get';
 import { handleRequest } from '../helper';
 import * as actions from '../actions';
 import * as folderSelector from '../selector';
+import { showNotification } from '../../notifications';
 export default function* createFolderSaga() {
   yield takeEvery(actions.CREATE_FOLDER, createFolder);
 }
@@ -40,6 +41,7 @@ function* createFolder(action) {
   const { error, response } = yield call(handleRequest, { query, variables });
   if (error) {
     yield put(actions.createFolderError());
+    yield put(showNotification("Cannot create the folder"));
   }
   const newFolderId = get(response, 'data.createFolder.id');
   yield put(actions.initFolder(newFolderId));
