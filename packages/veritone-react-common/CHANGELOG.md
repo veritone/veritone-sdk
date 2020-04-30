@@ -301,3 +301,6 @@
   * Redux-form version updated to 8.2.6
   * Redux-saga version updated to 1.1.3
   * Using css-in-js
+  
+## 9.0.8
+* Fix ES-513 Cannot initially type 0 in any Time input when create/edit scheduled ingestion
