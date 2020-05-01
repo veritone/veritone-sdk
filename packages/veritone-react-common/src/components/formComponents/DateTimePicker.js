@@ -3,11 +3,17 @@ import Today from '@material-ui/icons/Today';
 import isValid from 'date-fns/isValid';
 import getYear from 'date-fns/getYear';
 import format from 'date-fns/format';
-import toDate from 'date-fns/toDate';
 import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
-import isString from 'lodash/isString';
-import { instanceOf, func, shape, string, bool, oneOfType, any } from 'prop-types';
+import {
+  instanceOf,
+  func,
+  shape,
+  string,
+  bool,
+  oneOfType,
+  any
+} from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/styles';
 import parseISO from 'date-fns/parseISO';
 
@@ -29,22 +35,11 @@ class DateTimePicker extends React.Component {
 
   handleDateChange = ({ target }) => {
     const newDate = target.value;
-    if (
-      !isValid(parseISO(newDate)) ||
-      getYear(parseISO(newDate)) > 9999
-    ) {
+    const isoDate = parseISO(newDate);
+    if (!isValid(isoDate) || getYear(isoDate) > 9999) {
       return;
     }
-
-    this.props.input.onChange(
-      consolidate(newDate, getTimeString(this.props.input.value))
-    );
-  };
-
-  handleTimeChange = ({ target }) => {
-    this.props.input.onChange(
-      consolidate(getDateString(this.props.input.value), target.value)
-    );
+    this.props.input.onChange(isoDate);
   };
 
   render() {
@@ -60,18 +55,11 @@ class DateTimePicker extends React.Component {
     return (
       <div className={classes.container}>
         {this.props.showIcon && <Today className={classes.todayIcon} />}
-        <DateSelector
-          min={min}
-          max={max}
-          value={getDateString(input.value)}
+        <DateTimeSelector
+          min={min && specialDateTimeFormat(min)}
+          max={max && specialDateTimeFormat(max)}
+          value={specialDateTimeFormat(input.value || new Date())}
           onChange={this.handleDateChange}
-          {...rest}
-        />
-        <TimeSelector
-          min={min}
-          max={max}
-          value={getTimeString(input.value)}
-          onChange={this.handleTimeChange}
           {...rest}
         />
         {timeZone && <TimeZoneField value={timeZone} {...rest} />}
@@ -80,10 +68,14 @@ class DateTimePicker extends React.Component {
   }
 }
 
-const DateSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
+// T is special character, so build the date string manually
+const specialDateTimeFormat = date =>
+  format(new Date(date), 'yyyy-MM-dd HH:mm').replace(' ', 'T');
+
+const DateTimeSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   return (
     <TextField
-      type="date"
+      type="datetime-local"
       min={min}
       max={max}
       value={value}
@@ -95,33 +87,7 @@ const DateSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   );
 };
 
-DateSelector.propTypes = {
-  min: instanceOf(Date),
-  max: instanceOf(Date),
-  value: string.isRequired,
-  onChange: func.isRequired,
-  readOnly: bool
-};
-
-const TimeSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
-  return (
-    <TextField
-      type="time"
-      min={min}
-      max={max}
-      value={value}
-      onChange={onChange}
-      InputLabelProps={{
-        shrink: true
-      }}
-      InputProps={{
-        readOnly: readOnly
-      }}
-    />
-  );
-};
-
-TimeSelector.propTypes = {
+DateTimeSelector.propTypes = {
   min: instanceOf(Date),
   max: instanceOf(Date),
   value: string.isRequired,
@@ -146,24 +112,6 @@ const TimeZoneField = ({ value, ...rest }) => {
 TimeZoneField.propTypes = {
   value: string.isRequired
 };
-
-function consolidate(dateString, timeString) {
-  return parseISO(`${dateString}T${timeString}:00`);
-}
-
-function getDateString(date) {
-  if(isString(date)){
-    return format(new Date(date), 'yyyy-MM-dd');
-  }
-  return format(toDate(date), 'yyyy-MM-dd');
-}
-
-function getTimeString(date) {
-  if(isString(date)){
-    return format(new Date(date), 'yyyy-MM-dd');
-  }
-  return format(toDate(date), 'HH:mm');
-}
 
 function getTimeZone(date) {
   let tzDate = date;
