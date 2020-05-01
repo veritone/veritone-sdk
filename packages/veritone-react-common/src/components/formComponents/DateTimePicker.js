@@ -3,10 +3,8 @@ import Today from '@material-ui/icons/Today';
 import isValid from 'date-fns/isValid';
 import getYear from 'date-fns/getYear';
 import format from 'date-fns/format';
-import toDate from 'date-fns/toDate';
 import isDate from 'date-fns/isDate';
 import TextField from '@material-ui/core/TextField';
-import isString from 'lodash/isString';
 import {
   instanceOf,
   func,
