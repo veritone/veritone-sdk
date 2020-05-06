@@ -7,6 +7,8 @@ import {
 } from 'redux-saga/effects';
 import get from 'lodash/get';
 import omit from 'lodash/omit';
+import includes from 'lodash/includes';
+
 import { handleRequest } from '../helper';
 import * as actions from '../actions';
 import * as folderSelector from '../selector';
@@ -49,7 +51,7 @@ function* deleteFolder(action) {
     return yield put(actions.deleteFolderError(folderId));
   }
   const { orderIndex, parent, treeObjectId } = get(response, 'data.folder', {});
-  const childContents = yield getAllContent(folderId, childsType);
+  const { childContents, childFolders } = yield getAllContent(folderId, childsType);
   if (childContents.length) {
     const deleteContentQuery = `
     mutation ${deleteContent}($id: ID!){
@@ -82,15 +84,17 @@ function* deleteFolder(action) {
     yield put(showNotification("Cannot delete the folder"));
   }
   yield put(actions.initFolder(parent.id));
-  if (get(folderSelected, [workSpace, folderId])) {
-    if (!selectable) {
+  const folderSelectedIds = Object.keys(get(folderSelected, [workSpace], {}));
+  const deletedFolderIds = [...childFolders.map(item => item.id), folderId];
+  if (!selectable) {
+    if (includes(deletedFolderIds, get(folderSelectedIds, 0))) {
       yield put(actions.selectFolder(workSpace, {
         [rootIds[0]]: true
       }))
-    } else {
-      const newSelected = omit(folderSelected, [folderId]);
-      yield put(actions.selectFolder(workSpace, newSelected));
     }
+  } else {
+    const newSelected = omit(folderSelected, [...deletedFolderIds]);
+    yield put(actions.selectFolder(workSpace, newSelected));
   }
   yield put(actions.deleteFolderSuccess(folderId, parent.id));
   yield put(showNotification("Delete folder successful"));
@@ -99,6 +103,7 @@ function* deleteFolder(action) {
 
 function* getAllContent(folderId, childsType) {
   let contentArr = [];
+  let folderArr = [];
   function* getContents(currentId) {
     const queryFolder = `query folder($id:ID!){
       folder(id: $id){
@@ -143,7 +148,11 @@ function* getAllContent(folderId, childsType) {
       );
     }
     contentArr = contentArr.concat(childContents);
+    folderArr = folderArr.concat(childFolders);
   }
   yield getContents(folderId);
-  return contentArr;
+  return {
+    childContents: contentArr,
+    childFolders: folderArr
+  };
 }
