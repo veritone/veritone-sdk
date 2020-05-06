@@ -2,6 +2,7 @@ import { helpers } from 'veritone-redux-common';
 import omit from 'lodash/omit';
 import uniq from 'lodash/uniq';
 import includes from 'lodash/includes';
+import isEmpty from 'lodash/isEmpty';
 import * as actions from './actions';;
 
 const { createReducer } = helpers;
@@ -14,21 +15,26 @@ export const folderType = {
     ownerFolderName: 'My Folder',
     rootFolderType: 'cms',
     childs: 'tdo',
-    childsType: 'childTDOs'
+    childsType: 'childTDOs',
+    deleteContent: 'deleteTDO'
+
   },
   watchlist: {
     orgFolderName: 'Shared Watchlist',
     ownerFolderName: 'My Watchlist',
     rootFolderType: 'watchlist',
     child: 'watchlist',
-    childsType: 'childWatchlists'
+    childsType: 'childWatchlists',
+    deleteContent: 'deleteWatchlist'
+
   },
   collection: {
     orgFolderName: 'Shared Collections',
     ownerFolderName: 'My Collection',
     rootFolderType: 'collection ',
     child: 'collection',
-    childsType: 'childCollections'
+    childsType: 'childCollections',
+    deleteContent: 'deleteCollection'
   }
 }
 
@@ -261,6 +267,9 @@ export const folderReducer = createReducer(defaultFolderState, {
   [actions.DELETE_FOLDER_SUCCESS]: (state, action) => {
     const { folderId, parentId } = action.payload;
     const targetParentFolder = state.foldersData.byId[parentId] || {};
+    if (isEmpty(targetParentFolder)) {
+      return state;
+    }
     return {
       ...state,
       processingFolder: [
