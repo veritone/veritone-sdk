@@ -56,7 +56,7 @@ import EditFileUpload from './editFile';
 import ListEngine from './listEngine';
 import SaveTemplate from './saveTemplate';
 import FormAddContentTemplate from './formContentTemplate';
-import FolderSelectionDialog from '../FolderSelectionDialog';
+// import FolderSelectionDialog from '../FolderSelectionDialog';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -1115,12 +1115,12 @@ class UploadFile extends React.Component {
           data={uploadResultSelected}
         />
 
-        <FolderSelectionDialog
+        {/* <FolderSelectionDialog
           rootFolderType='cms'
           open={isOpenFolder}
           onCancel={this.handleCloseFolder}
           onSelect={this.onSelect}
-        />
+        /> */}
 
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}

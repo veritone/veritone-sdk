@@ -72,11 +72,11 @@ export default {
           'isValidElementType'
         ],
         '../../node_modules/react-is/index.js': [
-          'ForwardRef'
+          'ForwardRef',
+          'isFragment'
         ],
         '../../node_modules/jss/lib/index.js': [
-          'createRule',
-          'hasCSSTOMSupport'
+          'createRule'
         ]
       }
     }),

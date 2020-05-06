@@ -76,3 +76,4 @@ export {
   formUtils,
   formHelpers
 } from './components/FormBuilder';
+export Breadcrumbs from './components/DataPicker/Breadcrumbs';
