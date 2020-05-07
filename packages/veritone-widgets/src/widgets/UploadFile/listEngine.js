@@ -11,6 +11,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import { string, bool, instanceOf, object } from 'prop-types';
+import { isEmpty } from 'lodash';
 import styles from "./styles";
 const useStyles = makeStyles(styles);
 const MenuProps = {
@@ -29,13 +30,16 @@ function ListEngine({
   icon,
   isSelected,
   onChange,
-  librariesSelected
+  librariesSelected,
+  categoryId
 }) {
   const classes = useStyles();
   const [personName, setPersonName] = React.useState([]);
   const handleChange = event => {
     setPersonName(event.target.value);
   };
+  const librarieSelected = !isEmpty(librariesSelected) ? librariesSelected[categoryId] || [] : [];
+  console.log('librarieSelected', librarieSelected)
   return (
     <Card className={isSelected ? classes.cardEngineSelected : classes.listEngineCategories} >
       <CardContent className={classes.cardContent}>
@@ -60,7 +64,7 @@ function ListEngine({
             </InputLabel>
               <Select
                 multiple
-                value={librariesSelected}
+                value={librarieSelected}
                 onChange={onChange}
                 input={<Input />}
                 renderValue={selected => selected.join(", ")}
@@ -69,7 +73,7 @@ function ListEngine({
               >
                 {Object.values(libraries).map(item => (
                   <MenuItem key={item.name} value={item.name}>
-                    <Checkbox checked={librariesSelected.indexOf(item.name) > -1} />
+                    <Checkbox checked={librarieSelected.indexOf(item.name) > -1} />
                     <ListItemText primary={item.name} />
                   </MenuItem>
                 ))}

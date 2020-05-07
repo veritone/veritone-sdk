@@ -318,9 +318,9 @@ class UploadFile extends React.Component {
   }
 
   componentDidMount() {
-    const { id, fetchLibraries, fetchContentTemplates } = this.props;
-    fetchLibraries(id);
-    fetchContentTemplates(id);
+    // const { id, fetchLibraries, fetchContentTemplates } = this.props;
+    // fetchLibraries(id);
+    // fetchContentTemplates(id);
   }
 
   handlePick = () => {
@@ -397,6 +397,9 @@ class UploadFile extends React.Component {
     );
   };
   handleOpen = () => {
+    const { id, fetchLibraries, fetchContentTemplates } = this.props;
+    fetchLibraries(id);
+    fetchContentTemplates(id);
     this.setState({
       openUpload: true
     })
@@ -570,6 +573,7 @@ class UploadFile extends React.Component {
     onChangeTemplate(id, templateId)
   }
   onClickEngine = (event) => {
+    event.stopPropagation();
     const engineCategoryId = event.currentTarget.getAttribute('data-id');
     const { id, onClickEngineCategory } = this.props;
     onClickEngineCategory(id, engineCategoryId);
@@ -625,9 +629,10 @@ class UploadFile extends React.Component {
     const { id, removeTagsCustomize } = this.props;
     removeTagsCustomize(id, name);
   }
-  handleChangeLibraries = (event, categoryId) => () => {
+  handleChangeLibraries = (event, categoryId) => {
     event.stopPropagation();
     const { value } = event.target;
+    console.log('value', value)
     const { id, onChangeLibraries } = this.props;
     onChangeLibraries(id, categoryId, value);
   }
@@ -661,7 +666,7 @@ class UploadFile extends React.Component {
             </Stepper>
 
             {
-              activeStep === 0 && (
+              activeStep === 10 && (
                 <div className={classes.mainUpload}>
                   <div className={classes.mainUploadHeader}>
                     <List>
@@ -708,7 +713,7 @@ class UploadFile extends React.Component {
             }
 
             {
-              activeStep === 1 && (
+              activeStep === 0 && (
                 <Fragment>
                   {
                     loadingUpload ? (
@@ -743,14 +748,14 @@ class UploadFile extends React.Component {
                                   {
                                     engineCategories.map(item => {
                                       return (
-                                        <Grid item xs={3} onClick={this.onClickEngine} data-id={item.id} >
-                                          <ListEngine 
+                                        <Grid key={item.name} item xs={3} onClick={this.onClickEngine} data-id={item.id} >
+                                          <ListEngine
                                           title={item.name} 
                                           des={item.description} 
                                           libraries={librariesByCategories[item.id]} 
                                           icon={item.iconClass} 
                                           isSelected={enginesSelected.some(engine => engine.categoryId === item.id)}
-                                          onChange={event => this.handleChangeLibraries(event, item.id)}
+                                          onChange={(event) => this.handleChangeLibraries(event, item.id)}
                                           librariesSelected={librariesSelected}
                                           categoryId={item.id}
                                           />
@@ -813,9 +818,8 @@ class UploadFile extends React.Component {
                                             .filter(item => JSON.stringify(item.name).toLowerCase().indexOf(engineNameSearch.toLowerCase()) !== -1)
                                             .map(item => {
                                               return (
-                                                <Card className={classes.cardEngines}>
+                                                <Card key={item.id} className={classes.cardEngines}>
                                                   <CardHeader
-                                                    key={item.id}
                                                     avatar={
                                                       item.logoPath || item.deploymentModel === 'FullyNetworkIsolated' ?
                                                         this.renderLogoEngine(item.logoPath, item.deploymentModel === 'FullyNetworkIsolated', 'header') :
@@ -897,7 +901,7 @@ class UploadFile extends React.Component {
                                         {
                                           enginesSelected && enginesSelected.map(item => {
                                             return (
-                                              <Fragment>
+                                              <Fragment key={item.categoryId}>
                                                 <Typography component="p" className={classes.titleCategorySelected}>
                                                   {item.categoryName}
                                                 </Typography>
@@ -905,9 +909,8 @@ class UploadFile extends React.Component {
                                                   item.engineIds.map(engine => {
                                                     const engineFilter = engineByCategories[item.categoryId].find(item => item.id === engine);
                                                     return (
-                                                      <Card className={classes.cardEngines}>
+                                                      <Card key={engine} className={classes.cardEngines}>
                                                         <CardHeader
-                                                          key={engine}
                                                           avatar={
                                                             engineFilter.logoPath || engineFilter.deploymentModel === 'FullyNetworkIsolated' ?
                                                               this.renderLogoEngine(engineFilter.logoPath, engineFilter.deploymentModel === 'FullyNetworkIsolated', 'selected') :
@@ -986,7 +989,7 @@ class UploadFile extends React.Component {
                     {
                       contentTemplateSelected.length ? contentTemplateSelected.map((item, index) => {
                         return (
-                          <FormAddContentTemplate contentTemplate={item} onChange={this.handleChangeContentTemplate} removeContentTemplate={this.removeContentTemplate} validate={validate ? validate[index] : null} />
+                          <FormAddContentTemplate key={item} contentTemplate={item} onChange={this.handleChangeContentTemplate} removeContentTemplate={this.removeContentTemplate} validate={validate ? validate[index] : null} />
                         )
                       }) : (
                           <div className={classes.titleSelectContentTemplate}>

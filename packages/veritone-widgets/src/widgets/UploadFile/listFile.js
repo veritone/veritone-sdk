@@ -66,9 +66,9 @@ function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll
                 inputProps={{ 'aria-labelledby': labelId }}
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={item.fileName} />
+            <ListItemText id={labelId} primary={item && item.fileName} />
             <ListItemSecondaryAction>
-              <span>{item.type}</span>
+              <span>{item && item.type}</span>
             </ListItemSecondaryAction>
           </ListItem>
         );

@@ -31,7 +31,7 @@ export default {
     fontSize: 14
   },
   selectLibraries: {
-    width: 120
+    minWidth: 120
   },
   labelInput: {
     fontSize: 12

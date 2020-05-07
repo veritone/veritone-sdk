@@ -285,8 +285,9 @@ function* watchFetchEngineCategories() {
     const { records } = get(response, 'data.engineCategories', []);
     if (error) {
       yield put(actions.fetchEngineCategoriesFailure(id))
+    }else {
+      yield put(actions.fetchEngineCategoriesSuccess(id, records))
     }
-    yield put(actions.fetchEngineCategoriesSuccess(id, records))
   })
 }
 
@@ -322,8 +323,9 @@ function* watchFetchLibraries() {
     const { records } = get(response, 'data.libraries', []);
     if (error) {
       yield put(actions.fetchLibrariesFailure(id))
+    }else {
+      yield put(actions.fetchLibrariesSuccess(id, records))
     }
-    yield put(actions.fetchLibrariesSuccess(id, records))
   })
 }
 
@@ -409,8 +411,9 @@ function* watchSaveTemplate() {
     //const { records } = get(response, 'data.libraries', []);
     if (error) {
       yield put(actions.saveTemplateFailure(id))
+    }else {
+      yield put(actions.saveTemplateSuccess(id))
     }
-    yield put(actions.saveTemplateSuccess(id))
   })
 }
 
@@ -473,8 +476,9 @@ function* watchFetchContentTemplates() {
     const { records } = get(response, 'data.dataRegistries', []);
     if (error) {
       yield put(actions.fetchContentTemplatesFailure(id))
+    }else {
+      yield put(actions.fetchContentTemplatesSuccess(id, records))
     }
-    yield put(actions.fetchContentTemplatesSuccess(id, records))
   })
 }
 
@@ -624,8 +628,9 @@ function* callCreateJob({ id, query, variables }){
   const { records } = get(response, 'data.createJob.tasks', []);
   if (error) {
     yield put(actions.fetchCreateJobFailure(id))
+  }else {
+    yield put(actions.fetchCreateJobSuccess(id, records))
   }
-  yield put(actions.fetchCreateJobSuccess(id, records))
 }
 export default function* root() {
   yield all([

@@ -661,15 +661,22 @@ export default createReducer(defaultState, {
     }
   },
   [actions.ON_CHANGE_LIBRARIES](state, { payload: { id, categoryId, value} }) {
-    const librariesSelected = get(state[id], 'librariesSelected', []);
+    let librariesSelected = get(state[id], 'librariesSelected', {});
+    if(!Object.keys(librariesSelected)) {
+      librariesSelected = {
+        [categoryId]: value
+      }
+    }else {
+      librariesSelected = {
+        ...librariesSelected,
+        [categoryId]: value
+      }
+    }
     return {
       ...state,
       [id]: {
         ...state[id],
-        librariesSelected: [
-          ...librariesSelected,
-          value
-        ]
+        librariesSelected
       }
     }
   }
@@ -728,4 +735,4 @@ export const contentTemplateSelected = (state, id) => get(local(state), [id, 'co
 export const selectedFolder = (state, id) => get(local(state), [id, 'selectedFolder'], folderSelectedDefault);
 export const tagsCustomize = (state, id) => get(local(state), [id, 'tagsCustomize'], []);
 export const loadingUpload = (state, id) => get(local(state), [id, 'loadingUpload'], false);
-export const librariesSelected = (state, id) => get(local(state), [id, 'librariesSelected'], []);
+export const librariesSelected = (state, id) => get(local(state), [id, 'librariesSelected'], {});
