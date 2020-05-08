@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { noop, debounce } from 'lodash';
+import { noop, debounce, isEmpty } from 'lodash';
 import { bool, func, oneOf, number, string, arrayOf, shape, objectOf } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
@@ -50,12 +50,17 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import Chip from '@material-ui/core/Chip';
+import Collapse from "@material-ui/core/Collapse";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Input from "@material-ui/core/Input";
+import Checkbox from "@material-ui/core/Checkbox";
 import styles from './styles';
 import ListFileUpload from './listFile';
 import EditFileUpload from './editFile';
 import ListEngine from './listEngine';
 import SaveTemplate from './saveTemplate';
 import FormAddContentTemplate from './formContentTemplate';
+import ListEngineSelected from './listEngineSelected';
 // import FolderSelectionDialog from '../FolderSelectionDialog';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
@@ -83,6 +88,15 @@ const DialogActions = withStyles((theme) => ({
     padding: 10,
   },
 }))(MuiDialogActions);
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: 48 * 4.5 + 8,
+      width: 250
+    }
+  }
+};
 
 @withStyles(styles)
 // provide id prop on mount
@@ -145,7 +159,8 @@ const DialogActions = withStyles((theme) => ({
     addTagsCustomize: uploadFileAction.addTagsCustomize,
     removeTagsCustomize: uploadFileAction.removeTagsCustomize,
     fetchCreateTdo: uploadFileAction.fetchCreateTdo,
-    onChangeLibraries: uploadFileAction.onChangeLibraries
+    onChangeLibraries: uploadFileAction.onChangeLibraries,
+    onChangeFormEngineSelected: uploadFileAction.onChangeFormEngineSelected
 
   },
   (stateProps, dispatchProps, ownProps) => ({
@@ -314,7 +329,8 @@ class UploadFile extends React.Component {
     engineNameSearch: '',
     validate: null,
     isOpenFolder: false,
-    tagsCustomizeName: ''
+    tagsCustomizeName: '',
+    expanded: true
   }
 
   componentDidMount() {
@@ -636,6 +652,17 @@ class UploadFile extends React.Component {
     const { id, onChangeLibraries } = this.props;
     onChangeLibraries(id, categoryId, value);
   }
+  handleExpandClick = () => {
+    const { expanded } = this.state;
+    this.setState({ expanded: !expanded })
+  };
+
+  handleChangeFieldsEngine = event => {
+    const { id : engineId, value, name } = event.target;
+    const { id , onChangeFormEngineSelected } = this.props;
+    onChangeFormEngineSelected(id, engineId, name, value)
+  }
+
   render() {
     const pickerComponent = {
       overview: this.overviewUploadFile,
@@ -645,7 +672,7 @@ class UploadFile extends React.Component {
     }[this.props.pickerState]();
     const steps = this.getSteps();
     const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload, librariesSelected } = this.props;
-    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName } = this.state;
+    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName, expanded } = this.state;
     return (
       <Fragment>
         <Dialog fullScreen open={this.state.openUpload} onClose={this.handleClose}>
@@ -666,7 +693,7 @@ class UploadFile extends React.Component {
             </Stepper>
 
             {
-              activeStep === 10 && (
+              activeStep === 0 && (
                 <div className={classes.mainUpload}>
                   <div className={classes.mainUploadHeader}>
                     <List>
@@ -713,7 +740,7 @@ class UploadFile extends React.Component {
             }
 
             {
-              activeStep === 0 && (
+              activeStep === 1 && (
                 <Fragment>
                   {
                     loadingUpload ? (
@@ -750,14 +777,14 @@ class UploadFile extends React.Component {
                                       return (
                                         <Grid key={item.name} item xs={3} onClick={this.onClickEngine} data-id={item.id} >
                                           <ListEngine
-                                          title={item.name} 
-                                          des={item.description} 
-                                          libraries={librariesByCategories[item.id]} 
-                                          icon={item.iconClass} 
-                                          isSelected={enginesSelected.some(engine => engine.categoryId === item.id)}
-                                          onChange={(event) => this.handleChangeLibraries(event, item.id)}
-                                          librariesSelected={librariesSelected}
-                                          categoryId={item.id}
+                                            title={item.name}
+                                            des={item.description}
+                                            libraries={librariesByCategories[item.id]}
+                                            icon={item.iconClass}
+                                            isSelected={enginesSelected.some(engine => engine.categoryId === item.id)}
+                                            onChange={(event) => this.handleChangeLibraries(event, item.id)}
+                                            librariesSelected={librariesSelected}
+                                            categoryId={item.id}
                                           />
                                         </Grid>
                                       )
@@ -814,7 +841,7 @@ class UploadFile extends React.Component {
                                       <Paper variant="outlined" square className={classes.listEngines}>
                                         {
                                           engineByCategories && engineByCategories[currentEngineCategory]
-                                            .filter(item => !enginesSelected.some(engine => engine.engineIds.includes(item.id)))
+                                            .filter(item => !enginesSelected.some(engine => engine.engineIds.some(engine => engine.id === item.id)))
                                             .filter(item => JSON.stringify(item.name).toLowerCase().indexOf(engineNameSearch.toLowerCase()) !== -1)
                                             .map(item => {
                                               return (
@@ -827,7 +854,7 @@ class UploadFile extends React.Component {
                                                     }
                                                     action={
                                                       <IconButton className={classes.iconAddEngines} data-id={item.id} onClick={this.handleAddEngine}>
-                                                        <AddCircleOutline />
+                                                          <AddCircleOutline />
                                                       </IconButton>
                                                     }
                                                     title={
@@ -839,7 +866,6 @@ class UploadFile extends React.Component {
                                                     }
                                                     className={classes.cardHeaderEngines}
                                                   />
-
                                                   <CardContent className={classes.cardContentEngines}>
                                                     {
                                                       this.renderLogoEngine(item.logoPath, item.deploymentModel === 'FullyNetworkIsolated', 'content')
@@ -856,7 +882,7 @@ class UploadFile extends React.Component {
                                                     </Typography>
                                                     <Typography component="p" className={classes.ratingEngines}>
                                                       Rating
-                                                </Typography>
+                                                    </Typography>
                                                     <Typography component="p" className={classes.priceEngines}>
                                                       {`Price: $${item.price / 100}/hour`}
                                                     </Typography>
@@ -875,7 +901,7 @@ class UploadFile extends React.Component {
                                         <FormControl className={classes.formEngines}>
                                           <InputLabel shrink className={classes.titleFormSelectEngine}>
                                             Your Selected Engines
-                                      </InputLabel>
+                                          </InputLabel>
                                           <Select
                                             value={currentTemplate}
                                             displayEmpty
@@ -900,46 +926,127 @@ class UploadFile extends React.Component {
                                       <Paper variant="outlined" square className={classes.listSelectedEngines}>
                                         {
                                           enginesSelected && enginesSelected.map(item => {
+                                            const librarieSelected = !isEmpty(librariesSelected) ? librariesSelected[item.categoryId] || [] : [];
                                             return (
+                                              // <ListEngineSelected key={item.categoryId} item={item} engineByCategories={engineByCategories} />
                                               <Fragment key={item.categoryId}>
                                                 <Typography component="p" className={classes.titleCategorySelected}>
                                                   {item.categoryName}
                                                 </Typography>
                                                 {
                                                   item.engineIds.map(engine => {
-                                                    const engineFilter = engineByCategories[item.categoryId].find(item => item.id === engine);
                                                     return (
                                                       <Card key={engine} className={classes.cardEngines}>
                                                         <CardHeader
                                                           avatar={
-                                                            engineFilter.logoPath || engineFilter.deploymentModel === 'FullyNetworkIsolated' ?
-                                                              this.renderLogoEngine(engineFilter.logoPath, engineFilter.deploymentModel === 'FullyNetworkIsolated', 'selected') :
+                                                            engine.logoPath || engine.deploymentModel === 'FullyNetworkIsolated' ?
+                                                              this.renderLogoEngine(engine.logoPath, engine.deploymentModel === 'FullyNetworkIsolated', 'selected') :
                                                               null
                                                           }
                                                           action={
-                                                            <IconButton data-id={engineFilter.id} onClick={this.handleRemoveEngine}>
+                                                             <Fragment>
+                                                             <IconButton className={expanded ? classes.expandOpen : ''} onClick={this.handleExpandClick}>
+                                                               <ExpandMore />
+                                                             </IconButton>
+                                                             <IconButton data-id={engine.id} onClick={this.handleRemoveEngine}>
                                                               <CloseIcon />
                                                             </IconButton>
+                                                           </Fragment>
                                                           }
                                                           title={
-                                                            !engineFilter.logoPath && (
+                                                            !engine.logoPath && (
                                                               <Typography component="p" className={classes.titleHeaderEngines}>
-                                                                {engineFilter.name}
+                                                                {engine.name}
                                                               </Typography>
                                                             )
                                                           }
                                                           className={classes.cardHeaderEngines}
                                                         />
-
+                                                        <Collapse in={expanded} timeout="auto" unmountOnExit>
                                                         <CardContent className={classes.cardContentEngines}>
                                                           <Typography component="p" color="textSecondary">
-                                                            {engineFilter.description}
+                                                            {engine.description}
                                                           </Typography>
 
                                                           <Typography component="p" >
-                                                            {`Price: $${engineFilter.price / 100}/hour`}
+                                                            {`Price: $${engine.price / 100}/hour`}
                                                           </Typography>
+
+                                                          {
+                                                            engine.libraryRequired && !isEmpty(librariesByCategories[item.categoryId]) && (
+                                                              <div>
+                                                                <FormControl className={classes.formControl}>
+                                                                <InputLabel className={classes.labelInput}>
+                                                                  Choose Libraries
+                                                              </InputLabel>
+                                                                <Select
+                                                                  multiple
+                                                                  value={librarieSelected}
+                                                                  onChange={(event) => this.handleChangeLibraries(event, item.categoryId)}
+                                                                  input={<Input />}
+                                                                  renderValue={selected => selected.join(", ")}
+                                                                  MenuProps={MenuProps}
+                                                                  className={classes.selectLibraries}
+                                                                >
+                                                                  {Object.values(librariesByCategories[item.categoryId]).map(item => (
+                                                                    <MenuItem key={item.name} value={item.name}>
+                                                                      <Checkbox checked={librarieSelected.indexOf(item.name) > -1} />
+                                                                      <ListItemText primary={item.name} />
+                                                                    </MenuItem>
+                                                                  ))}
+                                                                </Select>
+                                                              </FormControl>
+                                                              </div>
+                                                            )
+                                                          }
+                                                          <from className={classes.formfieldsEngine}>
+                                                          {
+                                                            
+                                                            engine.fields.length && (
+                                                              engine.fields.map(item => {
+                                                                return (
+                                                                  <Fragment key={engine.id} >
+                                                                    {
+                                                                      item.type === "Picklist" ? (
+                                                                          <Select
+                                                                            id={engine.id}
+                                                                            name={`${item.name}`}
+                                                                            value={engine.fields[0] && engine.fields[0].options.length && engine.fields[0].options[0].value}
+                                                                            displayEmpty
+                                                                            onChange={this.handleChangeFieldsEngine}
+                                                                          >
+                                                                            {
+                                                                              item.options.map(item => {
+                                                                                return (
+                                                                                  <MenuItem key={item.value} value={item.value}>{item.key}</MenuItem>
+                                                                                )
+                                                                              })
+                                                                            } 
+                                                                          </Select>
+                                                                      ) : (
+                                                                        
+                                                                          <TextField
+                                                                          id={engine.id}
+                                                                          name={`${item.name}`}
+                                                                          label={item.label || item.name} 
+                                                                          defaultValue={item.defaultValue}
+                                                                          onChange={this.handleChangeFieldsEngine}
+                                                                          />
+                                                                        
+                                                                      )
+                                                                    }
+                                                                 </Fragment>
+                                                                 
+                                                                )
+                                                              })
+
+                                                            )
+                                                            
+                                                          }
+                                                          </from>
+
                                                         </CardContent>
+                                                        </Collapse>
                                                       </Card>
                                                     )
                                                   })

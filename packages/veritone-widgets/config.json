@@ -1,5 +1,5 @@
 {
-  "apiRoot": "https://api.veritone.com",
-  "switchAppRoute": "https://app.veritone.com/switch-app",
+  "apiRoot": "https://api.stage.veritone.com",
+  "switchAppRoute": "https://app.stage.veritone.com/switch-app",
   "graphQLEndpoint": "v3/graphql"
 }

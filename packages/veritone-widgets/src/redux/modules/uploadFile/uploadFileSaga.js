@@ -353,9 +353,18 @@ function* watchFetchEngines() {
           supportedInputFormats
           isConductor
           fields {
+            defaultValue
+            info
+            label
+            max
+            min
             name
-            type
+            options {
+              key
+              value
+            }
             step
+            type
           }
           category {
             id

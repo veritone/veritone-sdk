@@ -375,19 +375,21 @@ export default createReducer(defaultState, {
     const currentEngineCategory = get(state[id], 'currentEngineCategory', currentEngineCategoryDefault);
     const category = get(state[id], 'engineCategories', []).find(item => item.id === currentEngineCategory);
     const enginesSelected = get(state[id], 'enginesSelected', []);
+    const enginesDefault = get(state[id], 'enginesDefault', []);
+    const engineSelected = enginesDefault.find(item => item.id === engineId);
     let newEnginesSelected = [...enginesSelected];
     if (!newEnginesSelected.length) {
       newEnginesSelected.push({
         categoryId: currentEngineCategory,
         categoryName: category.name,
-        engineIds: [engineId]
+        engineIds: [engineSelected]
       })
     } else {
       if (!newEnginesSelected.some(item => item.categoryId === currentEngineCategory)) {
         newEnginesSelected.push({
           categoryId: currentEngineCategory,
           categoryName: category.name,
-          engineIds: [engineId]
+          engineIds: [engineSelected]
         })
       } else {
         const index = newEnginesSelected.findIndex(item => item.categoryId === currentEngineCategory);
@@ -395,7 +397,7 @@ export default createReducer(defaultState, {
           ...newEnginesSelected[index],
           engineIds: [
             ...newEnginesSelected[index].engineIds,
-            engineId
+            engineSelected
           ]
         }
       }
@@ -421,11 +423,11 @@ export default createReducer(defaultState, {
   [actions.REMOVE_ENGINE](state, { payload: { id, engineId } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const newEnginesSelected = [...enginesSelected].map(item => {
-      if (item.engineIds.includes(engineId)) {
+      if (item.engineIds.some(item => item.id === engineId)) {
         return {
           ...item,
           engineIds: [
-            ...item.engineIds.filter(item => item !== engineId)
+            ...item.engineIds.filter(item => item.id !== engineId)
           ]
         }
       }
@@ -528,7 +530,7 @@ export default createReducer(defaultState, {
         {
           categoryId: engineCategoryId,
           categoryName: engineByCategories[engineCategoryId][0].category.name,
-          engineIds: [engineByCategories[engineCategoryId][0].id]
+          engineIds: [engineByCategories[engineCategoryId][0]]
         }
       ]
     }
@@ -677,6 +679,32 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         librariesSelected
+      }
+    }
+  },
+  [actions.ON_CHANGE_FORM_ENGINE_SELECTED](state, { payload: { id, engineId, name, value } }) {
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    const newEnginesSelected = [...enginesSelected].map(item => {
+      if(item.engineIds.some(engine => engine.id === engineId)){
+        const index = item.engineIds.findIndex(item => item.id === engineId);
+        item.engineIds[index].fields = item.engineIds[index].fields.map(item => {
+          if(item.name === name){
+            return {
+              ...item,
+              defaultValue: value
+            }
+          }
+          return item
+        })
+        return item;
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
       }
     }
   }

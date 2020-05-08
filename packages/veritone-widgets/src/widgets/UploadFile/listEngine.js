@@ -34,12 +34,7 @@ function ListEngine({
   categoryId
 }) {
   const classes = useStyles();
-  const [personName, setPersonName] = React.useState([]);
-  const handleChange = event => {
-    setPersonName(event.target.value);
-  };
   const librarieSelected = !isEmpty(librariesSelected) ? librariesSelected[categoryId] || [] : [];
-  console.log('librarieSelected', librarieSelected)
   return (
     <Card className={isSelected ? classes.cardEngineSelected : classes.listEngineCategories} >
       <CardContent className={classes.cardContent}>
@@ -57,7 +52,7 @@ function ListEngine({
           {des}
         </Typography>
         {
-          libraries && (
+          !isEmpty(libraries) && (
             <FormControl className={classes.formControl}>
               <InputLabel className={classes.labelInput}>
                 Choose Libraries

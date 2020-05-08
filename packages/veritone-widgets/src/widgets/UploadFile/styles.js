@@ -405,6 +405,14 @@ export default {
     alignItems: 'center',
     height: 'calc(100% - 74px)'
   },
+  expandOpen: {
+    transform: "rotate(180deg)"
+  },
+  formfieldsEngine: {
+    "& > *": {
+      margin: '8px'
+    }
+  },
   //content templates
   cardContentTemplate: {
     marginTop: '10px'
