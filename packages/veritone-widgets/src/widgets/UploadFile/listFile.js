@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll }) {
   const classes = useStyles();
-  return (
+  return data.length ? (
     <List className={classes.root}>
       <ListItem
         role={undefined}
@@ -74,7 +74,7 @@ function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll
         );
       })}
     </List>
-  );
+  ) : <Fragment />
 }
 
 ListFileUpload.propTypes = {

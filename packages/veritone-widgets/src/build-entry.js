@@ -49,3 +49,4 @@ export { reducers, rootSaga } from './redux/configureStore';
 export UploadFile, { UploadFileWidget } from './widgets/UploadFile';
 export uploadFileReducer, * as uploadFileModule from './redux/modules/uploadFile';
 export uploadFileSaga from './redux/modules/uploadFile/uploadFileSaga';
+export folderSelectionDialogReducer from './redux/modules/folderSelectionDialog';

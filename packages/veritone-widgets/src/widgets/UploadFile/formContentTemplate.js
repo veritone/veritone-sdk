@@ -44,8 +44,9 @@ function FormAddContentTemplate({
                                     required={required.includes(item)}
                                     name={item}
                                     label={item}
+                                    value={contentTemplate.data[item]}
                                     onChange={onChange}
-                                    error={required.includes(item) && validate && !validate.data[item].length ? true : false}
+                                    error={required.includes(item) && validate && !validate.data[item] && !validate.data[item].length ? true : false}
                                     helperText=""
                                 />
                             </FormControl>

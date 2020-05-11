@@ -21,7 +21,8 @@ import {
   uploadResult,
   tagsCustomize,
   contentTemplateSelected,
-  selectedFolder
+  selectedFolder,
+  libraries
 } from './';
 // import {
 //   ABORT_REQUEST,
@@ -571,7 +572,7 @@ function* watchFetchCreateTdo() {
 
 function* callCreateTdo({ id, query, variables, jobConfig }) {
   const { error, response } = yield call(handleRequest, { query, variables })
-      const { tdoId } = get(response, 'data.createTDO', null);
+      const { id: tdoId } = get(response, 'data.createTDO', null);
       if (error) {
         yield put(actions.fetchCreateTdoFailure(id))
       }
@@ -589,7 +590,8 @@ function* watchFetchCreateJob() {
 
     const dataUploadResult = yield select(uploadResult, id);
     const dataEnginesSelecteds = yield select(enginesSelected, id);
-  
+    const dataLibraries = yield select(libraries, id);
+    const startTimeOverride = Math.floor(new Date().getTime() / 1000);
     yield yield all( dataUploadResult.map(item => {
       const tasks = [
         {
@@ -597,18 +599,32 @@ function* watchFetchCreateJob() {
           payload: {
             tdoId: tdoId,
             url: item.getUrl,
-            startTimeOverride: 1587524429
+            startTimeOverride
           }
         }
       ];
       dataEnginesSelecteds.forEach(element => {
         element.engineIds.forEach(engine => {
-          tasks.push({
-            engineId: engine,
-            payload: {
-              diarise: "true"
-            }
-          })
+          let task = { engineId: null, payload: {}};
+          task.engineId = engine.id;
+
+          task.payload = engine.fields.reduce((res, { name, defaultValue }) => ({
+            ...res,
+            [name]: defaultValue
+          }), {})
+          if(engine.libraryRequired && engine.librariesSelected){
+            engine.librariesSelected.forEach(item => {
+              tasks.push({
+                ...task,
+                payload: {
+                  ...task.payload,
+                  libraryId: Object.values(dataLibraries).find(element => element.name === item).id
+                }
+              })
+            })
+          }else {
+            tasks.push(task)
+          }
         })
       })
       const input = {
@@ -622,12 +638,6 @@ function* watchFetchCreateJob() {
         input
       };
       return call(callCreateJob, { id, query, variables })
-      // const { error, response } = yield call(handleRequest, { query, variables })
-      // const { records } = get(response, 'data.createJob.tasks', []);
-      // if (error) {
-      //   yield put(actions.fetchCreateJobFailure(id))
-      // }
-      // yield put(actions.fetchCreateJobSuccess(id, records))
     })
     )
   })

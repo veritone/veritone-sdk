@@ -61,7 +61,7 @@ import ListEngine from './listEngine';
 import SaveTemplate from './saveTemplate';
 import FormAddContentTemplate from './formContentTemplate';
 import ListEngineSelected from './listEngineSelected';
-// import FolderSelectionDialog from '../FolderSelectionDialog';
+import FolderSelectionDialog from '../FolderSelectionDialog';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -160,7 +160,9 @@ const MenuProps = {
     removeTagsCustomize: uploadFileAction.removeTagsCustomize,
     fetchCreateTdo: uploadFileAction.fetchCreateTdo,
     onChangeLibraries: uploadFileAction.onChangeLibraries,
-    onChangeFormEngineSelected: uploadFileAction.onChangeFormEngineSelected
+    onChangeFormEngineSelected: uploadFileAction.onChangeFormEngineSelected,
+    onChangeLibrariesEngineSelected: uploadFileAction.onChangeLibrariesEngineSelected,
+    onCloseModalUploadFile: uploadFileAction.onCloseModalUploadFile
 
   },
   (stateProps, dispatchProps, ownProps) => ({
@@ -300,7 +302,9 @@ class UploadFile extends React.Component {
       })
     ),
     loadingUpload: bool,
-    onChangeLibraries: func
+    onChangeLibraries: func,
+    onChangeFormEngineSelected: func,
+    onCloseModalUploadFile: func
   };
 
   static defaultProps = {
@@ -422,9 +426,12 @@ class UploadFile extends React.Component {
   }
 
   handleClose = () => {
+    const { id, onCloseModalUploadFile } = this.props;
     this.setState({
-      openUpload: false
+      openUpload: false,
+      activeStep: 0
     })
+    onCloseModalUploadFile(id);
   };
 
   getSteps = () => {
@@ -605,8 +612,10 @@ class UploadFile extends React.Component {
     removeContentTemplate(id, contentTemplateId);
   }
   handleChangeContentTemplate = (event) => {
-    const { id, name, value } = event.target;
-    this.onChangeContentTemplate(id, name, value);
+    const { id: contentTemplateId, name, value } = event.target;
+    //this.onChangeContentTemplate(id, name, value);
+    const { id, onChangeFormContentTemplate } = this.props;
+    onChangeFormContentTemplate(id, contentTemplateId, name, value);
   }
 
   onChangeContentTemplate = (contentTemplateId, name, value) => {
@@ -657,10 +666,18 @@ class UploadFile extends React.Component {
     this.setState({ expanded: !expanded })
   };
 
-  handleChangeFieldsEngine = event => {
-    const { id : engineId, value, name } = event.target;
+  handleChangeFieldsEngine = (event, engineId)=> {
+    const { value, name } = event.target;
     const { id , onChangeFormEngineSelected } = this.props;
     onChangeFormEngineSelected(id, engineId, name, value)
+  }
+
+  handleChangeLibrariesEngineSelected = (event, engineId) => {
+    event.stopPropagation();
+    const { value } = event.target;
+    console.log('value', value)
+    const { id, onChangeLibrariesEngineSelected } = this.props;
+    onChangeLibrariesEngineSelected(id, engineId, value);
   }
 
   render() {
@@ -926,7 +943,7 @@ class UploadFile extends React.Component {
                                       <Paper variant="outlined" square className={classes.listSelectedEngines}>
                                         {
                                           enginesSelected && enginesSelected.map(item => {
-                                            const librarieSelected = !isEmpty(librariesSelected) ? librariesSelected[item.categoryId] || [] : [];
+                                           
                                             return (
                                               // <ListEngineSelected key={item.categoryId} item={item} engineByCategories={engineByCategories} />
                                               <Fragment key={item.categoryId}>
@@ -935,6 +952,7 @@ class UploadFile extends React.Component {
                                                 </Typography>
                                                 {
                                                   item.engineIds.map(engine => {
+                                                    const librariesSelected = engine.librariesSelected || [];
                                                     return (
                                                       <Card key={engine} className={classes.cardEngines}>
                                                         <CardHeader
@@ -981,8 +999,8 @@ class UploadFile extends React.Component {
                                                               </InputLabel>
                                                                 <Select
                                                                   multiple
-                                                                  value={librarieSelected}
-                                                                  onChange={(event) => this.handleChangeLibraries(event, item.categoryId)}
+                                                                  value={librariesSelected}
+                                                                  onChange={(event) => this.handleChangeLibrariesEngineSelected(event, engine.id)}
                                                                   input={<Input />}
                                                                   renderValue={selected => selected.join(", ")}
                                                                   MenuProps={MenuProps}
@@ -990,7 +1008,7 @@ class UploadFile extends React.Component {
                                                                 >
                                                                   {Object.values(librariesByCategories[item.categoryId]).map(item => (
                                                                     <MenuItem key={item.name} value={item.name}>
-                                                                      <Checkbox checked={librarieSelected.indexOf(item.name) > -1} />
+                                                                      <Checkbox checked={librariesSelected.indexOf(item.name) > -1} />
                                                                       <ListItemText primary={item.name} />
                                                                     </MenuItem>
                                                                   ))}
@@ -1009,11 +1027,10 @@ class UploadFile extends React.Component {
                                                                     {
                                                                       item.type === "Picklist" ? (
                                                                           <Select
-                                                                            id={engine.id}
                                                                             name={`${item.name}`}
-                                                                            value={engine.fields[0] && engine.fields[0].options.length && engine.fields[0].options[0].value}
+                                                                            value={engine.fields[0] && engine.fields[0].defaultValue}
                                                                             displayEmpty
-                                                                            onChange={this.handleChangeFieldsEngine}
+                                                                            onChange={event => this.handleChangeFieldsEngine(event, engine.id)}
                                                                           >
                                                                             {
                                                                               item.options.map(item => {
@@ -1030,7 +1047,7 @@ class UploadFile extends React.Component {
                                                                           name={`${item.name}`}
                                                                           label={item.label || item.name} 
                                                                           defaultValue={item.defaultValue}
-                                                                          onChange={this.handleChangeFieldsEngine}
+                                                                          onChange={event => this.handleChangeFieldsEngine(event, engine.id)}
                                                                           />
                                                                         
                                                                       )
@@ -1224,13 +1241,17 @@ class UploadFile extends React.Component {
           handleClose={this.handleCloseEditFileUpload}
           data={uploadResultSelected}
         />
-
-        {/* <FolderSelectionDialog
-          rootFolderType='cms'
-          open={isOpenFolder}
-          onCancel={this.handleCloseFolder}
-          onSelect={this.onSelect}
-        /> */}
+       {
+         isOpenFolder && (
+          <FolderSelectionDialog
+            rootFolderType='cms'
+            open={isOpenFolder}
+            onCancel={this.handleCloseFolder}
+            onSelect={this.onSelect}
+          />
+         )
+       }
+        
 
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}

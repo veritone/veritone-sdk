@@ -707,6 +707,33 @@ export default createReducer(defaultState, {
         enginesSelected: newEnginesSelected
       }
     }
+  },
+  [actions.ON_CHANGE_LIBRARIES_ENGINE_SELECTED](state, { payload: { id, engineId, value } }) {
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    const newEnginesSelected = [...enginesSelected].map(item => {
+      if(item.engineIds.some(engine => engine.id === engineId)){
+        const index = item.engineIds.findIndex(item => item.id === engineId);
+        item.engineIds[index].librariesSelected = value;
+        return item;
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
+      }
+    }
+  },
+  [actions.ON_CLOSE_MODAL_UPLOAD_FILE](state, { payload: { id } }) {
+    return {
+      ...state,
+      [id]: {
+        ...defaultPickerState,
+        state: 'overview'
+      }
+    }
   }
 });
 
@@ -764,3 +791,4 @@ export const selectedFolder = (state, id) => get(local(state), [id, 'selectedFol
 export const tagsCustomize = (state, id) => get(local(state), [id, 'tagsCustomize'], []);
 export const loadingUpload = (state, id) => get(local(state), [id, 'loadingUpload'], false);
 export const librariesSelected = (state, id) => get(local(state), [id, 'librariesSelected'], {});
+export const libraries = (state, id) => get(local(state), [id, 'libraries'], {});
