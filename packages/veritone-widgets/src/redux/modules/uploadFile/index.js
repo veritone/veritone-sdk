@@ -348,16 +348,35 @@ export default createReducer(defaultState, {
   },
   [actions.FETCH_ENGINES_SUCCESS](state, { payload: { id, engines } }) {
     const enginesFilter = engines.filter(item => item.runtimeType === "edge");
+    console.log('enginesFilter', enginesFilter)
     let engineByCategories = enginesFilter.reduce((res, value) => {
       if (!res[value.category.id]) {
         res[value.category.id] = [
           value
-        ];
+        ].sort((a, b) => {
+          if (a.isConductor && b.isConductor) {
+            return 0;
+          } else if (a.isConductor) {
+            return -1;
+          } else if (b.isConductor) {
+            return 1;
+          }
+          return 0;
+        });
       } else {
         res[value.category.id] = [
           ...res[value.category.id],
           value
-        ].sort((a, b) => a.name.localeCompare(b.name))
+        ].sort((a, b) => {
+          if (a.isConductor && b.isConductor) {
+            return 0;
+          } else if (a.isConductor) {
+            return -1;
+          } else if (b.isConductor) {
+            return 1;
+          }
+          return 0;
+        });
       }
       return res;
     }, {})
@@ -376,7 +395,11 @@ export default createReducer(defaultState, {
     const category = get(state[id], 'engineCategories', []).find(item => item.id === currentEngineCategory);
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const enginesDefault = get(state[id], 'enginesDefault', []);
-    const engineSelected = enginesDefault.find(item => item.id === engineId);
+    let engineSelected = enginesDefault.find(item => item.id === engineId);
+    engineSelected = {
+      ...engineSelected,
+      expand: true
+    }
     let newEnginesSelected = [...enginesSelected];
     if (!newEnginesSelected.length) {
       newEnginesSelected.push({
@@ -521,6 +544,19 @@ export default createReducer(defaultState, {
   [actions.ON_CLICK_ENGINE_CATEGORY](state, { payload: { id, engineCategoryId } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const engineByCategories = get(state[id], 'engineByCategories', {});
+    const librariesSelected = get(state[id], 'librariesSelected', {});
+    const isLibrarySelected = !!(!isEmpty(librariesSelected) && Array.isArray(librariesSelected[engineCategoryId]) && librariesSelected[engineCategoryId].length);
+    console.log('isLibrarySelected', isLibrarySelected)
+    const engineCategoriesSelected = !isEmpty(engineByCategories) && engineByCategories[engineCategoryId].filter(item => item.libraryRequired === isLibrarySelected);
+    console.log('engineCategoriesSelected', engineCategoriesSelected)
+    let engineToSelect = engineCategoriesSelected.length && engineCategoriesSelected[0];
+    if(isLibrarySelected){
+      engineToSelect = {
+        ...engineToSelect,
+        librariesSelected: !isEmpty(librariesSelected) && Array.isArray(librariesSelected[engineCategoryId]) && librariesSelected[engineCategoryId],
+        expand: true
+      }
+    }
     let newEnginesSelected = [];
     if (enginesSelected.some(item => item.categoryId === engineCategoryId)) {
       newEnginesSelected = [...enginesSelected].filter(item => item.categoryId !== engineCategoryId)
@@ -529,8 +565,8 @@ export default createReducer(defaultState, {
         ...enginesSelected,
         {
           categoryId: engineCategoryId,
-          categoryName: engineByCategories[engineCategoryId][0].category.name,
-          engineIds: [engineByCategories[engineCategoryId][0]]
+          categoryName: engineToSelect.category.name,
+          engineIds: [engineToSelect]
         }
       ]
     }
@@ -732,6 +768,27 @@ export default createReducer(defaultState, {
       [id]: {
         ...defaultPickerState,
         state: 'overview'
+      }
+    }
+  },
+  [actions.ON_CHANGE_EXPAND](state, { payload: { id, categoryId, engineId, expand } }) {
+    const enginesSelected = get(state[id], 'enginesSelected', []);
+    const newEnginesSelected = enginesSelected.map(item => {
+      if(item.categoryId === categoryId){
+        const findIndex = item.engineIds.findIndex(item => item.id === engineId);
+        item.engineIds[findIndex] = {
+          ...item.engineIds[findIndex],
+          expand
+        }
+        return item;
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        enginesSelected: newEnginesSelected
       }
     }
   }

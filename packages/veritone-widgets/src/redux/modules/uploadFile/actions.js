@@ -53,6 +53,7 @@ export const ON_CHANGE_LIBRARIES = `${namespace}_ON_CHANGE_LIBRARIES`;
 export const ON_CHANGE_FORM_ENGINE_SELECTED = `${namespace}_ON_CHANGE_FORM_ENGINE_SELECTED`;
 export const ON_CHANGE_LIBRARIES_ENGINE_SELECTED = `${namespace}_ON_CHANGE_LIBRARIES_ENGINE_SELECTED`;
 export const ON_CLOSE_MODAL_UPLOAD_FILE = `${namespace}_ON_CLOSE_MODAL_UPLOAD_FILE`;
+export const ON_CHANGE_EXPAND = `${namespace}_ON_CHANGE_EXPAND`;
 export const CATEGORY_IDS_TO_EXCLUDE = [
     '4fef6040-3fb6-4757-9aae-4044e8b46bc9', // Search
     '4be1a1b2-653d-4eaa-ba18-747a265305d8', // Ingestion
@@ -306,4 +307,8 @@ export const onChangeLibrariesEngineSelected = (id, engineId, value) => ({
 export const onCloseModalUploadFile = (id) => ({
     type: ON_CLOSE_MODAL_UPLOAD_FILE,
     payload: { id }
+})
+export const onChangeExpand = (id, categoryId, engineId, expand) => ({
+    type: ON_CHANGE_EXPAND,
+    payload: { id, categoryId, engineId, expand }
 })

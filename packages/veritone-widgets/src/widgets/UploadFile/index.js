@@ -162,7 +162,8 @@ const MenuProps = {
     onChangeLibraries: uploadFileAction.onChangeLibraries,
     onChangeFormEngineSelected: uploadFileAction.onChangeFormEngineSelected,
     onChangeLibrariesEngineSelected: uploadFileAction.onChangeLibrariesEngineSelected,
-    onCloseModalUploadFile: uploadFileAction.onCloseModalUploadFile
+    onCloseModalUploadFile: uploadFileAction.onCloseModalUploadFile,
+    onChangeExpand: uploadFileAction.onChangeExpand
 
   },
   (stateProps, dispatchProps, ownProps) => ({
@@ -334,7 +335,7 @@ class UploadFile extends React.Component {
     validate: null,
     isOpenFolder: false,
     tagsCustomizeName: '',
-    expanded: true
+    expanded: []
   }
 
   componentDidMount() {
@@ -661,13 +662,18 @@ class UploadFile extends React.Component {
     const { id, onChangeLibraries } = this.props;
     onChangeLibraries(id, categoryId, value);
   }
-  handleExpandClick = () => {
-    const { expanded } = this.state;
-    this.setState({ expanded: !expanded })
+  handleExpandClick = (event) => {
+    const expand = event.currentTarget.getAttribute('data-expand');
+    const engineId = event.currentTarget.getAttribute('data-engineId');
+    const categoryId = event.currentTarget.getAttribute('data-categoryId');
+    // const { expanded } = this.state;
+    const { id, onChangeExpand } = this.props;
+    // this.setState({ expanded: [...expanded, engineId] })
+    onChangeExpand(id, categoryId, engineId, expand === "true" ? true : false)
   };
 
-  handleChangeFieldsEngine = (event, engineId)=> {
-    const { value, name } = event.target;
+  handleChangeFieldsEngine = (event)=> {
+    const { id: engineId, value, name } = event.target;
     const { id , onChangeFormEngineSelected } = this.props;
     onChangeFormEngineSelected(id, engineId, name, value)
   }
@@ -963,7 +969,13 @@ class UploadFile extends React.Component {
                                                           }
                                                           action={
                                                              <Fragment>
-                                                             <IconButton className={expanded ? classes.expandOpen : ''} onClick={this.handleExpandClick}>
+                                                             <IconButton 
+                                                             className={engine.expand ? classes.expandOpen : ''} 
+                                                             data-engineId={engine.id}
+                                                             data-categoryId={item.categoryId}
+                                                             data-expand={!engine.expand}
+                                                             onClick={this.handleExpandClick}
+                                                             >
                                                                <ExpandMore />
                                                              </IconButton>
                                                              <IconButton data-id={engine.id} onClick={this.handleRemoveEngine}>
@@ -980,7 +992,7 @@ class UploadFile extends React.Component {
                                                           }
                                                           className={classes.cardHeaderEngines}
                                                         />
-                                                        <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                                        <Collapse in={engine.expand} timeout="auto" unmountOnExit>
                                                         <CardContent className={classes.cardContentEngines}>
                                                           <Typography component="p" color="textSecondary">
                                                             {engine.description}
@@ -1025,13 +1037,15 @@ class UploadFile extends React.Component {
                                                                 return (
                                                                   <Fragment key={engine.id} >
                                                                     {
-                                                                      item.type === "Picklist" ? (
-                                                                          <Select
-                                                                            name={`${item.name}`}
-                                                                            value={engine.fields[0] && engine.fields[0].defaultValue}
-                                                                            displayEmpty
-                                                                            onChange={event => this.handleChangeFieldsEngine(event, engine.id)}
-                                                                          >
+                                                                      ["MultiPicklist", "Picklist"].includes(item.type) ? (
+                                                                           <TextField
+                                                                           id={engine.id}
+                                                                           name={`${item.name}`}
+                                                                           select
+                                                                           label={item.label || item.name}
+                                                                           value={item.defaultValue}
+                                                                           onChange={this.handleChangeFieldsEngine}
+                                                                         >
                                                                             {
                                                                               item.options.map(item => {
                                                                                 return (
@@ -1039,7 +1053,7 @@ class UploadFile extends React.Component {
                                                                                 )
                                                                               })
                                                                             } 
-                                                                          </Select>
+                                                                         </TextField>
                                                                       ) : (
                                                                         
                                                                           <TextField
@@ -1047,7 +1061,7 @@ class UploadFile extends React.Component {
                                                                           name={`${item.name}`}
                                                                           label={item.label || item.name} 
                                                                           defaultValue={item.defaultValue}
-                                                                          onChange={event => this.handleChangeFieldsEngine(event, engine.id)}
+                                                                          onChange={this.handleChangeFieldsEngine}
                                                                           />
                                                                         
                                                                       )

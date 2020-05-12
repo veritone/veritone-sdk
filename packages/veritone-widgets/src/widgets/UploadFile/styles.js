@@ -410,7 +410,8 @@ export default {
   },
   formfieldsEngine: {
     "& > *": {
-      margin: '8px'
+      margin: '8px',
+      minWidth: '120px'
     }
   },
   //content templates
