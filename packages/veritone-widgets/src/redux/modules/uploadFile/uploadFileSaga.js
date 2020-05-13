@@ -512,20 +512,20 @@ function* watchFetchCreateTdo() {
     })
     const dataSelectedFolder = yield select(selectedFolder, id);
     const date = new Date().toISOString();
-    yield yield all( dataUploadResult.map(item => {
+    yield yield all( dataUploadResult.map((item, key) => {
       const dataDetail = {
         'veritone-program': {
-          programImage: '',
-          data: '',
           programId: '-1',
+          programImage: get(item, 'programImage', ''),
+          programLiveImage: get(item, 'programLiveImage', ''),
           programName: ''
         },
         'veritone-permissions': {
-          acls: [],
+          acls: [{groupId: "57941654-0f5f-4234-ba31-a232b3df75f7", permission: "owner"}],
           isPublic: false
         },
         tags: dataTagsCustomize,
-        date,
+        date: item.dateTime ? item.dateTime : date,
         'veritone-file': {
           fileName: item.fileName,
           size: item.size,
@@ -564,23 +564,23 @@ function* watchFetchCreateTdo() {
       // //   yield put(actions.fetchCreateTdoFailure(id))
       // // }
       // yield put(actions.fetchCreateTdoSuccess(id, tdoId, jobConfig))
-      return call(callCreateTdo, { id, query, variables, jobConfig })
+      return call(callCreateTdo, { id, query, variables, jobConfig, key })
     })
     )
   })
 }
 
-function* callCreateTdo({ id, query, variables, jobConfig }) {
+function* callCreateTdo({ id, query, variables, jobConfig, key }) {
   const { error, response } = yield call(handleRequest, { query, variables })
       const { id: tdoId } = get(response, 'data.createTDO', null);
       if (error) {
         yield put(actions.fetchCreateTdoFailure(id))
       }
-      yield put(actions.fetchCreateTdoSuccess(id, tdoId, jobConfig))
+      yield put(actions.fetchCreateTdoSuccess(id, tdoId, jobConfig, key))
 }
 function* watchFetchCreateJob() {
   yield takeEvery(actions.FETCH_CREATE_TDO_SUCCESS, function* (action) {
-    const { id, tdoId, jobConfig } = action.payload;
+    const { id, tdoId, jobConfig, key } = action.payload;
     const query = `mutation createJob($input: CreateJob){
       createJob(input: $input) {
         id
@@ -592,63 +592,61 @@ function* watchFetchCreateJob() {
     const dataEnginesSelecteds = yield select(enginesSelected, id);
     const dataLibraries = yield select(libraries, id);
     const startTimeOverride = Math.floor(new Date().getTime() / 1000);
-    yield yield all( dataUploadResult.map(item => {
-      const tasks = [
-        {
-          engineId: "9e611ad7-2d3b-48f6-a51b-0a1ba40feab4",
-          payload: {
-            tdoId: tdoId,
-            url: item.getUrl,
-            startTimeOverride
-          }
-        }
-      ];
-      dataEnginesSelecteds.forEach(element => {
-        element.engineIds.forEach(engine => {
-          let task = { engineId: null, payload: {}};
-          task.engineId = engine.id;
-
-          task.payload = engine.fields.reduce((res, { name, defaultValue }) => ({
-            ...res,
-            [name]: defaultValue
-          }), {})
-          if(engine.libraryRequired && engine.librariesSelected){
-            engine.librariesSelected.forEach(item => {
-              tasks.push({
-                ...task,
-                payload: {
-                  ...task.payload,
-                  libraryId: Object.values(dataLibraries).find(element => element.name === item).id
-                }
-              })
-            })
-          }else {
-            tasks.push(task)
-          }
-        })
-      })
-      const input = {
-        targetId: tdoId,
-        tasks,
-        jobConfig: {
-          createTDOInput: jobConfig
+    
+    const tasks = [
+      {
+        engineId: "9e611ad7-2d3b-48f6-a51b-0a1ba40feab4",
+        payload: {
+          tdoId: tdoId,
+          url: dataUploadResult[key].getUrl,
+          startTimeOverride
         }
       }
-      const variables = {
-        input
-      };
-      return call(callCreateJob, { id, query, variables })
+    ]; 
+    dataEnginesSelecteds.forEach(element => {
+      element.engineIds.forEach(engine => {
+        let task = { engineId: null, payload: {}};
+        task.engineId = engine.id;
+
+        task.payload = engine.fields.reduce((res, { name, defaultValue }) => ({
+          ...res,
+          [name]: defaultValue
+        }), {})
+        if(engine.libraryRequired && engine.librariesSelected){
+          engine.librariesSelected.forEach(item => {
+            tasks.push({
+              ...task,
+              payload: {
+                ...task.payload,
+                libraryId: Object.values(dataLibraries).find(element => element.name === item).id
+              }
+            })
+          })
+        }else {
+          tasks.push(task)
+        }
+      })
     })
-    )
+    const input = {
+      targetId: tdoId,
+      tasks,
+      jobConfig: {
+        createTDOInput: jobConfig
+      }
+    }
+    const variables = {
+      input
+    };
+    yield call(callCreateJob, { id, query, variables, key })
   })
 }
-function* callCreateJob({ id, query, variables }){
+function* callCreateJob({ id, query, variables, key }){
   const { error, response } = yield call(handleRequest, { query, variables })
   const { records } = get(response, 'data.createJob.tasks', []);
   if (error) {
     yield put(actions.fetchCreateJobFailure(id))
   }else {
-    yield put(actions.fetchCreateJobSuccess(id, records))
+    yield put(actions.fetchCreateJobSuccess(id, records, key))
   }
 }
 export default function* root() {

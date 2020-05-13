@@ -14,7 +14,15 @@ const defaultPickerState = {
   warning: false,
   uploadResult: [],
   checkedFile: [],
-  currentEngineCategory: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+  currentEngineCategory: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
+  uploadResultEdit: {
+    getUrlProgramImage: '',
+    programLiveImage: '',
+    getUrlProgramLiveImage: '',
+    uploadResultId: [],
+    fileName: '',
+    dateTime: ''
+  }
 };
 
 const defaultState = {
@@ -54,7 +62,7 @@ export default createReducer(defaultState, {
   [actions.PICK_START](
     state,
     {
-      meta: { id }
+      meta: { id, type }
     }
   ) {
     return {
@@ -62,7 +70,8 @@ export default createReducer(defaultState, {
         ...defaultPickerState,
         ...state[id],
         open: true,
-        state: 'selecting'
+        state: 'selecting',
+        type
       }
     };
   },
@@ -210,8 +219,43 @@ export default createReducer(defaultState, {
         .map(result => result.file)
       : [];
     // Combine existing uploadResult if any
-    const prevUploadResult = (get(state, [id, 'uploadResult']) || [])
-      .filter(result => !result.error);
+    let prevUploadResult = (get(state, [id, 'uploadResult']) || [])
+    .filter(result => !result.error);
+    const type = get(state[id], 'type', '');
+    const checkedFile = get(state[id], 'checkedFile', []);
+    let uploadResultEdit = get(state[id], 'uploadResultEdit', {});
+    if(type === 'programImage') {
+      //prevUploadResult = prevUploadResult.map(item => ({...item,  programImage: payload[0].unsignedUrl, getUrlProgramImage: payload[0].getUrl}))
+      uploadResultEdit = {
+        ...uploadResultEdit,
+        programImage: payload[0].unsignedUrl,
+        getUrlProgramImage: payload[0].getUrl,
+        uploadResultId: checkedFile
+      }
+    }
+    if(type === 'programLiveImage') {
+      //prevUploadResult = prevUploadResult.map(item => ({...item,  programImage: payload[0].unsignedUrl, getUrlProgramImage: payload[0].getUrl}))
+      uploadResultEdit = {
+        ...uploadResultEdit,
+        programLiveImage: payload[0].unsignedUrl,
+        getUrlProgramLiveImage: payload[0].getUrl,
+        uploadResultId: checkedFile
+      }
+    }
+    // if(checkedFile.length === 1 && type === 'programImage') {
+    //   prevUploadResult[checkedFile[0]] = {
+    //     ...prevUploadResult[checkedFile[0]],
+    //     programImage: payload[0].unsignedUrl,
+    //     getUrlProgramImage: payload[0].getUrl
+    //   }
+    // }
+    // if(checkedFile.length === 1 && type === 'programLiveImage') {
+    //   prevUploadResult[checkedFile[0]] = {
+    //     ...prevUploadResult[checkedFile[0]],
+    //     programLiveImage: payload[0].unsignedUrl,
+    //     getUrlProgramLiveImage: payload[0].getUrl
+    //   }
+    // }
     return {
       ...state,
       [id]: {
@@ -220,9 +264,10 @@ export default createReducer(defaultState, {
         error: error ? errorMessage : null,
         warning: warning || null,
         state: 'complete',
-        uploadResult: prevUploadResult.concat(payload),
+        uploadResult: type === 'uploadFile' ? prevUploadResult.concat(payload) : prevUploadResult,
         failedFiles,
-        isShowListFile: true
+        isShowListFile: true,
+        uploadResultEdit
       }
     };
   },
@@ -280,7 +325,14 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        isShowEditFileUpload: false
+        isShowEditFileUpload: false,
+        uploadResultEdit: {
+          programImage: '',
+          getUrlProgramImage: '',
+          programLiveImage: '',
+          getUrlProgramLiveImage: '',
+          uploadResultId: []
+        }
       }
     }
   },
@@ -550,11 +602,14 @@ export default createReducer(defaultState, {
     const engineCategoriesSelected = !isEmpty(engineByCategories) && engineByCategories[engineCategoryId].filter(item => item.libraryRequired === isLibrarySelected);
     console.log('engineCategoriesSelected', engineCategoriesSelected)
     let engineToSelect = engineCategoriesSelected.length && engineCategoriesSelected[0];
+    engineToSelect = {
+      ...engineToSelect,
+      expand: true
+    }
     if(isLibrarySelected){
       engineToSelect = {
         ...engineToSelect,
-        librariesSelected: !isEmpty(librariesSelected) && Array.isArray(librariesSelected[engineCategoryId]) && librariesSelected[engineCategoryId],
-        expand: true
+        librariesSelected: !isEmpty(librariesSelected) && Array.isArray(librariesSelected[engineCategoryId]) && librariesSelected[engineCategoryId]
       }
     }
     let newEnginesSelected = [];
@@ -684,19 +739,27 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.FETCH_CREATE_JOB_SUCCESS](state, { payload: { id }}) {
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        uploadResult: [],
-        state: 'overview',
-        enginesSelected: [],
-        contentTemplateSelected: [],
-        tagsCustomize: [],
-        selectedFolder: folderSelectedDefault
+  [actions.FETCH_CREATE_JOB_SUCCESS](state, { payload: { id, records, key }}) {
+    const uploadResult = get(state[id], 'uploadResult', []); 
+    if((uploadResult.length -1) === key) {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          uploadResult: [],
+          state: 'overview',
+          enginesSelected: [],
+          contentTemplateSelected: [],
+          tagsCustomize: [],
+          selectedFolder: folderSelectedDefault,
+          checkedFile: []
+        }
       }
     }
+    return {
+      ...state
+    }
+    
   },
   [actions.ON_CHANGE_LIBRARIES](state, { payload: { id, categoryId, value} }) {
     let librariesSelected = get(state[id], 'librariesSelected', {});
@@ -791,6 +854,74 @@ export default createReducer(defaultState, {
         enginesSelected: newEnginesSelected
       }
     }
+  },
+  [actions.ON_CHANGE_FILE_NAME_EDIT](state, { payload: { id, value } }){
+    // const checkedFile = get(state[id], 'checkedFile', []);
+    // const uploadResult = get(state[id], 'uploadResult', []);
+    // const uploadResultEdit = get(state[id], 'uploadResultEdit', {});
+    // const newUploadResult = uploadResult.map((item, key) => {
+    //   if(checkedFile.includes(key)) {
+    //     return {
+    //       ...item,
+    //       fileName: value
+    //     }
+    //   }
+    //   return item;
+    // })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        uploadResultEdit: {
+          ...state[id].uploadResultEdit,
+          fileName: value
+        }
+      }
+    }
+  },
+  [actions.ON_CHANGE_DATE_TIME_EDIT](state, { payload: { id, value } }){
+    // const checkedFile = get(state[id], 'checkedFile', []);
+    // const uploadResult = get(state[id], 'uploadResult', []);
+    // const newUploadResult = uploadResult.map((item, key) => {
+    //   if(checkedFile.includes(key)) {
+    //     return {
+    //       ...item,
+    //       dateTime: new Date(value).toISOString()
+    //     }
+    //   }
+    //   return item;
+    // })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        uploadResultEdit: {
+          ...state[id].uploadResultEdit,
+          dateTime: value
+        }
+      }
+    }
+  },
+  [actions.SAVE_EDIT_FILE_UPLOAD](state, { payload: { id } }) {
+    const uploadResultEdit = get(state[id], 'uploadResultEdit', []);
+    const uploadResult = get(state[id], 'uploadResult', []);
+    const newUploadResult = uploadResult.map((item, key) => {
+      if(uploadResultEdit.uploadResultId.includes(key)) {
+        return {
+          ...item,
+          ...uploadResultEdit
+        }
+      }
+      return item;
+    })
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        uploadResult: newUploadResult,
+        isShowEditFileUpload: false
+      }
+    }
   }
 });
 
@@ -849,3 +980,4 @@ export const tagsCustomize = (state, id) => get(local(state), [id, 'tagsCustomiz
 export const loadingUpload = (state, id) => get(local(state), [id, 'loadingUpload'], false);
 export const librariesSelected = (state, id) => get(local(state), [id, 'librariesSelected'], {});
 export const libraries = (state, id) => get(local(state), [id, 'libraries'], {});
+export const uploadResultEdit = (state, id) => get(local(state), [id, 'uploadResultEdit'], {});

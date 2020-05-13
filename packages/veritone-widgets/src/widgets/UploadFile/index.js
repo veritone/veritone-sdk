@@ -128,7 +128,8 @@ const MenuProps = {
     selectedFolder: filePickerModule.selectedFolder(state, id),
     tagsCustomize: filePickerModule.tagsCustomize(state, id),
     loadingUpload: filePickerModule.loadingUpload(state, id),
-    librariesSelected: filePickerModule.librariesSelected(state, id)
+    librariesSelected: filePickerModule.librariesSelected(state, id),
+    uploadResultEdit: filePickerModule.uploadResultEdit(state, id)
   }),
   {
     pick: uploadFileAction.pick,
@@ -163,8 +164,10 @@ const MenuProps = {
     onChangeFormEngineSelected: uploadFileAction.onChangeFormEngineSelected,
     onChangeLibrariesEngineSelected: uploadFileAction.onChangeLibrariesEngineSelected,
     onCloseModalUploadFile: uploadFileAction.onCloseModalUploadFile,
-    onChangeExpand: uploadFileAction.onChangeExpand
-
+    onChangeExpand: uploadFileAction.onChangeExpand,
+    onChangeFileNameEdit: uploadFileAction.onChangeFileNameEdit,
+    onChangeDateTimeEdit: uploadFileAction.onChangeDateTimeEdit,
+    saveEditFileUpload: uploadFileAction.saveEditFileUpload
   },
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -305,7 +308,10 @@ class UploadFile extends React.Component {
     loadingUpload: bool,
     onChangeLibraries: func,
     onChangeFormEngineSelected: func,
-    onCloseModalUploadFile: func
+    onCloseModalUploadFile: func,
+    onChangeFileNameEdit: func,
+    onChangeDateTimeEdit: func,
+    saveEditFileUpload: func
   };
 
   static defaultProps = {
@@ -321,6 +327,8 @@ class UploadFile extends React.Component {
     this.onChangeTemplateName = debounce(this.onChangeTemplateName, 500);
     this.onChangeSearchEngine = debounce(this.onChangeSearchEngine, 500);
     this.onChangeContentTemplate = debounce(this.onChangeContentTemplate, 500);
+    this.onChangeFormEngine = debounce(this.onChangeFormEngine, 500);
+
   }
   state = {
     openUpload: false,
@@ -344,8 +352,9 @@ class UploadFile extends React.Component {
     // fetchContentTemplates(id);
   }
 
-  handlePick = () => {
-    this.props.pick(this.props.id);
+  handlePick = (event) => {
+    const type = event.currentTarget.getAttribute('data-type');
+    this.props.pick(this.props.id, type);
     this.setState({ currentScreen: 'selectFile' })
   };
 
@@ -449,7 +458,7 @@ class UploadFile extends React.Component {
 
     if (activeStep === 3) {
       fetchCreateTdo(id);
-      this.setState({ activeStep: 0 })
+      this.setState({ activeStep: 0, openUpload: false })
     } else {
       contentTemplateSelected.forEach(item => {
         if (!item.validate.length) {
@@ -487,7 +496,7 @@ class UploadFile extends React.Component {
           <div className={classes.iconUploadBody}>
             <CloudUpload />
           </div>
-          <div className={classes.titleUpload} onClick={this.handlePick} >
+          <div className={classes.titleUpload} data-type={'uploadFile'} onClick={this.handlePick} >
             Upload Media
           </div>
           <div className={classes.titleSelect}>
@@ -516,13 +525,27 @@ class UploadFile extends React.Component {
   }
   handleEditFile = () => {
     const { id, showEditFileUpload, checkedFile, uploadResult } = this.props;
-    const uploadResultSelected = uploadResult.filter((item, key) => checkedFile.includes(key));
-    this.setState({ uploadResultSelected })
+    // const uploadResultSelected = uploadResult.filter((item, key) => checkedFile.includes(key));
+    // this.setState({ uploadResultSelected })
     showEditFileUpload(id);
   }
   handleCloseEditFileUpload = () => {
     const { id, hideEditFileUpload } = this.props;
     hideEditFileUpload(id);
+  }
+  handleSaveEditFileUpload = () => {
+    const { id, saveEditFileUpload } = this.props;
+    saveEditFileUpload(id);
+  }
+  onChangeDateTime = (event) => {
+    const { id, onChangeDateTimeEdit } = this.props;
+    const { value } = event.target;
+    onChangeDateTimeEdit(id, value);
+  }
+  onChangeFileName = (event) => {
+    const { id, onChangeFileNameEdit } = this.props;
+    const { value } = event.target;
+    onChangeFileNameEdit(id, value);
   }
   handleShowAdvancedCognitive = () => {
     const { showAdvancedCognitive } = this.state;
@@ -674,6 +697,11 @@ class UploadFile extends React.Component {
 
   handleChangeFieldsEngine = (event)=> {
     const { id: engineId, value, name } = event.target;
+    // const { id , onChangeFormEngineSelected } = this.props;
+    // onChangeFormEngineSelected(id, engineId, name, value)
+    this.onChangeFormEngine(engineId, name, value);
+  }
+  onChangeFormEngine = (engineId, name, value) => {
     const { id , onChangeFormEngineSelected } = this.props;
     onChangeFormEngineSelected(id, engineId, name, value)
   }
@@ -694,7 +722,7 @@ class UploadFile extends React.Component {
       complete: this.listFile
     }[this.props.pickerState]();
     const steps = this.getSteps();
-    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload, librariesSelected } = this.props;
+    const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload, librariesSelected, uploadResultEdit } = this.props;
     const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName, expanded } = this.state;
     return (
       <Fragment>
@@ -728,7 +756,7 @@ class UploadFile extends React.Component {
                         {
                           isShowListFile && (
                             <ListItemSecondaryAction>
-                              <IconButton onClick={this.handlePick}>
+                              <IconButton data-type={'uploadFile'} onClick={this.handlePick}>
                                 <Add />
                               </IconButton>
                               <IconButton onClick={this.handleEditFile} disabled={!checkedFile.length}>
@@ -1043,7 +1071,7 @@ class UploadFile extends React.Component {
                                                                            name={`${item.name}`}
                                                                            select
                                                                            label={item.label || item.name}
-                                                                           value={item.defaultValue}
+                                                                           defaultValue={item.defaultValue}
                                                                            onChange={this.handleChangeFieldsEngine}
                                                                          >
                                                                             {
@@ -1253,7 +1281,12 @@ class UploadFile extends React.Component {
           open={isShowEditFileUpload}
           title={'Edit Media'}
           handleClose={this.handleCloseEditFileUpload}
-          data={uploadResultSelected}
+          data={uploadResult.filter((item, key) => checkedFile.includes(key))}
+          onChangeDateTime={this.onChangeDateTime}
+          handlePick={this.handlePick}
+          onChangeFileName={this.onChangeFileName}
+          uploadResultEdit={uploadResultEdit}
+          handleSave={this.handleSaveEditFileUpload}
         />
        {
          isOpenFolder && (

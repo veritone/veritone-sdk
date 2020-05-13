@@ -389,6 +389,8 @@ export default {
       backgroundColor: 'white',
       opacity: '.8',
       transition: 'all 0.5s',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover'
   },
 
   iconUpload: {
@@ -413,6 +415,12 @@ export default {
       margin: '8px',
       minWidth: '120px'
     }
+  },
+  titleEditMultipleFile: {
+    padding: '10px 15px',
+    textAlign: 'center',
+    color: '#e4bc0a',
+    backgroundColor: '#fcf8e3'
   },
   //content templates
   cardContentTemplate: {

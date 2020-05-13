@@ -46,7 +46,6 @@ function ListFileUpload({ data, checked, handleToggle, indeterminate, checkedAll
       </ListItem>
       {data.map((item, key) => {
         const labelId = `checkbox-list-label-${item}`;
-
         return (
           <ListItem
             key={item}

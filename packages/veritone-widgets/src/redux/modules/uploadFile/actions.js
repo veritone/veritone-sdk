@@ -54,6 +54,9 @@ export const ON_CHANGE_FORM_ENGINE_SELECTED = `${namespace}_ON_CHANGE_FORM_ENGIN
 export const ON_CHANGE_LIBRARIES_ENGINE_SELECTED = `${namespace}_ON_CHANGE_LIBRARIES_ENGINE_SELECTED`;
 export const ON_CLOSE_MODAL_UPLOAD_FILE = `${namespace}_ON_CLOSE_MODAL_UPLOAD_FILE`;
 export const ON_CHANGE_EXPAND = `${namespace}_ON_CHANGE_EXPAND`;
+export const ON_CHANGE_FILE_NAME_EDIT = `${namespace}_ON_CHANGE_FILE_NAME_EDIT`;
+export const ON_CHANGE_DATE_TIME_EDIT = `${namespace}_ON_CHANGE_DATE_TIME_EDIT`;
+export const SAVE_EDIT_FILE_UPLOAD = `${namespace}_SAVE_EDIT_FILE_UPLOAD`;
 export const CATEGORY_IDS_TO_EXCLUDE = [
     '4fef6040-3fb6-4757-9aae-4044e8b46bc9', // Search
     '4be1a1b2-653d-4eaa-ba18-747a265305d8', // Ingestion
@@ -65,9 +68,9 @@ export const CATEGORY_IDS_TO_EXCLUDE = [
     '0b10da6b-3485-496c-a2cb-aabf59a6352d', // Media (Push)
     'f951fbf9-aa69-47a2-87c8-12dfb51a1f18' // Cognition Utility
   ];
-export const pick = id => ({
+export const pick = (id, type) => ({
     type: PICK_START,
-    meta: { id }
+    meta: { id, type }
 });
 
 export const endPick = (id, type) => ({
@@ -275,18 +278,18 @@ export const fetchCreateTdo = (id) => ({
     type: FETCH_CREATE_TDO_REQUEST,
     payload: { id }
 })
-export const fetchCreateTdoSuccess = (id, tdoId, jobConfig) => ({
+export const fetchCreateTdoSuccess = (id, tdoId, jobConfig, key) => ({
     type: FETCH_CREATE_TDO_SUCCESS,
-    payload: { id, tdoId, jobConfig }
+    payload: { id, tdoId, jobConfig, key }
 })
 export const fetchCreateTdoFailure = (id) => ({
     type: FETCH_CREATE_TDO_FAILURE,
     payload: { id }
 })
 
-export const fetchCreateJobSuccess = (id) => ({
+export const fetchCreateJobSuccess = (id, records, key) => ({
     type: FETCH_CREATE_JOB_SUCCESS,
-    payload: { id }
+    payload: { id, records, key }
 })
 export const fetchCreateJobFailure = (id) => ({
     type: FETCH_CREATE_TDO_FAILURE,
@@ -311,4 +314,18 @@ export const onCloseModalUploadFile = (id) => ({
 export const onChangeExpand = (id, categoryId, engineId, expand) => ({
     type: ON_CHANGE_EXPAND,
     payload: { id, categoryId, engineId, expand }
+})
+export const onChangeFileNameEdit = (id, value) => ({
+    type: ON_CHANGE_FILE_NAME_EDIT,
+    payload: { id, value }
+})
+
+export const onChangeDateTimeEdit = (id, value) => ({
+    type: ON_CHANGE_DATE_TIME_EDIT,
+    payload: { id, value }
+})
+
+export const saveEditFileUpload = (id) => ({
+    type: SAVE_EDIT_FILE_UPLOAD,
+    payload: { id }
 })

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -31,18 +31,46 @@ const DialogTitle = ({ children, onClose, ...other }) => {
     );
 };
 
-function EditFileUpload({ open, title, handleClose, data }) {
+function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, handlePick, onChangeFileName, uploadResultEdit, handleSave }) {
     const [value, setValue] = React.useState('general');
     const classes = useStyles();
-    const handleChange = (event, newValue) => {
+    function handleChange(event, newValue) {
         setValue(newValue);
     };
+    function getDateTimeNow() {
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let dt = date.getDate();
+
+        let house = date.getHours();
+        let min = date.getMinutes();
+
+        if (dt < 10) {
+            dt = "0" + dt;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (house < 10) {
+            house = "0" + house;
+        }
+        if (min < 10) {
+            min = "0" + min;
+        }
+        return year + "-" + month + "-" + dt + "T" + house + ":" + min;
+    }
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="md">
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
                 {title}
             </DialogTitle>
             <DialogContent dividers className={classes.dialogEditFileContent}>
+                {
+                    data.length > 1 && (
+                        <p className={classes.titleEditMultipleFile}>All values will be overwritten when bulk editing multiple files.</p>
+                    )
+                }
                 <Paper className={classes.tabsContent}>
                     <Tabs
                         value={value}
@@ -65,38 +93,48 @@ function EditFileUpload({ open, title, handleClose, data }) {
                                 <Grid item xs={4}>
                                     <p className={classes.generalText}>Avatar Image (Optional)</p>
                                     <div className={classes.uploadImage} >
-                                        <div className={classes.uploadImageContent}>
+                                        <div
+                                            className={classes.uploadImageContent}
+                                            data-type={'programImage'}
+                                            onClick={handlePick}
+                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramImage || data[0].getUrlProgramImage && data[0].getUrlProgramImage : uploadResultEdit.getUrlProgramImage ? uploadResultEdit.getUrlProgramImage : ''})` }}
+                                        >
                                             <AddPhotoAlternate className={classes.iconUpload} />
-                                            <p class="upload-image-button-text">Upload Image</p>
+                                            <p>Upload Image</p>
                                         </div>
                                     </div>
                                 </Grid>
                                 <Grid item xs={8}>
                                     <p className={classes.generalText}>Cover Image (Optional)</p>
                                     <div className={classes.uploadImage} >
-                                        <div className={classes.uploadImageContent}>
+                                        <div
+                                            className={classes.uploadImageContent}
+                                            data-type={'programLiveImage'}
+                                            onClick={handlePick}
+                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramLiveImage || data[0].getUrlProgramLiveImage && data[0].getUrlProgramLiveImage : uploadResultEdit.getUrlProgramLiveImage ? uploadResultEdit.getUrlProgramLiveImage : ''})` }}
+                                        >
                                             <AddPhotoAlternate className={classes.iconUpload} />
-                                            <p class="upload-image-button-text">Upload Image</p>
+                                            <p>Upload Image</p>
                                         </div>
                                     </div>
                                 </Grid>
 
                             </Grid>
                             <div className={classes.fileName}>
-                                <TextField required label="File Name (Required)" defaultValue={data.length === 1 ? data[0].fileName : ''} />
+                                <TextField required label="File Name (Required)" defaultValue={data.length === 1 ? data[0].fileName : ''} onChange={onChangeFileName} />
                             </div>
                             <div>
                                 <p className={classes.generalInfo}>Media Display Time</p>
                                 <TextField
-                                    id="date"
-                                    label="Date (Required)"
-                                    type="date"
-                                    defaultValue="2017-05-24"
+                                    label="Date Time (Required)"
+                                    type="datetime-local"
+                                    defaultValue={getDateTimeNow()}
+                                    className={classes.textField}
+                                    onChange={onChangeDateTime}
                                     InputLabelProps={{
-                                        shrink: true,
+                                        shrink: true
                                     }}
                                 />
-                                <TextField required label="Tags (Optional)" defaultValue="uploadfile.txt" />
                             </div>
                         </div>
                     )
@@ -117,7 +155,7 @@ function EditFileUpload({ open, title, handleClose, data }) {
                 <Button autoFocus onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button autoFocus onClick={handleClose} color="primary">
+                <Button autoFocus onClick={handleSave} color="primary">
                     Save
                 </Button>
             </DialogActions>
@@ -126,11 +164,14 @@ function EditFileUpload({ open, title, handleClose, data }) {
 }
 
 EditFileUpload.propTypes = {
-    open: bool, 
-    title: string, 
+    open: bool,
+    title: string,
     handleClose: func,
     data: arrayOf(shape({
         fileName: string
-    }))
+    })),
+    onChangeDateTime: func,
+    handlePick: func,
+    onChangeFileName: func
 }
 export default EditFileUpload;
