@@ -264,14 +264,14 @@ export const selectFolder = (id, selectedFolder) => ({
     payload: { id, selectedFolder }
 })
 
-export const addTagsCustomize = (id, value) => ({
+export const addTagsCustomize = (id, value, type) => ({
     type: ADD_TAGS_CUSTOMIZE,
-    payload: { id, value }
+    payload: { id, value, type }
 })
 
-export const removeTagsCustomize = (id, value) => ({
+export const removeTagsCustomize = (id, value, type) => ({
     type: REMOVE_TAGS_CUSTOMIZE,
-    payload: { id, value }
+    payload: { id, value, type }
 })
 
 export const fetchCreateTdo = (id) => ({

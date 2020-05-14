@@ -4,7 +4,7 @@ import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 export const namespace = 'uploadFile';
 import * as actions from './actions';
-
+import { getDateTimeNow } from '../../../shared/util';
 const defaultPickerState = {
   open: false,
   state: 'selecting', // selecting | uploading | complete
@@ -21,7 +21,8 @@ const defaultPickerState = {
     getUrlProgramLiveImage: '',
     uploadResultId: [],
     fileName: '',
-    dateTime: ''
+    dateTime: '',
+    tagsEdit: []
   }
 };
 
@@ -220,11 +221,11 @@ export default createReducer(defaultState, {
       : [];
     // Combine existing uploadResult if any
     let prevUploadResult = (get(state, [id, 'uploadResult']) || [])
-    .filter(result => !result.error);
+      .filter(result => !result.error);
     const type = get(state[id], 'type', '');
     const checkedFile = get(state[id], 'checkedFile', []);
     let uploadResultEdit = get(state[id], 'uploadResultEdit', {});
-    if(type === 'programImage') {
+    if (type === 'programImage') {
       //prevUploadResult = prevUploadResult.map(item => ({...item,  programImage: payload[0].unsignedUrl, getUrlProgramImage: payload[0].getUrl}))
       uploadResultEdit = {
         ...uploadResultEdit,
@@ -233,7 +234,7 @@ export default createReducer(defaultState, {
         uploadResultId: checkedFile
       }
     }
-    if(type === 'programLiveImage') {
+    if (type === 'programLiveImage') {
       //prevUploadResult = prevUploadResult.map(item => ({...item,  programImage: payload[0].unsignedUrl, getUrlProgramImage: payload[0].getUrl}))
       uploadResultEdit = {
         ...uploadResultEdit,
@@ -312,11 +313,19 @@ export default createReducer(defaultState, {
     }
   },
   [actions.SHOW_EDIT_FILE_UPLOAD](state, { payload: { id } }) {
+    const uploadResult = get(state[id], 'uploadResult', []);
+    const checkedFile = get(state[id], 'checkedFile', []);
     return {
       ...state,
       [id]: {
         ...state[id],
-        isShowEditFileUpload: true
+        isShowEditFileUpload: true,
+        uploadResultEdit: {
+          ...state[id].uploadResultEdit,
+          fileName: checkedFile.length === 1 ? uploadResult[0].fileName : '',
+          dateTime: getDateTimeNow(),
+          uploadResultId: checkedFile
+        }
       }
     }
   },
@@ -331,12 +340,13 @@ export default createReducer(defaultState, {
           getUrlProgramImage: '',
           programLiveImage: '',
           getUrlProgramLiveImage: '',
-          uploadResultId: []
+          uploadResultId: [],
+          tagsEdit: []
         }
       }
     }
   },
-  [actions.FETCH_LIBRARIES_REQUEST](state, { meta: { id }} ) {
+  [actions.FETCH_LIBRARIES_REQUEST](state, { meta: { id } }) {
     return {
       ...state,
       [id]: {
@@ -606,7 +616,7 @@ export default createReducer(defaultState, {
       ...engineToSelect,
       expand: true
     }
-    if(isLibrarySelected){
+    if (isLibrarySelected) {
       engineToSelect = {
         ...engineToSelect,
         librariesSelected: !isEmpty(librariesSelected) && Array.isArray(librariesSelected[engineCategoryId]) && librariesSelected[engineCategoryId]
@@ -715,33 +725,64 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ADD_TAGS_CUSTOMIZE](state, { payload: { id, value } }) {
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        tagsCustomize: state[id].tagsCustomize ? [
-          ...state[id].tagsCustomize,
-          {
-            value
+  [actions.ADD_TAGS_CUSTOMIZE](state, { payload: { id, value, type } }) {
+    if (type === 'editFileUpload') {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          uploadResultEdit: {
+            ...state[id].uploadResultEdit,
+            tagsEdit: state[id].uploadResultEdit.tagsEdit.length ? [
+              ...state[id].uploadResultEdit.tagsEdit,
+              {
+                value
+              }
+            ] : [{ value }]
           }
-        ] : [{value}]
+        }
+      }
+    } else {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          tagsCustomize: state[id].tagsCustomize ? [
+            ...state[id].tagsCustomize,
+            {
+              value
+            }
+          ] : [{ value }]
+        }
       }
     }
   },
-  [actions.REMOVE_TAGS_CUSTOMIZE](state, { payload: { id, value }}) {
-    const tagsCustomize = get(state[id], 'tagsCustomize', []).filter(item => item.value !== value);
-    return {
-      ...state,
-      [id]: {
-        ...state[id],
-        tagsCustomize
+  [actions.REMOVE_TAGS_CUSTOMIZE](state, { payload: { id, value, type } }) {
+    if (type === 'editFileUpload') {
+      let uploadResultEdit = get(state[id], 'uploadResultEdit', []);
+      uploadResultEdit.tagsEdit = uploadResultEdit.tagsEdit.filter(item => item.value !== value);
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          uploadResultEdit
+        }
+      }
+
+    } else {
+      const tagsCustomize = get(state[id], 'tagsCustomize', []).filter(item => item.value !== value);
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          tagsCustomize
+        }
       }
     }
   },
-  [actions.FETCH_CREATE_JOB_SUCCESS](state, { payload: { id, records, key }}) {
-    const uploadResult = get(state[id], 'uploadResult', []); 
-    if((uploadResult.length -1) === key) {
+  [actions.FETCH_CREATE_JOB_SUCCESS](state, { payload: { id, records, key } }) {
+    const uploadResult = get(state[id], 'uploadResult', []);
+    if ((uploadResult.length - 1) === key) {
       return {
         ...state,
         [id]: {
@@ -759,15 +800,15 @@ export default createReducer(defaultState, {
     return {
       ...state
     }
-    
+
   },
-  [actions.ON_CHANGE_LIBRARIES](state, { payload: { id, categoryId, value} }) {
+  [actions.ON_CHANGE_LIBRARIES](state, { payload: { id, categoryId, value } }) {
     let librariesSelected = get(state[id], 'librariesSelected', {});
-    if(!Object.keys(librariesSelected)) {
+    if (!Object.keys(librariesSelected)) {
       librariesSelected = {
         [categoryId]: value
       }
-    }else {
+    } else {
       librariesSelected = {
         ...librariesSelected,
         [categoryId]: value
@@ -784,10 +825,10 @@ export default createReducer(defaultState, {
   [actions.ON_CHANGE_FORM_ENGINE_SELECTED](state, { payload: { id, engineId, name, value } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const newEnginesSelected = [...enginesSelected].map(item => {
-      if(item.engineIds.some(engine => engine.id === engineId)){
+      if (item.engineIds.some(engine => engine.id === engineId)) {
         const index = item.engineIds.findIndex(item => item.id === engineId);
         item.engineIds[index].fields = item.engineIds[index].fields.map(item => {
-          if(item.name === name){
+          if (item.name === name) {
             return {
               ...item,
               defaultValue: value
@@ -810,7 +851,7 @@ export default createReducer(defaultState, {
   [actions.ON_CHANGE_LIBRARIES_ENGINE_SELECTED](state, { payload: { id, engineId, value } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const newEnginesSelected = [...enginesSelected].map(item => {
-      if(item.engineIds.some(engine => engine.id === engineId)){
+      if (item.engineIds.some(engine => engine.id === engineId)) {
         const index = item.engineIds.findIndex(item => item.id === engineId);
         item.engineIds[index].librariesSelected = value;
         return item;
@@ -837,7 +878,7 @@ export default createReducer(defaultState, {
   [actions.ON_CHANGE_EXPAND](state, { payload: { id, categoryId, engineId, expand } }) {
     const enginesSelected = get(state[id], 'enginesSelected', []);
     const newEnginesSelected = enginesSelected.map(item => {
-      if(item.categoryId === categoryId){
+      if (item.categoryId === categoryId) {
         const findIndex = item.engineIds.findIndex(item => item.id === engineId);
         item.engineIds[findIndex] = {
           ...item.engineIds[findIndex],
@@ -855,7 +896,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ON_CHANGE_FILE_NAME_EDIT](state, { payload: { id, value } }){
+  [actions.ON_CHANGE_FILE_NAME_EDIT](state, { payload: { id, value } }) {
     // const checkedFile = get(state[id], 'checkedFile', []);
     // const uploadResult = get(state[id], 'uploadResult', []);
     // const uploadResultEdit = get(state[id], 'uploadResultEdit', {});
@@ -879,7 +920,7 @@ export default createReducer(defaultState, {
       }
     }
   },
-  [actions.ON_CHANGE_DATE_TIME_EDIT](state, { payload: { id, value } }){
+  [actions.ON_CHANGE_DATE_TIME_EDIT](state, { payload: { id, value } }) {
     // const checkedFile = get(state[id], 'checkedFile', []);
     // const uploadResult = get(state[id], 'uploadResult', []);
     // const newUploadResult = uploadResult.map((item, key) => {
@@ -906,10 +947,16 @@ export default createReducer(defaultState, {
     const uploadResultEdit = get(state[id], 'uploadResultEdit', []);
     const uploadResult = get(state[id], 'uploadResult', []);
     const newUploadResult = uploadResult.map((item, key) => {
-      if(uploadResultEdit.uploadResultId.includes(key)) {
+      if (uploadResultEdit.uploadResultId.includes(key)) {
         return {
           ...item,
-          ...uploadResultEdit
+          ...uploadResultEdit,
+          programImage: uploadResultEdit.programImage || item.programImage,
+          getUrlProgramImage: uploadResultEdit.getUrlProgramImage || item.getUrlProgramImage,
+          programLiveImage: uploadResultEdit.programLiveImage || item.programLiveImage,
+          getUrlProgramLiveImage: uploadResultEdit.getUrlProgramLiveImage || item.getUrlProgramLiveImage,
+          uploadResultId: uploadResultEdit.uploadResultId.length && uploadResultEdit.uploadResultId || item.uploadResultId,
+          tagsEdit: uploadResultEdit.tagsEdit.length && uploadResultEdit.tagsEdit || item.tagsEdit
         }
       }
       return item;
@@ -919,6 +966,14 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         uploadResult: newUploadResult,
+        uploadResultEdit: {
+          programImage: '',
+          getUrlProgramImage: '',
+          programLiveImage: '',
+          getUrlProgramLiveImage: '',
+          uploadResultId: [],
+          tagsEdit: []
+        },
         isShowEditFileUpload: false
       }
     }

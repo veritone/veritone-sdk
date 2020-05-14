@@ -28,12 +28,12 @@ const reducer = createReducer(defaultState, {
         ...state
       };
     }
-
     return {
       ...state,
       snackbar: {
         open: true,
-        message: action.payload.message
+        message: action.payload.message,
+        anchorOrigin: action.payload.anchorOrigin
       }
     };
   },
@@ -69,11 +69,12 @@ function local(state) {
   return state[namespace];
 }
 
-export function showNotification(message) {
+export function showNotification(message, anchorOrigin = { vertical: "bottom", horizontal: "center" }) {
   return {
     type: SHOW_SNACKBAR,
     payload: {
-      message
+      message,
+      anchorOrigin
     }
   };
 }

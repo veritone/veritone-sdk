@@ -24,7 +24,8 @@ class Story extends React.Component {
 
   handleShowSnackBarNotification = () => {
     this.props.showNotification(
-      `The current time is: ${new Date().toLocaleTimeString()}`
+      `The current time is: ${new Date().toLocaleTimeString()}`,
+      { vertical: 'bottom', horizontal: 'left' }
     );
   };
 

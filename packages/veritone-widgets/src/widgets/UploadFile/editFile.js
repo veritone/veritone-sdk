@@ -14,7 +14,9 @@ import Paper from '@material-ui/core/Paper';
 import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import Chip from '@material-ui/core/Chip';
 import { string, func, bool, shape, arrayOf } from 'prop-types';
+import { getDateTimeNow } from '../../shared/util';
 import styles from './styles';
 const useStyles = makeStyles(styles);
 const DialogTitle = ({ children, onClose, ...other }) => {
@@ -31,35 +33,13 @@ const DialogTitle = ({ children, onClose, ...other }) => {
     );
 };
 
-function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, handlePick, onChangeFileName, uploadResultEdit, handleSave }) {
+function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, handlePick, onChangeFileName, uploadResultEdit, handleSave, handleAddTagsCustomize,handleOnChangeTagsCustomize, tagsEditFileUpload, handleRemoveTagsCustomize  }) {
     const [value, setValue] = React.useState('general');
     const classes = useStyles();
     function handleChange(event, newValue) {
         setValue(newValue);
     };
-    function getDateTimeNow() {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        let dt = date.getDate();
-
-        let house = date.getHours();
-        let min = date.getMinutes();
-
-        if (dt < 10) {
-            dt = "0" + dt;
-        }
-        if (month < 10) {
-            month = "0" + month;
-        }
-        if (house < 10) {
-            house = "0" + house;
-        }
-        if (min < 10) {
-            min = "0" + min;
-        }
-        return year + "-" + month + "-" + dt + "T" + house + ":" + min;
-    }
+    const tagsEdit = data.length === 1 ? uploadResultEdit.tagsEdit.length && uploadResultEdit.tagsEdit || data[0].tagsEdit : uploadResultEdit.tagsEdit;
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="md">
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
@@ -97,7 +77,7 @@ function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, hand
                                             className={classes.uploadImageContent}
                                             data-type={'programImage'}
                                             onClick={handlePick}
-                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramImage || data[0].getUrlProgramImage && data[0].getUrlProgramImage : uploadResultEdit.getUrlProgramImage ? uploadResultEdit.getUrlProgramImage : ''})` }}
+                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramImage || data[0].getUrlProgramImage && data[0].getUrlProgramImage : uploadResultEdit.getUrlProgramImage})` }}
                                         >
                                             <AddPhotoAlternate className={classes.iconUpload} />
                                             <p>Upload Image</p>
@@ -111,7 +91,7 @@ function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, hand
                                             className={classes.uploadImageContent}
                                             data-type={'programLiveImage'}
                                             onClick={handlePick}
-                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramLiveImage || data[0].getUrlProgramLiveImage && data[0].getUrlProgramLiveImage : uploadResultEdit.getUrlProgramLiveImage ? uploadResultEdit.getUrlProgramLiveImage : ''})` }}
+                                            style={{ backgroundImage: `url(${data.length === 1 ? uploadResultEdit.getUrlProgramLiveImage || data[0].getUrlProgramLiveImage && data[0].getUrlProgramLiveImage : uploadResultEdit.getUrlProgramLiveImage})` }}
                                         >
                                             <AddPhotoAlternate className={classes.iconUpload} />
                                             <p>Upload Image</p>
@@ -121,7 +101,14 @@ function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, hand
 
                             </Grid>
                             <div className={classes.fileName}>
-                                <TextField required label="File Name (Required)" defaultValue={data.length === 1 ? data[0].fileName : ''} onChange={onChangeFileName} />
+                                <TextField
+                                    required
+                                    label="File Name (Required)"
+                                    defaultValue={data.length === 1 ? data[0].fileName : ''}
+                                    onChange={onChangeFileName}
+                                    error={!(uploadResultEdit.fileName)}
+                                    helperText={`${!(uploadResultEdit.fileName) ? 'File Name is required' : ''}`}
+                                />
                             </div>
                             <div>
                                 <p className={classes.generalInfo}>Media Display Time</p>
@@ -131,6 +118,8 @@ function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, hand
                                     defaultValue={getDateTimeNow()}
                                     className={classes.textField}
                                     onChange={onChangeDateTime}
+                                    error={!(uploadResultEdit.dateTime)}
+                                    helperText={`${!(uploadResultEdit.dateTime) ? 'Date Time is required' : ''}`}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -145,17 +134,40 @@ function EditFileUpload({ open, title, handleClose, data, onChangeDateTime, hand
                             <p className={classes.generalInfo}>Tagging Media</p>
                             <span className={classes.generalText}>Tags provide a useful way to group related media together and make it easier for people to find content.</span>
                             <div className={classes.fileName}>
-                                <TextField required label="Tags (Optional)" defaultValue="" placeholder="Type here and press enter" />
+                                <TextField
+                                    id="editFileUpload"
+                                    label="Tags (Optional)"
+                                    placeholder="Type here and press enter"
+                                    onKeyPress={handleAddTagsCustomize}
+                                    onChange={handleOnChangeTagsCustomize}
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                    value={tagsEditFileUpload}
+                                />
+                                <div className={classes.listTagsCustomize}>
+                                    {
+                                        tagsEdit && tagsEdit.map(item => {
+                                            return (
+                                                <Chip label={item.value} key={item.value} data-name={item.value} onDelete={handleRemoveTagsCustomize(item.value, 'editFileUpload')} />
+                                            )
+                                        })
+                                    }
+                                </div>
                             </div>
                         </div>
                     )
                 }
             </DialogContent>
             <DialogActions>
-                <Button autoFocus onClick={handleClose} color="primary">
+                <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button autoFocus onClick={handleSave} color="primary">
+                <Button
+                    onClick={handleSave}
+                    color="primary"
+                    disabled={!(uploadResultEdit.fileName) || !(uploadResultEdit.dateTime)}
+                >
                     Save
                 </Button>
             </DialogActions>

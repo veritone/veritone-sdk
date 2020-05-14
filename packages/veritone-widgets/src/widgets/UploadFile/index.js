@@ -62,6 +62,7 @@ import SaveTemplate from './saveTemplate';
 import FormAddContentTemplate from './formContentTemplate';
 import ListEngineSelected from './listEngineSelected';
 import FolderSelectionDialog from '../FolderSelectionDialog';
+import GlobalSnackBar from '../Notifications/GlobalSnackBar';
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -343,7 +344,8 @@ class UploadFile extends React.Component {
     validate: null,
     isOpenFolder: false,
     tagsCustomizeName: '',
-    expanded: []
+    expanded: [],
+    tagsEditFileUpload: ''
   }
 
   componentDidMount() {
@@ -458,7 +460,7 @@ class UploadFile extends React.Component {
 
     if (activeStep === 3) {
       fetchCreateTdo(id);
-      this.setState({ activeStep: 0, openUpload: false })
+      this.setState({ activeStep: 0, openUpload: false, tagsEditFileUpload: '', tagsCustomizeName: null })
     } else {
       contentTemplateSelected.forEach(item => {
         if (!item.validate.length) {
@@ -648,6 +650,7 @@ class UploadFile extends React.Component {
   }
 
   handleOpenFolder = () => {
+    console.log(231312)
     this.setState(prevState => ({
       isOpenFolder: true
     }));
@@ -663,25 +666,32 @@ class UploadFile extends React.Component {
     selectFolder(id, selectedFolder);
   };
   handleAddTagsCustomize = (event) => {
-    const { value } = event.target;
+    const { id: typeAddTags, value } = event.target;
     const { id, addTagsCustomize, tagsCustomize } = this.props;
     if (event.charCode === 13 && !tagsCustomize.includes(value)) {
-      addTagsCustomize(id, value);
-      this.setState({ tagsCustomizeName: '' })
+      addTagsCustomize(id, value, typeAddTags);
+      if(typeAddTags === 'editFileUpload') {
+        this.setState({ tagsEditFileUpload: '' })
+      }else {
+        this.setState({ tagsCustomizeName: '' })
+      }
     }
   }
   handleOnChangeTagsCustomize = (event) => {
-    const { value } = event.target;
-    this.setState({ tagsCustomizeName: value })
+    const { id, value } = event.target;
+    if(id === 'editFileUpload') {
+      this.setState({ tagsEditFileUpload: value })
+    }else {
+      this.setState({ tagsCustomizeName: value })
+    }
   }
-  handleRemoveTagsCustomize = (name) => () => {
+  handleRemoveTagsCustomize = (name, type) => () => {
     const { id, removeTagsCustomize } = this.props;
-    removeTagsCustomize(id, name);
+    removeTagsCustomize(id, name, type);
   }
   handleChangeLibraries = (event, categoryId) => {
     event.stopPropagation();
     const { value } = event.target;
-    console.log('value', value)
     const { id, onChangeLibraries } = this.props;
     onChangeLibraries(id, categoryId, value);
   }
@@ -709,7 +719,6 @@ class UploadFile extends React.Component {
   handleChangeLibrariesEngineSelected = (event, engineId) => {
     event.stopPropagation();
     const { value } = event.target;
-    console.log('value', value)
     const { id, onChangeLibrariesEngineSelected } = this.props;
     onChangeLibrariesEngineSelected(id, engineId, value);
   }
@@ -723,7 +732,7 @@ class UploadFile extends React.Component {
     }[this.props.pickerState]();
     const steps = this.getSteps();
     const { classes, isShowListFile, uploadResult, checkedFile, isShowEditFileUpload, engineCategories, librariesByCategories, engineByCategories, currentEngineCategory, enginesSelected, isShowModalSaveTemplate, templates, contentTemplates, contentTemplateSelected, selectedFolder, tagsCustomize, loadingUpload, librariesSelected, uploadResultEdit } = this.props;
-    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName, expanded } = this.state;
+    const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName, tagsEditFileUpload } = this.state;
     return (
       <Fragment>
         <Dialog fullScreen open={this.state.openUpload} onClose={this.handleClose}>
@@ -1227,6 +1236,7 @@ class UploadFile extends React.Component {
                       Label and group your ingested files by using keywords or terms to help describe them.
                     </Typography>
                     <TextField
+                      id="uploadFile"
                       label="Tags"
                       placeholder="Type here and press enter"
                       onKeyPress={this.handleAddTagsCustomize}
@@ -1240,7 +1250,7 @@ class UploadFile extends React.Component {
                       {
                         tagsCustomize.map(item => {
                           return (
-                            <Chip label={item.value} key={item.value} data-name={item.value} onDelete={this.handleRemoveTagsCustomize(item.value)} />
+                            <Chip label={item.value} key={item.value} data-name={item.value} onDelete={this.handleRemoveTagsCustomize(item.value, 'uploadFile')} />
                           )
                         })
                       }
@@ -1287,6 +1297,10 @@ class UploadFile extends React.Component {
           onChangeFileName={this.onChangeFileName}
           uploadResultEdit={uploadResultEdit}
           handleSave={this.handleSaveEditFileUpload}
+          handleAddTagsCustomize={this.handleAddTagsCustomize}
+          handleOnChangeTagsCustomize={this.handleOnChangeTagsCustomize}
+          tagsEditFileUpload={tagsEditFileUpload}
+          handleRemoveTagsCustomize={this.handleRemoveTagsCustomize}
         />
        {
          isOpenFolder && (
@@ -1298,7 +1312,7 @@ class UploadFile extends React.Component {
           />
          )
        }
-        
+        <GlobalSnackBar />
 
         {this.props.renderButton &&
           this.props.renderButton({ handlePickFiles: this.handlePick, handleOpenModal: this.handleOpen })}

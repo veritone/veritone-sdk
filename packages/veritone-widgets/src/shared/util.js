@@ -81,3 +81,26 @@ export function* handleRequest({ query, variables }) {
     response
   };
 }
+export const getDateTimeNow = () => {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let dt = date.getDate();
+
+  let house = date.getHours();
+  let min = date.getMinutes();
+
+  if (dt < 10) {
+      dt = "0" + dt;
+  }
+  if (month < 10) {
+      month = "0" + month;
+  }
+  if (house < 10) {
+      house = "0" + house;
+  }
+  if (min < 10) {
+      min = "0" + min;
+  }
+  return year + "-" + month + "-" + dt + "T" + house + ":" + min;
+}

@@ -24,6 +24,9 @@ import {
   selectedFolder,
   libraries
 } from './';
+import {
+  showNotification
+} from '../notifications';
 // import {
 //   ABORT_REQUEST,
 //   UPLOAD_REQUEST,
@@ -524,7 +527,7 @@ function* watchFetchCreateTdo() {
           acls: [{groupId: "57941654-0f5f-4234-ba31-a232b3df75f7", permission: "owner"}],
           isPublic: false
         },
-        tags: dataTagsCustomize,
+        tags: item.tagsEdit && item.tagsEdit.length ? dataTagsCustomize.concat(item.tagsEdit) : dataTagsCustomize,
         date: item.dateTime ? item.dateTime : date,
         'veritone-file': {
           fileName: item.fileName,
@@ -643,10 +646,14 @@ function* watchFetchCreateJob() {
 function* callCreateJob({ id, query, variables, key }){
   const { error, response } = yield call(handleRequest, { query, variables })
   const { records } = get(response, 'data.createJob.tasks', []);
+  const dataUploadResult = yield select(uploadResult, id);
   if (error) {
     yield put(actions.fetchCreateJobFailure(id))
   }else {
     yield put(actions.fetchCreateJobSuccess(id, records, key))
+    if(dataUploadResult.length -1 === key) {
+      yield put(showNotification('Your ingestion job is now active', { vertical: 'bottom', horizontal: 'left' }))
+    }
   }
 }
 export default function* root() {
