@@ -12,7 +12,9 @@ const HIDE_DIALOG = 'vtn/snackbar/HIDE_DIALOG';
 const defaultState = {
   snackbar: {
     open: false,
-    message: ''
+    message: '',
+    anchorOrigin: {vertical: 'bottom', horizontal: 'left'},
+    severity: 'success'
   },
   dialog: {
     open: false,
@@ -33,7 +35,8 @@ const reducer = createReducer(defaultState, {
       snackbar: {
         open: true,
         message: action.payload.message,
-        anchorOrigin: action.payload.anchorOrigin
+        anchorOrigin: action.payload.anchorOrigin,
+        severity: action.payload.severity
       }
     };
   },
@@ -69,12 +72,13 @@ function local(state) {
   return state[namespace];
 }
 
-export function showNotification(message, anchorOrigin = { vertical: "bottom", horizontal: "center" }) {
+export function showNotification(message, anchorOrigin, severity) {
   return {
     type: SHOW_SNACKBAR,
     payload: {
       message,
-      anchorOrigin
+      anchorOrigin,
+      severity
     }
   };
 }

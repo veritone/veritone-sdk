@@ -612,6 +612,11 @@ export default createReducer(defaultState, {
     const engineCategoriesSelected = !isEmpty(engineByCategories) && engineByCategories[engineCategoryId].filter(item => item.libraryRequired === isLibrarySelected);
     console.log('engineCategoriesSelected', engineCategoriesSelected)
     let engineToSelect = engineCategoriesSelected.length && engineCategoriesSelected[0];
+    if(!engineToSelect) {
+      return {
+        ...state
+      }
+    }
     engineToSelect = {
       ...engineToSelect,
       expand: true

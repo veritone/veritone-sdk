@@ -7,7 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
-import { isArray, noop, get, pickBy, identity } from 'lodash';
+import { isArray, noop, get, pickBy, identity, isEmpty } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
@@ -22,7 +22,9 @@ import {
   tagsCustomize,
   contentTemplateSelected,
   selectedFolder,
-  libraries
+  libraries,
+  engineByCategories,
+  librariesSelected
 } from './';
 import {
   showNotification
@@ -652,9 +654,22 @@ function* callCreateJob({ id, query, variables, key }){
   }else {
     yield put(actions.fetchCreateJobSuccess(id, records, key))
     if(dataUploadResult.length -1 === key) {
-      yield put(showNotification('Your ingestion job is now active', { vertical: 'bottom', horizontal: 'left' }))
+      yield put(showNotification('Your ingestion job is now active', { vertical: 'bottom', horizontal: 'left' }, 'success'))
     }
   }
+}
+function* watchClickEngineCategory() {
+  yield takeEvery(actions.ON_CLICK_ENGINE_CATEGORY, function* (action) {
+    const { id, engineCategoryId } = action.payload;
+    const dataEngineByCategories = yield select(engineByCategories, id);
+    const dataLibrariesSelected = yield select(librariesSelected, id);
+    const isLibrarySelected = !!(!isEmpty(dataLibrariesSelected) && Array.isArray(dataLibrariesSelected[engineCategoryId]) && dataLibrariesSelected[engineCategoryId].length);
+    const engineCategoriesSelected = !isEmpty(dataEngineByCategories) && dataEngineByCategories[engineCategoryId].filter(item => item.libraryRequired === isLibrarySelected);
+    let engineToSelect = engineCategoriesSelected.length && engineCategoriesSelected[0];
+    if(!engineToSelect){
+      yield put(showNotification('No available engines in this category', { vertical: 'bottom', horizontal: 'left' }, 'error'))
+    }
+  })
 }
 export default function* root() {
   yield all([
@@ -669,6 +684,7 @@ export default function* root() {
     fork(watchSaveTemplateSuccess),
     fork(watchFetchContentTemplates),
     fork(watchFetchCreateTdo),
-    fork(watchFetchCreateJob)
+    fork(watchFetchCreateJob),
+    fork(watchClickEngineCategory)
   ]);
 }
