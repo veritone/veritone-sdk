@@ -377,6 +377,7 @@ class UploadFile extends React.Component {
           {...this.props}
           onRequestClose={this.cancel}
           onPickFiles={this.onFilesSelected}
+          multiple
         />
       </Dialog>
     );
@@ -650,8 +651,8 @@ class UploadFile extends React.Component {
   }
 
   handleOpenFolder = () => {
-    console.log(231312)
     this.setState(prevState => ({
+      ...prevState,
       isOpenFolder: true
     }));
   };
@@ -735,7 +736,7 @@ class UploadFile extends React.Component {
     const { activeStep, uploadResultSelected, libraries, engines, showAdvancedCognitive, templateName, currentTemplate, engineNameSearch, validate, isOpenFolder, tagsCustomizeName, tagsEditFileUpload } = this.state;
     return (
       <Fragment>
-        <Dialog fullScreen open={this.state.openUpload} onClose={this.handleClose}>
+        <Dialog fullScreen open={this.state.openUpload} onClose={this.handleClose} disableEnforceFocus>
           <DialogTitle onClose={this.handleClose} style={{ background: '#1976d2' }}>
             Upload
           </DialogTitle>

@@ -168,6 +168,7 @@ class FolderSelectionDialog extends React.Component {
           fullWidth
           maxWidth="md"
           open={this.props.open}
+          disableEnforceFocus
         >
           {this.renderLoader()}
           <Grid container justify="space-between" alignItems="center">
