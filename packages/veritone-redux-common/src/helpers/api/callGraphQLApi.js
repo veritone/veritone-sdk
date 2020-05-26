@@ -3,9 +3,11 @@ import { guid } from 'helpers/misc';
 import { getConfig } from '../../modules/config';
 import { selectOAuthToken, selectSessionToken } from '../../modules/auth';
 import fetchGraphQLApi from './fetchGraphQLApi';
+import { getExtraHeaders } from '../../modules';
 
 async function callGraphQLApi({
   actionTypes: [requestType, successType, failureType],
+  extraHeaders,
   query,
   variables,
   operationName,
@@ -31,6 +33,11 @@ async function callGraphQLApi({
     return;
   }
 
+  let _extraHeaders = extraHeaders;
+  if (!Object.keys(extraHeaders || {}).length) {
+    _extraHeaders = getExtraHeaders(state);
+  }
+
   // attach an ID so the handleApiCall reducer can track this request across
   // its multiple actions
   const _internalRequestId = requestId || guid();
@@ -53,7 +60,8 @@ async function callGraphQLApi({
       query,
       variables,
       operationName,
-      token
+      token,
+      _extraHeaders
     });
   } catch (e) {
     dispatch({

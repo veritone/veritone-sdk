@@ -2,6 +2,7 @@ import { getCredentialsMode } from './';
 
 export default function fetchGraphQLApi({
   endpoint = 'https://api.veritone.com/v3/graphql',
+  extraHeaders = {},
   query,
   variables,
   operationName,
@@ -16,7 +17,8 @@ export default function fetchGraphQLApi({
     }),
     headers: {
       Authorization: token ? `bearer ${token}` : null,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...extraHeaders
     },
     credentials: getCredentialsMode()
   }).then(r => r.json());

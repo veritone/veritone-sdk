@@ -44,3 +44,6 @@ export const confirmation = {
   ...confirmationModule,
   confirmationRootSaga
 };
+
+import { getExtraHeaders as _getExtraHeaders } from './cross-module';
+export const getExtraHeaders = _getExtraHeaders;
