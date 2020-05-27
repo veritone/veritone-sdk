@@ -20,7 +20,8 @@ import {
 
 const { fetchGraphQLApi } = helpers;
 const {
-  user: userModule
+  user: userModule,
+  getExtraHeaders
 } = modules;
 
 export const template = {
@@ -48,6 +49,7 @@ function* initializeFolderData(id, refreshCache) {
     token
   } = yield getGqlParams();
   const getItem = yield select(getItemByTypeAndId);
+  const extraHeaders = yield select(getExtraHeaders);
   const cachedFolderData = getItem(template.type, ROOT_ID);
   let itemDataPayload = {};
   // Get root folders
@@ -65,6 +67,7 @@ function* initializeFolderData(id, refreshCache) {
       const rootFolderResponse = yield call(fetchGraphQLApi, {
         endpoint: graphQLUrl,
         query: rootQuery,
+        extraHeaders,
         token
       });
       const error = get(rootFolderResponse, 'errors[0].message');
@@ -110,7 +113,8 @@ function* initializeFolderData(id, refreshCache) {
 function* fetchFolderPage(currentNode, id) {
   const {
     graphQLUrl,
-    token
+    token,
+    extraHeaders
   } = yield getGqlParams();
   const currentFolderId = currentNode.id;
   const { nodeOffset = 0, leafOffset = 0 } = currentNode;
@@ -139,6 +143,7 @@ function* fetchFolderPage(currentNode, id) {
       const childFolderResponse = yield call(fetchGraphQLApi, {
         endpoint: graphQLUrl,
         query,
+        extraHeaders,
         token
       });
 
@@ -190,6 +195,7 @@ function* fetchFolderPage(currentNode, id) {
       const childTdoResponse = yield call(fetchGraphQLApi, {
         endpoint: graphQLUrl,
         query,
+        extraHeaders,
         token
       });
       const error = get(childTdoResponse, 'errors[0].message');

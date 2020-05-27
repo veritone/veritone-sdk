@@ -124,7 +124,7 @@ function createTDOsFromFiles(id, callback) {
         return yield createTDOWithAsset(signedFile, currentNode, currentNode);
       });
       createdTDOs = tdoResponses.map(res => get(res, 'data.createTDOWithAsset', currentNode));
-      
+
       const jobResponses = yield createdTDOs.map(function* (tdo) {
         return yield createInitialJob(tdo);
       });
@@ -146,7 +146,8 @@ function createTDOsFromFiles(id, callback) {
 function* createTDOWithAsset(signedFile, currentNode) {
   const {
     graphQLUrl,
-    token
+    token,
+    extraHeaders
   } = yield getGqlParams();
   const query = `mutation ($input: CreateTDOWithAsset!) {
     createTDOWithAsset(input: $input) {
@@ -177,6 +178,7 @@ function* createTDOWithAsset(signedFile, currentNode) {
     endpoint: graphQLUrl,
     query,
     variables,
+    extraHeaders,
     token
   });
 }
@@ -184,7 +186,8 @@ function* createTDOWithAsset(signedFile, currentNode) {
 function* createInitialJob(tdo) {
   const {
     graphQLUrl,
-    token
+    token,
+    extraHeaders
   } = yield getGqlParams();
   const query = `mutation ($input: CreateJob!) {
     createJob(input: $input) {
@@ -207,6 +210,7 @@ function* createInitialJob(tdo) {
     endpoint: graphQLUrl,
     query,
     variables,
+    extraHeaders,
     token
   });
 }

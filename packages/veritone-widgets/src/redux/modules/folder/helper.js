@@ -5,10 +5,12 @@ const { fetchGraphQLApi } = helpers;
 const {
   auth: authModule,
   config: configModule,
+  getExtraHeaders
 } = modules;
 
 export function* getGqlParams() {
   const config = yield select(configModule.getConfig);
+  const extraHeaders = yield select(getExtraHeaders);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const sessionToken = yield select(authModule.selectSessionToken);
@@ -16,19 +18,21 @@ export function* getGqlParams() {
   const token = sessionToken || oauthToken;
   return {
     graphQLUrl,
-    token
+    token,
+    extraHeaders
   };
 }
 
 
 export function* handleRequest({ query, variables }) {
-  const { graphQLUrl, token } = yield call(getGqlParams);
+  const { graphQLUrl, token, extraHeaders } = yield call(getGqlParams);
   let response;
   try {
     response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query,
       variables,
+      extraHeaders,
       token
     });
     if (response.errors) {

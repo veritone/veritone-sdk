@@ -16,7 +16,7 @@ export default function fetchGraphQLApi({
       operationName
     }),
     headers: {
-      Authorization: token ? `bearer ${token}` : null,
+      Authorization: token ? `Bearer ${token}` : null,
       'Content-Type': 'application/json',
       ...extraHeaders
     },

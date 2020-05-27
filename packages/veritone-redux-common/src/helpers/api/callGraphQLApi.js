@@ -2,8 +2,8 @@ import { constant, isFunction } from 'lodash';
 import { guid } from 'helpers/misc';
 import { getConfig } from '../../modules/config';
 import { selectOAuthToken, selectSessionToken } from '../../modules/auth';
-import fetchGraphQLApi from './fetchGraphQLApi';
 import { getExtraHeaders } from '../../modules';
+import fetchGraphQLApi from './fetchGraphQLApi';
 
 async function callGraphQLApi({
   actionTypes: [requestType, successType, failureType],
