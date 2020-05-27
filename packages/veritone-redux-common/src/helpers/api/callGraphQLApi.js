@@ -61,7 +61,7 @@ async function callGraphQLApi({
       variables,
       operationName,
       token,
-      _extraHeaders
+      extraHeaders: _extraHeaders
     });
   } catch (e) {
     dispatch({
