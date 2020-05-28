@@ -1,6 +1,7 @@
 import { get, isEmpty, uniqWith, isEqual } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer, fetchGraphQLApi } = helpers;
+const { getExtraHeaders } = modules;
 const { selectSessionToken, selectOAuthToken } = modules.auth;
 const { getConfig } = modules.config;
 
@@ -131,6 +132,7 @@ export function getFolders(rootFolderType) {
     `;
 
     const config = getConfig(getState());
+    const extraHeaders = getExtraHeaders(getState());
     const { apiRoot, graphQLEndpoint } = config;
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
@@ -141,6 +143,7 @@ export function getFolders(rootFolderType) {
         variables: {
           rootFolderType
         },
+        extraHeaders,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 
@@ -227,6 +230,7 @@ export function getMoreSubFolders(variables, accumulator = []) {
     `;
 
     const config = getConfig(getState());
+    const extraHeaders = getExtraHeaders(getState());
     const { apiRoot, graphQLEndpoint } = config;
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
     let folderList;
@@ -235,6 +239,7 @@ export function getMoreSubFolders(variables, accumulator = []) {
         endpoint: graphQLUrl,
         query,
         variables,
+        extraHeaders,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 
@@ -344,6 +349,7 @@ export function createFolder(
     `;
 
     const config = getConfig(getState());
+    const extraHeaders = getExtraHeaders(getState());
     const { apiRoot, graphQLEndpoint } = config;
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
@@ -352,6 +358,7 @@ export function createFolder(
         endpoint: graphQLUrl,
         query,
         variables,
+        extraHeaders,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
 

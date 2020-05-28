@@ -4,6 +4,7 @@ import fetchGraphQLApi from 'helpers/api/fetchGraphQLApi';
 import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
+import { getExtraHeaders } from '../index';
 
 export const namespace = 'engine';
 
@@ -133,7 +134,8 @@ export function fetchEngines(
       }
     `;
 
-    const config = getConfig(getState());
+    const state = getState();
+    const config = getConfig(state);
     const { apiRoot, graphQLEndpoint } = config;
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
@@ -141,6 +143,7 @@ export function fetchEngines(
       const response = await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
+        extraHeaders: getExtraHeaders(state),
         variables: {
           name: searchQuery,
           offset,

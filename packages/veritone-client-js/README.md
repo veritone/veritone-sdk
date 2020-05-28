@@ -1,7 +1,5 @@
 # Veritone JS client library
 
-#REPO IS DEPRECATED, please do not use this repo.
-
 ## Installation
 We provide bundles for the browser and for node.
 

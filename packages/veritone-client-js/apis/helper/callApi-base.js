@@ -11,6 +11,7 @@ export default function callApiFactory(doRequest) {
       apiToken,
       oauthToken,
       baseUrl,
+      extraHeaders = {},
       maxRetries = 1,
       retryIntervalMs = 1000
     } = {},
@@ -115,7 +116,8 @@ export default function callApiFactory(doRequest) {
                 headers: Object.assign(
                   neededToken
                     ? {
-                        Authorization: `Bearer ${neededToken}`
+                        Authorization: `Bearer ${neededToken}`,
+                    ...extraHeaders
                       }
                     : {},
                   headers,

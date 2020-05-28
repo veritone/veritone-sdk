@@ -29,3 +29,10 @@ export function setConfig(obj = {}) {
 export function getConfig(state) {
   return local(state);
 }
+
+/**
+ * Selects application id. This should be passed down from the primary app
+ * @param state
+ * @returns {*}
+ */
+export const selectApplicationId = state => getConfig(state).applicationId;

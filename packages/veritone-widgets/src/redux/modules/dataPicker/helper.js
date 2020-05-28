@@ -5,6 +5,7 @@ import { modules } from 'veritone-redux-common';
 const {
   auth: authModule,
   config: configModule,
+  getExtraHeaders
 } = modules;
 
 export const ROOT_ID = 'root';
@@ -32,6 +33,7 @@ export const TDO_FRAGMENTS = `
 
 export function* getGqlParams() {
   const config = yield select(configModule.getConfig);
+  const extraHeaders = yield select(getExtraHeaders);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const sessionToken = yield select(authModule.selectSessionToken);
@@ -39,6 +41,7 @@ export function* getGqlParams() {
   const token = sessionToken || oauthToken;
   return {
     graphQLUrl,
-    token
+    token,
+    extraHeaders
   };
 }

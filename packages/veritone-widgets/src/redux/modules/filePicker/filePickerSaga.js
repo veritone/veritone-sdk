@@ -10,7 +10,7 @@ import {
 import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
-const { auth: authModule, config: configModule } = modules;
+const { auth: authModule, config: configModule, getExtraHeaders } = modules;
 
 import { helpers } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
@@ -31,7 +31,7 @@ let requestMap;
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
-  
+
   if (warning || error) {
     // There are failed uploads, don't close out and display error screen
     return;
@@ -40,7 +40,11 @@ function* finishUpload(id, result, { warning, error }, callback) {
   // Get accumulated results, not just what's in the current upload/retry request
   // If there's no results, then the user must have aborted them all
   const totalResults = yield select(uploadResult, id);
-  yield call(callback, totalResults, { warning, error, cancelled: !totalResults.length });
+  yield call(callback, totalResults, {
+    warning,
+    error,
+    cancelled: !totalResults.length
+  });
 }
 
 function* uploadFileSaga(id, fileOrFiles, callback = noop) {
@@ -57,6 +61,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       }`;
 
   const config = yield select(configModule.getConfig);
+  const extraHeaders = yield select(getExtraHeaders);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const sessionToken = yield select(authModule.selectSessionToken);
@@ -72,6 +77,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
           query: getUrlQuery,
           // todo: add uuid to $name to prevent naming conflicts
           variables: { name },
+          extraHeaders,
           token: sessionToken || oauthToken
         })
       )
@@ -99,7 +105,11 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
 
   let resultChan;
   try {
-    const uploadChannelResult = yield call(uploadFilesChannel, uploadDescriptors, files);
+    const uploadChannelResult = yield call(
+      uploadFilesChannel,
+      uploadDescriptors,
+      files
+    );
     resultChan = uploadChannelResult.channel;
     requestMap = uploadChannelResult.requestMap;
   } catch (error) {
@@ -119,14 +129,16 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
-      yield put(uploadProgress(id, key, {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        error,
-        aborted,
-        percent: 100
-      }));
+      yield put(
+        uploadProgress(id, key, {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          error,
+          aborted,
+          percent: 100
+        })
+      );
 
       result.push({
         key,
@@ -145,12 +157,14 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       continue;
     }
 
-    yield put(uploadProgress(id, key, {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      percent: progress
-    }));
+    yield put(
+      uploadProgress(id, key, {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        percent: progress
+      })
+    );
   }
 
   // Remove aborted requests
@@ -195,7 +209,9 @@ function* watchRetryDone() {
     const completedUploads = uploads.filter(upload => !upload.error);
 
     yield put(endPick(id));
-    yield call(callback, completedUploads, { cancelled: !completedUploads.length });
+    yield call(callback, completedUploads, {
+      cancelled: !completedUploads.length
+    });
   });
 }
 

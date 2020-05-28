@@ -13,7 +13,8 @@ const defaultState = {
   OAuthToken: null,
   OAuthErrorCode: null,
   OAuthErrorDescription: null,
-  sessionToken: null
+  sessionToken: null,
+  userId: null
 };
 
 const reducer = createReducer(defaultState, {
@@ -54,7 +55,8 @@ const reducer = createReducer(defaultState, {
   [FETCH_USER_SUCCESS](state, action) {
     return {
       ...state,
-      sessionToken: action.payload.token
+      sessionToken: action.payload.token,
+      userId: action.payload.userId
     };
   },
 
@@ -172,3 +174,10 @@ export function selectOAuthError(state) {
     description: local(state).OAuthErrorDescription
   };
 }
+
+/**
+ * Selects user id
+ * @param state
+ * @returns {null}
+ */
+export const selectUserId = state => local(state).userId;
