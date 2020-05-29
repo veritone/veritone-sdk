@@ -127,3 +127,11 @@ This allows redux-common to use more than one version of the API.
   * React-redux version updated to 7.1.3
   * Redux-form version updated to 8.2.6
   * Redux-saga version updated to 1.1.3
+  
+## 3.11.5
+* Add `getExtraHeaders` function to retrieve tracking headers (exported in modules)
+* Pass `x-veritone-user` header along with requests
+    * It will start passing it when user is fetched
+* Pass `x-veritone-application` header along with requests
+    * It will get `applicationId` from state/config/applicationId
+
