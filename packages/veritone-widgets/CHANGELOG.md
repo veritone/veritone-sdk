@@ -306,3 +306,10 @@ const MyPage = () => (
   * Redux-form version updated to 8.2.6
   * Redux-saga version updated to 1.1.3
   * Using css-in-js
+  
+## 9.0.10
+* Bug fixes 
+* Fix user profile user name is not editable
+* Add image resize functionality to file picker
+* Add tracking headers
+    * VeritoneApp now requires `applicationId` config parameter where `applicationId` is your veritone application's id.
