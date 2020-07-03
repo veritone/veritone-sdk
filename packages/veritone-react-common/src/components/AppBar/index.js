@@ -154,6 +154,7 @@ class AppBar extends React.Component {
 
     return (
       <Paper
+        data-test="appbar"
         component="header"
         square
         elevation={elevation}
@@ -165,6 +166,7 @@ class AppBar extends React.Component {
         }}
       >
         <div
+          data-test="appbarLogo"
           className={classes.logo}
           style={{ backgroundColor: logoBackgroundColor }}
           onClick={this.goHome}
@@ -183,10 +185,11 @@ class AppBar extends React.Component {
                 draggable="false"
               />
             ) : (
-                <div className={classes.title}>{title}</div>
+                <div data-test="appbarTitle" className={classes.title}>{title}</div>
               )}
           </div>
           <div
+            data-test="appbarSearch"
             className={classes.searchBarHolder}
             style={{
               justifyContent: searchBarJustification,
@@ -234,7 +237,7 @@ class AppBar extends React.Component {
 
               {//App Switcher
                 appSwitcher && (
-                  <div>
+                  <div data-test="appbarSwitcher">
                     <AppSwitcher
                       enabledApps={enabledApps}
                       isFetchingApps={isFetchingApps}
@@ -247,7 +250,7 @@ class AppBar extends React.Component {
 
               {//User Profile
                 profileMenu && (
-                  <div>
+                  <div data-test="appbarProfile">
                     <ProfileMenu
                       onLogout={onLogout}
                       onEditProfile={onEditProfile}
