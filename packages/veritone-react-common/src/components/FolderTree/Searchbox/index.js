@@ -54,7 +54,7 @@ export default function Searchbox({
     }
   }
   return (
-    <div className={classes.searchBoxRoot}>
+    <div data-test="folderTreeSearchBox" className={classes.searchBoxRoot}>
       <InputBase
         onChange={handleChangeInput}
         inputRef={inputRef}
