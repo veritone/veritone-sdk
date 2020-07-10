@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "9.0.10",
+  "version": "9.0.11",
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
@@ -103,7 +103,7 @@
     "veritone-dev-env": "^3.0.0",
     "webpack": "^4.0.1",
     "webpack-cli": "^2.0.9",
-    "veritone-react-common": "^9.0.10",
+    "veritone-react-common": "^9.0.11",
     "veritone-redux-common": "^3.11.5"
   },
   "license": "Apache-2.0",
