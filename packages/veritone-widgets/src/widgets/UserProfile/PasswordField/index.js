@@ -15,7 +15,7 @@ const PasswordField = ({ lastUpdated, onEdit }) => {
     <div className={classes.container}>
       <RaisedTextField
         label="Password"
-        value={`Last updated ${format(new Date(lastUpdated), 'MMMM dd, yyyy')}`}
+        value={`Last updated ${format(new Date(lastUpdated), 'MMMM DD, YYYY')}`}
         action="RESET"
         onClickAction={onEdit}
         className={classes.field}
