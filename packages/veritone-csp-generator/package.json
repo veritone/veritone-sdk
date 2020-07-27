@@ -26,7 +26,7 @@
     "rollup-plugin-babel": "^3.0.7"
   },
   "dependencies": {
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.19"
   },
   "jest": {
     "moduleFileExtensions": [
