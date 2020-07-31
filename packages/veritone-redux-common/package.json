@@ -1,6 +1,6 @@
 {
   "name": "veritone-redux-common",
-  "version": "3.11.5",
+  "version": "3.11.6-beta",
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
@@ -10,7 +10,7 @@
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-dynamic-modules": "^5.2.0",
     "redux-saga": "1.1.3",
-    "veritone-functional-permissions": "^1.0.1",
+    "veritone-functional-permissions": "^1.0.2-beta",
     "veritone-oauth-helpers": "^2.1.0"
   },
   "main": "dist/bundle-cjs.js",
