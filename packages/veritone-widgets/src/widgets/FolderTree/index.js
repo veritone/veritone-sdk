@@ -347,7 +347,7 @@ function FolderTreeWrapper({
     return openEdit ? 3 : ((openModify && modifyFromAction) ? 2 : 1);
   };
   return (
-    <React.Fragment>
+    <div data-test="folderTree">
       {isEnableSearch && (
         <SearchBox
           onSearch={onSearch}
@@ -403,7 +403,7 @@ function FolderTreeWrapper({
         handleClose={handleCloseNewFolder}
         handleSubmit={handleSubmitNewFolder}
       />
-    </React.Fragment>
+    </div>
   );
 }
 
