@@ -1,14 +1,10 @@
 import React, { Fragment } from 'react';
-import { get } from 'lodash';
-import PowerIcon from '@material-ui/icons/PowerSettingsNew';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { get, findIndex } from 'lodash';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
-import { string, func, shape, arrayOf, element, any } from 'prop-types';
+import { string, func, shape, arrayOf, bool, element, any, number } from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import styles from './styles';
 
@@ -25,26 +21,50 @@ class InnerProfileMenu extends React.Component {
       }),
       signedImageUrl: string
     }),
+    isDiscovery: bool,
+    enabledApps: arrayOf(
+      shape({
+        name: string,
+        permissionId: number,
+        iconClass: string,
+        displayName: string
+      })
+    ),
     additionMenuItems: arrayOf(element),
     classes: shape({ any }),
   };
 
+  sendToAdmin = (route) => () => {
+    window.open(route, 'blank')
+  }
+
   render() {
     const { classes } = this.props;
+    let adminRoute;
+    const adminAppExists  = findIndex(this.props.enabledApps, ['applicationId', "ea1d26ab-0d29-4e97-8ae7-d998a243374e"]);
+    const ADMIN = (adminAppExists >= 0) ? true : false;
+    if (ADMIN){
+      adminRoute = `${this.props.enabledApps[adminAppExists]['applicationUrl']}/organizations/${this.props.enabledApps[adminAppExists]['ownerOrganizationId']}/discovery `
+    }
+    const DISCOVERY = this.props.isDiscovery;
     const userExists = !!Object.keys(this.props.user).length;
     if (!userExists) {
       return <div className={classes.userNullState}>No user found</div>;
     }
+    const userInitials = get(this.props.user, 'kvp.firstName').slice(0,1).toUpperCase() + get(this.props.user, 'kvp.lastName').slice(0,1).toUpperCase();
 
     const userProfileImage =
       this.props.user.signedImageUrl ||
-      get(this.props.user, 'kvp.image') ||
-      '//static.veritone.com/veritone-ui/default-avatar-2.png';
+      get(this.props.user, 'kvp.image');
+
     return (
       <Fragment>
         <ListSubheader className={classes['header']} key="header">
           <div className={classes['userAvatar']}>
-            <Avatar src={userProfileImage} />
+            { !userProfileImage ?
+              <Avatar data-test= "userAvatarInitials" className={classes.avatar}>{userInitials}</Avatar> :
+              <Avatar data-test="userAvatar" className={classes.avatar} src={userProfileImage}/>
+            }
           </div>
           <div className={classes['userProfile']}>
             <div className={classes['fullName']}>
@@ -56,13 +76,23 @@ class InnerProfileMenu extends React.Component {
             </div>
             <div className={classes['editButton']}>
               <Button
+                data-test="editProfileButton"
                 variant="contained"
-                color="secondary"
+                color="primary"
                 onClick={this.props.onEditProfile}
-                className="editProfileButton"
+                className={classes.editProfileButton}
               >
                 Edit Profile
               </Button>
+              {ADMIN && DISCOVERY && <Button
+                data-test="discoverySettingsButton"
+                variant="outlined"
+                color="primary"
+                onClick={this.sendToAdmin(adminRoute)}
+                className={classes.settingsButton}
+              >
+                Settings
+              </Button>}
             </div>
           </div>
         </ListSubheader>
@@ -70,16 +100,16 @@ class InnerProfileMenu extends React.Component {
         {this.props.additionMenuItems}
 
         <Divider />
-        <MenuItem
+        <div className={classes.center}>
+        <Button
+          data-test="logoutButton"
+          variant="outlined"
           onClick={this.props.onLogout}
-          key="logout"
-          className="logoutButton"
+          className={classes.logoutButton}
         >
-          <ListItemIcon>
-            <PowerIcon />
-          </ListItemIcon>
-          <ListItemText primary="Log out" />
-        </MenuItem>
+        Sign Out
+        </Button>
+        </div>
       </Fragment>
     );
   }

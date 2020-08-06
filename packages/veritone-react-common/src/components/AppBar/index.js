@@ -45,6 +45,7 @@ class AppBar extends React.Component {
       })
     ),
     currentAppName: string,
+    isDiscovery: bool,
     rightActions: arrayOf(
       shape({
         label: string.isRequired,
@@ -124,7 +125,7 @@ class AppBar extends React.Component {
       logoBackgroundColor,
       title,
       titleColor,
-
+      isDiscovery,
       searchBar,
       searchBarJustification,
       searchBarLeftMargin,
@@ -250,8 +251,10 @@ class AppBar extends React.Component {
 
               {//User Profile
                 profileMenu && (
-                  <div data-test="appbarProfile">
+                  <div  data-test="appbarProfile">
                     <ProfileMenu
+                      enabledApps={enabledApps}
+                      isDiscovery={isDiscovery}
                       onLogout={onLogout}
                       onEditProfile={onEditProfile}
                       user={user}

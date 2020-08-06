@@ -19,7 +19,8 @@ import UserProfile from '../UserProfile';
     enabledApps: user.selectEnabledApps(state),
     enabledAppsFailedLoading: user.enabledAppsFailedLoading(state),
     isFetchingApps: user.isFetchingApps(state),
-    switchAppRoute: config.getConfig(state).switchAppRoute
+    switchAppRoute: config.getConfig(state).switchAppRoute,
+    isDiscovery: config.getConfig(state).isDiscovery
   }),
   { fetchEnabledApps: user.fetchEnabledApps },
   null,
