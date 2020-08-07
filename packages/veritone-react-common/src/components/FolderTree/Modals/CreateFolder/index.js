@@ -44,7 +44,7 @@ export default function CreateFolder({
   const onCreate = () => {
     validate(folderName);
     if (error === '') {
-      handleSubmit(folderName, parentFolder.id);
+      handleSubmit(folderName.trim(), parentFolder.id);
     }
   };
 
@@ -58,7 +58,7 @@ export default function CreateFolder({
   }, []);
 
   const validate = (folderNameToValid) => {
-    if (folderNameToValid.length === 0) {
+    if (folderNameToValid.trim().length === 0) {
       return setError('Folder name must not be empty');
     }
     setError('');
