@@ -27,7 +27,12 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('[data-test="userAvatar"]').find('img').props().src).toBe(testUser.kvp.image);
+    expect(
+      wrapper
+        .find('[data-test="userAvatar"]')
+        .find('img')
+        .props().src
+    ).toBe(testUser.kvp.image);
 
     wrapper = mount(
       <div>
@@ -41,7 +46,12 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('[data-test="userAvatar"]').find('img').props().src).toMatch(/signed/);
+    expect(
+      wrapper
+        .find('[data-test="userAvatar"]')
+        .find('img')
+        .props().src
+    ).toMatch(/signed/);
 
     wrapper = mount(
       <div>
@@ -52,7 +62,12 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('[data-test="userAvatarInitials"]').find('div').text()).toEqual('MR');
+    expect(
+      wrapper
+        .find('[data-test="userAvatarInitials"]')
+        .find('div')
+        .text()
+    ).toEqual('MR');
   });
 
   it("shows the user's first name", function() {
@@ -173,14 +188,16 @@ describe('InnerProfileMenu', function() {
   });
 
   it('renders settings button if app is discovery and admin access', function() {
-    const enabledApps = [{
-      applicationIconUrl: "https://static.veritone.com/veritone-ui/appicons-2/admin.png",
-      applicationId: "ea1d26ab-0d29-4e97-8ae7-d998a243374e",
-      applicationKey: "admin",
-      applicationName: "Admin",
-      applicationStatus: "active",
-      applicationUrl: "https://admin.veritone.com",
-      ownerOrganizationId: 1234,
+    const enabledApps = [
+      {
+        applicationIconUrl:
+          'https://static.veritone.com/veritone-ui/appicons-2/admin.png',
+        applicationId: 'ea1d26ab-0d29-4e97-8ae7-d998a243374e',
+        applicationKey: 'admin',
+        applicationName: 'Admin',
+        applicationStatus: 'active',
+        applicationUrl: 'https://admin.veritone.com',
+        ownerOrganizationId: 1234
       }
     ];
     const isDiscovery = true;
@@ -196,20 +213,21 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('button')).toHaveLength(3)
-
+    expect(wrapper.find('button')).toHaveLength(3);
   });
 
   it('doesnt renders settings button if app is not discovery', function() {
-    const enabledApps = [{
-      applicationIconUrl: "https://static.veritone.com/veritone-ui/appicons-2/admin.png",
-      applicationId: "ea1d26ab-0d29-4e97-8ae7-d998a243374e",
-      applicationKey: "admin",
-      applicationName: "Admin",
-      applicationStatus: "active",
-      applicationUrl: "https://admin.veritone.com",
-      ownerOrganizationId: 768256565,
-    }
+    const enabledApps = [
+      {
+        applicationIconUrl:
+          'https://static.veritone.com/veritone-ui/appicons-2/admin.png',
+        applicationId: 'ea1d26ab-0d29-4e97-8ae7-d998a243374e',
+        applicationKey: 'admin',
+        applicationName: 'Admin',
+        applicationStatus: 'active',
+        applicationUrl: 'https://admin.veritone.com',
+        ownerOrganizationId: 768256565
+      }
     ];
     const isDiscovery = false;
 
@@ -224,7 +242,7 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('button')).toHaveLength(2)
+    expect(wrapper.find('button')).toHaveLength(2);
   });
 
   it('doesnt renders settings button if admin app is not enabled', function() {
@@ -242,7 +260,6 @@ describe('InnerProfileMenu', function() {
         />
       </div>
     );
-    expect(wrapper.find('button')).toHaveLength(2)
+    expect(wrapper.find('button')).toHaveLength(2);
   });
-
 });
