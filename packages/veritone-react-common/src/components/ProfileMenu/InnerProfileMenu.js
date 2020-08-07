@@ -39,31 +39,35 @@ class InnerProfileMenu extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { isDiscovery, classes } = this.props;
     let adminRoute;
     const adminAppExists  = findIndex(this.props.enabledApps, ['applicationId', "ea1d26ab-0d29-4e97-8ae7-d998a243374e"]);
-    const ADMIN = (adminAppExists >= 0) ? true : false;
-    if (ADMIN){
+    const isAdmin = (adminAppExists >= 0) ? true : false;
+    if (isAdmin){
       adminRoute = `${this.props.enabledApps[adminAppExists]['applicationUrl']}/organizations/${this.props.enabledApps[adminAppExists]['ownerOrganizationId']}/discovery `
     }
-    const DISCOVERY = this.props.isDiscovery;
+
     const userExists = !!Object.keys(this.props.user).length;
     if (!userExists) {
       return <div className={classes.userNullState}>No user found</div>;
     }
-    const userInitials = get(this.props.user, 'kvp.firstName').slice(0,1).toUpperCase() + get(this.props.user, 'kvp.lastName').slice(0,1).toUpperCase();
-
-    const userProfileImage =
+    let userInitials = get(this.props.user, 'kvp.firstName').slice(0,1).toUpperCase() + get(this.props.user, 'kvp.lastName').slice(0,1).toUpperCase()
+    let userProfileImage =
       this.props.user.signedImageUrl ||
       get(this.props.user, 'kvp.image');
+    if(!userInitials && !userProfileImage){
+      userProfileImage = '//static.veritone.com/veritone-ui/default-avatar-2.png'
+    }
+
+
 
     return (
       <Fragment>
         <ListSubheader className={classes['header']} key="header">
           <div className={classes['userAvatar']}>
-            { !userProfileImage ?
-              <Avatar data-test= "userAvatarInitials" className={classes.avatar}>{userInitials}</Avatar> :
-              <Avatar data-test="userAvatar" className={classes.avatar} src={userProfileImage}/>
+            { userProfileImage ?
+              <Avatar data-test="userAvatar" className={classes.avatar} src={userProfileImage}/> :
+              <Avatar data-test= "userAvatarInitials" className={classes.avatar}>{userInitials}</Avatar>
             }
           </div>
           <div className={classes['userProfile']}>
@@ -84,7 +88,7 @@ class InnerProfileMenu extends React.Component {
               >
                 Edit Profile
               </Button>
-              {ADMIN && DISCOVERY && <Button
+              {isDiscovery && isAdmin && <Button
                 data-test="discoverySettingsButton"
                 variant="outlined"
                 color="primary"

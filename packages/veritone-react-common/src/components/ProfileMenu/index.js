@@ -73,6 +73,9 @@ class ProfileMenu extends React.Component {
       userProfileImage =
         this.props.user.signedImageUrl ||
         get(this.props.user, 'kvp.image')
+      if(!userInitials && !userProfileImage){
+        userProfileImage = '//static.veritone.com/veritone-ui/default-avatar-2.png'
+      }
     }
 
     const { classes } = this.props;
@@ -85,9 +88,9 @@ class ProfileMenu extends React.Component {
             onClick={this.openMenu}
             data-veritone-element="profile-menu-button"
           >
-            { !userProfileImage ?
-              <Avatar className={classes.avatarProfile}>{userInitials}</Avatar> :
-              <Avatar style={{ height: 35, width: 35 }} src={userProfileImage}/>
+            { userProfileImage ?
+              <Avatar style={{ height: 35, width: 35 }} src={userProfileImage}/>:
+              <Avatar className={classes.avatarProfile}>{userInitials}</Avatar>
             }
           </IconButton>
         </Tooltip>

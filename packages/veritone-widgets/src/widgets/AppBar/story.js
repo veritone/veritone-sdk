@@ -19,4 +19,22 @@ storiesOf('AppBar', module).add('Base', () => {
       componentProps={{ ...props, title: 'AppBar Component' }}
     />
   );
+})
+  .add('Discovery Settings', () => {
+  const props = {
+    profileMenu: true,
+    appSwitcher: true,
+    onLogout: () => console.log('log out'),
+    isDiscovery: true
+  };
+
+  return (
+    <BaseStory
+      widget={AppBarWidget}
+      widgetProps={{ ...props, title: 'AppBar Widget' }}
+      componentClass={AppBar}
+      componentProps={{ ...props, title: 'AppBar Component' }}
+    />
+  );
 });
+
