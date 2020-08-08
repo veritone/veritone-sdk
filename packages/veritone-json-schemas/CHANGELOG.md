@@ -53,3 +53,7 @@
 
 ## 1.1.0
 * Adds support for Anomaly Detection Engines
+
+## 1.1.1
+
+* update lodash
