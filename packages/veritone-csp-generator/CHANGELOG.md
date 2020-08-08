@@ -4,6 +4,6 @@
 
 * First official release. Changelog, readme, first test added.
 
-## 3.3.4
+## 3.5.7
 
 * update lodash

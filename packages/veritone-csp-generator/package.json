@@ -1,6 +1,6 @@
 {
   "name": "veritone-csp-generator",
-  "version": "3.3.4",
+  "version": "3.5.7",
   "description": "This package exports functions that help you generate a query to core-search-server from a Cognitive Search Profile. A CSP is a structured JSON document that describes what you are looking for across multiple engine categories.",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
