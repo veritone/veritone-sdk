@@ -315,6 +315,9 @@ const MyPage = () => (
     * VeritoneApp now requires `applicationId` config parameter where `applicationId` is your veritone application's id.
 
 ## 10.0.0
+* unpublished
+
+## 10.0.1
 * **Breaking Change** - profile menu styling - changed classNames
 * add settings button discovery
 * fix year not showing edit profile
