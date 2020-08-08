@@ -135,7 +135,7 @@ This allows redux-common to use more than one version of the API.
 * Pass `x-veritone-application` header along with requests
     * It will get `applicationId` from state/config/applicationId
     
-## 3.11.6
+## 3.11.7
 * update lodash
 
 
