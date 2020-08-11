@@ -31,6 +31,9 @@ class ProfileMenu extends React.Component {
         firstName: string,
         lastName: string,
         image: string
+      }),
+      organization: shape({
+        organizationId: number
       })
     }),
     enabledApps: arrayOf(

@@ -28,6 +28,9 @@ class InnerProfileMenu extends React.Component {
         lastName: string,
         image: string
       }),
+      organization: shape({
+        organizationId: number
+      }),
       signedImageUrl: string
     }),
     isDiscovery: bool,
@@ -54,13 +57,12 @@ class InnerProfileMenu extends React.Component {
       'applicationId',
       'ea1d26ab-0d29-4e97-8ae7-d998a243374e'
     ]);
+    const orgId = get(this.props.user, 'organization.organizationId');
     const isAdmin = adminAppExists >= 0 ? true : false;
     if (isAdmin) {
       adminRoute = `${
         this.props.enabledApps[adminAppExists]['applicationUrl']
-      }/organizations/${
-        this.props.enabledApps[adminAppExists]['ownerOrganizationId']
-      }/discovery `;
+      }/organizations/${orgId}/discovery `;
     }
 
     const userExists = !!Object.keys(this.props.user).length;
