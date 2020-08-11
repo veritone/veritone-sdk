@@ -322,3 +322,6 @@ const MyPage = () => (
 * add settings button discovery
 * fix year not showing edit profile
 * data-test attributes
+
+## 10.0.2
+* bump veritone-react-common
