@@ -15884,10 +15884,6 @@ vendors@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.2.tgz#7fcb5eef9f5623b156bcea89ec37d63676f21801"
 
-veritone-csp-generator@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/veritone-csp-generator/-/veritone-csp-generator-3.5.1.tgz#44b6cb2a0f74a54cac3d5879794c35fd3dbf7881"
-
 veritone-searchbar-react-export@^20.0.0:
   version "20.0.0"
   resolved "https://registry.yarnpkg.com/veritone-searchbar-react-export/-/veritone-searchbar-react-export-20.0.0.tgz#91ce6d0b976088fa5500fc17c5f30eaa465fc236"

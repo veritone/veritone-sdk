@@ -1,6 +1,6 @@
 {
   "name": "veritone-redux-common",
-  "version": "3.11.5",
+  "version": "3.11.7",
   "dependencies": {
     "lodash": "^4.17.19",
     "prop-types": "^15.6.0",

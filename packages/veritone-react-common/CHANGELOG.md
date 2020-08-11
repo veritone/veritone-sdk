@@ -304,3 +304,10 @@
   
 ## 9.0.10
 * Fix: Cannot initially type 0 in any Time input when create/edit scheduled ingestion (#496)
+## 10.0.0 
+* Unpublished 
+## 10.0.1
+* BREAKING UPDATES: add discovery settings - Changes User Profile menu styling
+* add data-test attributes
+* bump lodash
+* fix collections folder/name
