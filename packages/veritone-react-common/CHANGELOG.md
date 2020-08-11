@@ -311,3 +311,7 @@
 * add data-test attributes
 * bump lodash
 * fix collections folder/name
+
+## 10.0.2
+* export breadcrumbs 
+* fix to use the users orgId for discovery settings button 
