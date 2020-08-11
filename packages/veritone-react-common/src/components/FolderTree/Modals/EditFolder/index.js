@@ -88,13 +88,13 @@ export default function EditFolder({
     if (error === '') {
       setOpen(false);
       setTimeout(() => {
-        handleSubmit(selectedFolder, folderName);
+        handleSubmit(selectedFolder, folderName.trim());
       }, 500);
     }
   };
 
   const validate = folderNameToValid => {
-    if (folderNameToValid.length === 0) {
+    if (folderNameToValid.trim().length === 0) {
       return setError('Folder name must not be empty');
     }
     setError('');

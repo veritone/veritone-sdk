@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { func, string } from 'prop-types';
+import { func, string, bool } from 'prop-types';
 import { connect } from 'react-redux';
 import {
   AppBar as LibAppBar,
@@ -29,7 +29,8 @@ class AppBar extends React.Component {
   static propTypes = {
     _widgetId: string,
     fetchEnabledApps: func,
-    switchAppRoute: string.isRequired
+    switchAppRoute: string.isRequired,
+    isDiscovery: bool
   };
 
   state = {
