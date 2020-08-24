@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "9.0.11",
+  "version": "10.0.2",
   "dependencies": {
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
@@ -25,7 +25,8 @@
     "redux-thunk": "^2.3.0",
     "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
-    "video-react": "~0.13.3"
+    "video-react": "~0.13.3",
+    "reselect": "^4.0.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
@@ -103,8 +104,8 @@
     "veritone-dev-env": "^3.0.0",
     "webpack": "^4.0.1",
     "webpack-cli": "^2.0.9",
-    "veritone-react-common": "^9.0.11",
-    "veritone-redux-common": "^3.11.5"
+    "veritone-react-common": "10.0.2",
+    "veritone-redux-common": "^3.11.7"
   },
   "license": "Apache-2.0",
   "jest": {

@@ -313,3 +313,15 @@ const MyPage = () => (
 * Add image resize functionality to file picker
 * Add tracking headers
     * VeritoneApp now requires `applicationId` config parameter where `applicationId` is your veritone application's id.
+
+## 10.0.0
+* unpublished
+
+## 10.0.1
+* **Breaking Change** - profile menu styling - changed classNames
+* add settings button discovery
+* fix year not showing edit profile
+* data-test attributes
+
+## 10.0.2
+* bump veritone-react-common

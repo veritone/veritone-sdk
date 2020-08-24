@@ -4,7 +4,16 @@ import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
 import Tooltip from '@material-ui/core/Tooltip';
-import { string, func, shape, arrayOf, element, any } from 'prop-types';
+import {
+  string,
+  func,
+  shape,
+  arrayOf,
+  bool,
+  element,
+  any,
+  number
+} from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 
@@ -22,11 +31,23 @@ class ProfileMenu extends React.Component {
         firstName: string,
         lastName: string,
         image: string
+      }),
+      organization: shape({
+        organizationId: number
       })
     }),
+    enabledApps: arrayOf(
+      shape({
+        name: string,
+        permissionId: number,
+        iconClass: string,
+        displayName: string
+      })
+    ),
+    isDiscovery: bool,
     tooltipTitle: string,
     additionMenuItems: arrayOf(element),
-    classes: shape({ any }),
+    classes: shape({ any })
   };
 
   static defaultProps = {
@@ -54,10 +75,28 @@ class ProfileMenu extends React.Component {
   };
 
   render() {
-    const userProfileImage =
-      this.props.user.signedImageUrl ||
-      get(this.props.user, 'kvp.image') ||
-      '//static.veritone.com/veritone-ui/default-avatar-2.png';
+    const userExists = !!Object.keys(this.props.user).length;
+    let userProfileImage;
+    let userInitials;
+    if (!userExists) {
+      userProfileImage =
+        '//static.veritone.com/veritone-ui/default-avatar-2.png';
+    } else {
+      userInitials =
+        get(this.props.user, 'kvp.firstName')
+          .slice(0, 1)
+          .toUpperCase() +
+        get(this.props.user, 'kvp.lastName')
+          .slice(0, 1)
+          .toUpperCase();
+      userProfileImage =
+        this.props.user.signedImageUrl || get(this.props.user, 'kvp.image');
+      if (!userInitials && !userProfileImage) {
+        userProfileImage =
+          '//static.veritone.com/veritone-ui/default-avatar-2.png';
+      }
+    }
+
     const { classes } = this.props;
 
     return (
@@ -68,7 +107,14 @@ class ProfileMenu extends React.Component {
             onClick={this.openMenu}
             data-veritone-element="profile-menu-button"
           >
-            <Avatar src={userProfileImage} style={{ height: 35, width: 35 }} />
+            {userProfileImage ? (
+              <Avatar
+                style={{ height: 35, width: 35 }}
+                src={userProfileImage}
+              />
+            ) : (
+              <Avatar className={classes.avatarProfile}>{userInitials}</Avatar>
+            )}
           </IconButton>
         </Tooltip>
         <Menu
@@ -78,12 +124,16 @@ class ProfileMenu extends React.Component {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorEl={this.state.anchorEl}
+          elevation={0}
+          classes={{ paper: classes.paper }}
           // https://github.com/callemall/material-ui/issues/7961#issuecomment-326215406
           getContentAnchorEl={null}
           className={classes.popover}
         >
           <InnerProfileMenu
             user={this.props.user}
+            isDiscovery={this.props.isDiscovery}
+            enabledApps={this.props.enabledApps}
             onLogout={this.handleLogout}
             onEditProfile={this.props.onEditProfile}
             additionMenuItems={this.props.additionMenuItems}

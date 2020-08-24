@@ -1,6 +1,6 @@
 {
   "name": "veritone-json-schemas",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "JSON Schemas, their examples, and helper functions used across Veritone",
   "repository": "https://github.com/veritone/veritone-sdk",
   "author": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "ajv": "^6.10.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "rollup-plugin-json": "^3.1.0"
   },
   "devDependencies": {

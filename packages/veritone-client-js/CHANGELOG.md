@@ -12,3 +12,6 @@
 # 1.1.0
 * No longer requires a token to be provided at startup. If no token is provided, API calls will not include an Authorization header
 * Ran prettier over the codebase with our common settings.
+
+# 2.0.1
+* update lodash
