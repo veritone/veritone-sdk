@@ -138,11 +138,12 @@ class SimpleSearchBarBaseComponent extends React.Component {
               [classes.focusedColor]: focused
             })}
           >
-            <div className={classes.searchBarContainer} style={{ width: _width }}>
-              <IconButton disabled={!focused} onClick={onSubmit}>
+            <div data-test="simpleSearchBarContainer" className={classes.searchBarContainer} style={{ width: _width }}>
+              <IconButton data-test="simpleSearchBarIcon" disabled={!focused} onClick={onSubmit}>
                 <Search className={classes.iconColor} />
               </IconButton>
               <Input
+                data-test="simpleSearchBarInput"
                 // handle esc and enter
                 onKeyDown={onKeyDown}
                 // disable browser auto complete
@@ -158,12 +159,12 @@ class SimpleSearchBarBaseComponent extends React.Component {
                 key={renderKey + 1}
               />
               <Zoom in={!!(focused && showClear && isLoading)}>
-                <div className={cx(classes.loadingIcon)}>
+                <div data-test="simpleSearchBarLoadingIcon" className={cx(classes.loadingIcon)}>
                   <CircularProgress size={20} />
                 </div>
               </Zoom>
               <Zoom in={showClear} className={cx(classes.clearButton)}>
-                <IconButton onClick={this.clear}>
+                <IconButton data-test="simpleSearchBarClearIcon" onClick={this.clear}>
                   <Clear />
                 </IconButton>
               </Zoom>
