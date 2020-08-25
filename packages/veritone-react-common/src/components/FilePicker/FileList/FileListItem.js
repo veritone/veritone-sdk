@@ -101,6 +101,7 @@ class FileListItem extends Component {
         <div className={classes.itemActionContainer}>
           {this.isImageFile && enableResize && (
             <IconButton
+              data-test="filePickerResizeBtn"
               className={classes.itemDeleteIcon}
               aria-label="Resize"
               onClick={this.onResizeImage}
@@ -109,6 +110,7 @@ class FileListItem extends Component {
             </IconButton>
           )}
           <IconButton
+            data-test="filePickerDeleteBtn"
             className={classes.itemDeleteIcon}
             aria-label="Delete"
             onClick={this.handleRemoveFile}
