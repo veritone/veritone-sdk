@@ -1,39 +1,15 @@
 {
   "name": "veritone-csp-generator",
-  "version": "3.5.7",
-  "description": "This package exports functions that help you generate a query to core-search-server from a Cognitive Search Profile. A CSP is a structured JSON document that describes what you are looking for across multiple engine categories.",
-  "main": "dist/bundle-cjs.js",
-  "module": "dist/bundle-es.js",
-  "jsnext:main": "dist/bundle-es.js",
+  "version": "3.5.8",
+  "description": "converts CSP -> V3 Query",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "export NODE_ENV=test && jest ./src/index.test.js",
-    "lint": "eslint --ext  src/**/*.js --max-warnings 0 **.js",
-    "build": "yarn run build:es && yarn run build:cjs",
-    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
-    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
-    "format": "prettier --write \"{src/**/*.{js,scss},*.md}\""
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
-  "author": "Andrew Tung",
+  "author": "Veritone Essentials Team",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-jest": "^23.0.1",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "eslint": "^4.19.1",
-    "jest": "^23.1.0",
-    "prettier": "1.12.1",
-    "rollup": "^1.17.0",
-    "rollup-plugin-babel": "^3.0.7"
-  },
-  "dependencies": {
-    "lodash": "^4.17.19"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "moduleDirectories": [
-      "node_modules"
-    ]
-  }
+  "dependencies": {}
 }

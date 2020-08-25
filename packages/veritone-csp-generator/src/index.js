@@ -1,7 +1,3 @@
-import includes from 'lodash/fp/includes';
-import isString from 'lodash/fp/isString';
-import isFunction from 'lodash/fp/isFunction';
-
 const FaceConditionGenerator = modalState => {
   return {
     operator: 'term',
@@ -25,60 +21,55 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  const query = V2QueryStringParser(
-    'text-recognition.series.ocrtext',
-    modalState.search
-  );
-  query.highlight = 'true';
-
-  return query;
+  if (modalState && modalState.includeSpecialCharacters) {
+    const query = V2QueryStringParser('text-recognition.series.ocrtext.native', modalState.search);
+    query.highlight = "true";
+    return query;
+  } else {
+    const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
+    query.highlight = "true";
+    return query;
+  }
 };
 
 const StructuredDataGenerator = modalState => {
   if (modalState.type === 'string') {
-    if (
-      modalState.operator === 'contains' ||
-      modalState.operator === 'not_contains'
-    ) {
-      return {
-        operator: 'query_string',
-        field: modalState.field + '.fulltext',
-        value: `*${modalState.value1.toLowerCase()}*`,
-        not: !includes(modalState.operator, 'not') ? true : undefined
-      };
-    } else {
+    if (modalState.operator === 'contains' || modalState.operator === 'not_contains') {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
         value: `${modalState.value1.toLowerCase()}`,
-        not: !includes(modalState.operator, 'not') ? true : undefined
-      };
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
+    } else {
+      return {
+        operator: 'term',
+        field: modalState.field + '.string',
+        value: `${modalState.value1}`,
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
     }
-  } else if (
-    modalState.type === 'dateTime' ||
-    modalState.type === 'integer' ||
-    modalState.type === 'number'
-  ) {
+  } else if (modalState.type === 'dateTime' || modalState.type === 'integer' || modalState.type === 'number') {
     if (modalState.operator === 'is' || modalState.operator === 'is_not') {
       return {
         operator: 'query_string',
         field: modalState.field,
         value: modalState.value1,
-        not: !includes(modalState.operator, 'not') ? true : undefined
-      };
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
     } else if (modalState.operator === 'range') {
       return {
         operator: 'range',
         field: modalState.field,
         gte: modalState.value1,
         lte: modalState.value2
-      };
+      }
     } else {
       return {
         operator: 'range',
         field: modalState.field,
         [modalState.operator]: modalState.value1
-      };
+      }
     }
   } else if (modalState.type === 'geoPoint') {
     return {
@@ -94,43 +85,166 @@ const StructuredDataGenerator = modalState => {
       operator: 'term',
       field: modalState.field,
       value: modalState.value1
-    };
+    }
   }
-};
+}
+
+function isEmpty(obj) {
+  if (!obj) return true;
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+  return JSON.stringify(obj) === JSON.stringify({});
+}
+
+const getCoordinatesFromBounding = (boundingPoly) => {
+  return boundingPoly.reduce((accumulator, currentItem, currentIndex) => {
+    if (currentIndex % 2 === 1) {
+      return accumulator;
+    }
+    return [...accumulator, [currentItem.x, currentItem.y]]
+  }, []);
+}
+
+const BoundingBoxGenerator = (modalState) => {
+  const boundingPoly = modalState.advancedOptions.boundingPoly || [];
+  if (!boundingPoly.length) {
+    return {};
+  }
+  return {
+    operator: "bounding_box",
+    field: "boundingBox",
+    relation: "within", // within | intersects | disjoint
+    coordinates: getCoordinatesFromBounding(boundingPoly)
+  }
+}
+
+const ConfidenceRangeGenerator = (modalState) => {
+  const range = modalState.advancedOptions.range || [];
+  if (!range.length || (range[0] === 0 && range[1] === 100)) {
+    return {};
+  }
+  return {
+    operator: "range",
+    field: "confidence",
+    gte: range[0] / 100,
+    lt: range[1] / 100
+  }
+}
+
+const buildAndOperator = (conditions) => {
+  return {
+    operator: 'and',
+    conditions: conditions
+  };
+}
+
+const buildOrOperator = (conditions) => {
+  return {
+    operator: 'or',
+    conditions: conditions
+  };
+}
 
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    return {
-      operator: 'query_string',
-      field: 'logo-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'query_string',
+        field: 'logo-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   } else {
-    return {
-      operator: 'term',
-      field: 'logo-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'term',
+        field: 'logo-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      }
+    }
+    else {
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "logo-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   }
 };
 
 const ObjectConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
-    return {
-      operator: 'query_string',
-      field: 'object-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'query_string',
+        field: 'object-recognition.series.found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'query_string',
+        field: 'found.fulltext',
+        value: `*${modalState.id}*`,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState, false), ConfidenceRangeGenerator(modalState, false)];
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   } else {
-    return {
-      operator: 'term',
-      field: 'object-recognition.series.found',
-      value: modalState.id,
-      not: modalState.exclude === true
-    };
+    if (isEmpty(modalState.advancedOptions)) {
+      return {
+        operator: 'term',
+        field: 'object-recognition.series.found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+    }
+    else {
+      const params = {
+        operator: 'term',
+        field: 'found',
+        value: modalState.id,
+        not: modalState.exclude === true
+      };
+      const conditions = [params, BoundingBoxGenerator(modalState), ConfidenceRangeGenerator(modalState)];
+      return {
+        operator: "query_object",
+        field: "object-recognition.series",
+        query: buildAndOperator(conditions.filter(item => !isEmpty(item)))
+      }
+    }
   }
 };
 
@@ -151,12 +265,12 @@ const TagConditionGenerator = modalState => {
   return {
     operator: 'query_object',
     field: 'tags',
+    not: modalState.exclude === true,
     query: {
       operator: 'term',
       field: 'tags.value',
       value: modalState.id,
-      dotNotation: true,
-      not: modalState.exclude === true
+      dotNotation: true
     }
   };
 };
@@ -165,7 +279,7 @@ const TimeConditionGenerator = modalState => {
   const dayPartTimeToMinutes = function (hourMinuteTime) {
     if (
       !hourMinuteTime ||
-      !isString(hourMinuteTime) ||
+      typeof hourMinuteTime !== 'string' ||
       hourMinuteTime.length != 5
     ) {
       return 0;
@@ -233,24 +347,10 @@ const TimeConditionGenerator = modalState => {
   };
 };
 
-// this parser converts the v2 text query languge into v3 search text operators
+
 const V2QueryStringParser = (field, queryString) => {
-  function buildOrOperator(conditions) {
-    return {
-      operator: 'or',
-      conditions: conditions
-    };
-  }
-
-  function buildAndOperator(conditions) {
-    return {
-      operator: 'and',
-      conditions: conditions
-    };
-  }
-
   function buildQueryStringOperator(field, queryText, highlight, analyzer) {
-    let op = {
+    var op = {
       operator: 'query_string',
       field: field,
       value: queryText
@@ -266,19 +366,19 @@ const V2QueryStringParser = (field, queryString) => {
 
   function buildSpanStringQuery(field, queryString) {
     // cleanup redundant whitespace
-    let queryText = queryString.replace(/\s{2+}/g, ' ');
-    let start, end, distance;
-    let spanConditions = [];
-    let proximityOperatorPos = queryText.indexOf(' w/', start),
+    var queryText = queryString.replace(/\s{2+}/g, ' ');
+    var start, end, distance;
+    var spanConditions = [];
+    var proximityOperatorPos = queryText.indexOf(' w/', start),
       proximityOperatorEnd;
 
     while (
       proximityOperatorPos > 1 &&
       proximityOperatorPos < queryText.length - 5
-    ) {
+      ) {
       // parse the span distance
       proximityOperatorEnd = queryText.indexOf(' ', proximityOperatorPos + 1);
-      let val = queryText.charAt(proximityOperatorPos + 3);
+      var val = queryText.charAt(proximityOperatorPos + 3);
       switch (val) {
         case 'p':
           distance = 75;
@@ -347,7 +447,7 @@ const V2QueryStringParser = (field, queryString) => {
       return null;
     }
     // wrap simple queries in quotes
-    if (!includes(queryExpression, ' ')) {
+    if (queryExpression.indexOf(' ') < 0) {
       return buildQueryStringOperator(
         field,
         keepCasing ? queryExpression : queryExpression.toLowerCase(),
@@ -357,21 +457,21 @@ const V2QueryStringParser = (field, queryString) => {
     }
 
     // deffer to query_string to handle the negation
-    let queryText = queryExpression.toLowerCase().replace('_not_', 'NOT');
+    var queryText = queryExpression.toLowerCase().replace('_not_', 'NOT');
 
     // if it is a simple query, i.e. no within
-    if (!includes(queryExpression, ' w/')) {
+    if (queryExpression.indexOf(' w/') < 0) {
       return buildQueryStringOperator(field, queryText, highlight, analyzer);
     }
 
     // build 2 queries - all words query and just and AND-query of all spanning expressions
     // all words query
-    let textSearchQuery = buildQueryStringOperator(
+    var textSearchQuery = buildQueryStringOperator(
       field,
       queryText.replace(/\s+w\/(\d+|[ps])\s+/g, ' ')
     );
     // spanning expressions
-    let spanQueries = buildSpanStringQuery(field, queryText);
+    var spanQueries = buildSpanStringQuery(field, queryText);
 
     // add to the same AND expression as the span expressions
     spanQueries.push(textSearchQuery);
@@ -387,7 +487,7 @@ const V2QueryStringParser = (field, queryString) => {
     analyzer
   ) {
     if (queryExpression.indexOf(',') > 0) {
-      let conditions = queryExpression
+      var conditions = queryExpression
         .split(',')
         .map(function processOrExpression(subExpression) {
           return buildStringQueryAnd(
@@ -410,11 +510,16 @@ const V2QueryStringParser = (field, queryString) => {
     );
   }
   return buildStringQuery(field, queryString);
-};
+}
 
 // most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
 const TranscriptConditionGenerator = modalState => {
   return V2QueryStringParser('transcript.transcript', modalState.search);
+};
+
+// most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
+const DocumentConditionGenerator = modalState => {
+  return V2QueryStringParser('text-document.text', modalState.search);
 };
 
 const GeolocationGenerator = modalState => {
@@ -430,6 +535,7 @@ const GeolocationGenerator = modalState => {
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': TranscriptConditionGenerator,
+  'ba2a423e-99c9-4422-b3a5-0b188d8388ab': DocumentConditionGenerator,
   'f2554098-f14b-4d81-9be1-41d0f992a22f': SentimentConditionGenerator,
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': RecognizedTextConditionGenerator,
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': FaceConditionGenerator,
@@ -450,8 +556,8 @@ const engineCategoryMetadataMapping = {
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': 'fingerprint',
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': 'logo-recognition',
   'tag-search-id': 'tags',
-  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation'
-};
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation',
+}
 
 const getJoinOperator = query => {
   const operators = Object.keys(query);
@@ -477,14 +583,11 @@ const cspToPartialQuery = csp => {
 };
 
 const generateQueryCondition = node => {
-  if (
-    node &&
-    node.engineCategoryId &&
-    isFunction(engineCategoryMapping[node.engineCategoryId])
+  if (node
+    && node.engineCategoryId
+    && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
   ) {
-    const newCondition = engineCategoryMapping[node.engineCategoryId](
-      node.state
-    );
+    const newCondition = engineCategoryMapping[node.engineCategoryId](node.state);
     return newCondition;
   } else {
     return null;
@@ -502,10 +605,7 @@ const dedupeArray = arr => {
 const selectMetadataFromCsp = csp => {
   let metadataKeys = [];
   if (csp && csp.engineCategoryId) {
-    const metadataKey =
-      csp.engineCategoryId === 'sdo-search-id'
-        ? csp.state.select
-        : engineCategoryMetadataMapping[csp.engineCategoryId];
+    const metadataKey = csp.engineCategoryId === 'sdo-search-id' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
     if (metadataKey) {
       metadataKeys.push(metadataKey);
     }
@@ -524,9 +624,7 @@ const selectMetadataFromCsp = csp => {
 
 const buildQuerySelect = csp => {
   const metadataKeysFromCsp = selectMetadataFromCsp(csp);
-  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(
-    metadataKeysFromCsp
-  );
+  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(metadataKeysFromCsp);
   return dedupeArray(metadataKeys);
 };
 
@@ -543,4 +641,7 @@ const searchQueryGenerator = csp => {
   return baseQuery;
 };
 
-export { searchQueryGenerator as CSPToV3Query, engineCategoryMapping };
+module.exports = {
+  CSPToV3Query: searchQueryGenerator,
+  engineCategoryMapping: engineCategoryMapping
+};
