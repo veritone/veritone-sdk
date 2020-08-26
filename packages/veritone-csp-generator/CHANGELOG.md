@@ -7,3 +7,7 @@
 ## 3.5.7
 
 * update lodash
+
+## 3.5.8
+
+* Merge search_bar branch into master 
