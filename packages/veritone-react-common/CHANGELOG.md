@@ -315,3 +315,6 @@
 ## 10.0.2
 * export breadcrumbs 
 * fix to use the users orgId for discovery settings button 
+
+## 10.0.3
+* add data-test attributes for SimpleSearchBar
