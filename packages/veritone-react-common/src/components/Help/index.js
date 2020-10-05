@@ -1,7 +1,6 @@
 import lodash from 'lodash';
 import React, { Fragment } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import HelpIcon from '@material-ui/icons/Help';
 import MessageIcon from '@material-ui/icons/Message';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Popover from '@material-ui/core/Popover';
@@ -13,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/styles';
 import { string, func, shape, any } from 'prop-types';
+import HelpIcon from 'images/help.svg';
 
 import styles from './styles';
 
@@ -92,7 +92,7 @@ class Help extends React.Component {
       <div className={classes.help}>
         <Tooltip title={tooltipTitle || ''} disableFocusListener>
           <IconButton onClick={this.showHelpWindow} data-veritone-element="help-button">
-            <HelpIcon htmlColor="white" />
+            <img src={HelpIcon} alt="help"/>
           </IconButton>
         </Tooltip>
 

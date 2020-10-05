@@ -1,13 +1,13 @@
 import React from 'react';
 import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
-import NotificationIcon from '@material-ui/icons/Notifications';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
 import { string, func, number, shape, any } from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
+import NotifyIcon from 'images/notification.svg'
 import styles from './styles';
 
 import NotificationList, { notificationListPropTypes } from './NotificationList';
@@ -22,7 +22,7 @@ export const notifierPropTypes = {
   totalNotification: number,
   showNotifications: func,
   hideNotification: func,
-  classes: shape({any}),
+  classes: shape({ any }),
 };
 class Notifier extends React.Component {
   static propTypes = notifierPropTypes;
@@ -86,10 +86,10 @@ class Notifier extends React.Component {
                     badgeContent={numNotifications}
                     classes={{ badge: classes.badge }}
                   >
-                    <NotificationIcon htmlColor="white" />
+                    <img src={NotifyIcon} alt="notification-icon" />
                   </Badge>
                   :
-                  <NotificationIcon htmlColor="white" />
+                  <img src={NotifyIcon} alt="notification-icon" />
               }
             </IconButton>
           </span>
