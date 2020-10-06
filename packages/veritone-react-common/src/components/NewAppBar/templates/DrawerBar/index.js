@@ -1,19 +1,18 @@
-/* eslint-disable react/prop-types */
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import { bool, string, func, oneOfType, element, arrayOf } from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 
 import Drawer from '@material-ui/core/Drawer';
 import { Box } from '@material-ui/core';
-import styles from './styles'
+import styles from './styles';
+
 const useStyles = makeStyles(styles);
 
 function DrawerContainer({
   open,
   anchor = 'right',
   onClose,
-  tabList,
-  tabComponent
+  children
 }) {
   const classes = useStyles();
   return (
@@ -35,13 +34,17 @@ function DrawerContainer({
       className={classes.drawerContainer}
     >
       <Box className={classes.content}>
-        Content
+        {children}
       </Box>
     </Drawer>
   )
 }
 
 DrawerContainer.propTypes = {
-}
+  open: bool,
+  anchor: string,
+  onClose: func,
+  children: oneOfType([element, arrayOf([element])])
+};
 
 export default DrawerContainer;

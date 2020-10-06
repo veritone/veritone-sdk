@@ -22,15 +22,45 @@ import HambugerIcon from 'images/hamburger.svg';
 import AppLogo from 'images/appLogo.svg'
 import OrgIcon from 'images/orgIcon.svg'
 import VeritoneLogo from 'images/veritoneLogo.svg';
-import SettingPanel from './templates/DrawerBar';
+import Application from 'images/application.svg';
+import User from 'images/user.svg';
+import Org from 'images/orgSetting.svg';
+import Preferences from 'images/preferences.svg';
+import Activity from 'images/activity.svg';
 
 import styles from './styles';
+import SettingPanel from './organisms/SettingPanel';
 
+const tabsListDefault = [
+  {
+    id: 0,
+    label: "Applications",
+    icon: Application
+  },
+  {
+    id: 1,
+    label: "Personal Profile",
+    icon: User
+  },
+  {
+    id: 2,
+    label: "ORGANIZATIONS",
+    icon: Org
+  },
+  {
+    id: 3,
+    label: "Settings & Preferences",
+    icon: Preferences
+  },
+  {
+    id: 4,
+    label: "Activity",
+    icon: Activity
+  }
+]
+const useStyles = makeStyles(styles);
 export const appBarHeight = 55;
 export const defaultAppBarZIndex = 1000;
-
-const useStyles = makeStyles(styles);
-
 function NewAppBar({
   elevation,
   zIndex,
@@ -57,10 +87,19 @@ function NewAppBar({
   onClose
 }) {
   const classes = useStyles();
-
+  const [openSetting, setOpenSetting] = React.useState(false);
   function goHome() {
     window.location.href = window.location.origin;
   };
+
+  function handleCloseSetting() {
+    setOpenSetting(false);
+  }
+
+  function handleOpenSetting() {
+    onShowSettingPanel && onShowSettingPanel();
+    setOpenSetting(true);
+  }
 
   return (
     <React.Fragment>
@@ -153,7 +192,7 @@ function NewAppBar({
               }
               {/* veritone function */}
               <IconButton
-                onClick={onShowSettingPanel}
+                onClick={handleOpenSetting}
               >
                 <img src={VeritoneLogo} draggable="false" />
               </IconButton>
@@ -172,7 +211,7 @@ function NewAppBar({
           </div>
         </div>
       </Box >
-      <SettingPanel open />
+      <SettingPanel open={openSetting} onClose={handleCloseSetting} tabsList={tabsListDefault} />
     </React.Fragment>
   );
 }
