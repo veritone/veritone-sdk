@@ -1,6 +1,6 @@
 {
   "name": "veritone-client-js",
-  "version": "2.0.1",
+  "version": "3.0.1",
   "description": "",
   "main": "dist/bundle-browser.js",
   "module": "index.js",
@@ -20,7 +20,7 @@
   "keywords": ["veritone"],
   "dependencies": {
     "async": "^2.5.0",
-    "axios": "^0.16.2",
+    "axios": "^0.20.0",
     "object.values": "^1.0.4",
     "qs": "^6.5.0",
     "request": "^2.81.0",
