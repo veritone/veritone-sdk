@@ -15,3 +15,6 @@
 
 # 2.0.1
 * update lodash
+
+# 3.0.1
+* update axios
