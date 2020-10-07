@@ -1,10 +1,10 @@
 export default {
   tabContainer: {
-    borderRight: '0.5px solid #D5DFE9'
+    borderRight: '0.5px solid #D5DFE9',
   },
   tabName: {
     borderBottom: '0.5px solid #D5DFE9',
-    padding: '20px 30px'
+    padding: '20px 30px',
   },
   title: {
     fontFamily: 'Dosis',
@@ -17,6 +17,6 @@ export default {
     color: '#5C6269',
   },
   tabContent: {
-    padding: 30
+    height: 'calc(100vh - 55px - 64px)'
   }
-}
+};
