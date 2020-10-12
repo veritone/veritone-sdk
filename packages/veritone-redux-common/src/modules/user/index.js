@@ -1,9 +1,5 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
 import { get, isEmpty, pick, merge } from 'lodash';
-import {
-  permissions as perms,
-  util as permissionUtil
-} from 'veritone-functional-permissions';
 
 import { commonHeaders, getCredentialsMode } from 'helpers/api';
 import callGraphQLApi from 'helpers/api/callGraphQLApi';
