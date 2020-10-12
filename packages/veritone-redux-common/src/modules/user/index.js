@@ -445,21 +445,6 @@ export function selectEnabledApps(state) {
         applicationName: migrations[app.applicationName] || app.applicationName
       };
     })
-    .filter(app => {
-      if (app.applicationCheckPermissions === false) {
-        return true;
-      }
-
-      const appAccessPermissionId = get(perms, [app.applicationKey, 'access']);
-
-      return (
-        appAccessPermissionId &&
-        permissionUtil.hasAccessTo(
-          appAccessPermissionId,
-          selectUser(state).permissionMasks
-        )
-      );
-    });
 }
 
 export function userIsAuthenticated(state) {
