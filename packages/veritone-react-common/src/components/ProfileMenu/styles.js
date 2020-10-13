@@ -89,7 +89,8 @@ export default {
     textTransform: 'capitalize',
     backgroundColor: '#4284F4',
     marginRight: '10px',
-    boxShadow: 'none'
+    boxShadow: 'none',
+    color: '#FFFFFF'
   },
   logoutButton:  {
     marginTop: '20px',

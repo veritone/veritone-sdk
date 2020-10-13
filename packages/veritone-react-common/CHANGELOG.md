@@ -318,3 +318,6 @@
 
 ## 10.0.3
 * add data-test attributes for SimpleSearchBar
+
+## 10.0.4
+* fix EditProfileButton's text color to white
