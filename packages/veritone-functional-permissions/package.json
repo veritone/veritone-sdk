@@ -9,7 +9,7 @@
     "lint": "gulp lint"
   },
   "dependencies": {
-    "jsonwebtoken": "^7.4.3",
+    "jsonwebtoken": "8.5.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
