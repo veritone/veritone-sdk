@@ -1,6 +1,6 @@
 {
   "name": "veritone-functional-permissions",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "responsible for managing functional permissions",
   "main": "index.js",
   "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-functional-permissions",
@@ -9,7 +9,7 @@
     "lint": "gulp lint"
   },
   "dependencies": {
-    "jsonwebtoken": "^7.4.3",
+    "jsonwebtoken": "8.5.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
