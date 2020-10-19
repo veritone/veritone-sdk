@@ -1,6 +1,6 @@
 {
   "name": "veritone-functional-permissions",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "responsible for managing functional permissions",
   "main": "index.js",
   "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-functional-permissions",
