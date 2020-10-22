@@ -138,4 +138,5 @@ This allows redux-common to use more than one version of the API.
 ## 3.11.7
 * update lodash
 
-
+## 3.11.8
+* update veritone-funtional-permissions
