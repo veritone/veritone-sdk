@@ -321,3 +321,6 @@
 
 ## 10.0.4
 * fix EditProfileButton's text color to white
+
+## 10.0.5
+* Fix: Close help modal on Chat With Support click

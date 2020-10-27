@@ -65,6 +65,7 @@ class Help extends React.Component {
   }
 
   openChatWindow = event => {
+    this.setState({ anchorEl: null });
     this.props.supportCallback && this.props.supportCallback();
     window.Intercom && window.Intercom('show');
   }
