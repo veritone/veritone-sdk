@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "10.0.4",
+  "version": "10.0.5",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
