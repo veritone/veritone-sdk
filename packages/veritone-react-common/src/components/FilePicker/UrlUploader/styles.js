@@ -77,8 +77,11 @@ export default {
       display: 'block',
     },
   },
+  videoPreview: {
+    width: '100%',
+  },
   fileUrlInputError: {},
   fileUrlInputFocused: {},
   fileUrlInputInkbar: {},
   fileUrlInputInkbarError: {},
-}
+};

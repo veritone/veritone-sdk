@@ -6,7 +6,16 @@ import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
-import { string, arrayOf, oneOfType, number, bool, func, shape, any } from 'prop-types';
+import {
+  string,
+  arrayOf,
+  oneOfType,
+  number,
+  bool,
+  func,
+  shape,
+  any,
+} from 'prop-types';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
@@ -25,13 +34,14 @@ class FilePicker extends Component {
     onPickFiles: func.isRequired,
     onRequestClose: func.isRequired,
     allowUrlUpload: bool,
+    isUploadUrlVideo: bool,
     maxFiles: number,
     title: string,
     tooManyFilesErrorMessage: func,
     oneFileOnlyErrorMessage: string,
     enableResize: bool,
     aspectRatio: number,
-    classes: shape({ any })
+    classes: shape({ any }),
   };
 
   static defaultProps = {
@@ -39,33 +49,35 @@ class FilePicker extends Component {
     accept: [],
     multiple: false,
     allowUrlUpload: true,
+    isUploadUrlVideo: false,
     title: 'File Picker',
-    tooManyFilesErrorMessage: maxFiles =>
+    tooManyFilesErrorMessage: (maxFiles) =>
       `You can select up to and including ${maxFiles} files. Please remove any unnecessary files.`,
     oneFileOnlyErrorMessage: `Only one file can be selected at a time`,
     enableResize: false,
-    aspectRatio: 16 / 9
+    aspectRatio: 16 / 9,
   };
 
   state = {
     selectedTab: 'upload',
     resize: {
       showing: false,
-      targetFile: null
+      targetFile: null,
     },
     files: [],
-    errorMessage: ''
+    errorMessage: '',
   };
 
-  handleRemoveFile = index => {
-    this.setState(state => ({
-      files: [...state.files.slice(0, index), ...state.files.slice(index + 1)]
+  handleRemoveFile = (index) => {
+    this.setState((state) => ({
+      files: [...state.files.slice(0, index), ...state.files.slice(index + 1)],
     }));
 
     this.clearErrorMessage();
   };
 
-  handleFilesSelected = fileOrFiles => {
+  handleFilesSelected = (fileOrFiles) => {
+    console.log('handleFilesSelected', fileOrFiles);
     const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
     if (this.props.multiple) {
@@ -76,45 +88,47 @@ class FilePicker extends Component {
       ) {
         // if a file was already staged, or user tried to add more than one file
         this.setState({
-          errorMessage: this.props.tooManyFilesErrorMessage(this.props.maxFiles)
+          errorMessage: this.props.tooManyFilesErrorMessage(
+            this.props.maxFiles
+          ),
         });
       } else {
         this.clearErrorMessage();
       }
 
-      this.setState(state => ({
-        files: [...state.files, ...files]
+      this.setState((state) => ({
+        files: [...state.files, ...files],
       }));
     } else {
       // single mode
       if (this.state.files.length >= 1 || files.length > 1) {
         // if a file was already staged, or user tried to add more than one file
         this.setState({
-          errorMessage: this.props.oneFileOnlyErrorMessage
+          errorMessage: this.props.oneFileOnlyErrorMessage,
         });
       } else {
         this.clearErrorMessage();
       }
 
       this.setState({
-        files: [files[0]]
+        files: [files[0]],
       });
     }
   };
 
-  handleFilesRejected = num => {
+  handleFilesRejected = (num) => {
     const files = pluralize('file', num);
     const were = pluralize('was', num);
 
     this.setState({
       // prettier-ignore
-      errorMessage: `${num} ${files} ${were} rejected due to filetype restrictions.`
+      errorMessage: `${num} ${files} ${were} rejected due to filetype restrictions.`,
     });
   };
 
-  handleTabChange = value => {
+  handleTabChange = (value) => {
     this.setState({
-      selectedTab: value
+      selectedTab: value,
     });
 
     this.clearErrorMessage();
@@ -130,7 +144,7 @@ class FilePicker extends Component {
     this.clearErrorMessage();
     this.setState(
       {
-        files: []
+        files: [],
       },
       () => this.props.onPickFiles(files)
     );
@@ -140,22 +154,25 @@ class FilePicker extends Component {
     this.setState({
       resize: {
         showing: true,
-        targetFile: file
-      }
-    })
-  }
+        targetFile: file,
+      },
+    });
+  };
 
   clearErrorMessage() {
     this.setState({
-      errorMessage: ''
+      errorMessage: '',
     });
   }
 
   disableNextStep() {
+    console.log('this.state.files', this.state.files);
+    console.log('this.state.resize', this.state.resize);
     if (this.props.multiple && this.props.maxFiles) {
       return (
         this.state.files.length > this.props.maxFiles ||
-        this.state.files.length === 0 || this.state.resize.showing
+        this.state.files.length === 0 ||
+        this.state.resize.showing
       );
     } else {
       return this.state.files.length === 0 || this.state.resize.showing;
@@ -163,28 +180,28 @@ class FilePicker extends Component {
   }
 
   onSubmitResize = (croppedFile) => {
-    this.setState(state => ({
-      files: state.files.map(file => {
+    this.setState((state) => ({
+      files: state.files.map((file) => {
         if (`cropped-${file.name}` === croppedFile.name) {
           return croppedFile;
         }
         return file;
-      })
+      }),
     }));
     this.setState({
       resize: {
         showing: false,
-        targetFile: null
-      }
-    })
+        targetFile: null,
+      },
+    });
   };
 
   onCancalResize = () => {
     this.setState({
       resize: {
         showing: false,
-        targetFile: null
-      }
+        targetFile: null,
+      },
     });
   };
 
@@ -192,24 +209,23 @@ class FilePicker extends Component {
     const acceptedFileTypes = (isString(this.props.accept)
       ? [this.props.accept]
       : this.props.accept
-    ).map(t => mime.lookup(t) || t); // use full mimetype when possible
+    ).map((t) => mime.lookup(t) || t); // use full mimetype when possible
     const { classes } = this.props;
-    const { resize: {
-      showing: resizeShowing,
-      targetFile
-    } } = this.state;
+    const {
+      resize: { showing: resizeShowing, targetFile },
+    } = this.state;
 
     return (
       <DndProvider backend={HTML}>
         <Paper
           classes={
             this.props.onRequestClose && {
-              root: classes.filePickerPaperOverride
+              root: classes.filePickerPaperOverride,
             }
           }
           style={{
             height: this.props.height,
-            width: this.props.width
+            width: this.props.width,
           }}
         >
           <div
@@ -219,7 +235,7 @@ class FilePicker extends Component {
                 : classes.filePickerNonModal
             }
             style={{
-              height: '100%'
+              height: '100%',
             }}
           >
             {this.props.onRequestClose ? (
@@ -234,23 +250,26 @@ class FilePicker extends Component {
                 multiple={this.props.multiple}
               />
             ) : (
-                <FilePickerFlatHeader
-                  title={this.props.title}
-                  fileCount={this.state.files.length}
-                  maxFiles={this.props.maxFiles}
-                />
-              )}
+              <FilePickerFlatHeader
+                title={this.props.title}
+                fileCount={this.state.files.length}
+                maxFiles={this.props.maxFiles}
+              />
+            )}
 
             {this.state.selectedTab === 'upload' && (
-              <div className={classes.filePickerBody} data-test="filePickerBody">
-                {resizeShowing ?
+              <div
+                className={classes.filePickerBody}
+                data-test="filePickerBody"
+              >
+                {resizeShowing ? (
                   <ResizePanel
                     file={targetFile}
                     aspectRatio={this.props.aspectRatio}
                     onSubmit={this.onSubmitResize}
                     onCancel={this.onCancalResize}
                   />
-                  :
+                ) : (
                   <React.Fragment>
                     <FileUploader
                       useFlatStyle={!this.props.onRequestClose}
@@ -268,8 +287,7 @@ class FilePicker extends Component {
                       />
                     )}
                   </React.Fragment>
-                }
-
+                )}
               </div>
             )}
 
@@ -278,10 +296,13 @@ class FilePicker extends Component {
                 <UrlUploader
                   onUpload={this.handleFilesSelected}
                   acceptedFileTypes={acceptedFileTypes}
+                  isUploadUrlVideo={this.props.isUploadUrlVideo}
                 />
               </div>
             )}
-            <div className={classes.errorMessage}>{this.state.errorMessage}</div>
+            <div className={classes.errorMessage}>
+              {this.state.errorMessage}
+            </div>
             {this.props.onRequestClose && (
               <FilePickerFooter
                 onCancel={this.handleCloseModal}

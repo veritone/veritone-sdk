@@ -44,46 +44,52 @@ const allFormats = [
   'video/webm',
   'video/x-m4v',
   'video/x-ms-wmv',
-  'video/x-msvideo'
+  'video/x-msvideo',
 ];
 
-const percentByFiles = [{
-  key: 'audio_file.flac',
-  value: {
-    type: 'audio/flac',
-    percent: 10,
-    size: 82356235
-  }
-}, {
-  key: 'video_file.mp4',
-  value: {
-    type: 'video/mp4',
-    percent: 20,
-    size: 23856925352
-  }
-}, {
-  key: 'image_file.png',
-  value: {
-    type: 'image/gif',
-    percent: 80,
-    size: 38529
-  }
-}, {
-  key: 'text_file.txt',
-  value: {
-    type: 'application/text',
-    percent: 90,
-    size: 569182
-  }
-}, {
-  key: 'error_file.bin',
-  value: {
-    type: 'application/json',
-    percent: 69,
-    size: 56283756,
-    error: true
-  }
-}];
+const percentByFiles = [
+  {
+    key: 'audio_file.flac',
+    value: {
+      type: 'audio/flac',
+      percent: 10,
+      size: 82356235,
+    },
+  },
+  {
+    key: 'video_file.mp4',
+    value: {
+      type: 'video/mp4',
+      percent: 20,
+      size: 23856925352,
+    },
+  },
+  {
+    key: 'image_file.png',
+    value: {
+      type: 'image/gif',
+      percent: 80,
+      size: 38529,
+    },
+  },
+  {
+    key: 'text_file.txt',
+    value: {
+      type: 'application/text',
+      percent: 90,
+      size: 569182,
+    },
+  },
+  {
+    key: 'error_file.bin',
+    value: {
+      type: 'application/json',
+      percent: 69,
+      size: 56283756,
+      error: true,
+    },
+  },
+];
 
 storiesOf('FilePicker', module)
   .add('Base', () => (
@@ -151,14 +157,15 @@ storiesOf('FilePicker', module)
       onRequestClose={action('close modal')}
       multiple
     />
-  )).add('File Progress Dialog', () => (
+  ))
+  .add('File Progress Dialog', () => (
     <FileProgressDialog
       percentByFiles={object('percentByFiles', percentByFiles)}
       progressMessage={`We couldn't upload these files.`}
       completeStatus={select('completeStatus', {
         success: 'success',
         failure: 'failure',
-        warning: 'warning'
+        warning: 'warning',
       })}
       height={450}
       width={600}
@@ -167,10 +174,19 @@ storiesOf('FilePicker', module)
       handleAbort={action('Handle abort')}
       onClose={action('On Close')}
     />
-  )).add('File Progress List', () => (
+  ))
+  .add('File Progress List', () => (
     <FileProgressList
       percentByFiles={object('percentByFiles', percentByFiles)}
       handleAbort={action('Handle abort')}
       showErrors={boolean('Show Errors', false)}
+    />
+  ))
+  .add('Upload Url Video', () => (
+    <FilePicker
+      accept={['video/*', 'audio/*', '.cme']}
+      isUploadUrlVideo
+      onPickFiles={action('upload files')}
+      onRequestClose={action('close modal')}
     />
   ));
