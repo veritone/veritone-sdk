@@ -1,31 +1,23 @@
 {
   "env": {
     "test": {
-      "presets": ["env", "react", "es2015"],
+      "presets": ["@babel/preset-env", "@babel/preset-react"],
       "plugins": [
+        "@babel/plugin-proposal-export-default-from",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
         [
-          "module-resolver",
-          {
-            "root": "./src",
-            "alias": {
-              "helpers": "./src/helpers",
-              "images": "./src/resources/images",
-              "components": "./src/components"
-            }
-          }
+          "@babel/plugin-proposal-object-rest-spread",
+          { "loose": true, "useBuiltIns": true }
         ],
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",        
-        "transform-es2015-destructuring",
+        "@babel/plugin-transform-destructuring",
         "lodash"
       ]
     },
     "production-es": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "modules": false,
             "targets": {
@@ -33,10 +25,10 @@
             }
           }
         ],
-        "react"
+        "@babel/preset-react"
       ],
       "plugins": [
-        "external-helpers",
+        "@babel/plugin-external-helpers",
         [
           "module-resolver",
           {
@@ -48,10 +40,13 @@
           }
         ],
         "add-react-displayname",
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",
+        "@babel/plugin-proposal-export-default-from",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        [
+          "@babel/plugin-proposal-object-rest-spread",
+          { "loose": true, "useBuiltIns": true }
+        ],
         "lodash",
         "date-fns"
       ]
@@ -59,18 +54,18 @@
     "production-cjs": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 0.5%"]
+              "browsers": ["> 5%"]
             }
           }
         ],
-        "react"
+        "@babel/preset-react"
       ],
       "plugins": [
-        "external-helpers",
+        "@babel/plugin-external-helpers",
         [
           "module-resolver",
           {
@@ -82,10 +77,13 @@
           }
         ],
         "add-react-displayname",
-        "transform-export-extensions",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-object-rest-spread",
+        "@babel/plugin-proposal-export-default-from",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        [
+          "@babel/plugin-proposal-object-rest-spread",
+          { "loose": true, "useBuiltIns": true }
+        ],
         "lodash",
         "date-fns"
       ]

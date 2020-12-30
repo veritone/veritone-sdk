@@ -4,9 +4,8 @@ import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
 import url from 'rollup-plugin-url';
-import analyze from 'rollup-analyzer-plugin';
+import analyze from 'rollup-plugin-analyzer';
 import postcss from 'rollup-plugin-postcss';
-import { snakeCase } from 'lodash';
 
 import * as mui from '@material-ui/core';
 import * as muiIcons from '@material-ui/icons';
@@ -87,8 +86,15 @@ export default {
           'DropTarget'
         ],
         '../../node_modules/@material-ui/utils/node_modules/react-is/index.js': [
-          'ForwardRef'
-        ]
+          'ForwardRef',
+          'Memo'
+        ],
+        '../../node_modules/@material-ui/core/node_modules/react-is/index.js': [
+          'isFragment'
+        ],
+        '../../node_modules/file-type/browser.js': [
+          'fromBuffer'
+        ],
       },
       include: ['../../node_modules/**', 'node_modules/**', '../**']
     }),

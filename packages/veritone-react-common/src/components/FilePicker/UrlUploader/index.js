@@ -35,7 +35,7 @@ class UrlUploader extends Component {
     evt.preventDefault();
   };
 
-  readFile = (responseBlob) => {
+  readFile = async (responseBlob) => {
     if (this.props.isUploadUrlVideo) {
       const objectURL = URL.createObjectURL(responseBlob);
       const blobToData = (blob) =>
@@ -52,8 +52,11 @@ class UrlUploader extends Component {
           reader.readAsArrayBuffer(blob);
         });
 
-      const result = blobToData(responseBlob);
-      const videoType = fromBuffer(result);
+      const result = await blobToData(responseBlob);
+      console.log('result', result);
+      const videoType = await fromBuffer(result);
+      console.log('videoType', videoType);
+      // const videoType = "";
       return { responseBlob, videoType };
     }
 

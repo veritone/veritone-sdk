@@ -5,7 +5,12 @@ import { select, object, boolean } from '@storybook/addon-knobs';
 
 import FileProgressDialog from './FileProgressDialog';
 import FileProgressList from './FileProgressList';
-import FilePicker from './';
+import FilePicker from '.';
+
+export default {
+  title: 'Example/FilePicker',
+  component: FilePicker,
+};
 
 const allFormats = [
   'application/json',
@@ -90,6 +95,13 @@ const percentByFiles = [
     },
   },
 ];
+
+// const Template = (args) => <FilePicker {...args} />;
+
+// export const Base = Template.bind({});
+// Base.args = {
+//   onPickFiles: { action: 'Upload files' },
+// };
 
 storiesOf('FilePicker', module)
   .add('Base', () => (

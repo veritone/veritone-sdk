@@ -14,9 +14,7 @@
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",
-  "dependencies": {
-    "babel-runtime": "^6.26.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "rimraf": "^2.6.2",
     "rollup": "^0.56.3",

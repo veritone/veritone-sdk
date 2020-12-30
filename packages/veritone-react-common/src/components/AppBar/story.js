@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { text } from '@storybook/addon-knobs/react';
+import { text } from '@storybook/addon-knobs';
 import { Build, Help } from '@material-ui/icons';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -9,7 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { SimpleSearchBar } from '../SimpleSearchBar/SimpleSearchBar';
 import { SearchBarAdvanced } from '../SearchBarAdvanced';
 
-import AppBar from './';
+import AppBar from '.';
 
 window.config = { appVersion: 'Attribute App 2019.24.0' };
 storiesOf('AppBar', module)

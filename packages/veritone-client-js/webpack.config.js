@@ -1,7 +1,7 @@
 // const path = require('path');
 const webpack = require('webpack');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const MinifyPlugin = require('babili-webpack-plugin');
+// const MinifyPlugin = require('babili-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
       __BROWSER__: process.env.BUILD_ENV === 'browser'
     }),
     new CaseSensitivePathsPlugin(),
-    new MinifyPlugin()
+    // new MinifyPlugin()
     // new BundleAnalyzerPlugin()
   ],
   module: {
