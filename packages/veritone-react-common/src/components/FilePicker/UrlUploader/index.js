@@ -53,10 +53,7 @@ class UrlUploader extends Component {
         });
 
       const result = await blobToData(responseBlob);
-      console.log('result', result);
       const videoType = await fromBuffer(result);
-      console.log('videoType', videoType);
-      // const videoType = "";
       return { responseBlob, videoType };
     }
 
@@ -92,26 +89,18 @@ class UrlUploader extends Component {
         }
       })
       .then((responseBlob) => {
-        console.log('responseBlob0', responseBlob);
-
         if (this.validateFileType(responseBlob.type)) {
-          console.log('responseBlob1', responseBlob);
           return responseBlob;
         } else {
-          console.log('responseBlob1-err', responseBlob);
           throw new Error(`${imageUrl} did match any of the allowed fileTypes`);
         }
       })
       .then(async (responseBlob) => {
-        console.log('responseBlob2', responseBlob);
         return this.readFile(responseBlob);
       })
       .then(({ responseBlob, videoType }) => {
-        console.log('responseBlob3', responseBlob, videoType);
         const fileType = videoType.mime;
-        console.log('fileType', fileType);
         const extension = mime.extension(fileType);
-        console.log('extension', extension);
 
         // make an attempt to extract a useful filename (if url has an extension),
         // otherwise use the URL.
@@ -119,15 +108,12 @@ class UrlUploader extends Component {
         const tryFilename = isUploadUrlVideo
           ? /(\w+)(\.\w+)+(?!.*(\w+)(\.\w+)+)/
           : /(?=\w+\.\w{3,4}$).+/;
-        console.log('tryFilename', tryFilename);
 
         let urlFileName = imageUrl.match(tryFilename);
         if (isArray(urlFileName) && urlFileName.length > 0) {
           urlFileName = urlFileName[0];
         }
         const fileName = urlFileName || `${imageUrl}.${extension}`;
-
-        console.log('fileName', fileName);
 
         this.props.onUpload(
           new File([responseBlob], fileName, {
@@ -138,7 +124,6 @@ class UrlUploader extends Component {
         return responseBlob;
       })
       .catch((error) => {
-        console.log('error', error);
         // todo: better errors
         this.setState({
           fetchingImage: false,

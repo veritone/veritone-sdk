@@ -77,7 +77,6 @@ class FilePicker extends Component {
   };
 
   handleFilesSelected = (fileOrFiles) => {
-    console.log('handleFilesSelected', fileOrFiles);
     const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
     if (this.props.multiple) {
@@ -166,8 +165,6 @@ class FilePicker extends Component {
   }
 
   disableNextStep() {
-    console.log('this.state.files', this.state.files);
-    console.log('this.state.resize', this.state.resize);
     if (this.props.multiple && this.props.maxFiles) {
       return (
         this.state.files.length > this.props.maxFiles ||

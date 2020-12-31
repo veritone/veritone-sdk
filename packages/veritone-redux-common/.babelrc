@@ -1,7 +1,7 @@
 {
   "env": {
     "test": {
-      "presets": ["@babel/env", "@babel/react"],
+      "presets": ["env", "react"],
       "plugins": [
         [
           "module-resolver",

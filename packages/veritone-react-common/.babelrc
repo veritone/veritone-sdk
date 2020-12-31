@@ -58,7 +58,7 @@
           {
             "modules": false,
             "targets": {
-              "browsers": ["> 5%"]
+              "browsers": ["> 0.5%"]
             }
           }
         ],

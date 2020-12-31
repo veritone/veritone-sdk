@@ -96,13 +96,6 @@ const percentByFiles = [
   },
 ];
 
-// const Template = (args) => <FilePicker {...args} />;
-
-// export const Base = Template.bind({});
-// Base.args = {
-//   onPickFiles: { action: 'Upload files' },
-// };
-
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker

@@ -9,7 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { SimpleSearchBar } from '../SimpleSearchBar/SimpleSearchBar';
 import { SearchBarAdvanced } from '../SearchBarAdvanced';
 
-import AppBar from '.';
+import AppBar from './';
 
 window.config = { appVersion: 'Attribute App 2019.24.0' };
 storiesOf('AppBar', module)
