@@ -71,6 +71,7 @@
     "@storybook/addon-essentials": "^6.1.11",
     "@storybook/addon-knobs": "^6.1.11",
     "@storybook/react": "^6.1.11",
+    "babel-loader": "^8.2.2",
     "babel-plugin-date-fns": "^2.0.0",
     "core-js": "^3.8.1",
     "cross-env": "^5.0.5",
