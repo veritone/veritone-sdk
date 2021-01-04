@@ -40,7 +40,7 @@
     "video-react": "~0.13.3"
   },
   "scripts": {
-    "start": "NODE_ENV=test start-storybook -p 9005 -c .storybook",
+    "start": "NODE_ENV=test start-storybook -p 9005",
     "now-start": "http-server docs-static",
     "now-build": "yarn run build:storybook",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
