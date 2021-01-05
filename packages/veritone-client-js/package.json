@@ -20,7 +20,7 @@
   "keywords": ["veritone"],
   "dependencies": {
     "async": "^2.5.0",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "object.values": "^1.0.4",
     "qs": "^6.5.0",
     "request": "^2.81.0",
