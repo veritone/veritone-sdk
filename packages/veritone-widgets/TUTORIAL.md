@@ -37,23 +37,23 @@ The Veritone file browser for AI processing. Allows you to browse your files and
 
 *Instance methods*
 
-* pick(callback): open the datapicker dialog.
-  * callback signature is (result, { warning, error, canceled})
-    * result: array of result objects, one for each file uploaded
-      * key: string, the filename as stored on the server (may include a UUID)
-      * fileName: string, the original filename
-      * size: number, the file size in bytes
-      * type: string, the mime type of the file
-      * error: string or `false`, the error that prevented the file from uploading, if any
-      * bucket: string, the S3 bucket to which the file was uploaded
-      * expiresInSeconds: number, the length of time the credentials in `getUrl` will be valid, in seconds.
-      * getUrl: string or `null`, the resulting S3 URL, if successful. Includes credentials that are valid for `expires` seconds.
-      * unsignedUrl: string or `null`, the resulting S3 URL, if successful. Does not include credentials and will need to be signed to be used.
-    * warning: string or `false`, a warning message if some (but not all) files failed to upload. A warning indicates that `result` contains some successful upload result objects, and some that were not successful (unsuccessful objects will have `error` populated with an error message, as noted above)
-    * error: string or `false`, an error message, if all files failed to upload.
-    * canceled: bool, whether or not the datapicker interaction was canceled (by the user, or by calling cancel()).
+* pick(callback): open the DataPicker dialog.
+  * callback signature is (result, { warning, error, cancelled })
+    * result: array of result objects, one for each file uploaded
+      * key: string, the filename as stored on the server (may include a UUID)
+      * fileName: string, the original filename
+      * size: number, the file size in bytes
+      * type: string, the mime type of the file
+      * error: string or `false`, the error that prevented the file from uploading, if any
+      * bucket: string, the S3 bucket to which the file was uploaded
+      * expiresInSeconds: number, the length of time the credentials in `getUrl` will be valid, in seconds.
+      * getUrl: string or `null`, the resulting S3 URL, if successful. Includes credentials that are valid for `expires` seconds.
+      * unsignedUrl: string or `null`, the resulting S3 URL, if successful. Does not include credentials and will need to be signed to be used.
+    * warning: string or `false`, a warning message if some (but not all) files failed to upload. A warning indicates that `result` contains some successful upload result objects, and some that were not successful (unsuccessful objects will have `error` populated with an error message, as noted above)
+    * error: string or `false`, an error message, if all files failed to upload.
+    * cancelled: bool, whether or not the DataPicker interaction was cancelled (by the user, or by calling cancel()).
 
-* cancel(): close the datapicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
+* cancel(): close the DataPicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
 
 
 *Sample Code for Implementation*
