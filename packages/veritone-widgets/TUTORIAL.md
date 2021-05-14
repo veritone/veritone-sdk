@@ -10,6 +10,8 @@ The Veritone file browser for AI processing. Allows you to browse your files and
 * name, string, the name of the file
 * onPick, function, the starting file to be used with DataPicker
 * endPick, function, the last file to be used with DataPicker
+* open, bool, used to open a file (Required to have `open` or `renderButton`)
+* renderButton, function, used to render the file access button in the widget (Required to have `open` or `renderButton`)
 * uploadToTDo, function, the list of files that will be uploaded
 * retryDone, function, used to inform the user the status of if a file can be found
 * retryRequest, function, used to request another attempt at searching for a file
@@ -52,3 +54,21 @@ The Veritone file browser for AI processing. Allows you to browse your files and
     * canceled: bool, whether or not the datapicker interaction was canceled (by the user, or by calling cancel()).
 
 * cancel(): close the datapicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
+
+
+*Sample Code for Implementation*
+
+```javascript
+
+widget = new veritoneWidgets.DataPickerWidget({
+   elId: YOUR_HTML_ELEMENT_ID,
+   onPick: items => {
+     console.log('Items picked: ');
+     console.log(items);
+   }
+ });
+ widget.pick(); // open Picker
+ widget.cancel(); // close Picker
+*/
+
+```
