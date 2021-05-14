@@ -31,7 +31,7 @@ The Veritone file browser for AI processing. Allows you to browse your files and
 * Only Upload, restricts the user to only uploading files
 * Single Selection Only, restricts the user to selecting only a single file at a time
 * 2 Selection Only, restricts the user to selecting only two files at a time
-* Not Fullscreen, enforces the rule that the widget can not be set to fullscreen.
+* Not Fullscreen, the widget is unable to be fullscreen
 
 *Instance methods*
 
