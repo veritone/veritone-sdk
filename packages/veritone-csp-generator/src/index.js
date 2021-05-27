@@ -249,14 +249,26 @@ const ObjectConditionGenerator = modalState => {
 };
 
 const SentimentConditionGenerator = modalState => {
+  let positive = '0.5';
+  let negative = '0.5';
+  if (modalState.customizedSearch && modalState.customizedSearch.sentiment) {
+    const sentiment = modalState.customizedSearch.sentiment;
+    if (sentiment.positive) {
+      positive = sentiment.positive;
+    }
+    if (sentiment.negative) {
+      negative = sentiment.negative;
+    }
+  }
+
   const sentimentOperator = {
     operator: 'range',
-    field: 'sentiment-veritone.series.score'
+    field: 'sentiment.sentiment.positiveValue'
   };
   if (modalState.search == 'positive') {
-    sentimentOperator.gte = '0.5';
+    sentimentOperator.gte = positive;
   } else {
-    sentimentOperator.lt = '0.5';
+    sentimentOperator.lt = negative;
   }
   return sentimentOperator;
 };
@@ -587,6 +599,7 @@ const generateQueryCondition = node => {
     && node.engineCategoryId
     && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
   ) {
+    node.state.customizedSearch = node.customizedSearch;
     const newCondition = engineCategoryMapping[node.engineCategoryId](node.state);
     return newCondition;
   } else {
