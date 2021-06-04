@@ -11,36 +11,40 @@
         "schemaId": {
           "type": "string",
           "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
-          "example": "https://docs.veritone.com/schemas/vtn-standard/master.json"
+          "examples": [
+            "https://docs.veritone.com/schemas/vtn-standard/master.json"
+          ]
         },
         "sourceEngineId": {
           "type": "string",
           "description": "<GUID> of the engine that generated this file (provided by Veritone)",
-          "example": "fe261482-af8d-4709-aefb-ff1c19b61eb9"
+          "examples": ["fe261482-af8d-4709-aefb-ff1c19b61eb9"]
         },
         "sourceEngineName": {
           "type": "string",
           "description": "Name of the engine that generated this file (provided by Veritone)",
-          "example": "capio"
+          "examples": ["capio", "Transcription - Medical V3"]
         },
         "taskPayload": {
           "type": "object",
           "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone). Task payload will be a combination of attributes found on https://docs.veritone.com/#/developer/adapters/quick-start/step-2?id=constructing-a-batch-pull-adapter and any default custom fields (https://docs.veritone.com/#/developer/engines/custom-fields/?id=custom-fields)",
-          "example": {
-            "detectionThreshold": 0.7,
-            "processingFPS": 30
-          }
+          "examples": [
+            {
+              "detectionThreshold": 0.7,
+              "processingFPS": 30
+            }
+          ]
         },
         "taskId": {
           "type": "string",
           "description": "<GUID> of the task (provided by Veritone)",
-          "example": "6b9cd86e-de5c-4795-b605-a9b3b29fa3cf"
+          "examples": ["6b9cd86e-de5c-4795-b605-a9b3b29fa3cf"]
         },
         "generatedDateUTC": {
           "type": "string",
           "description": "DateTime (ISO8601) of when the engine result was generated (provided by Veritone if not included)",
           "format": "date-time",
-          "example": "2017-12-08T17:19:02Z"
+          "examples": ["2017-12-08T17:19:02Z"]
         },
         "externalSourceId": {
           "type": "string",
@@ -103,13 +107,13 @@
         "properties": {
           "class": {
             "type": "string",
-            "description": "The class of the object recognized",
-            "example": "For example, if the label of an object was dog, the class of the object could be animal"
+            "description": "The class of the object recognized.",
+            "examples": ["animal", "mammal", "jerseyNumber"]
           },
           "@id": {
             "type": "string",
             "description": "Private id variable used by the engine to refer to its internal dataset",
-            "example": "1"
+            "examples": ["1"]
           },
           "confidence": {
             "$ref": "#/definitions/confidence"
@@ -243,7 +247,7 @@
       "description": "Number of consecutive time-slices the utterance spans. example: of->thrones----->of->their-->own-> utteranceLength: thrones: 2; their,own: 1",
       "type": "integer",
       "minimum": 1,
-      "example": 2
+      "examples": [2]
     },
     "language": {
       "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
@@ -257,13 +261,13 @@
           "type": "integer",
           "minimum": 0,
           "description": "The start time relative to the start of the media asset in milliseconds.",
-          "example": 0
+          "examples": [0]
         },
         "stopTimeMs": {
           "type": "integer",
           "minimum": 0,
           "description": "The stop time relative to the start of the media asset in milliseconds.",
-          "example": 3000
+          "examples": [3000]
         },
         "language": {
           "$ref": "#/definitions/language"
