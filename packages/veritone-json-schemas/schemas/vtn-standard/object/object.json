@@ -24,7 +24,10 @@
   },
   "allOf": [
     {
-      "$ref": "../master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "$ref": "../master.json#/definitions/validated"
     },
     {
       "type": "object",

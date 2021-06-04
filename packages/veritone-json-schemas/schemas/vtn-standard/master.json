@@ -5,7 +5,7 @@
   "description": "Standard engine output at Veritone",
   "type": "object",
   "definitions": {
-    "header": {
+    "PREAMBLE": {
       "type": "object",
       "properties": {
         "schemaId": {
@@ -15,12 +15,12 @@
         },
         "sourceEngineId": {
           "type": "string",
-          "description": "<GUID> of the engine (provided by Veritone)",
+          "description": "<GUID> of the engine that generated this file (provided by Veritone)",
           "example": "fe261482-af8d-4709-aefb-ff1c19b61eb9"
         },
         "sourceEngineName": {
           "type": "string",
-          "description": "Engine name used to generate output (provided by Veritone)",
+          "description": "Name of the engine that generated this file (provided by Veritone)",
           "example": "capio"
         },
         "taskPayload": {
@@ -44,8 +44,7 @@
         },
         "externalSourceId": {
           "type": "string",
-          "description": "Vendor specific referenceId to this engine result (optional)",
-          "example": "1"
+          "description": "Vendor specific referenceId to this engine result (optional)"
         },
         "language": {
           "$ref": "#/definitions/language"
@@ -59,7 +58,9 @@
             }
           ]
         }
-      },
+      }
+    },
+    "validated": {
       "required": ["validationContracts"]
     },
     "confidence": {

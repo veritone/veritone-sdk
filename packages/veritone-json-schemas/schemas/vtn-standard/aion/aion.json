@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/aion/aion.json",
+  "title": "Engine output for any Veritone cognition engine: AI Object Notation (AION)",
+  "description": "Contains unstructured data about the contents of media (video, audio, image, or document). Used to validate the Media Type application/vnd.veritone.aion+json. Informal documentation/example is available at https://docs.veritone.com/#/developer/engines/standards/engine-output/",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    }
+  ]
+}
