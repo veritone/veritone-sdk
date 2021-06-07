@@ -42,7 +42,7 @@
     "eslint": "^4.1.1",
     "eslint-config-prettier": "^2.3.0",
     "isomorphic-fetch": "^2.2.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mocha": "^3.4.2",
     "nock": "^9.0.13",
     "nyc": "^11.0.3",

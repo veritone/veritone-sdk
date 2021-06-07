@@ -16,7 +16,7 @@
     "date-fns": "^2.1.0",
     "google-maps": "^3.3.0",
     "jss": "^10.0.0-alpha.24",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "memoize-one": "^4.0.0",
     "mime-types": "^2.1.17",
     "pluralize": "^7.0.0",
