@@ -2,7 +2,7 @@
   "name": "veritone-redux-common",
   "version": "3.11.8",
   "dependencies": {
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "prop-types": "^15.6.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
