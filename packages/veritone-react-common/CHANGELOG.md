@@ -324,3 +324,6 @@
 
 ## 10.0.5
 * Fix: Close help modal on Chat With Support click
+
+## 10.0.6
+* bump CSP generator
