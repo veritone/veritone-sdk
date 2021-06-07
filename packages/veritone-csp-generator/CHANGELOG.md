@@ -11,3 +11,7 @@
 ## 3.5.8
 
 * Merge search_bar branch into master 
+
+## 3.5.9
+
+* Fix sentiment search

@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "10.0.5",
+  "version": "10.0.6",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -112,7 +112,7 @@
     "stylelint-config-prettier": "^4.0.0",
     "stylelint-config-standard": "^17.0.0",
     "url-loader": "^0.6.2",
-    "veritone-csp-generator": "^3.5.7",
+    "veritone-csp-generator": "3.5.9",
     "veritone-dev-env": "^3.0.0",
     "veritone-searchbar-react-export": "^20.0.0"
   },
