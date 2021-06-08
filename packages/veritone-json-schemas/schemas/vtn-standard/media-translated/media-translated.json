@@ -22,7 +22,7 @@
         "media": {
           "allOf": [
             {
-              "$ref": "../master.json#/definitions/media"
+              "$ref": "../master.json#/definitions/medias"
             },
             {
               "type": "array",

@@ -25,7 +25,7 @@
         },
         "media": {
           "description": "Links to external files generated during processing",
-          "$ref": "../master.json#/definitions/media"
+          "$ref": "../master.json#/definitions/medias"
         }
       }
     }

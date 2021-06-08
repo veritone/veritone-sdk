@@ -6,10 +6,7 @@
   "taskId": "<TASK_ID>",
   "generatedDateUtc": "2017-12-08T17:19:02Z",
   "externalSourceId": "<string>",
-  "validationContracts": [
-    "text",
-    "face"
-  ],
+  "validationContracts": ["text", "face"],
   "tags": [
     {
       "key": "foo",
@@ -259,13 +256,11 @@
           "<keyN>": "<value>"
         }
       },
-      "media": [
-        {
-          "assetId": "<ID of the associated asset>",
-          "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "language": "en"
-        }
-      ],
+      "media": {
+        "assetId": "<ID of the associated asset>",
+        "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "language": "en"
+      },
       "vendor": {}
     }
   ]

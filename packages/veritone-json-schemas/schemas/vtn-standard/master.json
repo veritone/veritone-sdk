@@ -490,31 +490,35 @@
       "required": ["startTimeMs", "stopTimeMs"],
       "additionalProperties": false
     },
-    "media": {
+    "medias": {
       "description": "Reference to files when a cognition process outputs files.",
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "assetId": {
-            "description": "The ID of the asset output by the engine",
-            "type": "string"
-          },
-          "contentType": {
-            "description": "An IANA Media Type: https://www.iana.org/assignments/media-types/media-types.xhtml",
-            "type": "string",
-            "examples": [
-              "image/jpeg",
-              "application/json",
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            ]
-          },
-          "language": {
-            "$ref": "#/definitions/language"
-          }
-        },
-        "required": ["assetId"]
+        "$ref": "#/definitions/media"
       }
+    },
+    "media": {
+      "description": "A reference to a file output by cognition",
+      "type": "object",
+      "properties": {
+        "assetId": {
+          "description": "The ID of the asset output by the engine",
+          "type": "string"
+        },
+        "contentType": {
+          "description": "An IANA Media Type: https://www.iana.org/assignments/media-types/media-types.xhtml",
+          "type": "string",
+          "examples": [
+            "image/jpeg",
+            "application/json",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ]
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        }
+      },
+      "required": ["assetId"]
     },
     "page": {
       "description": "The page on which the text or insight appears",
