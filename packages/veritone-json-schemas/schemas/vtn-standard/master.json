@@ -308,11 +308,11 @@
         },
         "libraryId": {
           "description": "GUID of the training library used to extract/discover this object",
-          "type": "string"
+          "$ref": "#/definitions/guid"
         },
         "entityId": {
           "description": "GUID of the entity in the library that was used to identify this object",
-          "type": "string"
+          "$ref": "#/definitions/guid"
         },
         "mode": {
           "type": "string",
@@ -480,11 +480,11 @@
         },
         "libraryId": {
           "description": "GUID of the training library used to extract/discover this object",
-          "type": "string"
+          "$ref": "#/definitions/guid"
         },
         "entityId": {
           "description": "GUID of the entity in the library that was used to identify this object",
-          "type": "string"
+          "$ref": "#/definitions/guid"
         }
       },
       "required": ["startTimeMs", "stopTimeMs"],
