@@ -6,7 +6,28 @@
   "type": "object",
   "allOf": [
     {
+      "description": "Metadata for this document",
       "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "description": "Information about the document as a whole",
+      "$ref": "../master.json#/definitions/FILEDATA"
+    },
+    {
+      "properties": {
+        "object": {
+          "description": "Non time-based information about the content of this media",
+          "$ref": "../master.json#/definitions/OBJECTDATA"
+        },
+        "series": {
+          "description": "Time-based information about the content of this media",
+          "$ref": "../master.json#/definitions/TIMESERIESDATA"
+        },
+        "media": {
+          "description": "Links to external files generated during processing",
+          "$ref": "../master.json#/definitions/media"
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "tags": [
+    { "key": "foo", "value": "bar", "score": 0.13 },
+    { "key": "gender", "value": "female" },
+    { "key": "groundTruth" },
+    { "key": "moderation", "value": "nudity" },
+    { "key": "moderation", "value": "fakeNews", "score": 0.84 }
+  ]
+}

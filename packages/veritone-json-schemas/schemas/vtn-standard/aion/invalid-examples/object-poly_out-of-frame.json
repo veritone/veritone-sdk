@@ -1,0 +1,9 @@
+{
+  "object": [
+    {
+      "type": "object",
+      "label": "out of frame",
+      "boundingPoly": [{ "x": 0.1, "y": 1.1 }]
+    }
+  ]
+}

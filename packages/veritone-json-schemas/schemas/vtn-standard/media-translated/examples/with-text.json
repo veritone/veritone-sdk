@@ -12,11 +12,13 @@
   ],
   "object": [
     {
+      "type": "text",
       "text": "this is the first line of text which was originally written in spanish",
       "language": "en",
       "sentence": 1
     },
     {
+      "type": "text",
       "text": "c'est la première ligne de texte qui a été écrite en espagnol",
       "language": "fr",
       "sentence": 1
