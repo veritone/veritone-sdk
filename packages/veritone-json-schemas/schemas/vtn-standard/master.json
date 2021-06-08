@@ -93,9 +93,9 @@
       ]
     },
     "guid": {
-      "description": "A globally unique ID. Typically a UUID in the 8-4-4-4-12 character format.",
+      "description": "A globally unique ID. Typically a UUID in the 8-4-4-4-12 character format, but it doesn't have to be a UUID",
       "type": "string",
-      "examples": ["fe261482-af8d-4709-aefb-ff1c19b61eb9"]
+      "examples": ["fe261482-af8d-4709-aefb-ff1c19b61eb9", "21062204_Rl54mU5vIVED8Y9"]
     },
     "dateTime": {
       "description": "DateTime (ISO8601)",
