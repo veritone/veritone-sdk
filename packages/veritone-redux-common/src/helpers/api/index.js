@@ -21,9 +21,5 @@ export function commonHeaders(state) {
 }
 
 export function getCredentialsMode() {
-  const origin = (window && window.origin) || '';
-  // app.veritone.com on port 80 in prod, or
-  // ie. local.veritone.com on any port in dev
-  const isVeritoneInternalApp = origin.match(/\.veritone\.com(:\d{1,5})?$/);
-  return isVeritoneInternalApp ? 'include' : 'omit';
+  return 'include';
 }
