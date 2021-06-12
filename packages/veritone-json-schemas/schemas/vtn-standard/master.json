@@ -51,6 +51,9 @@
         "tags": {
           "$ref": "#/definitions/tags"
         },
+        "collateIndex": {
+          "$ref": "#/definitions/collateIndex"
+        },
         "language": {
           "$ref": "#/definitions/language"
         },
@@ -95,7 +98,10 @@
     "guid": {
       "description": "A globally unique ID. Typically a UUID in the 8-4-4-4-12 character format, but it doesn't have to be a UUID",
       "type": "string",
-      "examples": ["fe261482-af8d-4709-aefb-ff1c19b61eb9", "21062204_Rl54mU5vIVED8Y9"]
+      "examples": [
+        "fe261482-af8d-4709-aefb-ff1c19b61eb9",
+        "21062204_Rl54mU5vIVED8Y9"
+      ]
     },
     "dateTime": {
       "description": "DateTime (ISO8601)",
@@ -166,6 +172,11 @@
           { "key": "moderation", "value": "fakeNews", "score": 0.84 }
         ]
       }
+    },
+    "collateIndex": {
+      "description": "Collation order used to preserve ordering, especially when parallel processing. Items with lower collate values come before items with higher collate values. Indexes do not have to be sequential, but may not be duplicated. You may use whatever integers are convenient: indexes, frame/page numbers, byte offsets, etc.",
+      "type": "integer",
+      "examples": [0, 1, 2, 18673, -22]
     },
     "confidence": {
       "description": "Confidence expressed as a range of 0.0 (not confident) to 1.0 (maximum confidence)",
@@ -260,6 +271,9 @@
         },
         "language": {
           "$ref": "#/definitions/language"
+        },
+        "collateIndex": {
+          "$ref": "#/definitions/collateIndex"
         },
         "page": {
           "$ref": "#/definitions/page"

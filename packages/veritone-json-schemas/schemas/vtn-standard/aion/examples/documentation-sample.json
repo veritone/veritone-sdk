@@ -18,6 +18,7 @@
       "value": "bar2"
     }
   ],
+  "collateIndex": 0,
   "language": "en-US",
   "summary": "",
   "sentiment": {
@@ -52,6 +53,7 @@
       "libraryId": "<GUID>",
       "confidence": 0.99234,
       "text": "The quick brown fox jumped over the lazy dog",
+      "collateIndex": 4,
       "page": 5,
       "paragraph": 3,
       "sentence": 2,
