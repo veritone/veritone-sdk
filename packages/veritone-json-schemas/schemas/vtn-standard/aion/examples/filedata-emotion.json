@@ -1,0 +1,8 @@
+{
+  "emotions": [
+    { "emotion": "happy" },
+    { "emotion": "happy", "emotionValue": 0.777 },
+    { "emotion": "happy", "emotionValue": 0.777, "emotionConfidence": 0.88 },
+    { "emotion": "happy", "emotionConfidence": 0.88 }
+  ]
+}

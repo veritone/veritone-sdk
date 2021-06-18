@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { isEmpty, cloneDeep } from 'lodash';
 
 import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
+import * as AION_SCHEMA from '../schemas/vtn-standard/aion/aion.json';
 import * as CONCEPT_SCHEMA from '../schemas/vtn-standard/concept/concept.json';
 import * as ENTITY_SCHEMA from '../schemas/vtn-standard/entity/entity.json';
 import * as KEYWORD_SCHEMA from '../schemas/vtn-standard/keyword/keyword.json';
@@ -92,6 +93,8 @@ const validateBestPath = function(schema, data) {
   }
 };
 
+const verifyAion = generateValidationContractValidator(AION_SCHEMA);
+
 const verifyConcept = generateValidationContractValidator(CONCEPT_SCHEMA);
 const verifyEntity = generateValidationContractValidator(ENTITY_SCHEMA);
 const verifyKeyword = generateValidationContractValidator(KEYWORD_SCHEMA);
@@ -115,6 +118,7 @@ const verifyTranscript = generateValidationContractValidator(
 );
 
 const VALIDATORS = {
+  aion: verifyAion,
   concept: verifyConcept,
   entity: verifyEntity,
   keyword: verifyKeyword,

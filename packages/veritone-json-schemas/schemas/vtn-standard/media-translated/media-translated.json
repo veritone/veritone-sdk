@@ -6,7 +6,10 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../master.json#/definitions/header"
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "$ref": "../master.json#/definitions/validated"
     },
     {
       "properties": {
@@ -19,7 +22,7 @@
         "media": {
           "allOf": [
             {
-              "$ref": "../master.json#/definitions/media"
+              "$ref": "../master.json#/definitions/medias"
             },
             {
               "type": "array",

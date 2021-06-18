@@ -1,0 +1,19 @@
+{
+  "series": [
+    {
+      "startTimeMs": 300,
+      "stopTimeMs": 400,
+      "words": [{ "word": "Hello" }]
+    },
+    {
+      "startTimeMs": 400,
+      "stopTimeMs": 400,
+      "words": [{ "word": "," }]
+    },
+    {
+      "startTimeMs": 600,
+      "stopTimeMs": 800,
+      "words": [{ "word": "World" }]
+    }
+  ]
+}

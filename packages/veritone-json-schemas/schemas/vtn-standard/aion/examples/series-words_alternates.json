@@ -1,0 +1,32 @@
+{
+  "series": [
+    {
+      "startTimeMs": 300,
+      "stopTimeMs": 400,
+      "words": [{ "word": "of", "bestPath": true }]
+    },
+    {
+      "startTimeMs": 450,
+      "stopTimeMs": 500,
+      "words": [
+        {
+          "word": "their",
+          "confidence": 0.84,
+          "utteranceLength": 2,
+          "bestPath": true
+        },
+        {
+          "word": "throne",
+          "confidence": 0.6,
+          "utteranceLength": 1,
+          "bestPath": false
+        }
+      ]
+    },
+    {
+      "startTimeMs": 600,
+      "stopTimeMs": 800,
+      "words": [{ "word": "own", "confidence": 0.67, "bestPath": true }]
+    }
+  ]
+}

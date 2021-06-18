@@ -1,0 +1,269 @@
+{
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "sourceEngineId": "<GUID>",
+  "sourceEngineName": "engine_x",
+  "taskPayload": {},
+  "taskId": "<TASK_ID>",
+  "generatedDateUtc": "2017-12-08T17:19:02Z",
+  "externalSourceId": "<string>",
+  "validationContracts": ["text", "face"],
+  "tags": [
+    {
+      "key": "foo",
+      "value": "bar",
+      "score": 0.12
+    },
+    {
+      "key": "foo",
+      "value": "bar2"
+    }
+  ],
+  "collateIndex": 0,
+  "language": "en-US",
+  "summary": "",
+  "sentiment": {
+    "positiveValue": 0.12,
+    "positiveConfidence": 0.12,
+    "negativeValue": 0.12,
+    "negativeConfidence": 0.12
+  },
+  "gps": [
+    {
+      "latitude": 59.123,
+      "longitude": 213.123,
+      "precision": 100,
+      "direction": 10.1,
+      "velocity": 100,
+      "altitude": 123.12
+    }
+  ],
+  "emotions": [
+    {
+      "emotion": "angry",
+      "emotionValue": 0.12,
+      "emotionConfidence": 0.88
+    }
+  ],
+  "object": [
+    {
+      "type": "object",
+      "label": "dog",
+      "uri": "<URI>",
+      "entityId": "<GUID>",
+      "libraryId": "<GUID>",
+      "confidence": 0.99234,
+      "text": "The quick brown fox jumped over the lazy dog",
+      "collateIndex": 4,
+      "page": 5,
+      "paragraph": 3,
+      "sentence": 2,
+      "mode": "verify",
+      "transcription": {
+        "text": "hello world",
+        "confidence": 0.8
+      },
+      "lipVoiceCorrelation": {
+        "confidence": 0.9
+      },
+      "lipMovement": {
+        "confidence": 0.35
+      },
+      "sentiment": {
+        "positiveValue": 0.12,
+        "positiveConfidence": 0.12,
+        "negativeValue": 0.12,
+        "negativeConfidence": 0.12
+      },
+      "emotions": [
+        {
+          "emotion": "angry",
+          "emotionValue": 0.12,
+          "emotionConfidence": 0.88
+        }
+      ],
+      "age": {
+        "min": 20,
+        "max": 50,
+        "confidence": 0.2
+      },
+      "faceLandmarks": [
+        {
+          "type": "mouth",
+          "locationPoly": [
+            {
+              "x": 0.1,
+              "y": 0.2
+            }
+          ]
+        }
+      ],
+      "objectCategory": [
+        {
+          "class": "animal",
+          "@id": "kg:/m/0dl567",
+          "confidence": 0.567
+        }
+      ],
+      "region": "left",
+      "boundingPoly": [
+        {
+          "x": 0.1,
+          "y": 0.2
+        }
+      ],
+      "gps": [
+        {
+          "latitude": 59.123,
+          "longitude": 213.123,
+          "precision": 100,
+          "direction": 10.1,
+          "velocity": 100,
+          "altitude": 123.12
+        }
+      ],
+      "structuredData": {
+        "11223344-5566-7788-9900-aabbccddeeff": {
+          "<key>": "<value>",
+          "<keyN>": "<value>"
+        }
+      },
+      "vendor": {}
+    }
+  ],
+  "media": [
+    {
+      "assetId": "<ID of the associated asset>",
+      "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "language": "en"
+    }
+  ],
+  "vendor": {},
+  "series": [
+    {
+      "startTimeMs": 1260,
+      "stopTimeMs": 1360,
+      "tags": [
+        {
+          "key": "foo",
+          "value": "bar",
+          "score": 0.12
+        },
+        {
+          "key": "foo",
+          "value": "bar2"
+        }
+      ],
+      "summary": "",
+      "speakerId": "<Speaker Identifier>",
+      "words": [
+        {
+          "word": "!silence",
+          "confidence": 0.794,
+          "bestPath": true,
+          "utteranceLength": 1
+        }
+      ],
+      "language": "en-US",
+      "sentiment": {
+        "positiveValue": 0.12,
+        "positiveConfidence": 0.12,
+        "negativeValue": 0.12,
+        "negativeConfidence": 0.12
+      },
+      "emotions": [
+        {
+          "emotion": "angry",
+          "emotionValue": 0.12,
+          "emotionConfidence": 0.88
+        }
+      ],
+      "entityId": "<GUID>",
+      "libraryId": "<GUID>",
+      "object": {
+        "type": "object",
+        "label": "cat",
+        "uri": "<URI>",
+        "entityId": "<GUID>",
+        "libraryId": "<GUID>",
+        "confidence": 0.99234,
+        "text": "The quick brown fox jumped over the lazy dog",
+        "emotions": [
+          {
+            "emotion": "angry",
+            "emotionValue": 0.12,
+            "emotionConfidence": 0.88
+          }
+        ],
+        "age": {
+          "min": 20,
+          "max": 50,
+          "confidence": 0.2
+        },
+        "faceLandmarks": [
+          {
+            "type": "mouth",
+            "locationPoly": [
+              {
+                "x": 0.1,
+                "y": 0.2
+              }
+            ]
+          }
+        ],
+        "objectCategory": [
+          {
+            "class": "animal",
+            "@id": "kg:/m/0dl567",
+            "confidence": 0.567
+          }
+        ],
+        "region": "left",
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.2
+          }
+        ],
+        "gps": [
+          {
+            "latitude": 59.123,
+            "longitude": 213.123,
+            "precision": 100,
+            "direction": 10.1,
+            "velocity": 100,
+            "altitude": 123.12
+          }
+        ],
+        "structuredData": {
+          "11111111-2222-3333-4444-555555555555": {
+            "<key>": "<value>",
+            "<keyN>": "<value>"
+          }
+        },
+        "vendor": {}
+      },
+      "gps": [
+        {
+          "latitude": 59.123,
+          "longitude": 213.123,
+          "precision": 100,
+          "direction": 10.1,
+          "velocity": 100,
+          "altitude": 123.12
+        }
+      ],
+      "structuredData": {
+        "12345678-90ab-cdef-1234-567890abcdef": {
+          "<key>": "<value>",
+          "<keyN>": "<value>"
+        }
+      },
+      "media": {
+        "assetId": "<ID of the associated asset>",
+        "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "language": "en"
+      },
+      "vendor": {}
+    }
+  ]
+}
