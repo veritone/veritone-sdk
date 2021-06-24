@@ -134,6 +134,7 @@ const VALIDATORS = {
 
 export {
   VALIDATORS,
+  verifyAion,
   verifyConcept,
   verifyEntity,
   verifyKeyword,
