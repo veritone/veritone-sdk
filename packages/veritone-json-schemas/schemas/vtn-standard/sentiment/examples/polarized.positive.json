@@ -1,8 +1,7 @@
 {
   "validationContracts": ["sentiment"],
   "sentiment": {
-    "positiveValue": 1,
-    "positiveConfidence": 0.56,
-    "negativeValue": 0
+    "positiveValue": 0.56,
+    "positiveConfidence": 0.9464286
   }
 }
