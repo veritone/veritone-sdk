@@ -55,5 +55,7 @@
 * Adds support for Anomaly Detection Engines
 
 ## 1.1.1
+* Update lodash
 
-* update lodash
+## 1.2.0
+* Add validation support for the AI Object Notation (AION) file type [application/vnd.veritone.aion+json](https://www.iana.org/assignments/media-types/application/vnd.veritone.aion+json)
