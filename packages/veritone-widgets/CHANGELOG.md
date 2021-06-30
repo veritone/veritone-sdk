@@ -328,3 +328,6 @@ const MyPage = () => (
 
 ## 10.1.0
 * support whitelabeling
+
+## 10.1.1
+* bump veritone-react-common to fix white labeling

@@ -42,16 +42,13 @@ export default class VideoSource extends React.Component {
       }
       if (!this.player) {
         this.player = new shaka.Player(video);
-        //TODO if session cookie is not available, will need to set Authorization header on request using auth token
-        if (includes(streamUri, 'veritone.com/media-streamer/stream') || includes(streamUri, 'veritone.com/v3/stream/')) {
-          this.player
-            .getNetworkingEngine()
-            .registerRequestFilter(function(type, request) {
-              if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
-                request.allowCrossSiteCredentials = true;
-              }
-            });
-        }
+        this.player
+          .getNetworkingEngine()
+          .registerRequestFilter(function(type, request) {
+            if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+              request.allowCrossSiteCredentials = true;
+            }
+          });
       }
       if (disablePreload) {
         video.onplay = () => {
