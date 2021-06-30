@@ -327,3 +327,6 @@
 
 ## 10.0.6
 * bump CSP generator
+
+# 10.0.7
+* Pass cookies without domain check to support white labeling
