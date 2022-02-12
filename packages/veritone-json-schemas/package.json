@@ -23,7 +23,7 @@
     "format": "prettier --config \"../veritone-dev-env/.prettierrc.js\" --write \"./{src,schemas}/**/*.{js,json}\""
   },
   "dependencies": {
-    "ajv": "^6.10.0",
+    "ajv": "^6.12.3",
     "lodash": "^4.17.21",
     "rollup-plugin-json": "^3.1.0"
   },
