@@ -11,7 +11,10 @@ export default createComponent(
     onChange: onChangeFromField,
     classes,
     ...props
-  }) => ({
+  }) => {
+    console.log(inputProps);
+    console.log(props);
+    return ({
     ...inputProps,
     ...props,
     value,
@@ -26,4 +29,4 @@ export default createComponent(
       root: styles.container
     }
   })
-);
+)}
