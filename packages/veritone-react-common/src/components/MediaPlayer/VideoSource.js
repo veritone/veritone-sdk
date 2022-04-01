@@ -85,7 +85,7 @@ export default class VideoSource extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_prevProps, prevState) {
     const { video, disablePreload } = this.props;
     if (
       !disablePreload &&
