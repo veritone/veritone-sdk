@@ -38,6 +38,7 @@ export {
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
+export Help from './components/Help';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export BoundingPolyOverlay from './components/BoundingPolyOverlay/Overlay';
@@ -69,7 +70,6 @@ export {
   SimpleSearchBar,
   EntitySearchTemplate
 } from './components/SimpleSearchBar/SimpleSearchBar';
-
 export {
   Form,
   FormBuilder,
