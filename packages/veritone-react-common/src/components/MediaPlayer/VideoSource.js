@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, shape, string, func, bool } from 'prop-types';
-import { get, find, includes } from 'lodash';
+import { get, find } from 'lodash';
 import shaka from 'shaka-player';
 
 export default class VideoSource extends React.Component {
