@@ -6,7 +6,6 @@ import replace from 'rollup-plugin-replace';
 import url from 'rollup-plugin-url';
 import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
-import { snakeCase } from 'lodash';
 
 import * as mui from '@material-ui/core';
 import * as muiIcons from '@material-ui/icons';

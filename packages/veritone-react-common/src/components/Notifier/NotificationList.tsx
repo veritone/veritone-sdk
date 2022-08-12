@@ -1,12 +1,12 @@
-import React from 'react';
-import _ from 'lodash';
+import { Component } from 'react';
+import { find, findIndex, includes, isEmpty, isEqual } from 'lodash';
 
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import ErrorIconSvg from 'images/icon_error.svg';
 import CheckIconSvg from 'images/icon_check_circle.svg';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@mui/styles';
 
 import { string, arrayOf, oneOf, shape, func, node, any } from 'prop-types';
 
@@ -54,7 +54,7 @@ export const notificationListPropTypes = arrayOf(
   })
 );
 
-class NotificationList extends React.Component {
+class NotificationList extends Component {
   static propTypes = {
     notifications: notificationListPropTypes,
     classes: shape({any}),
@@ -65,13 +65,13 @@ class NotificationList extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     const currentEntries = nextProps.notifications || [];
 
-    if (_.isEmpty(prevState)) {
+    if (isEmpty(prevState)) {
       return {
         currentEntries,
         removedEntryIds: [],
         allEntries: currentEntries,
       }
-    } else if (_.isEqual(prevState.currentEntries, currentEntries)) {
+    } else if (isEqual(prevState.currentEntries, currentEntries)) {
       return prevState;
     } else {
       const prevEntries = prevState.currentEntries;
@@ -79,7 +79,7 @@ class NotificationList extends React.Component {
       //Find New Entry
       const newEntryIds = currentEntries.reduce((ids, entry) => {
         const entryId = entry.id;
-        const matchedEntry = _.find(prevEntries, {id: entryId});
+        const matchedEntry = find(prevEntries, {id: entryId});
         !matchedEntry && ids.push(entryId);
         return ids;
       }, []);
@@ -87,7 +87,7 @@ class NotificationList extends React.Component {
       //Find Removed Entry
       const removedEntryIds = prevEntries.reduce((ids, entry) => {
         const entryId = entry.id;
-        const matchedEntry = _.find(currentEntries, {id: entryId});
+        const matchedEntry = find(currentEntries, {id: entryId});
         !matchedEntry && ids.push(entryId);
         return ids;
       }, []);
@@ -95,7 +95,7 @@ class NotificationList extends React.Component {
       //Merge new entries & prev entries
       let allEntries = currentEntries.reduce((accumulator, entry) => {
         let newAccumulator = accumulator.concat([]);
-        const matchedPrevIndex = _.findIndex(prevEntries, {id: entry.id});
+        const matchedPrevIndex = findIndex(prevEntries, {id: entry.id});
         if (matchedPrevIndex !== -1) {
 
           //Append outdated entries for outro animation
@@ -122,7 +122,7 @@ class NotificationList extends React.Component {
       }
     }
   }
-  
+
   handleEntryActionClicked = entry => event => {
     entry.onActionClick && entry.onActionClick(entry);
   }
@@ -133,8 +133,8 @@ class NotificationList extends React.Component {
 
   drawCustomItem = (entryData) => {
     const entryId = entryData.id;
-    const isNewEntry = _.includes(this.state.newEntryIds, entryId);
-    const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
+    const isNewEntry = includes(this.state.newEntryIds, entryId);
+    const isRemoved = !isNewEntry && includes(this.state.removedEntryIds, entryId);
     const { classes } = this.props;
 
     return (
@@ -153,8 +153,8 @@ class NotificationList extends React.Component {
 
   drawGenericItem = (originalData, formatedData) => {
     const entryId = formatedData.id;
-    const isNewEntry = _.includes(this.state.newEntryIds, entryId);
-    const isRemoved = !isNewEntry && _.includes(this.state.removedEntryIds, entryId);
+    const isNewEntry = includes(this.state.newEntryIds, entryId);
+    const isRemoved = !isNewEntry && includes(this.state.removedEntryIds, entryId);
     const { classes } = this.props;
 
     return (
@@ -184,8 +184,8 @@ class NotificationList extends React.Component {
           </div>
           <div className={classNames(classes.actions)}>
           {
-            formatedData.onActionClick && 
-            <IconButton 
+            formatedData.onActionClick &&
+            <IconButton
               color="default"
               className={classNames(classes.iconButton)}
               onClick={this.handleEntryActionClicked(originalData)}
@@ -196,7 +196,7 @@ class NotificationList extends React.Component {
           }
           {
             formatedData.onRemoveClick &&
-            <IconButton 
+            <IconButton
               color="default"
               className={classNames(classes.iconButton)}
               onClick={this.handleEntryRemoveClick(originalData)}
@@ -287,7 +287,7 @@ class NotificationList extends React.Component {
           switch (entry.type) {
             case TYPE_PREPARING:
               return this.drawPreparingItem(entry);
-            
+
             case TYPE_PROCESSING:
               return this.drawProcessingItem(entry);
 
@@ -296,10 +296,10 @@ class NotificationList extends React.Component {
 
             case TYPE_COMPLETE:
               return this.drawCompleteItem(entry);
-            
+
             case TYPE_CUSTOM:
               return this.drawCustomItem(entry);
-            
+
             default:
               return null;
           }
