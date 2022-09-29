@@ -7,6 +7,10 @@
   "generatedDateUtc": "2017-12-08T17:19:02Z",
   "externalSourceId": "<string>",
   "validationContracts": ["text", "face"],
+  "processedStats": {
+    "processedBytes": "123456",
+    "processedMediaSeconds": "120"
+  },
   "tags": [
     {
       "key": "foo",

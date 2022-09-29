@@ -10,6 +10,10 @@
       "$ref": "../master.json#/definitions/PREAMBLE"
     },
     {
+      "description": "Processing resources needed to generate this document",
+      "$ref": "../master.json#/definitions/PROCESSING"
+    },
+    {
       "description": "Information about the document as a whole",
       "$ref": "../master.json#/definitions/FILEDATA"
     },
