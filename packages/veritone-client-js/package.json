@@ -22,7 +22,7 @@
     "async": "^2.5.0",
     "axios": "^0.20.0",
     "object.values": "^1.0.4",
-    "qs": "^6.5.0",
+    "qs": "^6.5.3",
     "request": "^2.81.0",
     "route-parser": "0.0.5",
     "validate.js": "^0.10.0"
