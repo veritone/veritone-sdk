@@ -1,91 +1,65 @@
 import React from 'react';
-import { arrayOf, shape, string, func, bool } from 'prop-types';
-import { get, find } from 'lodash';
+import { arrayOf, shape, string, func, bool, number } from 'prop-types';
+import { get, find, includes } from 'lodash';
 import shaka from 'shaka-player';
-
 export default class VideoSource extends React.Component {
   static propTypes = {
     video: shape({
       canPlayType: func.isRequired,
-      load: func.isRequired
+      load: func.isRequired,
     }),
     src: string,
     streams: arrayOf(
       shape({
         protocol: string.isRequired,
-        uri: string.isRequired
+        uri: string.isRequired,
       })
     ),
-    disablePreload: bool
+    disablePreload: bool,
+    currentTime: number,
+    actions: shape({
+      seek: func.isRequired,
+    }),
+    videoReloadTime: number.isRequired,
   };
 
   state = {
-    src: null
+    src: null,
   };
 
   UNSAFE_componentWillMount() {
     shaka.polyfill.installAll();
   }
+  componentDidMount() {
+    if (this.props.videoReloadTime) {
+      setInterval(() => {
+        const {
+          video,
+          src,
+          streams,
+          disablePreload,
+          currentTime,
+          actions,
+        } = this.props;
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { video, src, streams, disablePreload } = nextProps;
-    const dashUri = this.getStreamUri(streams, 'dash');
-    const hlsUri = this.getStreamUri(streams, 'hls');
-    const streamUri = dashUri || hlsUri;
-    // check if browser supports playing hls & dash with shaka player
-    const browserSupportsShaka = shaka.Player.isBrowserSupported();
-    let sourceUri;
-    if (video && streamUri && browserSupportsShaka) {
-      if (streamUri === this.state.streamUri) {
-        // media already loaded
-        return;
-      }
-      if (!this.player) {
-        this.player = new shaka.Player(video);
-        this.player
-          .getNetworkingEngine()
-          .registerRequestFilter(function(type, request) {
-            if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
-              request.allowCrossSiteCredentials = true;
-            }
-          });
-      }
-      if (disablePreload) {
-        video.onplay = () => {
-          video.onplay = null;
-          this.player
-            .load(streamUri)
-            .then(() => {
-              video.play();
-              return;
-            })
-            .catch(err => {
-              console.log('error loading video with shaka player', err);
-            });
-        };
-      } else {
-        this.player.load(streamUri).catch(err => {
-          console.log('error loading video with shaka player', err);
+        this.setState({
+          streamUri: undefined,
         });
-      }
-      this.setState({
-        streamUri: streamUri
-      });
-    } else if (hlsUri && video.canPlayType('application/vnd.apple.mpegurl')) {
-      // iOS does not work with the shaka-player. check if browser has native HLS support,
-      // if it does then set src to HLS manifest (primarily for safari on iOS)
-      sourceUri = hlsUri;
-    } else {
-      sourceUri = src;
-    }
-    if (sourceUri && sourceUri !== this.state.src) {
-      this.setState({
-        src: sourceUri
-      });
+        this.loadVideo(video, src, streams, disablePreload);
+        setTimeout(() => {
+          if (actions) {
+            actions.seek(currentTime);
+          }
+        }, 500);
+      }, this.props.videoReloadTime);
     }
   }
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { video, src, streams, disablePreload } = nextProps;
+    this.loadVideo(video, src, streams, disablePreload);
+  }
 
-  componentDidUpdate(_prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { video, disablePreload } = this.props;
     if (
       !disablePreload &&
@@ -107,6 +81,69 @@ export default class VideoSource extends React.Component {
     const stream = find(streams, { protocol });
     return get(stream, 'uri');
   }
+
+  loadVideo = (video, src, streams, disablePreload) => {
+    const dashUri = this.getStreamUri(streams, 'dash');
+    const hlsUri = this.getStreamUri(streams, 'hls');
+    const streamUri = dashUri || hlsUri;
+    // check if browser supports playing hls & dash with shaka player
+    const browserSupportsShaka = shaka.Player.isBrowserSupported();
+    let sourceUri;
+    if (video && streamUri && browserSupportsShaka) {
+      if (streamUri === this.state.streamUri) {
+        // media already loaded
+        return;
+      }
+      if (!this.player) {
+        this.player = new shaka.Player(video);
+        //TODO if session cookie is not available, will need to set Authorization header on request using auth token
+        if (
+          includes(streamUri, 'veritone.com/media-streamer/stream') ||
+          includes(streamUri, 'veritone.com/v3/stream/')
+        ) {
+          this.player
+            .getNetworkingEngine()
+            .registerRequestFilter(function (type, request) {
+              if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+                request.allowCrossSiteCredentials = true;
+              }
+            });
+        }
+      }
+      if (disablePreload) {
+        video.onplay = () => {
+          video.onplay = null;
+          this.player
+            .load(streamUri)
+            .then(() => {
+              video.play();
+              return;
+            })
+            .catch((err) => {
+              console.log('error loading video with shaka player', err);
+            });
+        };
+      } else {
+        this.player.load(streamUri).catch((err) => {
+          console.log('error loading video with shaka player', err);
+        });
+      }
+      this.setState({
+        streamUri: streamUri,
+      });
+    } else if (hlsUri && video.canPlayType('application/vnd.apple.mpegurl')) {
+      // iOS does not work with the shaka-player. check if browser has native HLS support,
+      // if it does then set src to HLS manifest (primarily for safari on iOS)
+      sourceUri = hlsUri;
+    } else {
+      sourceUri = src;
+    }
+    if (sourceUri && sourceUri !== this.state.src) {
+      this.setState({
+        src: sourceUri,
+      });
+    }
+  };
 
   render() {
     return this.state.src && <source src={this.state.src} />;

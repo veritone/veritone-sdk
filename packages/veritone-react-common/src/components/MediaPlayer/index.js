@@ -10,7 +10,7 @@ import {
   objectOf,
   any,
   object,
-  oneOfType
+  oneOfType,
 } from 'prop-types';
 import {
   Player,
@@ -24,7 +24,7 @@ import {
   TimeDivider,
   DurationDisplay,
   ProgressControl,
-  FullscreenToggle
+  FullscreenToggle,
 } from 'video-react';
 import cx from 'classnames';
 import { withStyles } from '@material-ui/styles';
@@ -43,7 +43,7 @@ class MediaPlayerComponent extends React.Component {
     streams: arrayOf(
       shape({
         protocol: string,
-        uri: string
+        uri: string,
       })
     ),
     overlayContentClassName: string,
@@ -57,8 +57,8 @@ class MediaPlayerComponent extends React.Component {
           overlayObjectType: string,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
-          ).isRequired
-        })
+          ).isRequired,
+        }),
       })
     ),
     onAddBoundingBox: func,
@@ -73,7 +73,7 @@ class MediaPlayerComponent extends React.Component {
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
-        onClick: func.isRequired
+        onClick: func.isRequired,
       })
     ),
     readOnly: bool,
@@ -104,12 +104,13 @@ class MediaPlayerComponent extends React.Component {
     autoHide: bool,
     autoHideTime: number,
     classes: shape({ any }),
+    videoReloadTime: number,
   };
 
   static contextTypes = {
     // need to pass our app's redux store to the Player, or else it will create
     // its own internal store that we can't integrate with
-    store: object
+    store: object,
   };
 
   static defaultProps = {
@@ -127,7 +128,7 @@ class MediaPlayerComponent extends React.Component {
     ctrlProgress: true,
     displayTime: true,
     autoHide: true,
-    autoHideTime: 1000
+    autoHideTime: 1000,
   };
 
   componentDidMount() {
@@ -139,7 +140,7 @@ class MediaPlayerComponent extends React.Component {
     }
   }
 
-  handleAddBoundingBox = newBox => {
+  handleAddBoundingBox = (newBox) => {
     this.props.onAddBoundingBox(newBox, this.props.currentTime * 1000);
   };
 
@@ -162,6 +163,7 @@ class MediaPlayerComponent extends React.Component {
       autoHide,
       autoHideTime,
       classes,
+      videoReloadTime,
       ...props
     } = this.props;
 
@@ -227,8 +229,13 @@ class MediaPlayerComponent extends React.Component {
             src={src}
             streams={streams}
             disablePreload={props.preload === 'none' ? true : false}
+            currentTime={this.props.currentTime}
+            videoReloadTime={videoReloadTime}
           />
-          <BigPlayButton position="center" className={classes.mediaPlayButton} />
+          <BigPlayButton
+            position="center"
+            className={classes.mediaPlayButton}
+          />
         </Player>
       </OverlayPositioningProvider>
     );
