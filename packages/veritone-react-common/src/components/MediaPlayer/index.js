@@ -104,7 +104,6 @@ class MediaPlayerComponent extends React.Component {
     autoHide: bool,
     autoHideTime: number,
     classes: shape({ any }),
-    videoReloadTime: number,
   };
 
   static contextTypes = {
@@ -163,7 +162,6 @@ class MediaPlayerComponent extends React.Component {
       autoHide,
       autoHideTime,
       classes,
-      videoReloadTime,
       ...props
     } = this.props;
 
@@ -230,7 +228,6 @@ class MediaPlayerComponent extends React.Component {
             streams={streams}
             disablePreload={props.preload === 'none' ? true : false}
             currentTime={this.props.currentTime}
-            videoReloadTime={videoReloadTime}
           />
           <BigPlayButton
             position="center"
