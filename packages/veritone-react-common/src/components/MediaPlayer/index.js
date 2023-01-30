@@ -169,6 +169,7 @@ class MediaPlayerComponent extends React.Component {
       this.props.boundingPolySeries || [],
       this.props.currentTime * 1000
     );
+    console.log('test')
 
     return (
       <OverlayPositioningProvider
