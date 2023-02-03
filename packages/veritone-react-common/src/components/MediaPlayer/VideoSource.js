@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, shape, string, func, bool, number } from 'prop-types';
-import { get, find, includes } from 'lodash';
+import { get, find } from 'lodash';
 import shaka from 'shaka-player';
 export default class VideoSource extends React.Component {
   static propTypes = {
@@ -17,14 +17,11 @@ export default class VideoSource extends React.Component {
     ),
     disablePreload: bool,
     currentTime: number,
-    actions: shape({
-      seek: func.isRequired,
-    }),
   };
 
   state = {
     src: null,
-    expiredSignedUri: false,
+    isStreamUriExpired: false,
   };
 
   UNSAFE_componentWillMount() {
@@ -33,18 +30,11 @@ export default class VideoSource extends React.Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { video, src, streams, disablePreload } = nextProps;
-    this.loadVideo(video, src, streams, disablePreload);
+    this.loadVideo(video, src, streams, disablePreload, this.props.currentTime);
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const {
-      video,
-      src,
-      streams,
-      disablePreload,
-      currentTime,
-      actions,
-    } = this.props;
+    const { video, src, streams, disablePreload, currentTime } = this.props;
     if (
       !disablePreload &&
       video &&
@@ -53,22 +43,17 @@ export default class VideoSource extends React.Component {
     ) {
       video.load();
     }
-    if (this.state.expiredSignedUri !== prevState.expiredSignedUri) {
+    if (this.state.isStreamUriExpired !== prevState.isStreamUriExpired) {
       this.setState({
         streamUri: undefined,
       });
-      this.loadVideo(video, src, streams, disablePreload);
-      setTimeout(() => {
-        if (actions) {
-          actions.seek(currentTime);
-        }
-      }, 500);
+      this.loadVideo(video, src, streams, disablePreload, currentTime);
     }
   }
 
   componentWillUnmount() {
     if (this.player) {
-      this.player.unload();
+      this.player.destroy();
     }
   }
 
@@ -77,7 +62,7 @@ export default class VideoSource extends React.Component {
     return get(stream, 'uri');
   }
 
-  loadVideo = (video, src, streams, disablePreload) => {
+  loadVideo = (video, src, streams, disablePreload, startTime) => {
     const dashUri = this.getStreamUri(streams, 'dash');
     const hlsUri = this.getStreamUri(streams, 'hls');
     const streamUri = dashUri || hlsUri;
@@ -91,25 +76,19 @@ export default class VideoSource extends React.Component {
       }
       if (!this.player) {
         this.player = new shaka.Player(video);
-        //TODO if session cookie is not available, will need to set Authorization header on request using auth token
-        if (
-          includes(streamUri, 'veritone.com/media-streamer/stream') ||
-          includes(streamUri, 'veritone.com/v3/stream/')
-        ) {
-          this.player
-            .getNetworkingEngine()
-            .registerRequestFilter(function (type, request) {
-              if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
-                request.allowCrossSiteCredentials = true;
-              }
-            });
-        }
+        this.player
+          .getNetworkingEngine()
+          .registerRequestFilter(function (type, request) {
+            if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+              request.allowCrossSiteCredentials = true;
+            }
+          });
       }
       if (disablePreload) {
         video.onplay = () => {
           video.onplay = null;
           this.player
-            .load(streamUri)
+            .load(streamUri, startTime)
             .then(() => {
               video.play();
               return;
@@ -119,17 +98,19 @@ export default class VideoSource extends React.Component {
             });
         };
       } else {
-        this.player.load(streamUri).catch((err) => {
+        this.player.load(streamUri, startTime).catch((err) => {
           console.log('error loading video with shaka player', err);
         });
       }
       this.setState({
         streamUri: streamUri,
       });
-      this.player.addEventListener('error', () => {
-        this.setState({
-          expiredSignedUri: true,
-        });
+      this.player.addEventListener('error', (error) => {
+        if (error.detail.code === 1001) {
+          this.setState({
+            isStreamUriExpired: true,
+          });
+        }
       });
     } else if (hlsUri && video.canPlayType('application/vnd.apple.mpegurl')) {
       // iOS does not work with the shaka-player. check if browser has native HLS support,
