@@ -44,9 +44,7 @@ export default class VideoSource extends React.Component {
       video.load();
     }
     if (this.state.isStreamUriExpired !== prevState.isStreamUriExpired) {
-      this.setState({
-        streamUri: undefined,
-      });
+      this.setStreamUri(undefined);
       this.loadVideo(video, src, streams, disablePreload, currentTime);
     }
   }
@@ -102,9 +100,7 @@ export default class VideoSource extends React.Component {
           console.log('error loading video with shaka player', err);
         });
       }
-      this.setState({
-        streamUri: streamUri,
-      });
+      this.setStreamUri(streamUri);
       this.player.addEventListener('error', (error) => {
         if (error.detail.code === 1001) {
           this.setState({
@@ -125,7 +121,11 @@ export default class VideoSource extends React.Component {
       });
     }
   };
-
+  setStreamUri(streamUri) {
+    this.setState({
+      streamUri,
+    });
+  }
   render() {
     return this.state.src && <source src={this.state.src} />;
   }
