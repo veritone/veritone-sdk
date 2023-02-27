@@ -192,7 +192,7 @@ class FilePicker extends Component {
     const acceptedFileTypes = (isString(this.props.accept)
       ? [this.props.accept]
       : this.props.accept
-    ).map(t => mime.lookup(t) || t); // use full mimetype when possible
+    ).map(t => t !== '.vob' ? mime.lookup(t) || t : t); // use full mimetype when possible
     const { classes } = this.props;
     const { resize: {
       showing: resizeShowing,

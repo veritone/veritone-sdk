@@ -9,7 +9,7 @@ const extensions = [
 ];
 
 export default {
-  input: './src/index.js',
+  input: './src/index.tsx',
   external: [],
   plugins: [
     json({

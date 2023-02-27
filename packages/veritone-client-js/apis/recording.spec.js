@@ -294,7 +294,7 @@ describe('Recording', function() {
       const metaHeader = { meta: 'meta-header' };
       const scope = nock(apiBaseUrl)
         .get(/some-id\/media/)
-        .reply(200, () => fs.createReadStream('index.js'), {
+        .reply(200, () => fs.createReadStream('index.tsx'), {
           'Content-length': contentLength,
           'Content-type': 'some-type',
           [headers.metadataHeader]: JSON.stringify(metaHeader)
@@ -396,7 +396,7 @@ describe('Recording', function() {
       const metaHeader = { meta: 'meta-header' };
       const scope = nock(apiBaseUrl)
         .get(/recording-id\/asset\/asset-id/)
-        .reply(200, () => fs.createReadStream('index.js'), {
+        .reply(200, () => fs.createReadStream('index.tsx'), {
           'Content-length': contentLength,
           'Content-type': 'some-type',
           [headers.metadataHeader]: JSON.stringify(metaHeader)

@@ -5,7 +5,7 @@ const MinifyPlugin = require('babili-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  entry: ['./index.js'],
+  entry: ['./index.tsx'],
   output: {
     filename:
       process.env.BUILD_ENV === 'browser'

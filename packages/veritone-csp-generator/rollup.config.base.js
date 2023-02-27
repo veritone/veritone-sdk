@@ -8,7 +8,7 @@ import analyze from 'rollup-analyzer-plugin';
 import * as lodash from 'lodash';
 
 export default {
-  input: 'src/index.js',
+  input: 'src/index.tsx',
   external: [
     ...Object.keys(lodash).map(name => `lodash/${name}`),
     ...Object.keys(lodash).map(name => `lodash/fp/${name}`)
