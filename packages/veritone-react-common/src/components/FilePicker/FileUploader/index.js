@@ -18,9 +18,12 @@ const boxTarget = {
     const allowableDroppedFiles = droppedFiles.filter(({ type }) => {
       // only accept dropped files of the correct type. This tries to duplicate
       // the functionality of the html5 file input.
+      const { name, type } = file;
+      const ext = name.match(/\.[0-9a-z]+$/i)?.[0];
 
       return (
         props.acceptedFileTypes.includes(type) ||
+        props.acceptedFileTypes.includes(ext) ||
         props.acceptedFileTypes.some(acceptedType => {
           // deal with video/*, audio/* etc
           if (endsWith(acceptedType, '/*')) {
