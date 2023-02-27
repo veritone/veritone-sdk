@@ -15,7 +15,7 @@ import styles from './styles';
 const boxTarget = {
   drop(props, monitor) {
     const droppedFiles = monitor.getItem().files;
-    const allowableDroppedFiles = droppedFiles.filter(({ type }) => {
+    const allowableDroppedFiles = droppedFiles.filter((file) => {
       // only accept dropped files of the correct type. This tries to duplicate
       // the functionality of the html5 file input.
       const { name, type } = file;
