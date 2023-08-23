@@ -74,6 +74,11 @@ export default class VideoSource extends React.Component {
       }
       if (!this.player) {
         this.player = new shaka.Player(video);
+        this.player.configure({
+          streaming: {
+            jumpLargeGaps: true,
+          }
+        });
         this.player
           .getNetworkingEngine()
           .registerRequestFilter(function (type, request) {
