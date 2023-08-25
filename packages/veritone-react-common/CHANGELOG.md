@@ -330,3 +330,6 @@
 
 # 10.0.7
 * Pass cookies without domain check to support white labeling
+
+# 10.0.8
+* Add jumpLargeGaps configuration for shaka-player to prevent the multi-periods video be stuck
