@@ -138,7 +138,8 @@
                 "summary",
                 "text",
                 "transcript",
-                "anomaly"
+                "anomaly",
+                "speech-confidence"
               ]
             },
             {

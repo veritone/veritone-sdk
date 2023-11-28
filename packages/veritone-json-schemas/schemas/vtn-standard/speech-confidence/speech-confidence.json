@@ -1,0 +1,71 @@
+{
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/speech-confidence/speech-confidene.json",
+  "title": "vtn-standard.speech-confidence",
+  "description": "Standard engine output for speech confidence at Veritone",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "$ref": "../master.json#/definitions/validated"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "speech-confidence"
+          }
+        },
+        "overallScore": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "transcriptAccuracy": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "meanOpinionScore": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "loudness": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "coloration": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "discontinuity": {
+          "$ref": "../master.json#/definitions/confidence"
+        },
+        "noisiness": {
+          "$ref": "../master.json#/definitions/confidence"
+        }
+      }
+    },
+    {
+      "anyOf": [
+        {
+          "required": ["overallScore"]
+        },
+        {
+          "required": ["transcriptAccuracy"]
+        },
+        {
+          "required": ["meanOpinionScore"]
+        },
+        {
+          "required": ["loudness"]
+        },
+        {
+          "required": ["coloration"]
+        },
+        {
+          "required": ["discontinuity"]
+        },
+        {
+          "required": ["noisiness"]
+        }
+      ]
+    }
+  ]
+}
