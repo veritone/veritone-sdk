@@ -4,6 +4,20 @@ This repo contains all the static JSON schemas used by Veritone.
 This does **not** include the [user-defined schemas registered through Veritone Developer](https://docs.veritone.com/#/developer/data/),
 just the ones that are core to our platform.
 
+## Releasing
+
+The JSON schema is deployed to the get.aiware.com
+site (https://get.aiware.com/schemas/index.html). 
+This may be deployed manually with
+```bash
+AWS_PROFILE=default
+aws --profile=$AWS_PROFILE s3 cp schemas/vtn-standard/index.html s3://aiware-prod-public/schemas/index.html
+for schema in $(find schemas/vtn-standard -name '*.json' | grep -v "examples"); do
+  aws --profile=$AWS_PROFILE s3 cp $schema s3://aiware-prod-public/${schema/vtn-standard\//}
+done
+```
+(with appropriate updates for the local directory)
+
 ## Usage
 
 This package exports a map of valid validation contract names to their validating functions and looks like the following:

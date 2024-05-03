@@ -70,7 +70,7 @@ test('it should export a transcript validator', () => {
 
 test('it should invalidate an object with extra properties in the summary object array', () => {
   const objectSummaryWithTimeFields = {
-    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/object.json',
+    schemaId: 'https://get.aiware.com/schemas/object.json',
     validationContracts: ['object'],
     object: [
       {
@@ -108,7 +108,7 @@ test('it should invalidate an object with extra properties in the summary object
 
 test('it should invalidate a transcript with extra properties', () => {
   const transcriptWithExtraField = {
-    schemaId: 'https://docs.veritone.com/schemas/vtn-standard/transcript.json',
+    schemaId: 'https://get.aiware.com/schemas/transcript.json',
     validationContracts: ['transcript'],
     series: [
       {

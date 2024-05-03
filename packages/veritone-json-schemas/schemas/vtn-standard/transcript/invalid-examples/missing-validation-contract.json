@@ -1,5 +1,5 @@
 {
-  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/transcript.json",
+  "schemaId": "https://get.aiware.com/schemas/transcript.json",
   "series": [
     {
       "startTimeMs": 0,

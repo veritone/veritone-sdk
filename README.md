@@ -28,14 +28,7 @@ _This is WIP and may change as we find a better process_
 9. Run `yarn publish` in each package directory as needed to push your release to NPM.
 
 ## veritone-json-schema
-The JSON schema is deployed to the documentation page (docs.veritone.com). 
-This may be deployed manually with
-```bash
-aws s3 sync \
-  github.com/veritone/veritone-sdk/packages/veritone-json-schemas/schemas/vtn-standard \
-  s3://veritone-docs-prod/schemas/vtn-standard
-```
-(with appropriate updates for the local directory)
+See packages/veritone-json-schema/README.md
 
 # Creating development/integration bundles (for internal Veritone use)
 Occasionally you may need to integrate unfinished work on an SDK package with another project. In cases where that project must be deployed or shared, we cannot rely on `yarn link`. Rather than cluttering our ecosystem with with prerelease package versions, you can publish a tar archive to an S3 bucket and reference that archive in the package.json of your project (using yarn's ability to download tarball dependencies).

@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/sentiment/sentiment.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/sentiment/sentiment.json",
   "title": "vtn-standard.sentiment",
   "description": "Standard engine output for Sentiment at Veritone",
   "type": "object",

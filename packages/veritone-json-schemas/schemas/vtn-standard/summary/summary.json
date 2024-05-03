@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/summary/summary.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/summary/summary.json",
   "title": "vtn-standard.summary",
   "description": "Standard engine output for Text Summary at Veritone",
   "type": "object",
