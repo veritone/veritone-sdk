@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/media-translated/media-translated.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/media-translated/media-translated.json",
   "title": "vtn-standard.media-translated",
   "description": "Standard engine output for translated text files at Veritone",
   "type": "object",

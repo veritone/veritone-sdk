@@ -1,6 +1,6 @@
 {
-  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/keyword/keyword.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/keyword/keyword.json",
   "title": "vtn-standard.keyword",
   "description": "Standard engine output for Keyword Extraction at Veritone",
   "type": "object",

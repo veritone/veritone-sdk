@@ -1,5 +1,5 @@
 {
-  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/object.json",
+  "schemaId": "https://get.aiware.com/schemas/object.json",
   "validationContracts": ["object"],
   "object": []
 }

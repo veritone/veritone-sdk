@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://get.aiware.com/schemas/master.json",
   "title": "vtn-standard",
   "description": "Standard engine output at Veritone",
   "type": "object",
@@ -100,9 +100,7 @@
     "schemaId": {
       "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
       "type": "string",
-      "examples": [
-        "https://docs.veritone.com/schemas/vtn-standard/aion/aion.json"
-      ]
+      "examples": ["https://get.aiware.com/schemas/aion/aion.json"]
     },
     "guid": {
       "description": "A globally unique ID. Typically a UUID in the 8-4-4-4-12 character format, but it doesn't have to be a UUID",
