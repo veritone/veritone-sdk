@@ -364,6 +364,10 @@
         "entityIdentifierId": {
           "description": "The unique ID of recognized entity identifier (for example, a specific image).",
           "type": "string"
+        },
+        "referenceId": {
+          "description": "Unique identifier of the vector",
+          "type": "string"
         }
       },
       "required": ["type"],
@@ -523,6 +527,10 @@
         "entityId": {
           "description": "GUID of the entity in the library that was used to identify this object",
           "$ref": "#/definitions/guid"
+        },
+        "referenceId": {
+          "description": "Unique identifier of the vector",
+          "type": "string"
         }
       },
       "required": ["startTimeMs", "stopTimeMs"],
@@ -767,6 +775,30 @@
     "vendor": {
       "description": "Custom data that doesn't conform to any other field. You can add any arbitrary data inside this object, but it will not be indexed, searchable, or have any impact on the system. However it will be returned when reading the data back out.",
       "type": "object"
+    },
+    "embedding": {
+      "description": "The embedding engine result was generated",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "description": "Unique identifier of the vector",
+            "type": "string"
+          },
+          "vector": {
+            "description": "An array of vectors related to the vectorized data",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "tags": {
+            "$ref": "#/definitions/tags"
+          }
+        },
+        "required": ["referenceId"]
+      }
     }
   }
 }
