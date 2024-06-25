@@ -41,6 +41,10 @@
         },
         "validationContracts": {
           "$ref": "#/definitions/validationContracts"
+        },
+        "internalTaskId": {
+          "description": "ID of the internal task. A part of the GLC prototype",
+          "$ref": "#/definitions/guid"
         }
       }
     },
@@ -368,6 +372,9 @@
         "referenceId": {
           "description": "Unique identifier of the vector",
           "type": "string"
+        },
+        "fingerprintVector": {
+          "$ref": "#/definitions/fingerprintVector"
         }
       },
       "required": ["type"],
@@ -776,6 +783,10 @@
       "description": "Custom data that doesn't conform to any other field. You can add any arbitrary data inside this object, but it will not be indexed, searchable, or have any impact on the system. However it will be returned when reading the data back out.",
       "type": "object"
     },
+    "fingerprintVector": {
+      "description": "An array of vectors related to the vectorized data",
+      "type": "array"
+    },
     "embedding": {
       "description": "The embedding engine result was generated",
       "type": "array",
@@ -787,17 +798,12 @@
             "type": "string"
           },
           "vector": {
-            "description": "An array of vectors related to the vectorized data",
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+            "$ref": "#/definitions/fingerprintVector"
           },
           "tags": {
             "$ref": "#/definitions/tags"
           }
-        },
-        "required": ["referenceId"]
+        }
       }
     }
   }
