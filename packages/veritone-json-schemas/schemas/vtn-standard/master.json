@@ -375,6 +375,9 @@
         },
         "fingerprintVector": {
           "$ref": "#/definitions/fingerprintVector"
+        },
+        "tags": {
+          "$ref": "#/definitions/tags"
         }
       },
       "required": ["type"],
