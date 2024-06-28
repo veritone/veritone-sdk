@@ -1,0 +1,22 @@
+{
+  "embedding": [
+    {
+      "referenceId": "<ID of the vector>",
+      "vector": [
+        0.23407,
+        0.11176
+      ],
+      "tags": [
+        {
+          "key": "foo",
+          "value": "bar",
+          "score": 0.12
+        },
+        {
+          "key": "foo",
+          "value": "bar2"
+        }
+      ]
+    }
+  ]
+}

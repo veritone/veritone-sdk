@@ -806,7 +806,8 @@
           "tags": {
             "$ref": "#/definitions/tags"
           }
-        }
+        },
+        "additionalProperties": false
       }
     }
   }
