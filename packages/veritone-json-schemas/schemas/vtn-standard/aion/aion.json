@@ -30,6 +30,10 @@
         "media": {
           "description": "Links to external files generated during processing",
           "$ref": "../master.json#/definitions/medias"
+        },
+        "embedding": {
+          "description": "The embedding engine result was generated",
+          "$ref": "../master.json#/definitions/embedding"
         }
       }
     }
