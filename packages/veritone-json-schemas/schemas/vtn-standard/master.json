@@ -788,7 +788,10 @@
     },
     "fingerprintVector": {
       "description": "An array of vectors related to the vectorized data",
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
     },
     "embedding": {
       "description": "The embedding engine result was generated",
