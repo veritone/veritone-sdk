@@ -374,7 +374,7 @@
           "type": "string"
         },
         "fingerprintVector": {
-          "$ref": "#/definitions/fingerprintVector"
+          "$ref": "#/definitions/vector"
         },
         "tags": {
           "$ref": "#/definitions/tags"
@@ -786,15 +786,15 @@
       "description": "Custom data that doesn't conform to any other field. You can add any arbitrary data inside this object, but it will not be indexed, searchable, or have any impact on the system. However it will be returned when reading the data back out.",
       "type": "object"
     },
-    "fingerprintVector": {
-      "description": "An array of vectors related to the vectorized data",
+    "vector": {
+      "description": "An array of floats representing objects in vector space.",
       "type": "array",
       "items": {
         "type": "number"
       }
     },
     "embedding": {
-      "description": "The embedding engine result was generated",
+      "description": "An array of floats representing objects in vector space.",
       "type": "array",
       "items": {
         "type": "object",
@@ -804,7 +804,7 @@
             "type": "string"
           },
           "vector": {
-            "$ref": "#/definitions/fingerprintVector"
+            "$ref": "#/definitions/vector"
           },
           "tags": {
             "$ref": "#/definitions/tags"

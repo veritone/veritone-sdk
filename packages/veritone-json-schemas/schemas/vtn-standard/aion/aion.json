@@ -32,7 +32,7 @@
           "$ref": "../master.json#/definitions/medias"
         },
         "embedding": {
-          "description": "The embedding engine result was generated",
+          "description": "An array of floats representing objects in vector space",
           "$ref": "../master.json#/definitions/embedding"
         }
       }
