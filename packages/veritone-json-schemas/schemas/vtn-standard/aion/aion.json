@@ -30,6 +30,10 @@
         "media": {
           "description": "Links to external files generated during processing",
           "$ref": "../master.json#/definitions/medias"
+        },
+        "embedding": {
+          "description": "An array of floats representing objects in vector space",
+          "$ref": "../master.json#/definitions/embedding"
         }
       }
     }

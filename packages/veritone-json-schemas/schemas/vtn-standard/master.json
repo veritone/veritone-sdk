@@ -41,6 +41,10 @@
         },
         "validationContracts": {
           "$ref": "#/definitions/validationContracts"
+        },
+        "internalTaskId": {
+          "description": "ID of the internal task. A part of the GLC prototype",
+          "$ref": "#/definitions/guid"
         }
       }
     },
@@ -364,6 +368,16 @@
         "entityIdentifierId": {
           "description": "The unique ID of recognized entity identifier (for example, a specific image).",
           "type": "string"
+        },
+        "referenceId": {
+          "description": "Unique identifier of the vector",
+          "type": "string"
+        },
+        "fingerprintVector": {
+          "$ref": "#/definitions/vector"
+        },
+        "tags": {
+          "$ref": "#/definitions/tags"
         }
       },
       "required": ["type"],
@@ -523,6 +537,10 @@
         "entityId": {
           "description": "GUID of the entity in the library that was used to identify this object",
           "$ref": "#/definitions/guid"
+        },
+        "referenceId": {
+          "description": "Unique identifier of the vector",
+          "type": "string"
         }
       },
       "required": ["startTimeMs", "stopTimeMs"],
@@ -767,6 +785,33 @@
     "vendor": {
       "description": "Custom data that doesn't conform to any other field. You can add any arbitrary data inside this object, but it will not be indexed, searchable, or have any impact on the system. However it will be returned when reading the data back out.",
       "type": "object"
+    },
+    "vector": {
+      "description": "An array of floats representing objects in vector space.",
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "embedding": {
+      "description": "An array of floats representing objects in vector space.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "description": "Unique identifier of the vector",
+            "type": "string"
+          },
+          "vector": {
+            "$ref": "#/definitions/vector"
+          },
+          "tags": {
+            "$ref": "#/definitions/tags"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

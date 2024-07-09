@@ -4,6 +4,7 @@
   "sourceEngineName": "engine_x",
   "taskPayload": {},
   "taskId": "<TASK_ID>",
+  "internalTaskId": "<INTERNAL_TASK_ID>",
   "generatedDateUtc": "2017-12-08T17:19:02Z",
   "externalSourceId": "<string>",
   "validationContracts": ["text", "face"],
@@ -131,7 +132,23 @@
           "<keyN>": "<value>"
         }
       },
-      "vendor": {}
+      "vendor": {},
+      "referenceId": "<ID of the vector>",
+      "fingerprintVector": [
+        0.23407,
+        0.11176
+      ],
+      "tags": [
+        {
+          "key": "foo",
+          "value": "bar",
+          "score": 0.12
+        },
+        {
+          "key": "foo",
+          "value": "bar2"
+        }
+      ]
     }
   ],
   "media": [
@@ -244,7 +261,8 @@
             "<keyN>": "<value>"
           }
         },
-        "vendor": {}
+        "vendor": {},
+        "referenceId": "<ID of the vector>"
       },
       "gps": [
         {
@@ -268,6 +286,26 @@
         "language": "en"
       },
       "vendor": {}
+    }
+  ],
+  "embedding": [
+    {
+      "referenceId": "<ID of the vector>",
+      "vector": [
+        0.23407,
+        0.11176
+      ],
+      "tags": [
+        {
+          "key": "foo",
+          "value": "bar",
+          "score": 0.12
+        },
+        {
+          "key": "foo",
+          "value": "bar2"
+        }
+      ]
     }
   ]
 }
