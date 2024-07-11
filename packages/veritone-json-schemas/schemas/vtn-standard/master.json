@@ -44,7 +44,7 @@
         },
         "internalTaskId": {
           "description": "ID of the internal task. A part of the GLC prototype",
-          "$ref": "#/definitions/guid"
+          "type": "string"
         }
       }
     },
