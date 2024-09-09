@@ -260,10 +260,10 @@ const SentimentConditionGenerator = modalState => {
       negative = sentiment.negative;
     }
   }
-
+ 
   const sentimentOperator = {
     operator: 'range',
-    field: 'sentiment.sentiment.positiveValue'
+    field: 'text-document.sentiment.positiveValue'
   };
   if (modalState.search == 'positive') {
     sentimentOperator.gte = positive;
