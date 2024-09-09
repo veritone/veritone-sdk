@@ -16,5 +16,5 @@
 
 * Fix sentiment search
 
-## 3.5.10
-* Update sentiment search
+## 4.0.0
+* Update sentiment search query
