@@ -67,7 +67,7 @@
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
-    "stylelint": "^8.2.0",
+    "stylelint": "^15.10.1",
     "stylelint-config-prettier": "^4.0.0",
     "stylelint-config-standard": "^17.0.0",
     "veritone-dev-env": "^3.0.0"
