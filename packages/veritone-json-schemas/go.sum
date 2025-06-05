@@ -1,0 +1,14 @@
+github.com/goccy/go-json v0.10.5 h1:Fq85nIqj+gXn/S5ahsiTlK3TmC85qgirsdTP/+DeaC4=
+github.com/goccy/go-json v0.10.5/go.mod h1:oq7eo15ShAhp70Anwd5lgX2pLfOS3QCiwU/PULtXL6M=
+github.com/goccy/go-yaml v1.18.0 h1:8W7wMFS12Pcas7KU+VVkaiCng+kG8QiFeFwzFb+rwuw=
+github.com/goccy/go-yaml v1.18.0/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
+github.com/gotnospirit/makeplural v0.0.0-20180622080156-a5f48d94d976 h1:b70jEaX2iaJSPZULSUxKtm73LBfsCrMsIlYCUgNGSIs=
+github.com/gotnospirit/makeplural v0.0.0-20180622080156-a5f48d94d976/go.mod h1:ZGQeOwybjD8lkCjIyJfqR5LD2wMVHJ31d6GdPxoTsWY=
+github.com/gotnospirit/messageformat v0.0.0-20221001023931-dfe49f1eb092 h1:c7gcNWTSr1gtLp6PyYi3wzvFCEcHJ4YRobDgqmIgf7Q=
+github.com/gotnospirit/messageformat v0.0.0-20221001023931-dfe49f1eb092/go.mod h1:ZZAN4fkkful3l1lpJwF8JbW41ZiG9TwJ2ZlqzQovBNU=
+github.com/kaptinlin/go-i18n v0.1.4 h1:wCiwAn1LOcvymvWIVAM4m5dUAMiHunTdEubLDk4hTGs=
+github.com/kaptinlin/go-i18n v0.1.4/go.mod h1:g1fn1GvTgT4CiLE8/fFE1hboHWJ6erivrDpiDtCcFKg=
+github.com/kaptinlin/jsonschema v0.4.1 h1:iRlCOIcjdxX5E6Hi9XbMvfsGEi1QNrTbBgTS3Lfrl18=
+github.com/kaptinlin/jsonschema v0.4.1/go.mod h1:1DUd7r5SdyB2ZnMtyB7uLv64dE3zTFTiYytDCd+AEL0=
+golang.org/x/text v0.25.0 h1:qVyWApTSYLk/drJRO5mDlNYskwQznZmkpV2c8q9zls4=
+golang.org/x/text v0.25.0/go.mod h1:WEdwpYrmk1qmdHvhkSTNPm3app7v4rsT8F2UD6+VHIA=
