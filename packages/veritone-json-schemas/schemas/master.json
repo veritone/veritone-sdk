@@ -444,7 +444,8 @@
             },
             "required": ["word"],
             "additionalProperties": false
-          }
+          },
+          "uniqueItems": true
         },
         {
           "type": "array",
@@ -455,8 +456,14 @@
             "items": {
               "required": ["confidence", "utteranceLength"]
             },
-            "uniqueItems": true,
-            "requireBestPath": true
+            "contains": {
+              "type": "object",
+              "properties": {
+                "bestPath": { "const": true}
+              }
+            },
+            "maxContains": 1,
+            "minContains": 1
           }
         }
       ]
