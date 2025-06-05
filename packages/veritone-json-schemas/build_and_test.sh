@@ -4,5 +4,5 @@ yarn
 yarn test
 yarn build
 
-mkdir -p dist/schemas/vtn-standard
-cp schemas/vtn-standard/*/*.json dist/schemas/vtn-standard
+mkdir -p dist/schemas
+cp schemas/*/*.json dist/schemas

@@ -12,8 +12,8 @@ This may be deployed manually with
 ```bash
 AWS_PROFILE=default
 aws --profile=$AWS_PROFILE s3 cp schemas/vtn-standard/index.html s3://aiware-prod-public/schemas/index.html
-for schema in $(find schemas/vtn-standard -name '*.json' | grep -v "examples"); do
-  aws --profile=$AWS_PROFILE s3 cp $schema s3://aiware-prod-public/${schema/vtn-standard\//}
+for schema in $(find schemas -name '*.json' | grep -v "examples"); do
+  aws --profile=$AWS_PROFILE s3 cp --dryrun $schema s3://aiware-prod-public/$schema}
 done
 ```
 (with appropriate updates for the local directory)
