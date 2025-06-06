@@ -25,6 +25,34 @@ OPTIONS
 EOT
 }
 
+# validates any number of files against a schema. automatically includes a reference to the
+# master document.
+#  $1 schemaName to validate against
+#  $2... files to validate
+jsValidate() {
+  local schemaName=$1
+  local instanceFiles=$2
+
+  # sourcemeta/jsonschema
+  docker run --interactive --rm --volume "$PWD:/workspace" \
+    ghcr.io/sourcemeta/jsonschema validate --verbose \
+    ./schemas/$schemaName/$schemaName.json \
+    -r ./schemas/master.json \
+    $instanceFiles \
+    2>&1
+
+}
+
+# validates that the schema itself is valid according to it's $schema value
+jsMetaValidate() {
+  local schemaName=$1
+
+  docker run --interactive --rm --volume "$PWD:/workspace" \
+    ghcr.io/sourcemeta/jsonschema metaschema --verbose \
+    /workspace/schemas/$schemaName/$schemaName.json \
+    2>&1
+}
+
 # outputs the result of one test
 #  $1 - test name
 #  $2 - test result (ok, fail, etc)
@@ -38,12 +66,29 @@ reportTest() {
 # be output. If the test is expected to be invalid, then the error will only be output if the
 # verbose flag is true
 #
-#  $1 expected result of these tests: "valid" or "invalid"
+#  $1 expect result of these tests to be valid: true or false
 #  $2 output of the validation code
 #  updates the number of passed tests in /tmp/schematest.pass.txt
 #  updates the number of failed tests in /tmp/schematest.fail.txt
+#  returns 0 if all tests pass, 1 if any test fails
+#
+# Example output from the container that we will be evaluating:
+#  ok: /workspace/schemas/aion/examples/correlaton.json
+#    matches /workspace/schemas/aion/aion.json
+#  ok: /workspace/schemas/aion/examples/documentation-sample.json
+#    matches /workspace/schemas/aion/aion.json
+#  fail: /workspace/schemas/aion/invalid-examples/series-words_no-confidence.json
+#  error: Schema validation failure
+#    The object value was expected to define properties "confidence", and "utteranceLength" but did not define properties "confidence", and "utteranceLength"
+#      at instance location "/series/0/words/0"
+#      at evaluate path "/allOf/3/properties/series/$ref/items/$ref/properties/words/$ref/allOf/1/then/items/required"
+#  fail: /workspace/schemas/aion/invalid-examples/series-words_no-word.json
+#  error: Schema validation failure
+#    The array value was expected to contain at least 1 item but it contained 0 items
+#      at instance location "/series/0/words"
+#      at evaluate path "/allOf/3/properties/series/$ref/items/$ref/properties/words/$ref/allOf/0/minItems"
 evaluateTestResults() {
-  local expected="$1"
+  local expectValid="$1"
   local results="$2"
 
   local pass=$(< /tmp/schematest.pass.txt)
@@ -52,19 +97,34 @@ evaluateTestResults() {
   IFS=$'\n'
   local line
   local testName
+  local printLine=false
   for line in $results; do
-    testName=$(echo "$line" | sed 's|/data/schemas/||;s| .*$||')
+    testName=$(echo "$line" | sed 's|^.*: ||;s|/workspace/schemas/||')
     case "$line" in
-      /data/*\ $expected)
-        reportTest "$testName" ok
-        pass=$(( $pass + 1 ))
+      ok:*)
+        if $expectValid; then
+          reportTest "$testName" ok
+          pass=$(( $pass + 1 ))
+          printLine=false
+        else
+          reportTest "$testName" fail
+          fail=$(( $fail + 1 ))
+          printLine=true
+        fi
         ;;
-      /data/*)
-        reportTest "$testName" fail
-        fail=$(( $fail + 1 ))
+      fail:*)
+        if $expectValid; then
+          reportTest "$testName" fail
+          fail=$(( $fail + 1 ))
+          printLine=true
+        else
+          reportTest "$testName" ok
+          pass=$(( $pass + 1 ))
+          printLine=$verbose
+        fi
         ;;
       *)
-        [[ "$expected" == valid ]] || $verbose && printf "       %s\n" "$line"
+        $printLine && printf "       %s\n" "$line"
         ;;
     esac
   done
@@ -72,6 +132,18 @@ evaluateTestResults() {
 
   echo "${pass:-0}" >/tmp/schematest.pass.txt
   echo "${fail:-0}" >/tmp/schematest.fail.txt
+
+  # return 0 if no failing tests
+  [[ $fail -eq 0 ]]
+}
+
+# given a schema name, will validate that the schema itself is valid
+#  $1 - name of the schema: aion, summary, object, etc
+validateMetaSchema() {
+  local schema=$1
+
+  local results=$(jsMetaValidate $schema)
+  evaluateTestResults true "$results"
 }
 
 # given a schema name, will validate that all the "examples" are valid. Returns 0 (success) if
@@ -85,13 +157,10 @@ validateSchemaExamples() {
     return
   }
 
-  # run all the tests in one batch (for performance) and collect the results
+  # run all the tests and collect the results
   local results
-  results=$(docker run --rm -v $PWD:/data 3scale/ajv validate --all-errors \
-      -s "/data/schemas/$schema/$schema.json" \
-      -r "/data/schemas/master.json" \
-      -d "/data/schemas/$schema/examples/*.json" 2>&1)
-  evaluateTestResults valid "$results" 
+  results=$(jsValidate "$schema" "./schemas/$schema/examples/*.json")
+  evaluateTestResults true "$results"
 }
 
 # given a schema name, will validate that all the "invalid-examples" are invalid. Returns 0 (success) if
@@ -107,11 +176,8 @@ validateSchemaInvalidExamples() {
 
   # run all the tests in one batch (for performance) and collect the results
   local results
-  results=$(docker run --rm -v $PWD:/data 3scale/ajv validate --all-errors \
-      -s "/data/schemas/$schema/$schema.json" \
-      -r "/data/schemas/master.json" \
-      -d "/data/schemas/$schema/invalid-examples/*.json" 2>&1)
-  evaluateTestResults invalid "$results" 
+  results=$(jsValidate "$schema" "./schemas/$schema/invalid-examples/*.json")
+  evaluateTestResults false "$results" 
 }
 
 # given a schema name, validates that all "examples" are valid and all "invalid-examples" are
@@ -120,25 +186,28 @@ validateSchemaInvalidExamples() {
 validateSchema() {
   local schema=$1
 
+  # validate the schema itself
+  validateMetaSchema $schema || return 1
+
   # printf "Schema %s\n" $schema
   validateSchemaExamples $schema
   validateSchemaInvalidExamples $schema
+  return 0
 }
 
 validateFile() {
-  local filePath="/data/schemas/$(echo "$1" | sed 's|^.*schemas/||')"
+  # get file like ./schemas/aion/examples/empty.json
+  local filePath="./schemas/$(echo "$1" | sed 's|^.*schemas/||')"
 
-  local schema=$(echo "$filePath" | cut -d/ -f4)
+  # extract schema from file path as 3rd element
+  local schemaName=$(echo "$filePath" | cut -d/ -f3)
 
   local results
-  results=$(docker run --rm -v $PWD:/data 3scale/ajv validate --all-errors \
-      -s "/data/schemas/$schema/$schema.json" \
-      -r "/data/schemas/master.json" \
-      -d "$filePath" 2>&1)
+  results=$(jsValidate "$schemaName" "$filePath")
 
   case "$filePath" in
-    *invalid-examples*)  evaluateTestResults invalid "$results";;
-    *)                   evaluateTestResults valid "$results";;
+    *invalid-examples*)  evaluateTestResults false "$results";;
+    *)                   evaluateTestResults true  "$results";;
   esac
 }
 
