@@ -60,6 +60,69 @@ So what is the AION validator for then? It has two purposes:
    For instance, at the time of writing, there is no specific validation contract for validating "location detection", 
    but you can use the AION validator to ensure that your GPS data conforms to the expected format.
 
+
+## Local Testing
+
+We use a containerized tool for validation of the schema and examples. All examples can be
+tested easily with `make test`, however sometimes it is easier to focus on a subset of examples,
+so the following can also be used:
+
+### Test a schema
+
+To run a suite of tests for one schema, run `./test-examples.sh <schema-name>`
+
+In this mode, the test script will verify the schema itself is valid. It will then assert that
+all JSON files in the `examples` directory validate against the schema correctly. It will then
+assert that all JSON files in the `invalid-examples` directory DO NOT validate against the schema.
+
+```
+$ ./test-examples.sh language
+ok     master.json
+ok     language/language.json
+ok     language/examples/basic.json
+ok     language/invalid-examples/empty.json
+ok     language/invalid-examples/missing-language.json
+ok     language/invalid-examples/missing-validation-contract.json```
+```
+
+### Test a specific file
+
+To run a single test for one JSON file, run `./test-examples.sh <file-path>`
+
+In this mode, the only the one file will be validated.
+
+```
+$ ./test-examples.sh language/examples/basic.json
+ok     language/examples/basic.json
+PASS   1 tests passed
+```
+
+### Validate directly with the container sourcemeta/jsonschema
+
+Validate one or more schemas against the jsonschema metadata schema validators with the
+`metaschema` keyword:
+
+```
+docker run --interactive --rm --volume "$PWD:/workspace" \
+  ghcr.io/sourcemeta/jsonschema \
+  metaschema --verbose \
+  schemas/master.json schemas/aion/aion.json
+```
+
+Validate one or more instances against a schema with the `validate` keyword by passing in the
+schema as the first parameter and the instance file as the 2nd. Note that you must also
+include the `$ref`d files as resources (`-r` parameters). The following validates the
+`examples/basic.json` instance file against the `language.json` schema
+
+```
+docker run --interactive --rm --volume "$PWD:/workspace" \
+  ghcr.io/sourcemeta/jsonschema \
+  validate --verbose \
+  -r schemas/master.json \
+  schemas/language/language.json \
+  schemas/language/examples/basic.json
+```
+
 ## Contributing
 
 > See the [veritone-sdk README](../../README.md) for full information.
