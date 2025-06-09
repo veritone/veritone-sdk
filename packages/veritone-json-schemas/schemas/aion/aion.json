@@ -36,6 +36,8 @@
           "$ref": "../master.json#/definitions/embedding"
         }
       }
-    }
+    },
+    { "$ref": "../capabilities.json#/definitions/anomaly" },
+    { "$ref": "../capabilities.json#/definitions/language" }
   ]
 }

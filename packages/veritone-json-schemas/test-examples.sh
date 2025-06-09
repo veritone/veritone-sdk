@@ -35,9 +35,9 @@ jsValidate() {
 
   # sourcemeta/jsonschema
   docker run --interactive --rm --volume "$PWD:/workspace" \
-    ghcr.io/sourcemeta/jsonschema validate --verbose --fast \
+    ghcr.io/sourcemeta/jsonschema validate --verbose \
     ./schemas/$schemaName/$schemaName.json \
-    -r ./schemas/master.json \
+    -r ./schemas/master.json -r ./schemas/capabilities.json \
     $instanceFiles \
     2>&1
 
@@ -51,6 +51,11 @@ jsMetaValidate() {
   docker run --interactive --rm --volume "$PWD:/workspace" \
     ghcr.io/sourcemeta/jsonschema metaschema --verbose \
     /workspace/schemas/master.json \
+    2>&1
+  # validate the capabilities schema that defines the cognition contracts
+  docker run --interactive --rm --volume "$PWD:/workspace" \
+    ghcr.io/sourcemeta/jsonschema metaschema --verbose \
+    /workspace/schemas/capabilities.json \
     2>&1
   # validate the root schema
   docker run --interactive --rm --volume "$PWD:/workspace" \

@@ -1,0 +1,17 @@
+{
+  "$comments": "Multiple contracts are valid",
+  "validationContracts": ["anomaly", "language"],
+  "language": "en",
+  "object": [
+    {
+      "type": "anomaly",
+      "objectCategory": [
+        {
+          "class": "anomaly",
+          "@id": "7665554",
+          "confidence": 0.903
+        }
+      ]
+    }
+  ]
+}

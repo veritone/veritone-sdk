@@ -1,0 +1,11 @@
+{
+  "$comments": "Does not fulfill the 'anomaly' contract",
+  "validationContracts": ["anomaly", "language"],
+  "language":"en",
+  "object": [
+    {
+      "type": "text",
+      "text": "hi"
+    }
+  ]
+}

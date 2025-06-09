@@ -1,0 +1,24 @@
+{
+  "validationContracts": ["anomaly"],
+  "object": [
+    {
+      "type": "anomaly",
+      "objectCategory": [
+        {
+          "class": "anomaly",
+          "@id": "12345",
+          "confidence": 0.468
+        }
+      ]
+    },
+    {
+      "objectCategory": [
+        {
+          "class": "anomaly",
+          "@id": "7665554",
+          "confidence": 0.903
+        }
+      ]
+    }
+  ]
+}

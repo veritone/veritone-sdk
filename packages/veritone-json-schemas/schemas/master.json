@@ -101,6 +101,10 @@
         "$ref": "#/definitions/seriesItem"
       }
     },
+    "comment": {
+      "description": "Comments are for humans and are ignored by processors",
+      "type": "string"
+    },
     "schemaId": {
       "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
       "type": "string",
@@ -278,6 +282,9 @@
       "description": "Describes a visual or textural object within the media",
       "type": "object",
       "properties": {
+        "$comment": {
+          "$ref": "#/definitions/comment"
+        },
         "type": {
           "$ref": "#/definitions/objectResultType"
         },
