@@ -3,4 +3,10 @@ help: ## Print the list of makefile targets
 
 test: ## Test all valid and invalid examples against their respective schemas
 	./test-examples.sh
-	
+
+build: ## Builds the validator in the dist/ directory
+	yarn
+	yarn test
+	yarn build
+	mkdir -p dist/schemas/vtn-standard
+	cp schemas/*/*.json dist/schemas/vtn-standard

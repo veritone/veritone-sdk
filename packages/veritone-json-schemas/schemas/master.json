@@ -124,31 +124,29 @@
       "description": "Defines which validation contract(s) should be used to validate this content. May be one of the standard categories or the schemaId of a Structured Data Object",
       "type": "array",
       "minItems": 1,
-      "items": [
-        {
-          "type": "string",
-          "anyOf": [
-            {
-              "enum": [
-                "concept",
-                "entity",
-                "keyword",
-                "language",
-                "media-translated",
-                "object",
-                "sentiment",
-                "summary",
-                "text",
-                "transcript",
-                "anomaly"
-              ]
-            },
-            {
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-            }
-          ]
-        }
-      ]
+      "items": {
+        "type": "string",
+        "anyOf": [
+          {
+            "enum": [
+              "concept",
+              "entity",
+              "keyword",
+              "language",
+              "media-translated",
+              "object",
+              "sentiment",
+              "summary",
+              "text",
+              "transcript",
+              "anomaly"
+            ]
+          },
+          {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          }
+        ]
+      }
     },
     "validated": {
       "description": "When included, requires that the document declare it's validation contracts",

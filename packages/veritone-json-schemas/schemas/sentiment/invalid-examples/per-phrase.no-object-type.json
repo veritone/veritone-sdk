@@ -1,4 +1,5 @@
 {
+  "validationContracts": ["sentiment"],
   "object": [
     {
       "page": 3,

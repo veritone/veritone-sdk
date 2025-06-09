@@ -1,1 +1,3 @@
-{}
+{
+  "validationContracts": ["sentiment"]
+}

@@ -35,7 +35,7 @@ jsValidate() {
 
   # sourcemeta/jsonschema
   docker run --interactive --rm --volume "$PWD:/workspace" \
-    ghcr.io/sourcemeta/jsonschema validate --verbose \
+    ghcr.io/sourcemeta/jsonschema validate --verbose --fast \
     ./schemas/$schemaName/$schemaName.json \
     -r ./schemas/master.json \
     $instanceFiles \
@@ -47,6 +47,12 @@ jsValidate() {
 jsMetaValidate() {
   local schemaName=$1
 
+  # validate the master schema that contains the definitions
+  docker run --interactive --rm --volume "$PWD:/workspace" \
+    ghcr.io/sourcemeta/jsonschema metaschema --verbose \
+    /workspace/schemas/master.json \
+    2>&1
+  # validate the root schema
   docker run --interactive --rm --volume "$PWD:/workspace" \
     ghcr.io/sourcemeta/jsonschema metaschema --verbose \
     /workspace/schemas/$schemaName/$schemaName.json \
@@ -97,10 +103,12 @@ evaluateTestResults() {
   IFS=$'\n'
   local line
   local testName
-  local printLine=false
+  local printLine=true
   for line in $results; do
     testName=$(echo "$line" | sed 's|^.*: ||;s|/workspace/schemas/||')
     case "$line" in
+      Detecting*) : ;;
+      Importing*) : ;;
       ok:*)
         if $expectValid; then
           reportTest "$testName" ok
