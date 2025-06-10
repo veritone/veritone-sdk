@@ -37,7 +37,7 @@
         }
       }
     },
-    { "$ref": "../capabilities.json#/definitions/anomaly" },
-    { "$ref": "../capabilities.json#/definitions/language" }
+    { "$ref": "../contracts.json#/definitions/capabilityAnomaly" },
+    { "$ref": "../contracts.json#/definitions/capabilityLanguage" }
   ]
 }
