@@ -279,118 +279,127 @@
       }
     },
     "objectResult": {
-      "description": "Describes a visual or textural object within the media",
-      "type": "object",
-      "properties": {
-        "$comment": {
-          "$ref": "#/definitions/comment"
+      "allOf": [
+        {
+          "description": "Describes a visual or textural object within the media",
+          "type": "object",
+          "properties": {
+            "$comment": {
+              "$ref": "#/definitions/comment"
+            },
+            "type": {
+              "$ref": "#/definitions/objectResultType"
+            },
+            "label": {
+              "description": "Main label of this object. Required if the object contains no other identifying information.",
+              "type": "string"
+            },
+            "uri": {
+              "description": "URI of the thumbnail to show in the UI. If this is not present, the bounding poly can be used to generate one dynamically.",
+              "type": "string"
+            },
+            "confidence": {
+              "$ref": "#/definitions/confidence"
+            },
+            "text": {
+              "$ref": "#/definitions/objectText"
+            },
+            "language": {
+              "$ref": "#/definitions/language"
+            },
+            "collateIndex": {
+              "$ref": "#/definitions/collateIndex"
+            },
+            "page": {
+              "$ref": "#/definitions/page"
+            },
+            "paragraph": {
+              "$ref": "#/definitions/paragraph"
+            },
+            "sentence": {
+              "$ref": "#/definitions/sentence"
+            },
+            "transcription": {
+              "$ref": "#/definitions/transcription"
+            },
+            "lipVoiceCorrelation": {
+              "$ref": "#/definitions/lipVoiceCorrelation"
+            },
+            "lipMovement": {
+              "$ref": "#/definitions/lipMovement"
+            },
+            "faceLandmarks": {
+              "$ref": "#/definitions/faceLandmarks"
+            },
+            "sentiment": {
+              "$ref": "#/definitions/sentiment"
+            },
+            "emotions": {
+              "$ref": "#/definitions/emotions"
+            },
+            "age": {
+              "$ref": "#/definitions/age"
+            },
+            "motorVehicle": {
+              "$ref": "#/definitions/motorVehicle"
+            },
+            "objectCategory": {
+              "$ref": "#/definitions/objectCategory"
+            },
+            "boundingPoly": {
+              "$ref": "#/definitions/boundingPoly"
+            },
+            "gps": {
+              "$ref": "#/definitions/gpsCoordinates"
+            },
+            "structuredData": {
+              "$ref": "#/definitions/structuredData"
+            },
+            "vendor": {
+              "$ref": "#/definitions/vendor"
+            },
+            "libraryId": {
+              "description": "GUID of the training library used to extract/discover this object",
+              "$ref": "#/definitions/guid"
+            },
+            "entityId": {
+              "description": "GUID of the entity in the library that was used to identify this object",
+              "$ref": "#/definitions/guid"
+            },
+            "mode": {
+              "type": "string",
+              "enum": ["enroll", "verify"]
+            },
+            "region": {
+              "description": "Region of source a match was found",
+              "type": "string",
+              "enum": ["left", "right", "top", "bottom"]
+            },
+            "entityIdentifierId": {
+              "description": "The unique ID of recognized entity identifier (for example, a specific image).",
+              "type": "string"
+            },
+            "referenceId": {
+              "description": "Unique identifier of the vector",
+              "type": "string"
+            },
+            "fingerprintVector": {
+              "$ref": "#/definitions/vector"
+            },
+            "tags": {
+              "$ref": "#/definitions/tags"
+            }
+          },
+          "required": ["type"],
+          "additionalProperties": false
         },
-        "type": {
-          "$ref": "#/definitions/objectResultType"
-        },
-        "label": {
-          "description": "Main label of this object. Required if the object contains no other identifying information.",
-          "type": "string"
-        },
-        "uri": {
-          "description": "URI of the thumbnail to show in the UI. If this is not present, the bounding poly can be used to generate one dynamically.",
-          "type": "string"
-        },
-        "confidence": {
-          "$ref": "#/definitions/confidence"
-        },
-        "text": {
-          "$ref": "#/definitions/objectText"
-        },
-        "language": {
-          "$ref": "#/definitions/language"
-        },
-        "collateIndex": {
-          "$ref": "#/definitions/collateIndex"
-        },
-        "page": {
-          "$ref": "#/definitions/page"
-        },
-        "paragraph": {
-          "$ref": "#/definitions/paragraph"
-        },
-        "sentence": {
-          "$ref": "#/definitions/sentence"
-        },
-        "transcription": {
-          "$ref": "#/definitions/transcription"
-        },
-        "lipVoiceCorrelation": {
-          "$ref": "#/definitions/lipVoiceCorrelation"
-        },
-        "lipMovement": {
-          "$ref": "#/definitions/lipMovement"
-        },
-        "faceLandmarks": {
-          "$ref": "#/definitions/faceLandmarks"
-        },
-        "sentiment": {
-          "$ref": "#/definitions/sentiment"
-        },
-        "emotions": {
-          "$ref": "#/definitions/emotions"
-        },
-        "age": {
-          "$ref": "#/definitions/age"
-        },
-        "objectCategory": {
-          "$ref": "#/definitions/objectCategory"
-        },
-        "boundingPoly": {
-          "$ref": "#/definitions/boundingPoly"
-        },
-        "gps": {
-          "$ref": "#/definitions/gpsCoordinates"
-        },
-        "structuredData": {
-          "$ref": "#/definitions/structuredData"
-        },
-        "vendor": {
-          "$ref": "#/definitions/vendor"
-        },
-        "libraryId": {
-          "description": "GUID of the training library used to extract/discover this object",
-          "$ref": "#/definitions/guid"
-        },
-        "entityId": {
-          "description": "GUID of the entity in the library that was used to identify this object",
-          "$ref": "#/definitions/guid"
-        },
-        "mode": {
-          "type": "string",
-          "enum": ["enroll", "verify"]
-        },
-        "region": {
-          "description": "Region of source a match was found",
-          "type": "string",
-          "enum": ["left", "right", "top", "bottom"]
-        },
-        "entityIdentifierId": {
-          "description": "The unique ID of recognized entity identifier (for example, a specific image).",
-          "type": "string"
-        },
-        "referenceId": {
-          "description": "Unique identifier of the vector",
-          "type": "string"
-        },
-        "fingerprintVector": {
-          "$ref": "#/definitions/vector"
-        },
-        "tags": {
-          "$ref": "#/definitions/tags"
-        }
-      },
-      "required": ["type"],
-      "additionalProperties": false
+        { "$ref": "./contracts.json#/definitions/objectMotorVehicle" }
+      ]
     },
     "objectResultType": {
-      "description": "The type of a visual or textural object in the media.",
+      "description": "The type of a visual or textural object in the media",
       "type": "string",
+      "$comment": "Use kabob-case",
       "enum": [
         "object",
         "face",
@@ -407,7 +416,8 @@
         "text",
         "namedEntity",
         "barcode",
-        "anomaly"
+        "anomaly",
+        "motor-vehicle"
       ]
     },
     "objectText": {
@@ -748,6 +758,62 @@
         "confidence": {
           "$ref": "#/definitions/confidence"
         }
+      }
+    },
+    "motorVehicle": {
+      "description": "A licensed motorized vehicle (car or truck)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "make": {
+          "type": "string",
+          "examples": ["Hyundai", "Ford"]
+        },
+        "model": {
+          "type": "string",
+          "examples": ["Elantra", "F-250 Super Duty"]
+        },
+        "makeModelConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "bodyStyle": {
+          "description": "General classification of vehicle type",
+          "type": "string",
+          "examples": ["sedan", "pickup", "minivan", "hatchback"]
+        },
+        "bodyStyleConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "color": {
+          "type": "string"
+        },
+        "colorConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "orientation": {
+          "description": "Side of vehicle that is visible",
+          "type": "string",
+          "examples": ["front", "rear", "left", "right", "top", "bottom"]
+        }, 
+        "orientationConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "licensePlate": {
+          "description": "License plate number visible. No hyphens, spaces or other punctuation",
+          "type": "string",
+          "examples": ["GAV1064", "CNH320", "131D92", "IMGROOT"]
+        },
+        "licensePlateConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "licensePlateRegion": {
+          "description": "Region or authority that issued the license plate. List known from largest to smallest separated by hyphens: i.e. COUNTRY-STATE-COUNTY. Use ISO-3166-1:alpha-2 and ISO-3166-2 uppercase codes.",
+          "type": "string",
+          "examples": ["US-NY", "US-GA-HAZZARD", "IE-LD"]
+        },
+        "licensePlateRegionConfidence": {
+          "$ref": "#/definitions/confidence"
+        }    
       }
     },
     "lipVoiceCorrelation": {

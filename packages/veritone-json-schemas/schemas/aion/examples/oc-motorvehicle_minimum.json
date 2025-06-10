@@ -1,0 +1,16 @@
+{
+  "object": [
+    {
+      "type": "motor-vehicle",
+      "motorVehicle": {
+        "make": "Dodge",
+        "model": "Charger",
+        "bodyStyle": "2 door",
+        "color": "orange",
+        "orientation": "front",
+        "licensePlate": "CNH320",
+        "licensePlateRegion": "US-GA-HAZZARD"
+      }
+    }
+  ]
+}

@@ -61,6 +61,25 @@
       "then": {
         "required": ["language"]
       }
+    },
+
+    "objectMotorVehicle": {
+      "$comment": "Object of type 'motor-vehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
+      "if": {
+        "properties": {
+          "type": { "const": "motor-vehicle"}
+        }
+      },
+      "then":{
+        "properties": {
+          "type": {},
+          "motorVehicle": {},
+          "label": {},
+          "boundingPoly": {}
+        },
+        "required": ["type", "motorVehicle"],
+        "additionalProperties": false
+      }
     }
   }
 }

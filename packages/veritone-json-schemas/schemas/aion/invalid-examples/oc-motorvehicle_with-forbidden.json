@@ -1,0 +1,20 @@
+{
+  "object": [
+    {
+      "type": "motor-vehicle",
+      "motorVehicle": {
+        "make": "Dodge",
+        "model": "Charger",
+        "bodyStyle": "2 door",
+        "color": "orange",
+        "orientation": "front",
+        "licensePlate": "CNH320",
+        "licensePlateRegion": "US-GA-HAZZARD"
+      },
+      "lipMovement": {
+        "$comment": "lip movement is forbidden in a motor-vehicle object",
+        "confidence": 0.00
+      }
+    }
+  ]
+}

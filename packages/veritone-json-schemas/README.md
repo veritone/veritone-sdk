@@ -132,6 +132,12 @@ docker run --interactive --rm --volume "$PWD:/workspace" \
 1. `yarn install` to install dependencies.
 2. run `yarn test` to run the schema validator against all the examples.
 
+### To add a new object type
+
+1. Add new enum to the `objectResultsType` field
+2. Add new structure for the object type
+3. Add new Object Contract to the contracts.json file
+
 ## License
 
 Copyright 2019-2021, Veritone Inc.
