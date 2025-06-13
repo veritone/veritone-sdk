@@ -340,6 +340,9 @@
             "age": {
               "$ref": "#/definitions/age"
             },
+            "licensePlate": {
+              "$ref": "#/definitions/licensePlate"
+            },
             "motorVehicle": {
               "$ref": "#/definitions/motorVehicle"
             },
@@ -393,7 +396,8 @@
           "required": ["type"],
           "additionalProperties": false
         },
-        { "$ref": "./contracts.json#/definitions/objectMotorVehicle" }
+        { "$ref": "./contracts.json#/definitions/objectMotorVehicle" },
+        { "$ref": "./contracts.json#/definitions/objectLicensePlate" }
       ]
     },
     "objectResultType": {
@@ -760,6 +764,30 @@
         }
       }
     },
+    "licensePlate": {
+      "description": "A license plate",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "description": "License plate number. No hyphens, spaces or other punctuation",
+          "type": "string",
+          "examples": ["GAV1064", "CNH320", "131D92", "IMGROOT"]
+        },
+        "confidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "issuer": {
+          "description": "Region or authority that issued the license plate. List known from largest to smallest separated by hyphens: i.e. COUNTRY-STATE-COUNTY. Use ISO-3166-1:alpha-2 and ISO-3166-2 codes.",
+          "type": "string",
+          "examples": ["US-NY", "US-GA-HAZZARD", "IE-LD"]
+        },
+        "issuerConfidence": {
+          "$ref": "#/definitions/confidence"
+        }    
+      },
+      "required": ["number"]
+    },
     "motorVehicle": {
       "description": "A licensed motorized vehicle (car or truck)",
       "type": "object",
@@ -799,21 +827,8 @@
           "$ref": "#/definitions/confidence"
         },
         "licensePlate": {
-          "description": "License plate number visible. No hyphens, spaces or other punctuation",
-          "type": "string",
-          "examples": ["GAV1064", "CNH320", "131D92", "IMGROOT"]
-        },
-        "licensePlateConfidence": {
-          "$ref": "#/definitions/confidence"
-        },
-        "licensePlateRegion": {
-          "description": "Region or authority that issued the license plate. List known from largest to smallest separated by hyphens: i.e. COUNTRY-STATE-COUNTY. Use ISO-3166-1:alpha-2 and ISO-3166-2 uppercase codes.",
-          "type": "string",
-          "examples": ["US-NY", "US-GA-HAZZARD", "IE-LD"]
-        },
-        "licensePlateRegionConfidence": {
-          "$ref": "#/definitions/confidence"
-        }    
+          "$ref": "#/definitions/licensePlate"
+        }
       }
     },
     "lipVoiceCorrelation": {

@@ -80,6 +80,25 @@
         "required": ["type", "motorVehicle"],
         "additionalProperties": false
       }
+    },
+
+    "objectLicensePlate": {
+      "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
+      "if": {
+        "properties": {
+          "type": { "const": "licensePlate"}
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "licensePlate": {},
+          "label": {},
+          "boundingPoly": {}
+        },
+        "required": ["type", "licensePlate"],
+        "additionalProperties": false
+      }
     }
   }
 }

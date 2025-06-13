@@ -1,0 +1,42 @@
+{
+  "object": [
+    {
+      "type": "motor-vehicle",
+      "motorVehicle": {
+        "make": "Dodge",
+        "model": "Charger",
+        "makeModelConfidence": 0.92,
+        "bodyStyle": "2 door",
+        "bodyStyleConfidence": 0.8,
+        "color": "orange",
+        "colorConfidence": 0.85,
+        "orientation": "front",
+        "orientationConfidence": 0.95,
+        "licensePlate": {
+          "number": "CNH320",
+          "confidence": 0.95,
+          "issuer": "US-GA-HAZZARD",
+          "issuerConfidence": 0.63
+        }
+      },
+      "boundingPoly": [
+        {
+          "x": 0.8046875,
+          "y": 0.4597222222222222
+        },
+        {
+          "x": 0.83984375,
+          "y": 0.4597222222222222
+        },
+        {
+          "x": 0.83984375,
+          "y": 0.5041666666666667
+        },
+        {
+          "x": 0.8046875,
+          "y": 0.5041666666666667
+        }
+      ]
+    }
+  ]
+}

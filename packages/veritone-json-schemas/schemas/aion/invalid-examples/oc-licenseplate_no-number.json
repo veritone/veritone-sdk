@@ -1,0 +1,13 @@
+{
+  "object": [
+    {
+      "type": "licensePlate",
+      "label": "CNH320",
+      "licensePlate": {
+        "confidence": 0.95,
+        "issuer": "US-GA-HAZZARD",
+        "issuerConfidence": 0.63
+      }
+    }
+  ]
+}
