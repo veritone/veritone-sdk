@@ -6,7 +6,7 @@
       "startTimeMs": 0,
       "stopTimeMs": 1000,
       "object": {
-        "type": "motor-vehicle",
+        "type": "motorVehicle",
         "motorVehicle": {
           "make": "Ford",
           "model": "F-150",
@@ -44,7 +44,7 @@
       "startTimeMs": 0,
       "stopTimeMs": 1000,
       "object": {
-        "type": "motor-vehicle",
+        "type": "motorVehicle",
         "motorVehicle": {
           "make": "Dodge",
           "model": "Charger",

@@ -3,7 +3,7 @@
   "$comment": "This motor vehicle object is invalid because it does not contain a 'motorVehicle' property.",
   "object": [
     {
-      "type": "motor-vehicle",
+      "type": "motorVehicle",
       "label": "CNH320"
     }
   ]

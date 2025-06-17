@@ -3,7 +3,7 @@
   "$comment": "A motor vehicle with a small number of properties. Technically, none of these properties are required, but this example is meant to illustrate the minimal practical motor vehicle object.",
   "object": [
     {
-      "type": "motor-vehicle",
+      "type": "motorVehicle",
       "motorVehicle": {
         "make": "Dodge",
         "model": "Charger",

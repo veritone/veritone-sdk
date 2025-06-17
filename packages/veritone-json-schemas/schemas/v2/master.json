@@ -403,7 +403,7 @@
     "objectResultType": {
       "description": "The type of a visual or textural object in the media",
       "type": "string",
-      "$comment": "Use kabob-case in the future: TODO(km) convert to camelcase",
+      "$comment": "Use camelCase for types (kabob-case is deprecated)",
       "enum": [
         "object",
         "face",
@@ -421,7 +421,7 @@
         "namedEntity",
         "barcode",
         "anomaly",
-        "motor-vehicle"
+        "motorVehicle"
       ]
     },
     "objectText": {

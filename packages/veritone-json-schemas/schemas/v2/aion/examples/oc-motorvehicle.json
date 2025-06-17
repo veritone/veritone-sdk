@@ -3,7 +3,7 @@
   "$comment": "A motor vehicle object with recommended properties.",
   "object": [
     {
-      "type": "motor-vehicle",
+      "type": "motorVehicle",
       "label": "CNH320",
       "motorVehicle": {
         "make": "Dodge",

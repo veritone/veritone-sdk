@@ -3,7 +3,7 @@
   "$comment": "This motor vehicle object is invalid because it contains lip movement.",
   "object": [
     {
-      "type": "motor-vehicle",
+      "type": "motorVehicle",
       "motorVehicle": {
         "make": "Dodge",
         "model": "Charger",
@@ -14,7 +14,7 @@
         "licensePlateRegion": "US-GA-HAZZARD"
       },
       "lipMovement": {
-        "$comment": "lip movement is forbidden in a motor-vehicle object",
+        "$comment": "lip movement is forbidden in a motorVehicle object",
         "confidence": 0.00
       }
     }

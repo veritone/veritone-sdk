@@ -84,10 +84,10 @@
     },
 
     "objectMotorVehicle": {
-      "$comment": "Object of type 'motor-vehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
+      "$comment": "Object of type 'motorVehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
       "if": {
         "properties": {
-          "type": { "const": "motor-vehicle"}
+          "type": { "const": "motorVehicle"}
         }
       },
       "then":{
