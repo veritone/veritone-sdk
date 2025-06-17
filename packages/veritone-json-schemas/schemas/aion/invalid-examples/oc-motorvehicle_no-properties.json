@@ -1,0 +1,11 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "This motor vehicle object is invalid because it contains an empty 'motorVehicle'.",
+  "object": [
+    {
+      "type": "motor-vehicle",
+      "label": "CNH320",
+      "motorVehicle": {}
+    }
+  ]
+}

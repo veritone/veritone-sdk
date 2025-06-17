@@ -1,4 +1,6 @@
 {
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "A license plate object with minimal properties.",
   "object": [
     {
       "type": "licensePlate",

@@ -403,7 +403,7 @@
     "objectResultType": {
       "description": "The type of a visual or textural object in the media",
       "type": "string",
-      "$comment": "Use kabob-case",
+      "$comment": "Use kabob-case in the future: TODO(km) convert to camelcase",
       "enum": [
         "object",
         "face",
@@ -829,7 +829,8 @@
         "licensePlate": {
           "$ref": "#/definitions/licensePlate"
         }
-      }
+      },
+      "minProperties": 1
     },
     "lipVoiceCorrelation": {
       "description": "Used for the facial-features engine to describe how confident it is that the lips are moving in concert with current speech",

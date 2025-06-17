@@ -1,7 +1,10 @@
 {
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "A motor vehicle object with recommended properties.",
   "object": [
     {
       "type": "motor-vehicle",
+      "label": "CNH320",
       "motorVehicle": {
         "make": "Dodge",
         "model": "Charger",

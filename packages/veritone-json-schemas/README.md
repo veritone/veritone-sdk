@@ -4,7 +4,91 @@ This repo contains all the static JSON schemas used by Veritone.
 This does **not** include the [user-defined schemas registered through Veritone Developer](https://docs.veritone.com/#/developer/data/),
 just the ones that are core to our platform.
 
-## Releasing
+## Adding a new validation contract to AION
+
+Validation contracts are enforced by the JSON schema definitions. In order to add a new
+validation contract you need to understand how JSON Draft-07 schemas handle `allOf` and
+`if-then-else` specifications. See
+https://json-schema.org/draft-07/draft-handrews-json-schema-validation-01
+
+Determine the type of contract: capability, object, or series
+
+### Capability contract
+
+Capability contracts validate against the entire document as a whole. They can enforce that a
+document contains specific fields or fields with specific values.
+
+Capability contracts are triggered when the optional `validationContracts` array is present and
+has one or more values. Each value requires the document to fulfill its validation contract, so
+a document must fulfill _all_ the contracts to be valid. Note that some contracts are compatible
+with each other (i.e. "transcription" with "sentiment") but some contracts are fundamentally
+incompatible because they have conflicting requirements (i.e. "anomaly" and "text"). Where
+possible, contracts should be written so that they are compatible with other contracts.
+
+1. Add the new contract name to the `validationContracts` enum in `masters.json`
+
+1. Define the contract in the top section of `contracts.json`
+   1. Name must be `capability` + the enum you added in the previous step
+   1. Insert the contract alphabetically in the `definitions` object
+   1. Must have an `if` clause that ensures your contract only applies if the enum is present in
+      the `validationContracts` list
+
+1. Add the contract to the list of contract references toward the bottom of the `aion.json`
+   schema file.
+
+
+### Object contract
+
+Object contracts enforce that objects of a certain `type` are valid objects of that type. Object
+contracts apply independently to every object of the specific `type` and cannot enforce anything
+outside that object. This includes objects in the `object` array as well as any object in a
+`series` item.
+
+Object contracts are preferred over capability contracts because they have a local scope that
+affects individual objects and may be mixed in the same object or series array.
+
+1. Add the new object type to the `objectResultTypes` enum in `masters.json`
+   1. Use camelCase for new enum types
+
+1. Define the new contract in the middle section of `contracts.json`
+   1. Name must be `object` + the enum you added to the `objectResultTypes` property
+   1. Insert the contract alphabetically in the `definitions` object
+   1. Must have an `if` clause that ensures your contract only applies if the `type` of the
+      object is appropriate
+
+1. Add the contract to the list of contract references at the end of the `objectResult`
+   definition in `masters.json`
+
+Define your new object contract in the `contracts.json` file (middle section) and prefix it with
+`object`. After defining the contract, make it a requirement of all objects by adding it to the
+list of referenced contracts at the bottom of the `objectResult` definition in the `master.json`
+schema file.
+
+### Series contract
+
+> NOTE: At the time of writing, series contracts were accepted as a requirement for the AION v2.0
+> spec, but none have been implemented yet. Therefore, there are no examples to follow, but they
+> should be implemented similarly to the object contracts.
+> UPDATE: TODO(km) Objects are JSON objects, but series is an array of objects. Since series may
+> not be mergable, we may need to make them capabilities anyway. Think about the use-cases... if
+> you have a transcript, then do all seriesItems have to be `words`, or could you mix a
+> transcript with object recognition or something?
+
+Series contracts enforce that series of a certain `type` are valid for that type. Series
+contracts apply to items in the `series` array and are not typically compatible with each other.
+
+1. Add the new series type to the `seriesTypes` enum in `masters.json`
+
+1. Define the new contract in the bottom section of `contracts.json`
+   1. Name must be `series` + the enum you added to the `seriesTypes` property
+   1. Insert the cantract alphabetically in the `definitions` object
+   1. Mst have an `if` clause that ensures your contract only applies if the `type` of the
+      series is approperiate.
+
+1. Add the contract to...
+
+
+## Publishing
 
 The JSON schema is deployed to the get.aiware.com
 site (https://get.aiware.com/schemas/index.html). 

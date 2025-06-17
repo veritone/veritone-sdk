@@ -63,24 +63,6 @@
       }
     },
 
-    "objectMotorVehicle": {
-      "$comment": "Object of type 'motor-vehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
-      "if": {
-        "properties": {
-          "type": { "const": "motor-vehicle"}
-        }
-      },
-      "then":{
-        "properties": {
-          "type": {},
-          "motorVehicle": {},
-          "label": {},
-          "boundingPoly": {}
-        },
-        "required": ["type", "motorVehicle"],
-        "additionalProperties": false
-      }
-    },
 
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
@@ -97,6 +79,25 @@
           "boundingPoly": {}
         },
         "required": ["type", "licensePlate"],
+        "additionalProperties": false
+      }
+    },
+
+    "objectMotorVehicle": {
+      "$comment": "Object of type 'motor-vehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
+      "if": {
+        "properties": {
+          "type": { "const": "motor-vehicle"}
+        }
+      },
+      "then":{
+        "properties": {
+          "type": {},
+          "motorVehicle": {},
+          "label": {},
+          "boundingPoly": {}
+        },
+        "required": ["type", "motorVehicle"],
         "additionalProperties": false
       }
     }

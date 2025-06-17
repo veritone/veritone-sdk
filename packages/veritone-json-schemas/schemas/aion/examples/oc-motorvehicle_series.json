@@ -1,5 +1,6 @@
 {
-  "$schema": "https://get.aiware.com/schemas/${VERSION}/aion/schema",
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "A series containing multiple motor vehicles in the first second of a video.",
   "series": [
     {
       "startTimeMs": 0,
@@ -9,9 +10,15 @@
         "motorVehicle": {
           "make": "Ford",
           "model": "F-150",
-          "bodyStyle": "Pickup",
+          "bodyStyle": "Pickup Truck",
           "color": "black",
-          "orientation": "rear"
+          "orientation": "rear",
+          "licensePlate": {
+            "number": "Q100BC",
+            "confidence": 0.95,
+            "issuer": "US-NY",
+            "issuerConfidence": 0.63
+          }
         },
         "boundingPoly": [
           {

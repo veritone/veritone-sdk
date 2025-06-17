@@ -1,4 +1,6 @@
 {
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "This license plate object is invalid because it does not contain a 'licensePlate.number' property.",
   "object": [
     {
       "type": "licensePlate",
