@@ -263,7 +263,7 @@
           "class": {
             "type": "string",
             "description": "The class of the object recognized.",
-            "examples": ["animal", "mammal", "jerseyNumber"]
+            "examples": ["animal", "mammal", "jerseyNumber", "science & technology", "religion"]
           },
           "@id": {
             "type": "string",
@@ -405,23 +405,23 @@
       "type": "string",
       "$comment": "Use camelCase for types (kabob-case is deprecated)",
       "enum": [
-        "object",
+        "anomaly",
+        "barcode",
+        "concept",
         "face",
-        "facial-features",
         "face-verification",
-        "speaker-verification",
+        "facial-features",
+        "fingerprint",
+        "keyword",
         "licensePlate",
         "logo",
-        "fingerprint",
-        "speaker",
-        "sound",
-        "concept",
-        "keyword",
-        "text",
+        "motorVehicle",
         "namedEntity",
-        "barcode",
-        "anomaly",
-        "motorVehicle"
+        "object",
+        "sound",
+        "speaker",
+        "speaker-verification",
+        "text"
       ]
     },
     "objectText": {

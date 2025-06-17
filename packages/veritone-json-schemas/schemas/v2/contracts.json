@@ -6,7 +6,7 @@
   "definitions": {
     
     "capabilityAnomaly": {
-      "$comment": "If contracts contains 'anomaly', then there must be an 'object' or 'series' and all objects must be of type 'anomaly'",
+      "$comment": "Capability Anomaly: there must be an 'object' or 'series' and all objects must be of type 'anomaly'",
       "if": {
         "required": ["validationContracts"],
         "properties": { "validationContracts": { "contains": { "const": "anomaly" } } }
@@ -51,9 +51,31 @@
         ]
       }
     },
+
+    "capabilityConcept": {
+      "$comment": "Capability Concept: there must be an 'object' and all objects must be of type 'concept'",
+      "if": {
+        "required": ["validationContracts"],
+        "properties": { "validationContracts": { "contains": { "const": "concept" } } }
+      },
+      "then": {
+        "required": ["object"],
+        "properties": {
+          "object": {
+            "type": "array",
+            "items": {
+              "required": ["type"],
+              "properties": {
+                "type": { "const": "concept" }
+              }
+            }
+          }
+        }
+      }
+    },
     
     "capabilityLanguage": {
-      "$comment": "If contracts contains 'language', then the root object must contain a 'language' property",
+      "$comment": "Capability Language: the root object must contain a 'language' property",
       "if": {
         "required": ["validationContracts"],
         "properties": { "validationContracts": { "contains": { "const": "language" } } }

@@ -1,0 +1,33 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Concept document containing additional, optional fields.",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "concept",
+            "text": "Today's stock market performance shows a significant increase in technology stocks, particularly in the software sector.",
+            "objectCategory": [
+                {
+                    "class": "economy, business and finance",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/04000000",
+                    "confidence": 0.468
+                },
+                {
+                    "class": "science and technology",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/13000000",
+                    "confidence": 0.5381710529327393
+                },
+                {
+                    "class": "financial and business service",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/04006000",
+                    "confidence": 0.897
+                }
+            ],
+            "page": 7,
+            "paragraph": 6,
+            "sentence": 3
+        }
+    ]
+}

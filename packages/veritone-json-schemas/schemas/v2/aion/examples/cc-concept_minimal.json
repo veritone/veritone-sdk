@@ -1,0 +1,12 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Concept document containing minimum required object.",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "concept"
+        }
+    ]
+}
