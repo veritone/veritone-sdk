@@ -1,5 +1,9 @@
 {
-  "validationContracts": ["anomaly"],
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Anomaly contract that contains a non-anomaly object.",
+  "validationContracts": [
+    "anomaly"
+  ],
   "object": [
     {
       "type": "anomaly",

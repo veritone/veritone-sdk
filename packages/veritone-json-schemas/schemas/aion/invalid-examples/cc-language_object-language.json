@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Language document containing a language in an object (instead of the PREAMBLE).",
+  "validationContracts": [
+    "language"
+  ],
+  "object": [
+    {
+      "language": "en"
+    }
+  ]
+}

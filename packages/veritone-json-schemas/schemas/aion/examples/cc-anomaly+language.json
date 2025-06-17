@@ -1,6 +1,11 @@
 {
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Document that fulfills multiple validation contracts.",
   "$comments": "Multiple contracts are valid",
-  "validationContracts": ["anomaly", "language"],
+  "validationContracts": [
+    "anomaly",
+    "language"
+  ],
   "language": "en",
   "object": [
     {

@@ -1,8 +1,11 @@
 {
-    "validationContracts": ["anomaly"],
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Anomaly document containing anomaly objects and series. Objects are minimal (only contains the type).",
+    "validationContracts": [
+        "anomaly"
+    ],
     "object": [
         {
-            "$comment": "No requirement for anything other than type",
             "type": "anomaly"
         }
     ],
@@ -11,7 +14,6 @@
             "startTimeMs": 1243,
             "stopTimeMs": 2120,
             "object": {
-                "$comment": "No requirement for anything other than type",
                 "type": "anomaly"
             }
         }

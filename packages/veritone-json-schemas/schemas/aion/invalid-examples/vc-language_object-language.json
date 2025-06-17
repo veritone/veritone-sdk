@@ -1,9 +1,0 @@
-{
-  "validationContracts": ["language"],
-  "object": [
-    {
-      "$comment": "language in an object doesn't fulfill language contract",
-      "language": "en" 
-    }
-  ]
-}

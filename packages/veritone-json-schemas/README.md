@@ -147,6 +147,19 @@ So what is the AION validator for then? It has two purposes:
 
 ## Local Testing
 
+### Creating tests
+
+Create a test in the `examples` or `invalid-examples` directory. Everything in the `examples`
+directory must be a valid JSON instance of the schema it is associated with. Everything in the
+`invalid-examples` directory must be a JSON instnace that fails validation with the associated
+schema. 
+
+The typical naming convention is `<category-in-kabob-case>_<description-in-kabob-case>`. Specific
+examples that test contract validation should start with `cc` for Capability Contracts and `oc`
+for Object Contracts
+
+### Running tests
+
 We use a containerized tool for validation of the schema and examples. All examples can be
 tested easily with `make test`, however sometimes it is easier to focus on a subset of examples,
 so the following can also be used:
