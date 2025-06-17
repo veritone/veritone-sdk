@@ -1,0 +1,9 @@
+{
+  "object": [
+    {
+      "type": "object",
+      "label": "line",
+      "boundingPoly": [{ "x": 0.1, "y": 0.1 }, { "x": 0.1, "y": 0.4 }]
+    }
+  ]
+}

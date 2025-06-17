@@ -1,0 +1,8 @@
+{
+  "sentiment": {
+    "positiveValue": 0.84,
+    "positiveConfidence": 0.98,
+    "negativeValue": 0.13,
+    "negativeConfidence": 0.558
+  }
+}

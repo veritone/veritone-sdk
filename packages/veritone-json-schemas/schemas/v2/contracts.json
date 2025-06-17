@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/v2/contracts.json",
+  "title": "CapabilityContracts",
+  "description": "Defines the contracts for various engine capabilities and objects",
+  "definitions": {
+    
+    "capabilityAnomaly": {
+      "$comment": "If contracts contains 'anomaly', then there must be an 'object' or 'series' and all objects must be of type 'anomaly'",
+      "if": {
+        "required": ["validationContracts"],
+        "properties": { "validationContracts": { "contains": { "const": "anomaly" } } }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'anomaly'",
+            "required": ["object"],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": ["type"],
+                  "properties": {
+                    "type": { "const": "anomaly" }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series may only contain objects of type 'anomaly'",
+            "required": ["series"],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": ["object"],
+                  "properties": {
+                    "object": {
+                      "required": ["type"],
+                      "properties": {
+                        "type": { "const": "anomaly" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    
+    "capabilityLanguage": {
+      "$comment": "If contracts contains 'language', then the root object must contain a 'language' property",
+      "if": {
+        "required": ["validationContracts"],
+        "properties": { "validationContracts": { "contains": { "const": "language" } } }
+      },
+      "then": {
+        "required": ["language"]
+      }
+    },
+
+
+    "objectLicensePlate": {
+      "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
+      "if": {
+        "properties": {
+          "type": { "const": "licensePlate"}
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "licensePlate": {},
+          "label": {},
+          "boundingPoly": {}
+        },
+        "required": ["type", "licensePlate"],
+        "additionalProperties": false
+      }
+    },
+
+    "objectMotorVehicle": {
+      "$comment": "Object of type 'motor-vehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
+      "if": {
+        "properties": {
+          "type": { "const": "motor-vehicle"}
+        }
+      },
+      "then":{
+        "properties": {
+          "type": {},
+          "motorVehicle": {},
+          "label": {},
+          "boundingPoly": {}
+        },
+        "required": ["type", "motorVehicle"],
+        "additionalProperties": false
+      }
+    }
+  }
+}

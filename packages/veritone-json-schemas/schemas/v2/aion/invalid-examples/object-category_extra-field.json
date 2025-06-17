@@ -1,0 +1,15 @@
+{
+  "object": [
+    {
+      "type": "object",
+      "label": "dog",
+      "objectCategory": [
+        {
+          "class": "animal",
+          "@id": "1576",
+          "extra": "data"
+        }
+      ]
+    }
+  ]
+}

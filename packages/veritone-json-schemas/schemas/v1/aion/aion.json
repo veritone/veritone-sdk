@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/aion/aion.json",
+  "title": "Engine output for any Veritone cognition engine: AI Object Notation (AION)",
+  "description": "Contains unstructured data about the contents of media (video, audio, image, or document). Used to validate the Media Type application/vnd.veritone.aion+json. Informal documentation/example is available at https://docs.veritone.com/#/developer/engines/standards/engine-output/",
+  "type": "object",
+  "allOf": [
+    {
+      "description": "Metadata for this document",
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "description": "Processing resources needed to generate this document",
+      "$ref": "../master.json#/definitions/PROCESSING"
+    },
+    {
+      "description": "Information about the document as a whole",
+      "$ref": "../master.json#/definitions/FILEDATA"
+    },
+    {
+      "properties": {
+        "object": {
+          "description": "Non time-based information about the content of this media",
+          "$ref": "../master.json#/definitions/OBJECTDATA"
+        },
+        "series": {
+          "description": "Time-based information about the content of this media",
+          "$ref": "../master.json#/definitions/TIMESERIESDATA"
+        },
+        "media": {
+          "description": "Links to external files generated during processing",
+          "$ref": "../master.json#/definitions/medias"
+        },
+        "embedding": {
+          "description": "An array of floats representing objects in vector space",
+          "$ref": "../master.json#/definitions/embedding"
+        }
+      }
+    }
+  ]
+}
