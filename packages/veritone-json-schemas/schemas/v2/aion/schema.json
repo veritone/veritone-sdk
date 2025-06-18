@@ -40,6 +40,7 @@
     { "$ref": "../contracts.json#/definitions/capabilityAnomaly" },
     { "$ref": "../contracts.json#/definitions/capabilityConcept" },
     { "$ref": "../contracts.json#/definitions/capabilityEntity" },
+    { "$ref": "../contracts.json#/definitions/capabilityKeyword" },
     { "$ref": "../contracts.json#/definitions/capabilityLanguage" }
   ]
 }

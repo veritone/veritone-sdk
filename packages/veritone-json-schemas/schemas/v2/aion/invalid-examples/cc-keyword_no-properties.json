@@ -1,0 +1,12 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Keyword document containing object without required property 'label'.",
+    "validationContracts": [
+        "keyword"
+    ],
+    "object": [
+        {
+            "type": "keyword"
+        }
+    ]
+}

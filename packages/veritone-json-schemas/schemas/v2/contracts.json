@@ -154,6 +154,42 @@
         }
       }
     },
+    "capabilityKeyword": {
+      "$comment": "Capability Keyword: must only contain 'object's of type 'keyword' with a 'label'property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "keyword"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "object"
+        ],
+        "properties": {
+          "object": {
+            "type": "array",
+            "items": {
+              "required": [
+                "type",
+                "label"
+              ],
+              "properties": {
+                "type": {
+                  "const": "keyword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "capabilityLanguage": {
       "$comment": "Capability Language: the root object must contain a 'language' property",
       "if": {

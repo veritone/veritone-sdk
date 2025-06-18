@@ -1,0 +1,41 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Keyword document containing results in multiple objects.",
+    "validationContracts": [
+        "keyword"
+    ],
+    "object": [
+        {
+            "type": "keyword",
+            "label": "true gentleman"
+        },
+        {
+            "type": "keyword",
+            "label": "courteous"
+        },
+        {
+            "type": "keyword",
+            "label": "pleasant"
+        },
+        {
+            "type": "keyword",
+            "label": "pleasure"
+        },
+        {
+            "type": "keyword",
+            "label": "quiet"
+        },
+        {
+            "type": "keyword",
+            "label": "host"
+        },
+        {
+            "type": "keyword",
+            "label": "clean"
+        },
+        {
+            "type": "keyword",
+            "label": "john"
+        }
+    ]
+}
