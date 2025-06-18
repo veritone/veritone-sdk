@@ -1,0 +1,58 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Sentiment document example 2.",
+    "sourceEngineId": "76e005b3-1e5c-45c4-be45-c01b7371bb93",
+    "taskId": "24083314_zN3asNlhzhWvGaO",
+    "internalTaskId": "9d073713-6f1f-4c50-8b41-6260d83dc276",
+    "generatedDateUTC": "2024-08-14T18:47:57.377174216Z",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "object": [
+        {
+            "type": "face",
+            "label": "Charles Bolden Jr.",
+            "entityId": "91d044ce-d9e4-4906-bcf1-14fd40bb0d2e",
+            "libraryId": "b0ad8e91-62ad-4298-a307-9d51422fb2b4",
+            "confidence": 0.9999669647216797,
+            "emotions": [
+                {
+                    "emotion": "CALM",
+                    "emotionConfidence": 0.7052734375
+                },
+                {
+                    "emotion": "HAPPY",
+                    "emotionConfidence": 0.0523681640625
+                },
+                {
+                    "emotion": "SAD",
+                    "emotionConfidence": 0.0792694091796875
+                },
+                {
+                    "emotion": "SURPRISED",
+                    "emotionConfidence": 0.02219676971435547
+                },
+                {
+                    "emotion": "CONFUSED",
+                    "emotionConfidence": 0.011793772131204605
+                },
+                {
+                    "emotion": "ANGRY",
+                    "emotionConfidence": 0.0043010711669921875
+                },
+                {
+                    "emotion": "DISGUSTED",
+                    "emotionConfidence": 0.0030851364135742188
+                },
+                {
+                    "emotion": "FEAR",
+                    "emotionConfidence": 0.0006639957427978516
+                }
+            ],
+            "age": {
+                "min": 22,
+                "max": 28
+            }
+        }
+    ]
+}

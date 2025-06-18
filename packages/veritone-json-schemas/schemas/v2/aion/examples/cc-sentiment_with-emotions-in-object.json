@@ -1,0 +1,25 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Sentiment document containing emotions in an object.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "object": [
+        {
+            "type": "text",
+            "text": "I am looking forward to this new project, but a bit confused about the first steps.",
+            "emotions": [
+                {
+                    "emotion": "excited",
+                    "emotionValue": 0.14,
+                    "emotionConfidence": 0.88
+                },
+                {
+                    "emotion": "confused",
+                    "emotionValue": 0.82,
+                    "emotionConfidence": 0.75
+                }
+            ]
+        }
+    ]
+}

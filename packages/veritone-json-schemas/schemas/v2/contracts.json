@@ -157,7 +157,7 @@
       }
     },
     "capabilityKeyword": {
-      "$comment": "Capability Keyword: must only contain 'object's of type 'keyword' with a 'label'property",
+      "$comment": "Capability Keyword: must only contain 'object's of type 'keyword' with a 'label' property",
       "if": {
         "required": [
           "validationContracts"
@@ -243,7 +243,7 @@
       }
     },
     "capabilityObject": {
-      "$comment": "Capability Object: must contain 'object' property with items of type 'object'",
+      "$comment": "Capability Object: must contain 'object' or 'series' property with items of type 'object'",
       "if": {
         "required": [
           "validationContracts"
@@ -303,6 +303,59 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilitySentiment": {
+      "$comment": "Capability Sentiment: must contain 'sentiment' or 'emotions' property at the root or in all 'object's",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "sentiment"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "required": [
+              "sentiment"
+            ]
+          },
+          {
+            "required": [
+              "emotions"
+            ]
+          },
+          {
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "sentiment"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "emotions"
+                      ]
+                    }
+                  ]
                 }
               }
             }

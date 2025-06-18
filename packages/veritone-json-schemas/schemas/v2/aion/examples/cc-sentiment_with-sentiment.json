@@ -1,0 +1,11 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Sentiment document containing sentiment for whole document.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "sentiment": {
+        "positiveValue": 0.56,
+        "negativeValue": 0.2
+    }
+}
