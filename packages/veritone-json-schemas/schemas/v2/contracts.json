@@ -453,6 +453,36 @@
         ]
       }
     },
+    "capabilityTranscript": {
+      "$comment": "Capability Transcript: must contain a 'series' of 'words'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "transcript"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "series"
+        ],
+        "properties": {
+          "series": {
+            "type": "array",
+            "items": {
+              "required": [
+                "words"
+              ]
+            }
+          }
+        }
+      }
+    },
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
       "if": {
