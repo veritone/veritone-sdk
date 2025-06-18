@@ -1,0 +1,221 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Concept document actual example.",
+    "sourceEngineId": "06bbc2e7-aa59-4c32-9ec3-1a147fff78a6",
+    "taskId": "24083528_sAoRvBuZplAqbBO",
+    "internalTaskId": "319ea17a-ed83-4722-a063-8c80fbe725b3",
+    "generatedDateUTC": "2024-08-28T18:40:20.827282116Z",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "concept",
+            "text": "Closet full of secrets and skeletons of weeks when nothing is true.",
+            "objectCategory": [
+                {
+                    "class": "Medical Health::Diseases and Conditions::Bone and Joint Conditions",
+                    "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=312",
+                    "confidence": 1
+                }
+            ]
+        },
+        {
+            "type": "concept",
+            "text": "I used to own a castle."
+        },
+        {
+            "type": "concept",
+            "text": "Now it's boxes that I have to move."
+        },
+        {
+            "type": "concept",
+            "text": "Right here in the darkness."
+        },
+        {
+            "type": "concept",
+            "text": "There's nothing left for me to do."
+        },
+        {
+            "type": "concept",
+            "text": "It's easier to run away."
+        },
+        {
+            "type": "concept",
+            "text": "But today."
+        },
+        {
+            "type": "concept",
+            "text": "Today we got to cast the shadows out from sight."
+        },
+        {
+            "type": "concept",
+            "text": "A final stand, a shout and cry."
+        },
+        {
+            "type": "concept",
+            "text": "All the."
+        },
+        {
+            "type": "concept",
+            "text": "Now turn to right."
+        },
+        {
+            "type": "concept",
+            "text": "So find the past."
+        },
+        {
+            "type": "concept",
+            "text": "Take back the night."
+        },
+        {
+            "type": "concept",
+            "text": "And call upon the torch tonight."
+        },
+        {
+            "type": "concept",
+            "text": "To bring out of."
+        },
+        {
+            "type": "concept",
+            "text": "Because a lot."
+        },
+        {
+            "type": "concept",
+            "text": "It's."
+        },
+        {
+            "type": "concept",
+            "text": "To take back the night."
+        },
+        {
+            "type": "concept",
+            "text": "Bridge is burning."
+        },
+        {
+            "type": "concept",
+            "text": "Broken on different sides."
+        },
+        {
+            "type": "concept",
+            "text": "When we start a new."
+        },
+        {
+            "type": "concept",
+            "text": "Being chased by monsters to face head on."
+        },
+        {
+            "type": "concept",
+            "text": "Or be consumed."
+        },
+        {
+            "type": "concept",
+            "text": "Reaching out for something."
+        },
+        {
+            "type": "concept",
+            "text": "Grasping on to nothing to lose."
+        },
+        {
+            "type": "concept",
+            "text": "May be left to long unpaid."
+        },
+        {
+            "type": "concept",
+            "text": "But today."
+        },
+        {
+            "type": "concept",
+            "text": "Today we got to."
+        },
+        {
+            "type": "concept",
+            "text": "Cast the show."
+        },
+        {
+            "type": "concept",
+            "text": "Goes out from side."
+        },
+        {
+            "type": "concept",
+            "text": "A final stand, a shout and cry all."
+        },
+        {
+            "type": "concept",
+            "text": "Now turn to right."
+        },
+        {
+            "type": "concept",
+            "text": "So fight the past."
+        },
+        {
+            "type": "concept",
+            "text": "Take back the night."
+        },
+        {
+            "type": "concept",
+            "text": "I'll call the torch tonight to play."
+        },
+        {
+            "type": "concept",
+            "text": "Because a lot."
+        },
+        {
+            "type": "concept",
+            "text": "It's done."
+        },
+        {
+            "type": "concept",
+            "text": "To take back the night."
+        },
+        {
+            "type": "concept",
+            "text": "Take back the Night."
+        },
+        {
+            "type": "concept",
+            "text": "Take back."
+        },
+        {
+            "type": "concept",
+            "text": "At night."
+        },
+        {
+            "type": "concept",
+            "text": "Today."
+        },
+        {
+            "type": "concept",
+            "text": "Today."
+        },
+        {
+            "type": "concept",
+            "text": "Come upon the torch tonight to bring out all the girls tonight."
+        },
+        {
+            "type": "concept",
+            "text": "Because."
+        },
+        {
+            "type": "concept",
+            "text": "We have to go."
+        },
+        {
+            "type": "concept",
+            "text": "It's."
+        },
+        {
+            "type": "concept",
+            "objectCategory": [
+                {
+                    "class": "Medical Health::Diseases and Conditions::Bone and Joint Conditions",
+                    "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=312",
+                    "confidence": 1
+                }
+            ]
+        }
+    ],
+    "vendor": {
+        "api_calls": 47
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Entity document example.",
+    "sourceEngineId": "cb2b77b9-3478-4e51-844f-e4064384bb33",
+    "taskId": "24083314_3L2wPhJ7bsly688",
+    "internalTaskId": "7e59a451-2c41-40e9-a4da-6fbcf52c67e4",
+    "generatedDateUTC": "2024-08-14T18:38:44.503472884Z",
+    "validationContracts": [
+        "entity"
+    ],
+    "object": [
+        {
+            "label": "IOS IMESSAGE/SMS/MMS CHAT",
+            "type": "namedEntity",
+            "sentence": 1,
+            "objectCategory": [
+                {
+                    "class": "PRODUCT"
+                }
+            ]
+        },
+        {
+            "label": "8:29:54 PM",
+            "type": "namedEntity",
+            "sentence": 1,
+            "objectCategory": [
+                {
+                    "class": "TEMPORAL_TIME"
+                }
+            ]
+        },
+        {
+            "label": "Time ( US & Canada ) Local User",
+            "type": "namedEntity",
+            "sentence": 1,
+            "objectCategory": [
+                {
+                    "class": "ORGANIZATION"
+                }
+            ]
+        },
+        {
+            "label": "8:29:54 PM",
+            "type": "namedEntity",
+            "sentence": 2,
+            "objectCategory": [
+                {
+                    "class": "TEMPORAL_TIME"
+                }
+            ]
+        },
+        {
+            "label": "him",
+            "type": "namedEntity",
+            "sentence": 2,
+            "objectCategory": [
+                {
+                    "class": "PERSON"
+                }
+            ]
+        },
+        {
+            "label": "I 'll text you",
+            "type": "namedEntity",
+            "sentence": 3,
+            "objectCategory": [
+                {
+                    "class": "PRODUCT"
+                }
+            ]
+        }
+    ]
+}
