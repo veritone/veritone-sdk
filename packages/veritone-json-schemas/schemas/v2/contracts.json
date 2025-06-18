@@ -87,6 +87,7 @@
         }
       },
       "then": {
+        "$comment": "must contain 'object' property",
         "required": [
           "object"
         ],
@@ -97,6 +98,7 @@
               "required": [
                 "type"
               ],
+              "$comment": "every object must be of type 'concept'",
               "properties": {
                 "type": {
                   "const": "concept"
@@ -238,6 +240,74 @@
             }
           }
         }
+      }
+    },
+    "capabilityObject": {
+      "$comment": "Capability Object: must contain 'object' property with items of type 'object'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "object"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'object'",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must only contain objects of type 'object'",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "object"
+                  ],
+                  "properties": {
+                    "object": {
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "objectLicensePlate": {
