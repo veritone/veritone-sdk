@@ -383,6 +383,76 @@
         ]
       }
     },
+    "capabilityText": {
+      "$comment": "Capability Text: must contain 'object' or 'series' property with items of type 'text' and containing a 'text' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "text"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'text' and contain a 'text' property",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "type",
+                    "text"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "text"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must only contain objects of type 'text' with a 'text' property",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "object"
+                  ],
+                  "properties": {
+                    "object": {
+                      "required": [
+                        "type",
+                        "text"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "text"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
       "if": {
