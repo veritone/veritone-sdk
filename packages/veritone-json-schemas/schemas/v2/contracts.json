@@ -363,6 +363,26 @@
         ]
       }
     },
+    "capabilitySummary": {
+      "$comment": "Capability Summary: the root object must contain a 'summary' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "summary"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "summary"
+        ]
+      }
+    },
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
       "if": {

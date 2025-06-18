@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Summary document must have a summary.",
+  "sourceEngineId": "1abfe013-36a7-48cb-bc58-d0e925408674",
+  "taskId": "25051907_Dte4hfq1mAGcCD6",
+  "internalTaskId": "813476d7-f198-40fc-897c-8e4223f616f9",
+  "generatedDateUTC": "2025-05-07T19:41:45.405888865Z",
+  "validationContracts": [
+    "summary"
+  ],
+  "text": "You want to be Spider-Man, you have to make fibres. A DNA sequencing breakthrough in Germany means manufacturing spider silk fiber is no longer pure fantasy. University probably isn't for you, it's here that Professor Thomas Scheibel and his team study natural substances like spider silk in the hope of turning them into super materials."
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Summary document example.",
+  "sourceEngineId": "1abfe013-36a7-48cb-bc58-d0e925408674",
+  "taskId": "25051907_Dte4hfq1mAGcCD6",
+  "internalTaskId": "813476d7-f198-40fc-897c-8e4223f616f9",
+  "generatedDateUTC": "2025-05-07T19:41:45.405888865Z",
+  "validationContracts": [
+    "summary"
+  ],
+  "summary": " The text discusses the development of spider silk, a material that combines strength and elasticity five times stronger than steel. Scientists have been unable to produce this silk naturally due to spiders eating each other. However, a breakthrough in DNA sequencing in Germany has made it possible to manufacture spider silk fiber. The challenge now lies in producing large quantities of the material.\n\n   A company named AMSO, founded by Professor Thomas Scheibel and a postdoc from his research, uses genetically modified bacteria to produce spider silk proteins. These proteins are then spun into fibers for various applications. The material is vegan, biodegradable, and synthetic biopolymer.\n\n   Adidas and Airbus are exploring the use of this material in their products, while AMSO aims to scale up production to meet industry demands. The company has made hundreds of thousands of kilometers of fiber so far but producing enough for widespread use is a challenge due to its thinness and the need for large quantities in certain applications.\n\n   Additionally, the spider silk proteins are being used for other purposes such as medical devices, food preservation, and even survival gear. The material's potential uses are vast, and companies are working to understand and capitalize on these applications. The text concludes by stating that materials made from proteins will become increasingly important in the future."
+}
