@@ -1,0 +1,13 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Entity document containing minimum required object.",
+    "validationContracts": [
+        "entity"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "Hazard Concrete"
+        }
+    ]
+}

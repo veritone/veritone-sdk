@@ -1,0 +1,22 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Entity document containing minimum required objects with 'label's and/or 'entityId's.",
+    "validationContracts": [
+        "entity"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "Guard rail"
+        },
+        {
+            "type": "namedEntity",
+            "label": "Road grader",
+            "entityId": "FC6CC1F1-9091-4DA1-995E-C59FD03255A2"
+        },
+        {
+            "type": "namedEntity",
+            "entityId": "94D8B323-3DE0-47CE-94DA-DD7953415A6A"
+        }
+    ]
+}

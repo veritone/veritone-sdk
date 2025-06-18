@@ -1,0 +1,17 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Entity document containing object without required property 'label' or 'entityId'.",
+    "validationContracts": [
+        "entity"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "Hazard Concrete"
+        },
+        {
+            "type": "namedEntity",
+            "text": "Heavy machinery in use beyond this point."
+        }
+    ]
+}

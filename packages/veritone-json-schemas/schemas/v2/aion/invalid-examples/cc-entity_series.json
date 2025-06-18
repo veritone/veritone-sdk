@@ -1,0 +1,19 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Entity document that has a series instead of an object.",
+    "validationContracts": [
+        "entity"
+    ],
+    "series": [
+        {
+            "startTimeMs": 17000,
+            "stopTimeMs": 18000,
+            "object": [
+                {
+                    "type": "namedEntity",
+                    "label": "Hazard Concrete"
+                }
+            ]
+        }
+    ]
+}
