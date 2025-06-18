@@ -210,6 +210,36 @@
         ]
       }
     },
+    "capabilityMediaTranslated": {
+      "$comment": "Capability Media Translated: must contain 'media' property with 'language' in each item",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "media-translated"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "media"
+        ],
+        "properties": {
+          "media": {
+            "type": "array",
+            "items": {
+              "required": [
+                "language"
+              ]
+            }
+          }
+        }
+      }
+    },
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
       "if": {

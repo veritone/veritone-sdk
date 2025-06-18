@@ -1,0 +1,32 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Media Translated document containing assets translated into two languages.",
+    "validationContracts": [
+        "media-translated",
+        "text"
+    ],
+    "media": [
+        {
+            "language": "en",
+            "assetId": "3190799828_SHBrXAuFGv"
+        },
+        {
+            "language": "fr",
+            "assetId": "3190799828_0lYoNodINr"
+        }
+    ],
+    "object": [
+        {
+            "type": "text",
+            "text": "Once upon a time, there was a small village in the mountains.",
+            "language": "en",
+            "sentence": 1
+        },
+        {
+            "type": "text",
+            "text": "Il était une fois un petit village dans les montagnes.",
+            "language": "fr",
+            "sentence": 1
+        }
+    ]
+}
