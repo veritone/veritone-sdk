@@ -7,7 +7,7 @@
   "internalTaskId": "<INTERNAL_TASK_ID>",
   "generatedDateUtc": "2017-12-08T17:19:02Z",
   "externalSourceId": "<string>",
-  "validationContracts": ["text", "object"],
+  "validationContracts": ["summary", "object"],
   "processedStats": {
     "processedBytes": "123456",
     "processedMediaSeconds": "120"

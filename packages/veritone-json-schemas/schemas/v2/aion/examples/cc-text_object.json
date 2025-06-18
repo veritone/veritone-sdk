@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Text document containing text in an object.",
+  "validationContracts": [
+    "text"
+  ],
+  "object": [
+    {
+      "type": "text",
+      "text": "This is a sample text for the object.",
+      "language": "en"
+    }
+  ]
+}

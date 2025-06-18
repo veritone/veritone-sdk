@@ -1,0 +1,39 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Text document must have 'text' 'object' in a series.",
+  "validationContracts": [
+    "text"
+  ],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "type": "object",
+        "label": "OCR",
+        "text": "The quick brown fox jumped over the lazy dog.",
+        "page": 5,
+        "paragraph": 3,
+        "sentence": 2,
+        "boundingPoly": [
+          {
+            "x": 0.1,
+            "y": 0.1
+          },
+          {
+            "x": 0.1,
+            "y": 0.2
+          },
+          {
+            "x": 0.2,
+            "y": 0.2
+          },
+          {
+            "x": 0.2,
+            "y": 0.1
+          }
+        ]
+      }
+    }
+  ]
+}

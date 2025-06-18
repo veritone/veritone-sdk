@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Text document must have 'text' 'object' in a series.",
+  "validationContracts": [
+    "text"
+  ],
+  "series": [
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "summary": "The quick brown fox jumped over the lazy dog."
+    }
+  ]
+}

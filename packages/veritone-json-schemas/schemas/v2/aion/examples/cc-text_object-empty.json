@@ -1,0 +1,8 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Text document containing empty list of objects.",
+  "validationContracts": [
+    "text"
+  ],
+  "object": []
+}
