@@ -42,6 +42,7 @@
     { "$ref": "../contracts.json#/definitions/capabilityEntity" },
     { "$ref": "../contracts.json#/definitions/capabilityKeyword" },
     { "$ref": "../contracts.json#/definitions/capabilityLanguage" },
-    { "$ref": "../contracts.json#/definitions/capabilityMediaTranslated" }
+    { "$ref": "../contracts.json#/definitions/capabilityMediaTranslated" },
+    { "$ref": "../contracts.json#/definitions/capabilityObject" }
   ]
 }

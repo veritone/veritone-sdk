@@ -1,0 +1,8 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Object document containing empty series.",
+    "validationContracts": [
+        "object"
+    ],
+    "series": []
+}

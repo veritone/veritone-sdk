@@ -1,0 +1,114 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Object document containing objects and series of objects.",
+    "validationContracts": [
+        "object"
+    ],
+    "object": [
+        {
+            "type": "object",
+            "label": "dog",
+            "confidence": 0.9,
+            "boundingPoly": [
+                {
+                    "x": 0.1,
+                    "y": 0.1
+                },
+                {
+                    "x": 0.1,
+                    "y": 0.5
+                },
+                {
+                    "x": 0.5,
+                    "y": 0.5
+                },
+                {
+                    "x": 0.5,
+                    "y": 0.1
+                }
+            ],
+            "objectCategory": [
+                {
+                    "class": "animal",
+                    "@id": "1576"
+                }
+            ]
+        },
+        {
+            "type": "object",
+            "label": "cat",
+            "confidence": 0.55,
+            "objectCategory": [
+                {
+                    "class": "animal",
+                    "@id": "1576"
+                }
+            ]
+        }
+    ],
+    "series": [
+        {
+            "startTimeMs": 2000,
+            "stopTimeMs": 2100,
+            "object": {
+                "type": "object",
+                "label": "dog",
+                "objectCategory": [
+                    {
+                        "class": "animal",
+                        "@id": "1576"
+                    }
+                ],
+                "confidence": 0.9,
+                "boundingPoly": [
+                    {
+                        "x": 0.1,
+                        "y": 0.1
+                    },
+                    {
+                        "x": 0.1,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 0.1
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 2100,
+            "stopTimeMs": 2200,
+            "object": {
+                "type": "object",
+                "label": "cat",
+                "confidence": 0.55,
+                "objectCategory": [
+                    {
+                        "class": "animal",
+                        "@id": "1576"
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 1400,
+            "stopTimeMs": 2200,
+            "object": {
+                "type": "object",
+                "label": "ball",
+                "confidence": 0.55,
+                "objectCategory": [
+                    {
+                        "class": "toys",
+                        "@id": "3526"
+                    }
+                ]
+            }
+        }
+    ]
+}

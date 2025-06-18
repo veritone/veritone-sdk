@@ -1,0 +1,18 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Object document must contain only series 'object's type of 'object'.",
+    "validationContracts": [
+        "object"
+    ],
+    "series": [
+        {
+            "startTimeMs": 2000,
+            "stopTimeMs": 2100,
+            "object": {
+                "type": "namedEntity",
+                "label": "dog",
+                "confidence": 0.9
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$comment": "Object document containing objects and series of objects with minimal data.",
+    "validationContracts": [
+        "object"
+    ],
+    "object": [
+        {
+            "type": "object"
+        },
+        {
+            "type": "object"
+        }
+    ],
+    "series": [
+        {
+            "startTimeMs": 2000,
+            "stopTimeMs": 2100,
+            "object": {
+                "type": "object"
+            }
+        },
+        {
+            "startTimeMs": 2100,
+            "stopTimeMs": 2200,
+            "object": {
+                "type": "object"
+            }
+        },
+        {
+            "startTimeMs": 1400,
+            "stopTimeMs": 2200,
+            "object": {
+                "type": "object"
+            }
+        }
+    ]
+}

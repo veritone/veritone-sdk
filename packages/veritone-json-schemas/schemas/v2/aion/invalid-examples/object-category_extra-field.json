@@ -1,4 +1,6 @@
 {
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$comment": "Object category must not contain extra fields.",
   "object": [
     {
       "type": "object",
