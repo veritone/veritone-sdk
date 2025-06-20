@@ -1,6 +1,6 @@
 {
     "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
-    "$comment": "Transcription document with series entry missing words.",
+    "$comment": "Transcription document with series entry with empty word list.",
     "validationContracts": [
         "transcript"
     ],

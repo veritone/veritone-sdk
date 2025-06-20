@@ -11,7 +11,7 @@ validation contract you need to understand how JSON Draft-07 schemas handle `all
 `if-then-else` specifications. See
 https://json-schema.org/draft-07/draft-handrews-json-schema-validation-01
 
-Determine the type of contract: capability, object, or series
+Determine the type of contract: capability or object
 
 ### Capability contract
 
@@ -63,30 +63,6 @@ Define your new object contract in the `contracts.json` file (middle section) an
 `object`. After defining the contract, make it a requirement of all objects by adding it to the
 list of referenced contracts at the bottom of the `objectResult` definition in the `master.json`
 schema file.
-
-### Series contract
-
-> NOTE: At the time of writing, series contracts were accepted as a requirement for the AION v2.0
-> spec, but none have been implemented yet. Therefore, there are no examples to follow, but they
-> should be implemented similarly to the object contracts.
-> UPDATE: TODO(km) Objects are JSON objects, but series is an array of objects. Since series may
-> not be mergable, we may need to make them capabilities anyway. Think about the use-cases... if
-> you have a transcript, then do all seriesItems have to be `words`, or could you mix a
-> transcript with object recognition or something?
-
-Series contracts enforce that series of a certain `type` are valid for that type. Series
-contracts apply to items in the `series` array and are not typically compatible with each other.
-
-1. Add the new series type to the `seriesTypes` enum in `masters.json`
-
-1. Define the new contract in the bottom section of `contracts.json`
-   1. Name must be `series` + the enum you added to the `seriesTypes` property
-   1. Insert the cantract alphabetically in the `definitions` object
-   1. Mst have an `if` clause that ensures your contract only applies if the `type` of the
-      series is approperiate.
-
-1. Add the contract to...
-
 
 ## Publishing
 

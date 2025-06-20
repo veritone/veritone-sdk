@@ -55,7 +55,7 @@ jsValidate() {
     v2)
       docker run --interactive --rm --volume "$PWD:/workspace" \
         ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
-        ./schemas/$sVer/$sName/schema.json \
+        ./schemas/$sVer/$sName/schema \
         -r ./schemas/$sVer/master.json \
         -r ./schemas/$sVer/contracts.json \
         "$@" \
@@ -89,8 +89,12 @@ jsMetaValidate() {
       ;;
     v2)
       schemas="./schemas/v2/master.json \
-               ./schemas/v2/contracts.json \
-               ./schemas/v2/$sName/schema.json"
+               ./schemas/v2/contracts.json"
+      if [[ -f ./schemas/v2/$sName/schema ]]; then
+        schemas+=" ./schemas/v2/$sName/schema"
+      else
+        schemas+=" ./schemas/v2/$sName/schema.json"
+      fi
       ;;
     *)
       echo "Unknown schema version '$sVer'" >&2
@@ -289,8 +293,9 @@ validateSchema() {
 validateVersion() {
   local sVer=$1
 
-  # find all schema files in this version and validate them
-  for schemaPath in ./schemas/$sVer/*/*.json; do
+  # find all schema files in this version and validate them. look for 'schema.json' or just
+  # plain 'schema' files
+  for schemaPath in $(find ./schemas/$sVer/*/ -type f -maxdepth 1 \( -name '*.json' -o -name 'schema' \) ); do
     validateSchema $schemaPath
   done
 
