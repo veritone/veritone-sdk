@@ -54,6 +54,11 @@ assume_prod_role() {
   export AWS_SECRET_ACCESS_KEY="$(echo "$creds" | cut -d' ' -f2)"
   export AWS_SESSION_TOKEN="$(echo "$creds" | cut -d' ' -f3)"
 
+  aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 || {
+    error "Failed to assume role $awsRole in account $awsAccount. Please check your AWS credentials."
+    return 1
+  }
+
   echo "Assumed role $awsRole in account $awsAccount"
   return 0
 }
@@ -151,7 +156,7 @@ create_archive() {
   # Verify the archive directory does not already exist
   local archive_schema_dir="archive/schemas"
   local archive_dir="$archive_schema_dir/$version"
-  echo "Creating archive for version '$version' from '$source_dir' to '$archive_dir'"
+  echo "Creating archive for $version from '$source_dir' to '$archive_dir'"
   if [[ "$force" ]]; then
     # If the archive directory exists, remove it
     [[ -d "$archive_dir" ]] && {
@@ -235,6 +240,8 @@ create_archive() {
 # Uploads a single directory to an AWS S3 bucket
 #
 # Usage: upload_dir_to_getaiwarecom [--force] [--safe] <source_dir> <target_dir>
+# Where: <source_dir> is the local directory to upload (e.g., ./archive/schemas/v2.7)
+#        <target_dir> is the target S3 directory (e.g., s3://aiware-prod-public/schemas/v2.7)
 upload_dir_to_getaiwarecom() {
   local dryrun=
   local force=
@@ -254,8 +261,7 @@ upload_dir_to_getaiwarecom() {
   [[ -z "$target_dir" ]] && { error "upload_dir_to_getaiwarecom: No target directory specified"; return 1; }
   [[ -d "$source_dir" ]] || { error "upload_dir_to_getaiwarecom: Source directory '$source_dir' does not exist."; return 1; }
 
-  # Check if target directory already exists and return if --force is not specified, delete it
-  # if --force is specified
+  # Check if target directory already exists and delete it if --force is specified
   aws s3 ls "$target_dir" >/dev/null 2>&1 && {
     if [[ "$force" ]]; then
       echo "... Target directory '$target_dir' already exists. Removing it..."
@@ -269,12 +275,25 @@ upload_dir_to_getaiwarecom() {
     fi
   }
 
-  # TODO(km) this code needs to upload the schemas with the correct content type for json schemas
+  # Upload the directory to the S3 bucket
   echo "... Uploading directory '$source_dir' to '$target_dir'"
   aws s3 cp $dryrun "$source_dir" "$target_dir" --recursive || {
     error "upload_dir_to_getaiwarecom: Failed to upload '$source_dir' to '$target_dir'"
     return 1
   }
+
+  # Reupload the schema files with the correct content type. Schema files always declare a $schema
+  # value referencing json-schema.org
+  echo "... Updating the content type for the schema files to 'application/schema+json'"
+  local schema_file
+  for schema_file in $(grep -Rl "\$schema.*json-schema\.org" "$source_dir"); do
+    # schema_file like "schemas/v2.7/aion/schema.json" -> target_file like "s3://aiware-prod-public/schemas/v2.7/aion/schema.json"
+    local target_file="${schema_file/${source_dir}\//${target_dir}/}"
+    aws s3 cp $dryrun "$schema_file" "$target_file" --content-type "application/schema+json" \
+      --no-guess-mime-type --metadata-directive="REPLACE" || {
+      error "Failed to update content type for '$target_file'"
+    }
+  done
 
   return 0
 }
