@@ -497,7 +497,9 @@
           "type": {},
           "licensePlate": {},
           "label": {},
-          "boundingPoly": {}
+          "boundingPoly": {},
+          "uri": {},
+          "vendor": {}
         },
         "required": [
           "type",
@@ -520,7 +522,9 @@
           "type": {},
           "motorVehicle": {},
           "label": {},
-          "boundingPoly": {}
+          "boundingPoly": {},
+          "uri": {},
+          "vendor": {}
         },
         "required": [
           "type",
