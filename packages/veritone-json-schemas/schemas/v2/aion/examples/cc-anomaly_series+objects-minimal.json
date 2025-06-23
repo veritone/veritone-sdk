@@ -1,5 +1,5 @@
 {
-    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
     "$comment": "Anomaly document containing anomaly objects and series. Objects are minimal (only contains the type).",
     "validationContracts": [
         "anomaly"

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
     "$comment": "Sentiment document example 2.",
     "sourceEngineId": "76e005b3-1e5c-45c4-be45-c01b7371bb93",
     "taskId": "24083314_zN3asNlhzhWvGaO",

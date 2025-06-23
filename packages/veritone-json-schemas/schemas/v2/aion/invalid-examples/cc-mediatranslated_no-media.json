@@ -1,5 +1,5 @@
 {
-    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
     "$comment": "Media Translated document without media.",
     "validationContracts": [
         "media-translated"

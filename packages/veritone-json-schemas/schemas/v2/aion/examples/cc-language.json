@@ -1,5 +1,5 @@
 {
-    "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
     "$comment": "Language document example: Contains the detected language of a document, plus lists confidence of other languages checked.",
     "sourceEngineId": "a1095ed0-5c2f-467c-a60f-74b53a3f9ced",
     "taskId": "24125013_x9cvDlcerAPnxyg",

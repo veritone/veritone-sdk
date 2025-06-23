@@ -118,6 +118,36 @@ create_archive() {
   local source_dir="schemas/$major_version"
   [[ -d "$source_dir" ]] || { error "create_archive: Source directory '$source_dir' does not exist."; return 1; }
 
+  ##
+  ## Verify that the indexes and changelog are ready for the new version
+  ##
+
+  # Verify the CHANGELOG exists and contains a reference to the new version
+  local changelog_file="$source_dir/CHANGELOG.md"
+  [[ -f "$changelog_file" ]] || { 
+    error "Changelog file '$changelog_file' does not exist."
+    return 1
+  }
+  grep -q "${version/v/Version }" "$changelog_file" || {
+    error "Changelog file '$changelog_file' does not contain notes for 'Version ${version#v}'."
+    return 1
+  }
+
+  # Verify that index file exists and contains a link to the new version
+  local index_file="schemas/index.md"
+  [[ -f "$index_file" ]] || { 
+    error "Index file '$index_file' does not exist."
+    return 1
+  }
+  grep -q "/$version/index.html" "$index_file" || {
+    error "Index file '$index_file' does not contain a link to version '$version'."
+    return 1
+  }
+
+  ##
+  ## Verify the archive directory does not already exist, or remove it if --force is specified
+  ##
+
   # Verify the archive directory does not already exist
   local archive_schema_dir="archive/schemas"
   local archive_dir="$archive_schema_dir/$version"
@@ -140,18 +170,7 @@ create_archive() {
   ## Update the root index file
   ##
 
-  # Verify that index file exists and contains a reference to the new version
-  local index_file="schemas/index.md"
-  [[ -f "$index_file" ]] || { 
-    error "Index file '$index_file' does not exist."
-    return 1
-  }
-  grep -q "$version" "$index_file" || {
-    error "Index file '$index_file' does not contain a reference to version '$version'."
-    return 1
-  }
-
-  # Copy the index file to the anchive directory
+  # Copy the index file to the archive directory
   if [[ "$safe" ]]; then
     echo SAFE: "cp \"$index_file\" \"$archive_schema_dir\""
   else

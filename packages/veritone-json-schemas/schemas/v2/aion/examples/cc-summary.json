@@ -1,5 +1,5 @@
 {
-  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
   "$comment": "Summary document example.",
   "sourceEngineId": "1abfe013-36a7-48cb-bc58-d0e925408674",
   "taskId": "25051907_Dte4hfq1mAGcCD6",

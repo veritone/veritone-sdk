@@ -1,5 +1,5 @@
 {
-  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
   "$comment": "A validation contract may be a UUID instead of one of the enums.",
   "validationContracts": [
     "00000000-0000-0000-0000-000000000000"

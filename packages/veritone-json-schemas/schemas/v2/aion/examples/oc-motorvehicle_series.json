@@ -1,5 +1,5 @@
 {
-  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
   "$comment": "A series containing multiple motor vehicles in the first second of a video.",
   "series": [
     {

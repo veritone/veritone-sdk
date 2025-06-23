@@ -55,7 +55,7 @@ jsValidate() {
     v2)
       docker run --interactive --rm --volume "$PWD:/workspace" \
         ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
-        ./schemas/$sVer/$sName/schema \
+        ./schemas/$sVer/$sName/schema.json \
         -r ./schemas/$sVer/master.json \
         -r ./schemas/$sVer/contracts.json \
         "$@" \
@@ -89,12 +89,8 @@ jsMetaValidate() {
       ;;
     v2)
       schemas="./schemas/v2/master.json \
-               ./schemas/v2/contracts.json"
-      if [[ -f ./schemas/v2/$sName/schema ]]; then
-        schemas+=" ./schemas/v2/$sName/schema"
-      else
-        schemas+=" ./schemas/v2/$sName/schema.json"
-      fi
+               ./schemas/v2/contracts.json \
+               ./schemas/v2/$sName/schema.json"
       ;;
     *)
       echo "Unknown schema version '$sVer'" >&2
@@ -149,9 +145,9 @@ reportTest() {
 #
 # Example output from the container that we will be evaluating:
 #  ok: /workspace/schemas/aion/examples/correlaton.json
-#    matches /workspace/schemas/aion/aion.json
+#    matches /workspace/schemas/aion/schema.json
 #  ok: /workspace/schemas/aion/examples/documentation-sample.json
-#    matches /workspace/schemas/aion/aion.json
+#    matches /workspace/schemas/aion/schema.json
 #  fail: /workspace/schemas/aion/invalid-examples/series-words_no-confidence.json
 #  error: Schema validation failure
 #    The object value was expected to define properties "confidence", and "utteranceLength" but did not define properties "confidence", and "utteranceLength"
@@ -355,8 +351,6 @@ validateFile() {
       validateSchema ./schemas/$schemaVersion/$checkSchema/$checkSchema.json
     elif [[ -f ./schemas/$schemaVersion/$checkSchema/schema.json ]]; then
       validateSchema ./schemas/$schemaVersion/$checkSchema/schema.json
-    elif [[ -f ./schemas/$schemaVersion/$checkSchema/schema ]]; then
-      validateSchema ./schemas/$schemaVersion/$checkSchema/schema
     else
       # schema file not found
       echo "Unable to find version $schemaVersion of schema '$checkSchema'"

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://get.aiware.com/schemas/v2/aion/schema",
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
   "$comment": "A motor vehicle with a small number of properties. Technically, none of these properties are required, but this example is meant to illustrate the minimal practical motor vehicle object.",
   "object": [
     {

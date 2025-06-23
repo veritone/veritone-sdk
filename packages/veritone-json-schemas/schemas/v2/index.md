@@ -26,7 +26,7 @@ that enforce certain requirements on
 document capabilities as a whole (triggered by the listed `validationContracts`)
 and object contents (triggered by an `object`s `type` field).
 
-- [AI Object Notation (AION)](./aion/schema) ([Web version](./aion/schema.json))
+- [AI Object Notation (AION)](./aion/schema.json)
 
 ## Definitions
 
