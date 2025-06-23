@@ -43,3 +43,9 @@ only `definitions` that are referenced by other schema files.
 ## Version History
 
 [CHANGELOG](./CHANGELOG.html)
+
+``` {=html}
+<style>
+body { max-width: 72em !important; }
+</style>
+```

@@ -13,8 +13,10 @@
     `v2.1`, etc. The latest minor version for every major version is linked under the major
     version number (`v2` is a link to `v2.1`, and will be moved to link to `v2.2` when
     that becomes the latest version).
-- **Renamed the schema** from `aion/aion.json` to `aion/schema` to match the best practice
-  implementation of the JSON schema meta schemas.
+- **Renamed the schema** from `aion/aion.json` to `aion/schema.json` to match best practice
+  for schema names.
+- **Changed the Content-Type** of all schemas from `application/json` to
+  `application/schema+json` per best practices.
 - **Capability Validation** is now performed in the AION schema. Capability validation is the
   validation contract for the AION document as a whole. Any AION document that contains a list
   of contracts in the `validationContracts` array is required to validate against the contracts
@@ -28,3 +30,9 @@
   need to validate against a contract for the object type.
 - **New object type `licensePlate`** has been added with a validation contract.
 - **New object type `motorVehicle`** has been added with a validation contract.
+
+``` {=html}
+<style>
+body { max-width: 72em !important; }
+</style>
+```

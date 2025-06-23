@@ -11,3 +11,9 @@
 - [v2.0](./v2.0/index.html)
 - [v1.1](./v1.1/index.html)
 - [v1.0](./v1.0/index.html)
+
+``` {=html}
+<style>
+body { max-width: 72em !important; }
+</style>
+```

@@ -89,6 +89,46 @@ convert_all_markdown_to_html() {
   done
 }
 
+# Given a directory and a version, verifies that the CHANGELOG.md file exists and contains a
+# reference to the new version, and that the master index file exists and contains a link to the new
+# version.
+#
+# Usage: verify_version_links <dir> <version>
+# Where: <dir> is the directory containing the JSON schemas (e.g., ./schemas/v2)
+#        <version> is the version to verify (e.g., v2.7)
+#
+# Verifies that:
+# 1. The <dir>/CHANGELOG.md file exists and contains a reference to the new version.
+# 2. The <dir>/../index.md file exists and contains a link to the new version.
+verify_version_links() {
+  local dir="$1"
+  local version="$2"
+
+  # Verify the CHANGELOG exists and contains a reference to the new version
+  local changelog_file="$dir/CHANGELOG.md"
+  [[ -f "$changelog_file" ]] || { 
+    error "Changelog file '$changelog_file' does not exist."
+    return 1
+  }
+  grep -q "${version/v/Version }" "$changelog_file" || {
+    error "Changelog file '$changelog_file' does not contain notes for 'Version ${version#v}'."
+    return 1
+  }
+
+  # Verify that index file exists and contains a link to the new version
+  local index_file="$dir/../index.md"
+  [[ -f "$index_file" ]] || { 
+    error "Index file '$index_file' does not exist."
+    return 1
+  }
+  grep -q "/$version/index.html" "$index_file" || {
+    error "Index file '$index_file' does not contain a link to version '$version'."
+    return 1
+  }
+
+  return 0
+}
+
 # Creates an archive of a version of the JSON schemas. Given a version like "v2.7", copies the
 # relevant files from the major version schema (e.g., "v2") to a new archive schema directory
 # (e.g., "v2.7") and converts all "*.md" files to "*.html" (removing the "*.md" files).
@@ -127,27 +167,8 @@ create_archive() {
   ## Verify that the indexes and changelog are ready for the new version
   ##
 
-  # Verify the CHANGELOG exists and contains a reference to the new version
-  local changelog_file="$source_dir/CHANGELOG.md"
-  [[ -f "$changelog_file" ]] || { 
-    error "Changelog file '$changelog_file' does not exist."
-    return 1
-  }
-  grep -q "${version/v/Version }" "$changelog_file" || {
-    error "Changelog file '$changelog_file' does not contain notes for 'Version ${version#v}'."
-    return 1
-  }
-
-  # Verify that index file exists and contains a link to the new version
-  local index_file="schemas/index.md"
-  [[ -f "$index_file" ]] || { 
-    error "Index file '$index_file' does not exist."
-    return 1
-  }
-  grep -q "/$version/index.html" "$index_file" || {
-    error "Index file '$index_file' does not contain a link to version '$version'."
-    return 1
-  }
+  echo "Verifying version history for $version exists"
+  verify_version_links "$source_dir" "$version" || return 1
 
   ##
   ## Verify the archive directory does not already exist, or remove it if --force is specified
@@ -176,6 +197,7 @@ create_archive() {
   ##
 
   # Copy the index file to the archive directory
+  local index_file="$source_dir/../index.md"
   if [[ "$safe" ]]; then
     echo SAFE: "cp \"$index_file\" \"$archive_schema_dir\""
   else
@@ -347,14 +369,16 @@ upload_to_getaiwarecom() {
 
   local target_dir="$target_schemas_dir/$version"
 
-  echo "Uploading archive for version '$version' to '$target_dir'"
-  upload_dir_to_getaiwarecom $force $safe "$archive_dir" "$target_dir" || return 1
-
+  # Upload the version index file to the target directory
   echo "Uploading schema index file to '$target_schemas_dir/index.html'"
   aws s3 cp $dryrun "$schemas_dir/index.html" "$target_schemas_dir/index.html" || {
     error "Failed to upload index file to '$target_schemas_dir/index.html'"
     return 1
   }
+
+  # Upload the archive directory to the target directory
+  echo "Uploading archive for version '$version' to '$target_dir'"
+  upload_dir_to_getaiwarecom $force $safe "$archive_dir" "$target_dir" || return 1
 
   # If --latest is specified, upload the latest directories as well
   [[ "$latest" ]] && {
