@@ -1,0 +1,19 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract containing schema data in a 'structuredData' object.",
+  "validationContracts": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "series": [
+    {
+      "startTimeMs": 2100,
+      "stopTimeMs": 2200,
+      "structuredData": {
+        "00000000-0000-0000-0000-000000000000": {
+          "type": "string",
+          "description": "A string value in the structured data."
+        }
+      }
+    }
+  ]
+}

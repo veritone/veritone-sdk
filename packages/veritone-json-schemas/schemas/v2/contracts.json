@@ -310,6 +310,71 @@
         ]
       }
     },
+    "capabilitySchemaId_Pattern": {
+      "$comment": "SchemaId Pattern: must contain 'object' or 'series' with non-empty 'structuredData' properties. The 'structuredData' must contain a property that matches this schemaId, but that is not something that can be validated here.",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All object must contain a non-empty 'structuredData' property",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "structuredData"
+                  ],
+                  "properties": {
+                    "structuredData": {
+                      "type": "object",
+                      "minProperties": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must contain a non-empty 'structuredData' property",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "structuredData"
+                  ],
+                  "properties": {
+                    "structuredData": {
+                      "type": "object",
+                      "minProperties": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
     "capabilitySentiment": {
       "$comment": "Capability Sentiment: must contain 'sentiment' or 'emotions' property at the root or in all 'object's",
       "if": {

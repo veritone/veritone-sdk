@@ -1,0 +1,97 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Structured data for Nielsen ratings in Cleveland, Ohio.",
+  "sourceEngineId": "d7f7e7cd-dca9-49af-90b6-53a3698690f8",
+  "assetType": "vtn-standard",
+  "contentType": "application/json",
+  "validationContracts": [
+    "0d0bc61f-5793-4d80-a980-9b041cabf661"
+  ],
+  "metadata": {
+    "schemaIds": [
+      "0d0bc61f-5793-4d80-a980-9b041cabf661"
+    ],
+    "sourceEngineId": "d7f7e7cd-dca9-49af-90b6-53a3698690f8",
+    "source": "eventing-correlation-radio-audience-nielsen"
+  },
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 898000,
+      "structuredData": {
+        "0d0bc61f-5793-4d80-a980-9b041cabf661": [
+          {
+            "affiliates": [
+              "WZZZ-AM"
+            ],
+            "dataSource": {
+              "name": "Nielsen"
+            },
+            "datetimeEnd": "2025-02-05T00:00:00.000Z",
+            "datetimeStart": "2025-01-09T00:00:00.000Z",
+            "demographics": {
+              "male": {
+                "age12_17": 0,
+                "age18_20": 0,
+                "age21_24": 0,
+                "age25_34": 98,
+                "age35_44": 307,
+                "age45_49": 0,
+                "age50_54": 0,
+                "age55_64": 379,
+                "age65": 4505,
+                "total": 5289
+              },
+              "female": {
+                "age12_17": 0,
+                "age18_20": 0,
+                "age21_24": 519,
+                "age25_34": 826,
+                "age35_44": 0,
+                "age45_49": 0,
+                "age50_54": 0,
+                "age55_64": 920,
+                "age65": 2600,
+                "total": 4865
+              },
+              "total": 10154
+            },
+            "markets": [
+              "CLEVELAND"
+            ],
+            "reportPeriodId": "53605",
+            "reportPeriodName": "JANUARY 2025",
+            "station": {
+              "stationBand": "AM",
+              "geoIndicator": 1,
+              "stationComboId": "021757",
+              "stationComboName": "WZZZ-AM",
+              "stationComboType": 1,
+              "stationFrequency": "1100",
+              "stationCallLetter": "WZZZ",
+              "stationEncodeFlag": "",
+              "stationFormatCode": 66,
+              "stationActivityCode": "",
+              "homeOutsideIndicator": 0,
+              "stationSequenceNumber": "031",
+              "callLetterChangeIndicator": ""
+            },
+            "stationDayParts": {
+              "26": [
+                "WZZZ-AM"
+              ]
+            },
+            "audienceProviderBooks": [
+              {
+                "reportPeriodId": "53605",
+                "reportPeriodName": "JANUARY 2025",
+                "startDate": "2025-01-09T00:00:00.000Z",
+                "endDate": "2025-02-05T00:00:00.000Z"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

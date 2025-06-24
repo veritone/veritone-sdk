@@ -125,7 +125,7 @@
       "examples": ["2017-12-08T17:19:02Z"]
     },
     "validationContracts": {
-      "description": "Defines which validation contract(s) should be used to validate this content. May be one of the standard categories or the schemaId of a Structured Data Object",
+      "description": "Defines which capability validation contract(s) should be used to validate this content. May be one of the listed types or the schemaId of a Structured Data Object. If a schemaId is present, the object must contain 'structuredData' with the schemaId as a property.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -867,11 +867,11 @@
       }
     },
     "structuredData": {
-      "description": "Structured Data Objects (SDO) that conforms to a Structured Data Schema (SDS) defined in the Veritone system. The properties of this object must be the UUID of a SDS, with a value that is an SDO that matches the schema. Usually this just consists of a series of name/value pairs.",
+      "description": "Structured Data Objects (SDO) that conforms to a Structured Data Schema (SDS) defined in the Veritone system. The properties of this object must be the UUID of a SDS, with a value that is an SDO that matches the schema.",
       "type": "object",
       "patternProperties": {
         "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-          "description": "This must be data that matches the schema defined by the Veritone Structured Data Schema with the ID of the property name"
+          "description": "This object must contain data that matches the schema defined by the Veritone Structured Data Schema with the ID of the property name"
         }
       },
       "additionalProperties": false

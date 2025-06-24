@@ -47,6 +47,7 @@
     { "$ref": "../contracts.json#/definitions/capabilitySentiment" },
     { "$ref": "../contracts.json#/definitions/capabilitySummary" },
     { "$ref": "../contracts.json#/definitions/capabilityText" },
-    { "$ref": "../contracts.json#/definitions/capabilityTranscript" }
+    { "$ref": "../contracts.json#/definitions/capabilityTranscript" },
+    { "$ref": "../contracts.json#/definitions/capabilitySchemaId_Pattern" }
   ]
 }

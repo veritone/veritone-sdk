@@ -1,0 +1,17 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract that is structurally but not logically valid. The structuredData object is present but contains incorrect schemaId. This condition is not validatable by json-schema specifications.",
+  "validationContracts": [
+    "11111111-1111-1111-1111-111111111111"
+  ],
+  "object": [
+    {
+      "type": "object",
+      "structuredData": {
+        "cccccccc-cccc-cccc-cccc-cccccccccccc": {
+          "text": "Sample text"
+        }
+      }
+    }
+  ]
+}
