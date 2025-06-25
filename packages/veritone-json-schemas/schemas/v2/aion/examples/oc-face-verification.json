@@ -1,0 +1,80 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Face verification object with many supporting fields",
+  "series": [
+    {
+      "startTimeMs": 42333,
+      "stopTimeMs": 43333,
+      "object": {
+        "label": "Ryan Kisor",
+        "type": "face-verification",
+        "confidence": 0.7523365020751953,
+        "faceLandmarks": [
+          {
+            "type": "eyeLeft",
+            "locationPoly": [
+              {
+                "x": 0.27880197763442993,
+                "y": 0.45591166615486145
+              }
+            ]
+          },
+          {
+            "type": "eyeRight",
+            "locationPoly": [
+              {
+                "x": 0.29976096749305725,
+                "y": 0.4614948034286499
+              }
+            ]
+          },
+          {
+            "type": "mouthLeft",
+            "locationPoly": [
+              {
+                "x": 0.2779600918292999,
+                "y": 0.48932117223739624
+              }
+            ]
+          },
+          {
+            "type": "mouthRight",
+            "locationPoly": [
+              {
+                "x": 0.2953741252422333,
+                "y": 0.49400588870048523
+              }
+            ]
+          },
+          {
+            "type": "nose",
+            "locationPoly": [
+              {
+                "x": 0.289385050535202,
+                "y": 0.46382462978363037
+              }
+            ]
+          }
+        ],
+        "boundingPoly": [
+          {
+            "x": 0.26194795966148376,
+            "y": 0.4330843687057495
+          },
+          {
+            "x": 0.31269726157188416,
+            "y": 0.4330843687057495
+          },
+          {
+            "x": 0.31269726157188416,
+            "y": 0.5293931812047958
+          },
+          {
+            "x": 0.26194795966148376,
+            "y": 0.5293931812047958
+          }
+        ]
+      }
+    }
+  ]
+}

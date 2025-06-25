@@ -1,0 +1,19 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Speaker object missing the label.",
+  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "sourceEngineId": "02f4d710-cbcd-4534-98d6-a31522f8f4a6",
+  "taskId": "24083101_2FHaXhYPrtUgWkv",
+  "internalTaskId": "9193ba22-73eb-46fd-8646-3a692e2281d8",
+  "generatedDateUTC": "2024-08-01T07:04:01.50287487Z",
+  "series": [
+    {
+      "startTimeMs": 660,
+      "stopTimeMs": 20320,
+      "object": {
+        "text": "E!",
+        "type": "speaker"
+      }
+    }
+  ]
+}

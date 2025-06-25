@@ -1,7 +1,7 @@
 {
   "object": [
     {
-      "type": "text",
+      "type": "object",
       "transcription": {
         "text": "Hello",
         "confidence": 0.88

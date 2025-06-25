@@ -110,7 +110,7 @@
       }
     },
     "capabilityEntity": {
-      "$comment": "Capability Entity: must only contain 'object's of type 'namedEntity' with a 'label' or 'entityId' property",
+      "$comment": "Capability Entity: must only contain 'object's of type 'namedEntity'",
       "if": {
         "required": [
           "validationContracts"
@@ -138,19 +138,7 @@
                 "type": {
                   "const": "namedEntity"
                 }
-              },
-              "anyOf": [
-                {
-                  "required": [
-                    "label"
-                  ]
-                },
-                {
-                  "required": [
-                    "entityId"
-                  ]
-                }
-              ]
+              }
             }
           }
         }
@@ -311,7 +299,7 @@
       }
     },
     "capabilitySchemaId_Pattern": {
-      "$comment": "SchemaId Pattern: must contain 'object' or 'series' with non-empty 'structuredData' properties. The 'structuredData' must contain a property that matches this schemaId, but that is not something that can be validated here.",
+      "$comment": "SchemaId Pattern: must contain 'object' or 'series' with non-empty 'structuredData' properties. The 'structuredData' must contain a property that matches this schemaId, and the value of that property must match the schema definition in the aiWARE platform. Since json-schema cannot access the aiWARE platform, we can only verify that the structuredData is present.",
       "if": {
         "required": [
           "validationContracts"
@@ -548,6 +536,211 @@
         }
       }
     },
+    "objectAnomaly": {
+      "$comment": "Object of type 'anomaly' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "anomaly"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectBarcode": {
+      "$comment": "Object of type 'barcode' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "barcode"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectConcept": {
+      "$comment": "Object of type 'concept' MUST include 'text' and/or 'objectCategory' properties",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "concept"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "objectCategory": {}
+        },
+        "required": [
+          "type"
+        ],
+        "minProperties": 2
+      }
+    },
+    "objectFace": {
+      "$comment": "Object of type 'face' MUST include a boundingPoly, SHOULD include label, confidence, and MAY include a number of other properties related to faces",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "face"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "boundingPoly"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFaceVerification": {
+      "$comment": "Object of type 'face-verification' is unused but should contain many of the same properties as 'face'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "face-verification"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFacialFeatures": {
+      "$comment": "Object of type 'facial-features' is unused but should contain many of the same properties as 'face'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "facial-features"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFingerprint": {
+      "$comment": "Objects of type 'fingerprint' are overloaded and can mean one of two things: 1) It could refer to a tracked object fingerprint which MUST include fingerprintVector, referenceId, label, and tags, and MAY include confidence, boundingPoly, uri and vendor 2) It could also refer to a watermark fingerprint which MUST have a label (which is the watermark code) and text and MAY have vendor",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "fingerprint"
+          }
+        }
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$comment": "Object of type 'fingerprint' as a tracked object fingerprint",
+            "properties": {
+              "type": {},
+              "fingerprintVector": {},
+              "referenceId": {},
+              "label": {},
+              "tags": {},
+              "confidence": {},
+              "uri": {},
+              "boundingPoly": {},
+              "vendor": {}
+            },
+            "required": [
+              "type",
+              "fingerprintVector",
+              "referenceId",
+              "label",
+              "tags"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Object of type 'fingerprint' as a watermark fingerprint",
+            "properties": {
+              "type": {},
+              "label": {},
+              "text": {},
+              "vendor": {}
+            },
+            "required": [
+              "type",
+              "label",
+              "text"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "objectKeyword": {
+      "$comment": "Object of type 'keyword' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "keyword"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
     "objectLicensePlate": {
       "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
       "if": {
@@ -573,6 +766,33 @@
         "additionalProperties": false
       }
     },
+    "objectLogo": {
+      "$comment": "Object of type 'logo' MUST include label, confidence and boundingPoly, MAY include vendor and uri",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "logo"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "vendor": {},
+          "uri": {}
+        },
+        "required": [
+          "type",
+          "boundingPoly",
+          "label",
+          "confidence"
+        ],
+        "additionalProperties": false
+      }
+    },
     "objectMotorVehicle": {
       "$comment": "Object of type 'motorVehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
       "if": {
@@ -594,6 +814,140 @@
         "required": [
           "type",
           "motorVehicle"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectNamedEntity": {
+      "$comment": "Object of type 'namedEntity' MUST include label and objectCategory property, MAY include page, paragraph, sentence, libraryId, entityId and text",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "namedEntity"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "objectCategory": {},
+          "page": {},
+          "paragraph": {},
+          "sentence": {},
+          "libraryId": {},
+          "entityId": {},
+          "text": {}
+        },
+        "required": [
+          "type",
+          "label",
+          "objectCategory"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectObject": {
+      "$comment": "Object of type 'object' is a general object type and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "object"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectSound": {
+      "$comment": "Object of type 'sound' MUST include label, SHOULD include confidence, MAY include vendor",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "sound"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "confidence": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectSpeaker": {
+      "$comment": "Object of type 'speaker' MUST include label, MAY include confidence, libraryId, entityId and vendor",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "speaker"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    },
+     "objectSpeakerVerification": {
+      "$comment": "Object of type 'speakerVerification' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "speakerVerification"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+   "objectText": {
+      "$comment": "Object of type 'text' MUST include text, MAY include label, language, confidence, boundingPoly, page, paragraph, sentence, sentiment, emotions and vendor",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "text"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "label": {},
+          "language": {},
+          "confidence": {},
+          "boundingPoly": {},
+          "page": {},
+          "paragraph": {},
+          "sentence": {},
+          "sentiment": {},
+          "emotions": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "text"
         ],
         "additionalProperties": false
       }

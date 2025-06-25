@@ -1,0 +1,9 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Concept object with neither text nor objectCategory fields",
+  "object": [
+    {
+      "type": "concept"
+    }
+  ]
+}

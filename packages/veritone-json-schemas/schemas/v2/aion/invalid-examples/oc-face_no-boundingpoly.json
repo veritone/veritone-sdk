@@ -1,0 +1,65 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Face object missing boundingPoly field",
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "type": "face",
+        "age": {
+          "min": 20,
+          "max": 30,
+          "confidence": 0.8734419941902161
+        },
+        "faceLandmarks": [
+          {
+            "type": "left_eye",
+            "locationPoly": [
+              {
+                "x": 0.46441978878445095,
+                "y": 0.39038454161749947
+              }
+            ]
+          },
+          {
+            "type": "right_eye",
+            "locationPoly": [
+              {
+                "x": 0.6728788481818305,
+                "y": 0.3879580232832167
+              }
+            ]
+          },
+          {
+            "type": "nose",
+            "locationPoly": [
+              {
+                "x": 0.5941059324476454,
+                "y": 0.5093195703294542
+              }
+            ]
+          },
+          {
+            "type": "mouth_left",
+            "locationPoly": [
+              {
+                "x": 0.4668315781487359,
+                "y": 0.58770751953125
+              }
+            ]
+          },
+          {
+            "type": "mouth_right",
+            "locationPoly": [
+              {
+                "x": 0.6798791355556912,
+                "y": 0.5846857494778104
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

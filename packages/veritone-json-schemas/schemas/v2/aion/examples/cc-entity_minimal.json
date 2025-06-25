@@ -7,7 +7,8 @@
     "object": [
         {
             "type": "namedEntity",
-            "label": "Hazard Concrete"
+            "label": "Hazard Concrete",
+            "objectCategory": []
         }
     ]
 }

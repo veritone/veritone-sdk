@@ -1,0 +1,23 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Text objects a document summary.",
+  "sourceEngineId": "5464836b-c789-44cc-95e2-d029e1d23fa1",
+  "taskId": "23041622_tKYkKcGaviuIANx",
+  "internalTaskId": "f6d22da2-3b69-4f88-8261-612f955aef10",
+  "generatedDateUTC": "2023-04-22T14:28:28.758276216Z",
+  "object": [
+    {
+      "type": "text",
+      "text": "Ignition sequence start . Six , five , four , three , two , one , zero . All engine running . Liftoff . We have a little . 32 minutes past the hour . Liftoff on Apollo 11 . Our clear role program . ",
+      "page": 1,
+      "paragraph": 1,
+      "sentence": 4,
+      "sentiment": {
+        "positiveValue": 1,
+        "positiveConfidence": 0.8942003647486371,
+        "negativeValue": 0
+      }
+    }
+  ]
+}
+

@@ -8,7 +8,12 @@
         {
             "type": "namedEntity",
             "label": "Hazard Concrete",
-            "text": "Heavy machinery in use beyond this point."
+            "text": "Heavy machinery in use beyond this point.",
+            "objectCategory": [
+                {
+                    "class": "safety equipment"
+                }
+            ]
         }
     ]
 }

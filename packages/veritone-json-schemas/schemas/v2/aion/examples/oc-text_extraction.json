@@ -1,0 +1,91 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Text objects from an OCR operation.",
+  "sourceEngineId": "4318f3f8-e2a5-4056-be5e-238e7c9d07d2",
+  "taskId": "24093818_2FiZZ4PM7KvDqG3",
+  "internalTaskId": "83db4c9c-0e10-46eb-93df-33b2eaffe693",
+  "generatedDateUTC": "2024-09-18T19:22:49.562640498Z",
+  "series": [
+    {
+      "startTimeMs": 66,
+      "stopTimeMs": 67,
+      "object": {
+        "type": "text",
+        "confidence": 0.98865966796875,
+        "text": "MARCH",
+        "boundingPoly": [
+          {
+            "x": 0.081298828125,
+            "y": 0
+          },
+          {
+            "x": 0.17193603515625,
+            "y": 0
+          },
+          {
+            "x": 0.17193603515625,
+            "y": 0.0390625
+          },
+          {
+            "x": 0.081298828125,
+            "y": 0.0390625
+          }
+        ]
+      }
+    },
+    {
+      "startTimeMs": 66,
+      "stopTimeMs": 67,
+      "object": {
+        "type": "text",
+        "confidence": 0.9799788665771484,
+        "text": "NCAA.com",
+        "boundingPoly": [
+          {
+            "x": 0.7809793949127197,
+            "y": 0.026357103139162064
+          },
+          {
+            "x": 0.8908820152282715,
+            "y": 0.02385217882692814
+          },
+          {
+            "x": 0.8911243081092834,
+            "y": 0.05745234340429306
+          },
+          {
+            "x": 0.7812216877937317,
+            "y": 0.059957265853881836
+          }
+        ]
+      }
+    },
+    {
+      "startTimeMs": 66,
+      "stopTimeMs": 67,
+      "object": {
+        "type": "text",
+        "confidence": 0.9912504577636718,
+        "text": "MADNESS",
+        "boundingPoly": [
+          {
+            "x": 0.5534489750862122,
+            "y": 0.032503608614206314
+          },
+          {
+            "x": 0.6831182837486267,
+            "y": 0.028938841074705124
+          },
+          {
+            "x": 0.6835463047027588,
+            "y": 0.07814675569534302
+          },
+          {
+            "x": 0.5538769364356995,
+            "y": 0.0817115306854248
+          }
+        ]
+      }
+    }
+  ]
+}

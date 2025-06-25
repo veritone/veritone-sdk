@@ -6,7 +6,8 @@
     ],
     "object": [
         {
-            "type": "concept"
+            "type": "concept",
+            "text": "Sample text"
         }
     ]
 }

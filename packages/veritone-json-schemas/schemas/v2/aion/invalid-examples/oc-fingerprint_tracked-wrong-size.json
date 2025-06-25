@@ -1,0 +1,21 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Fingerprint of a tracked object in a 3-dimensional (invalid) vector space.",
+  "sourceEngineId": "cf22a20d-62a6-4b5b-bcd3-ef1269332b2f",
+  "taskId": "25020925_I33dStDoBukfTJZ",
+  "internalTaskId": "b76ba1fd-e9c5-4f51-b569-0fa6e76711c3",
+  "generatedDateUTC": "2025-02-25T15:52:12.956941858Z",
+  "object": [
+    {
+      "label": "person",
+      "type": "fingerprint",
+      "referenceId": "5888794a-a250-4e0b-a0ca-930c90e55ade",
+      "tags": [],
+      "fingerprintVector": [
+        0,
+        0.07975183,
+        0.02427893
+      ]
+    }
+  ]
+}

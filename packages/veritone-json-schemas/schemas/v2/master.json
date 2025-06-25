@@ -256,7 +256,6 @@
     "objectCategory": {
       "description": "Optional categories for object recognition. Used for referencing external taxonomies.",
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
@@ -396,8 +395,23 @@
           "required": ["type"],
           "additionalProperties": false
         },
+        { "$ref": "./contracts.json#/definitions/objectAnomaly" },
+        { "$ref": "./contracts.json#/definitions/objectBarcode" },
+        { "$ref": "./contracts.json#/definitions/objectConcept" },
+        { "$ref": "./contracts.json#/definitions/objectFace" },
+        { "$ref": "./contracts.json#/definitions/objectFaceVerification" },
+        { "$ref": "./contracts.json#/definitions/objectFacialFeatures" },
+        { "$ref": "./contracts.json#/definitions/objectFingerprint" },
+        { "$ref": "./contracts.json#/definitions/objectKeyword" },
+        { "$ref": "./contracts.json#/definitions/objectLicensePlate" },
+        { "$ref": "./contracts.json#/definitions/objectLogo" },
         { "$ref": "./contracts.json#/definitions/objectMotorVehicle" },
-        { "$ref": "./contracts.json#/definitions/objectLicensePlate" }
+        { "$ref": "./contracts.json#/definitions/objectNamedEntity" },
+        { "$ref": "./contracts.json#/definitions/objectObject" },
+        { "$ref": "./contracts.json#/definitions/objectSound" },
+        { "$ref": "./contracts.json#/definitions/objectSpeaker" },
+        { "$ref": "./contracts.json#/definitions/objectSpeakerVerification" },
+        { "$ref": "./contracts.json#/definitions/objectText" }
       ]
     },
     "objectResultType": {
@@ -881,11 +895,25 @@
       "type": "object"
     },
     "vector": {
-      "description": "An array of floats representing objects in vector space.",
+      "description": "An array of floats representing objects in vector space. The array must contain 256, 512, or 1024 floats.",
       "type": "array",
       "items": {
         "type": "number"
-      }
+      },
+      "oneOf": [
+        {
+          "minItems": 256,
+          "maxItems": 256
+        },
+        {
+          "minItems": 512,
+          "maxItems": 512
+        },
+        {
+          "minItems": 1024,
+          "maxItems": 1024
+        }
+      ]
     },
     "embedding": {
       "description": "An array of floats representing objects in vector space.",

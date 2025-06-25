@@ -1,0 +1,16 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Concept object with objectCategory field",
+  "object": [
+    {
+      "type": "concept",
+      "objectCategory": [
+        {
+          "class": "Shopping::Children's Games and Toys",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=482",
+          "confidence": 1
+        }
+      ]
+    }
+  ]
+}
