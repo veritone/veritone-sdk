@@ -34,6 +34,10 @@ assume_prod_role() {
   # if we can see the bucket then no need to assume the role
   aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 && return 0 
 
+  unset AWS_ACCESS_KEY_ID=
+  unset AWS_SECRET_ACCESS_KEY=
+  unset AWS_SESSION_TOKEN=
+
   local awsRole=VeritoneAiwareAssumeRole
   local awsAccount=026972849384
   local creds
@@ -333,14 +337,14 @@ upload_to_getaiwarecom() {
   local dryrun=
   local force=
   local latest=
-  local pre_release=
+  local release=
   # Handle flags
   while [[ "$1" == --* ]]; do
     case "$1" in
       --safe|--dryrun) safe="--safe"; dryrun="--dryrun" ;;
       --force) force="$1" ;;
       --latest) latest="$1" ;;
-      --pre-release) pre_release="$1" ;;
+      --release) release="$1" ;;
     esac
     shift
   done
@@ -364,8 +368,8 @@ upload_to_getaiwarecom() {
   assume_prod_role || return 1
 
   # Compute the target directory in the S3 bucket
-  local target_schemas_dir="s3://aiware-prod-public/schemas"
-  [[ "$pre_release" ]] && target_schemas_dir="s3://aiware-prod-public/schemas/pre-release"
+  local target_schemas_dir="s3://aiware-prod-public/schemas/pre-release"
+  [[ "$release" ]] && target_schemas_dir="s3://aiware-prod-public/schemas"
 
   local target_dir="$target_schemas_dir/$version"
 
@@ -393,4 +397,21 @@ upload_to_getaiwarecom() {
     echo "... Uploading archive for version '$version' to '$latest_dir'"
     upload_dir_to_getaiwarecom --force $safe "$archive_dir" "$latest_dir" || return 1
   }
+
+  # If --release was not specified, notify the user how to upload the release version
+  if [[ "$release" ]]; then
+    echo "Version $version has been uploaded to the release directory:"
+    echo "  https://get.aiware.com/schemas/$version/index.html"
+    echo "Index page: https://get.aiware.com/schemas/index.html"
+  else
+    echo "╭───────────────────────────────────────────────────────────────────────────"
+    echo "│ NOTE:"
+    echo "├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌"
+    echo "│ Version $version has been uploaded to the pre-release directory:"
+    echo "│   https://get.aiware.com/schemas/pre-release/$version/index.html"
+    echo "│ Index page: https://get.aiware.com/schemas/pre-release/index.html"
+    echo "│"
+    echo "│ To upload the release version, re-run this command with the --release flag"
+    echo "╰───────────────────────────────────────────────────────────────────────────"
+  fi
 }
