@@ -12,6 +12,9 @@
         "schemaId": {
           "$ref": "#/definitions/schemaId"
         },
+        "$comment": {
+          "$ref": "#/definitions/comment"
+        },
         "sourceEngineId": {
           "description": "ID of the engine that generated this file (provided by Veritone)",
           "$ref": "#/definitions/guid"
@@ -528,6 +531,9 @@
       "description": "A time-slice within audio or video media and it's associated data.",
       "type": "object",
       "properties": {
+        "$comment": {
+          "$ref": "#/definitions/comment"
+        },
         "startTimeMs": {
           "description": "The start time relative to the start of the media asset in milliseconds.",
           "type": "integer",
