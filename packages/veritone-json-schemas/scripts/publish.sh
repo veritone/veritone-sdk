@@ -415,3 +415,46 @@ upload_to_getaiwarecom() {
     echo "╰───────────────────────────────────────────────────────────────────────────"
   fi
 }
+
+
+# main script logic
+{
+  safe=
+  force=
+  latest=
+  release=
+
+  # Handle flags
+  while [[ "$1" == --* ]]; do
+    case "$1" in
+      --safe|--dryrun) safe="--safe" ;;
+      --force) force="--force" ;;
+      --latest) latest="--latest" ;;
+      --release) release="--release" ;;
+      *) error "Unknown option: $1"; exit 1 ;;
+    esac
+    shift
+  done
+
+  # TODO(km): this should be smarter about some things like:
+  # - Version number should be a placeholder in all the files since we don't know it yet
+  # - If no version number is provided, make one by incrementing the last version
+  # - If the version number is the highest one, then latest should be implied
+  # - If version number is provided, bail if not --force and the version directory already
+  #   exists
+  # - Move some of the above logic from functions to here?
+
+  # Validate version argument
+  version="$1"
+  [[ -z "$version" ]] && { error "No version specified. Usage: $0 [--safe] [--force] [--latest] [--release] <version>"; exit 1; }
+  if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]]; then
+    error "Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
+    exit 1
+  fi
+
+  # Create the archive for the version
+  create_archive $force $safe "$version" || exit
+
+  # Upload the archive to the S3 bucket
+  upload_to_getaiwarecom $safe $force $latest $release "$version" || exit
+}
