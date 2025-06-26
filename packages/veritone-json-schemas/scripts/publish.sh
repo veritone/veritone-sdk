@@ -34,9 +34,9 @@ assume_prod_role() {
   # if we can see the bucket then no need to assume the role
   aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 && return 0 
 
-  unset AWS_ACCESS_KEY_ID=
-  unset AWS_SECRET_ACCESS_KEY=
-  unset AWS_SESSION_TOKEN=
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
 
   local awsRole=VeritoneAiwareAssumeRole
   local awsAccount=026972849384

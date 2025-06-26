@@ -1,0 +1,91 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "OCR object is a special type of text object that has a position.",
+  "sourceEngineId": "742b5b8b-7cbb-41f7-8fb3-3747791b69f0",
+  "taskId": "25062409_aoqrboSU4kiIAPL",
+  "internalTaskId": "df03fc05-a2f1-4e30-871b-6d2277842092",
+  "generatedDateUTC": "2025-06-09T07:59:02.060710826Z",
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "type": "ocr",
+        "confidence": 0.9938229370117188,
+        "text": "FIFA",
+        "boundingPoly": [
+          {
+            "x": 0.7247772216796875,
+            "y": 0.57421875
+          },
+          {
+            "x": 0.7507781982421875,
+            "y": 0.57421875
+          },
+          {
+            "x": 0.7507781982421875,
+            "y": 0.5888671875
+          },
+          {
+            "x": 0.7247772216796875,
+            "y": 0.5888671875
+          }
+        ]
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "type": "ocr",
+        "confidence": 0.9861749267578125,
+        "text": "World Cup",
+        "boundingPoly": [
+          {
+            "x": 0.707226574420929,
+            "y": 0.5908203125
+          },
+          {
+            "x": 0.768328845500946,
+            "y": 0.5908203125
+          },
+          {
+            "x": 0.768328845500946,
+            "y": 0.61328125
+          },
+          {
+            "x": 0.707226574420929,
+            "y": 0.61328125
+          }
+        ]
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "type": "ocr",
+        "confidence": 0.9852759552001953,
+        "text": "2026",
+        "boundingPoly": [
+          {
+            "x": 0.7241271734237671,
+            "y": 0.6123046875
+          },
+          {
+            "x": 0.7533782720565796,
+            "y": 0.6123046875
+          },
+          {
+            "x": 0.7533782720565796,
+            "y": 0.6298828125
+          },
+          {
+            "x": 0.7241271734237671,
+            "y": 0.6298828125
+          }
+        ]
+      }
+    }
+  ]
+}

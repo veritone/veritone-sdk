@@ -68,6 +68,44 @@ jsValidate() {
   esac
 }
 
+# validates a single JSON instance file against the v2 AION schema. This is used to validate
+# random files that are not in the schemas directory. This is provided as a convenience for
+# simpler validation that isn't really part of the schema tests. This is less efficient than the
+# normal schema tests because it only validates one file at a time.
+#  $1 full path of the file to validate 
+jsAionValidate() {
+  local iPath="$1"
+
+  [[ -f "$iPath" ]] || {
+    echo "ERROR: File not found: $iPath"
+    return 1
+  }
+
+  local sVer=v2
+  local sName=aion
+
+  # running in fast mode means that we don't output the full validation stack, but only the
+  # error string, so only use fast if not in verbose mode
+  local doFast="--fast"
+  if $verbose; then
+    doFast=""
+  fi
+
+  # volumes: we mount the current dir to /workspace for access to the schemas files. we will
+  # also need to mount the file that we are validating, so that it is accessible in the
+  # /workspace/etc directory
+
+  docker run --interactive --rm \
+    --volume "$PWD:/workspace" \
+    --volume "$(dirname "$iPath"):/workspace/etc" \
+    ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
+    ./schemas/$sVer/$sName/schema.json \
+    -r ./schemas/$sVer/master.json \
+    -r ./schemas/$sVer/contracts.json \
+    "./etc/$(basename "$iPath")" \
+    2>&1
+}
+
 # validates that the schema itself is valid according to it's $schema value. This will validate
 # not only the schema itself, but also supporting schemas like master and contracts (if appropriate).
 #  $1 - schema version: v1, v2, etc
@@ -297,9 +335,10 @@ validateVersion() {
 
 }
 
-# validates a single JSON instance file against the schema that is in the parent directory
+# Validates a single JSON instance file from the schemas directory against the schema that is in
+# the parent directory
 #  $1 - path to the file to validate, like .../schemas/v1/text/examples/recognized-text.json
-validateFile() {
+validateSchemaFile() {
   local iPath="$1"
 
   # trim the path to the schema directory
@@ -314,6 +353,34 @@ validateFile() {
   case "$iPath" in
     *invalid-examples*)  evaluateTestResults false "$results";;
     *)                   evaluateTestResults true  "$results";;
+  esac
+}
+
+
+# Validates a single JSON instance file that is not in the schemas directory. This will validate
+# the file against the v2 AION schema, which is the default schema for all current JSON files.
+#  $1 - path to the file to validate, like /path/to/recognized-text.json
+validateAnyFile() {
+  local iPath="$1"
+
+  # validate the file against the v2 AION schema
+  local results
+  results=$(jsAionValidate "$iPath")
+
+  # evaluate the results, expecting the file to be valid
+  evaluateTestResults true "$results"
+}
+
+# Validates a single JSON instance file against the schema that is in the parent directory
+#  $1 - path to the file to validate, 
+#       like .../schemas/v1/text/examples/recognized-text.json
+#       or a path to any file on disk
+validateFile() {
+  local iPath="$1"
+
+  case "$iPath" in
+    *schemas/*) validateSchemaFile "$iPath" && return $? ;;
+    *) validateAnyFile "$(realpath "$iPath")" && return $? ;;
   esac
 }
 

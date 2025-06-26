@@ -453,7 +453,7 @@
       "then": {
         "anyOf": [
           {
-            "$comment": "All objects must be of type 'text' and contain a 'text' property",
+            "$comment": "All objects must be of type 'text' or 'ocr' and contain a 'text' property",
             "required": [
               "object"
             ],
@@ -467,7 +467,10 @@
                   ],
                   "properties": {
                     "type": {
-                      "const": "text"
+                      "enum": [
+                        "text",
+                        "ocr"
+                      ]
                     }
                   }
                 }
@@ -475,7 +478,7 @@
             }
           },
           {
-            "$comment": "All series must only contain objects of type 'text' with a 'text' property",
+            "$comment": "All series must only contain objects of type 'text' or 'ocr' with a 'text' property",
             "required": [
               "series"
             ],
@@ -494,7 +497,10 @@
                       ],
                       "properties": {
                         "type": {
-                          "const": "text"
+                          "enum": [
+                            "text",
+                            "ocr"
+                          ]
                         }
                       }
                     }
@@ -507,7 +513,7 @@
       }
     },
     "capabilityTranscript": {
-      "$comment": "Capability Transcript: must contain a 'series' of 'words'",
+      "$comment": "Capability Transcript: MUST contain a 'series' of 'words'. 'series' MAY be an empty array if there was nothing to transcribe",
       "if": {
         "required": [
           "validationContracts"
@@ -563,7 +569,7 @@
       }
     },
     "objectConcept": {
-      "$comment": "Object of type 'concept' MUST include 'text' and/or 'objectCategory' properties",
+      "$comment": "Object of type 'concept' MUST include 'text' or 'objectCategory', MAY include 'vendor'",
       "if": {
         "properties": {
           "type": {
@@ -575,16 +581,27 @@
         "properties": {
           "type": {},
           "text": {},
-          "objectCategory": {}
+          "objectCategory": {},
+          "vendor": {}
         },
-        "required": [
-          "type"
-        ],
-        "minProperties": 2
+        "anyOf": [
+          {
+            "required": [
+              "type",
+              "text"
+            ]
+          },
+          {
+            "required": [
+              "type",
+              "objectCategory"
+            ]
+          }
+        ]
       }
     },
     "objectFace": {
-      "$comment": "Object of type 'face' MUST include a boundingPoly, SHOULD include label, confidence, and MAY include a number of other properties related to faces",
+      "$comment": "Object of type 'face' MUST include a 'boundingPoly', SHOULD include 'label', 'confidence', and MAY include a number of other properties related to faces",
       "if": {
         "properties": {
           "type": {
@@ -616,7 +633,7 @@
       }
     },
     "objectFaceVerification": {
-      "$comment": "Object of type 'face-verification' is unused but should contain many of the same properties as 'face'",
+      "$comment": "Object of type 'face-verification' is unused but MAY contain many of the same properties as 'face'",
       "if": {
         "properties": {
           "type": {
@@ -647,7 +664,7 @@
       }
     },
     "objectFacialFeatures": {
-      "$comment": "Object of type 'facial-features' is unused but should contain many of the same properties as 'face'",
+      "$comment": "Object of type 'facial-features' is unused but MAY contain many of the same properties as 'face'",
       "if": {
         "properties": {
           "type": {
@@ -689,7 +706,7 @@
       "then": {
         "oneOf": [
           {
-            "$comment": "Object of type 'fingerprint' as a tracked object fingerprint",
+            "$comment": "Object of type 'fingerprint' as a unique reference to a tracked object",
             "properties": {
               "type": {},
               "fingerprintVector": {},
@@ -711,7 +728,7 @@
             "additionalProperties": false
           },
           {
-            "$comment": "Object of type 'fingerprint' as a watermark fingerprint",
+            "$comment": "Object of type 'fingerprint' as a watermark",
             "properties": {
               "type": {},
               "label": {},
@@ -742,7 +759,7 @@
       }
     },
     "objectLicensePlate": {
-      "$comment": "Object of type 'licensePlate' MUST include licensePlate property, MAY include label, boundingPoly",
+      "$comment": "Object of type 'licensePlate' MUST include 'licensePlate' property, MAY include 'label', 'boundingPoly', 'uri' and 'vendor'",
       "if": {
         "properties": {
           "type": {
@@ -767,7 +784,7 @@
       }
     },
     "objectLogo": {
-      "$comment": "Object of type 'logo' MUST include label, confidence and boundingPoly, MAY include vendor and uri",
+      "$comment": "Object of type 'logo' MUST include 'label', 'confidence' and 'boundingPoly', MAY include 'vendor' and 'uri'",
       "if": {
         "properties": {
           "type": {
@@ -794,7 +811,7 @@
       }
     },
     "objectMotorVehicle": {
-      "$comment": "Object of type 'motorVehicle' MUST include motorVehicle property, MAY include label, boundingPoly",
+      "$comment": "Object of type 'motorVehicle' MUST include 'motorVehicle' property, MAY include 'label', 'boundingPoly', 'uri' and 'vendor'",
       "if": {
         "properties": {
           "type": {
@@ -819,7 +836,7 @@
       }
     },
     "objectNamedEntity": {
-      "$comment": "Object of type 'namedEntity' MUST include label and objectCategory property, MAY include page, paragraph, sentence, libraryId, entityId and text",
+      "$comment": "Object of type 'namedEntity' MUST include 'label' and 'objectCategory', MAY include other properties related to location or ID of the entity",
       "if": {
         "properties": {
           "type": {
@@ -837,12 +854,40 @@
           "sentence": {},
           "libraryId": {},
           "entityId": {},
-          "text": {}
+          "text": {},
+          "vendor": {}
         },
         "required": [
           "type",
           "label",
           "objectCategory"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectOcr": {
+      "$comment": "Object of type 'ocr' MUST include 'text' and 'boundingPoly', MAY include 'label', 'confidence', 'language' and 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "ocr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "boundingPoly": {},
+          "label": {},
+          "language": {},
+          "confidence": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "text",
+          "boundingPoly"
         ],
         "additionalProperties": false
       }
@@ -861,7 +906,7 @@
       }
     },
     "objectSound": {
-      "$comment": "Object of type 'sound' MUST include label, SHOULD include confidence, MAY include vendor",
+      "$comment": "Object of type 'sound' MUST include 'label', SHOULD include 'confidence', MAY include 'vendor'",
       "if": {
         "properties": {
           "type": {
@@ -884,7 +929,7 @@
       }
     },
     "objectSpeaker": {
-      "$comment": "Object of type 'speaker' MUST include label, MAY include confidence, libraryId, entityId and vendor",
+      "$comment": "Object of type 'speaker' MUST include 'label', MAY include 'confidence', 'libraryId', 'entityId' and 'vendor'",
       "if": {
         "properties": {
           "type": {
@@ -908,7 +953,7 @@
         "additionalProperties": false
       }
     },
-     "objectSpeakerVerification": {
+    "objectSpeakerVerification": {
       "$comment": "Object of type 'speakerVerification' is unused and has no specific contract requirements",
       "if": {
         "properties": {
@@ -921,8 +966,8 @@
         "type": "object"
       }
     },
-   "objectText": {
-      "$comment": "Object of type 'text' MUST include text, MAY include label, language, confidence, boundingPoly, page, paragraph, sentence, sentiment, emotions and vendor",
+    "objectText": {
+      "$comment": "Object of type 'text' MUST include 'text', MAY include other properties related to the text location or analysis",
       "if": {
         "properties": {
           "type": {

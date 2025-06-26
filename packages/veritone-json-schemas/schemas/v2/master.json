@@ -407,6 +407,7 @@
         { "$ref": "./contracts.json#/definitions/objectLogo" },
         { "$ref": "./contracts.json#/definitions/objectMotorVehicle" },
         { "$ref": "./contracts.json#/definitions/objectNamedEntity" },
+        { "$ref": "./contracts.json#/definitions/objectOcr" },
         { "$ref": "./contracts.json#/definitions/objectObject" },
         { "$ref": "./contracts.json#/definitions/objectSound" },
         { "$ref": "./contracts.json#/definitions/objectSpeaker" },
@@ -431,6 +432,7 @@
         "logo",
         "motorVehicle",
         "namedEntity",
+        "ocr",
         "object",
         "sound",
         "speaker",
@@ -472,6 +474,10 @@
               },
               "bestPath": {
                 "description": "This word is on the best translation path through a lattice. Required if using a lattice such that the best translation is the one created by discarding everything not on the best path. Must not be used if not in a lattice",
+                "type": "boolean"
+              },
+              "partial": {
+                "description": "This word or phrase has only been partially processed in a real-time transcript. It may be replaced by a more accurate word or phrase later when we get more context.",
                 "type": "boolean"
               }
             },

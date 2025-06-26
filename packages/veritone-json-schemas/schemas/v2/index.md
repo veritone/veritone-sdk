@@ -2,19 +2,6 @@
 
 This directory contains the standard JSON schemas used by Veritone.
 
-> NOTE: AION v2 is still in a pre-release evaluation state.
->
-> The current state of this release is:
->
-> 1. AION v2.0 has object validation contracts for two new object types: `licensePlate` and
->    `motorVehicle`. The objects and validation rules are still under evaluation.
-> 2. Object validation contracts have not been created for other object types yet. Each object
->    type will be evaluated and contracts will be created as needed. New contracts will be
->    defined in order to maintain as much backward compatibility with v1 documents as possible.
-> 3. Capability validation contracts have been moved from individual "capability schemas" to
->    AION, and these contracts are subject to further review and change.
-> 4. Documentation and example files have not undergone final review yet.
-
 ## AI Object Notation (AION) Schema
 
 AION (pronounced "eye-on") is a universal schema defintion 
