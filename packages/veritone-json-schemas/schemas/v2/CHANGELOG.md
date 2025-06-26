@@ -44,6 +44,9 @@
     designed to accommodate as much of the legacy usage as possible. If your engine does not
     meet these requirement, we recommend you update your engine. If this is not possible, then
     continue to use the v1 schemas.
+- **Comment support** has been added for documents, objects, and series. Taking a page from the
+  json-schema definitions, we now allow a `$comment` property in any document, object or series 
+  item. The value must be a string, and is ignored by aiWARE processing.
 - **New object types** have been added:
   - **`licensePlate`** requries a `licensePlate` with a `number`.
   - **`motorVehicle`** requries a `motorVehicle` that may optionally have a `licensePlate`.
