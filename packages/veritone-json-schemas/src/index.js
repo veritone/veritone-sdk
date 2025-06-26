@@ -1,19 +1,19 @@
 import Ajv from 'ajv';
 import { isEmpty, cloneDeep } from 'lodash';
 
-import * as MASTER_SCHEMA from '../schemas/vtn-standard/master.json';
-import * as AION_SCHEMA from '../schemas/vtn-standard/aion/aion.json';
-import * as CONCEPT_SCHEMA from '../schemas/vtn-standard/concept/concept.json';
-import * as ENTITY_SCHEMA from '../schemas/vtn-standard/entity/entity.json';
-import * as KEYWORD_SCHEMA from '../schemas/vtn-standard/keyword/keyword.json';
-import * as LANGUAGE_SCHEMA from '../schemas/vtn-standard/language/language.json';
-import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/vtn-standard/media-translated/media-translated.json';
-import * as OBJECT_SCHEMA from '../schemas/vtn-standard/object/object.json';
-import * as SENTIMENT_SCHEMA from '../schemas/vtn-standard/sentiment/sentiment.json';
-import * as SUMMARY_SCHEMA from '../schemas/vtn-standard/summary/summary.json';
-import * as TEXT_SCHEMA from '../schemas/vtn-standard/text/text.json';
-import * as TRANSCRIPT_SCHEMA from '../schemas/vtn-standard/transcript/transcript.json';
-import * as ANOMALY_SCHEMA from '../schemas/vtn-standard/anomaly/anomaly.json';
+import * as MASTER_SCHEMA from '../schemas/v1/master.json';
+import * as AION_SCHEMA from '../schemas/v1/aion/aion.json';
+import * as CONCEPT_SCHEMA from '../schemas/v1/concept/concept.json';
+import * as ENTITY_SCHEMA from '../schemas/v1/entity/entity.json';
+import * as KEYWORD_SCHEMA from '../schemas/v1/keyword/keyword.json';
+import * as LANGUAGE_SCHEMA from '../schemas/v1/language/language.json';
+import * as MEDIA_TRANSLATED_SCHEMA from '../schemas/v1/media-translated/media-translated.json';
+import * as OBJECT_SCHEMA from '../schemas/v1/object/object.json';
+import * as SENTIMENT_SCHEMA from '../schemas/v1/sentiment/sentiment.json';
+import * as SUMMARY_SCHEMA from '../schemas/v1/summary/summary.json';
+import * as TEXT_SCHEMA from '../schemas/v1/text/text.json';
+import * as TRANSCRIPT_SCHEMA from '../schemas/v1/transcript/transcript.json';
+import * as ANOMALY_SCHEMA from '../schemas/v1/anomaly/anomaly.json';
 
 /**
  * Generates a function that will validate vtn-standard for a validation contract
