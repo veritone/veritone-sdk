@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://get.aiware.com/schemas/concept/concept.json",
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/concept/concept.json",
   "title": "vtn-standard.concept",
   "description": "Standard engine output for Content Classification at Veritone",
   "type": "object",
@@ -24,10 +24,7 @@
   },
   "allOf": [
     {
-      "$ref": "../master.json#/definitions/PREAMBLE"
-    },
-    {
-      "$ref": "../master.json#/definitions/validated"
+      "$ref": "../master.json#/definitions/header"
     },
     {
       "properties": {

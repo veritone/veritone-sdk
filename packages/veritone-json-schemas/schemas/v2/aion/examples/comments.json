@@ -1,6 +1,6 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Any AION file may have '$comment' in the root object which is ignored by aiWARE",
+  "$comment": "Example: Demonstrates inclusion of comments in AION files.Any AION file may have '$comment' in the root object which is ignored by aiWARE",
   "object": [
     {
       "$comment": "Any object may have '$comment' which is ignored by aiWARE",

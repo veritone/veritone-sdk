@@ -28,6 +28,24 @@ cd_json_schemas() {
   cd "$dir" || { error "cd_json_schemas: Failed to change directory to '$dir'"; return 1; }
 }
 
+# Checks if the given version is a valid version string in the format vX.Y
+# where X and Y are integers. If valid, returns 0, otherwise prints an error and returns 1.
+is_version_valid() {
+  local version="$1"
+  
+  [[ "$version" ]] || { 
+    error "No version specified"
+    return 1
+  }
+
+  [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]] || {
+    error "Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
+    return 1
+  }
+
+  return 0
+}
+
 # Checks if we have access to the aiware-prod-public bucket, and if not, assumes the production
 # role for access
 assume_prod_role() {
@@ -38,16 +56,16 @@ assume_prod_role() {
   unset AWS_SECRET_ACCESS_KEY
   unset AWS_SESSION_TOKEN
 
-  local awsRole=VeritoneAiwareAssumeRole
-  local awsAccount=026972849384
+  local aws_role=VeritoneAiwareAssumeRole
+  local aws_account=026972849384
   local creds
   creds=$(aws sts assume-role \
-      --role-arn "arn:aws:iam::${awsAccount}:role/${awsRole}" \
+      --role-arn "arn:aws:iam::${aws_account}:role/${aws_role}" \
       --role-session-name publish-schemas-session \
       --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" \
       --output text)
   [ "$creds" ] || {
-    echo "Unable to assume role $awsRole, proceeding using [default] credentials"
+    echo "Unable to assume role $aws_role, proceeding using [default] credentials"
     return 0
   }
 
@@ -59,11 +77,11 @@ assume_prod_role() {
   export AWS_SESSION_TOKEN="$(echo "$creds" | cut -d' ' -f3)"
 
   aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 || {
-    error "Failed to assume role $awsRole in account $awsAccount. Please check your AWS credentials."
+    error "Failed to assume role $aws_role in account $aws_account. Please check your AWS credentials."
     return 1
   }
 
-  echo "Assumed role $awsRole in account $awsAccount"
+  echo "Assumed role $aws_role in account $aws_account"
   return 0
 }
 
@@ -153,13 +171,7 @@ create_archive() {
   done
   local version="$1"
 
-  # Validate version
-  [[ -z "$version" ]] && { error "create_archive: No version specified"; return 1; }
-  if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]]; then
-    error "create_archive: Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
-    return 1
-  fi
-
+  is_version_valid "$version" || return
   cd_json_schemas || return 1
 
   # Find source directory from major version
@@ -324,8 +336,42 @@ upload_dir_to_getaiwarecom() {
   return 0
 }
 
+# Checks if the given version is the latest minor version of its major version.
+# For example, if the version is v2.7, it checks if there are no other v2.x versions
+# that are greater than v2.7. Returns 0 if it is the latest minor version, 1 otherwise.
+is_latest_minor_version() {
+  local version="$1"
+  is_version_valid "$version" || return
+
+  local major_version="${version%%.*}"
+
+  local schemas_dir="archive/schemas"
+  local latest_version=$(ls "$schemas_dir" | grep "^$major_version\." | sort -V | tail -n 1)
+  
+  [[ "$latest_version" == "$version" ]]
+}
+
+# Checks if the given version is the latest major version.
+# For example, if the version is v2.7, it checks that it is the latest v2.x version, and there
+# are no v3.x versions.
+# Returns 0 if it is the latest major version, 1 otherwise.
+is_latest_major_version() {
+  local version="$1"
+  is_version_valid "$version" || return
+
+  is_latest_minor_version "$version" || return
+
+  local major_version="${version%%.*}"
+
+  local schemas_dir="archive/schemas"
+  local latest_version=$(ls "$schemas_dir" | sort -V | tail -n 1)
+  local latest_major_version="${latest_version%%.*}"
+
+  [[ "$latest_major_version" == "$major_version" ]]
+}
+
 # Upload the archive to the AWS S3 bucket as s3://aiware-prod-public/schemas/.
-# 
+#
 # Usage: upload_to_getaiwarecom [--safe] [--force] [--latest] [--pre-release] <version>
 # Where: <version> is the version to upload (e.g., v2.7)
 #        --safe: Will not perform any actions, but will print what it would do.
@@ -349,13 +395,9 @@ upload_to_getaiwarecom() {
     shift
   done
 
-  # Validate version
+  # get version
   local version="$1"
-  [[ -z "$version" ]] && { error "upload_to_getaiwarecom: No version specified"; return 1; }
-  if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]]; then
-    error "upload_to_getaiwarecom: Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
-    return 1
-  fi
+  is_version_valid "$version" || return
 
   cd_json_schemas || return 1
   local schemas_dir="archive/schemas"
@@ -384,15 +426,17 @@ upload_to_getaiwarecom() {
   echo "Uploading archive for version '$version' to '$target_dir'"
   upload_dir_to_getaiwarecom $force $safe "$archive_dir" "$target_dir" || return 1
 
-  # If --latest is specified, upload the latest directories as well
-  [[ "$latest" ]] && {
+  # If this is the latest of the minor versions, also upload to the major version directory
+  is_latest_minor_version "$version" && {
     # Upload to the major version directory (e.g., v2.7 -> v2) (always overwriting it)
     local major_version="${version%.*}"
     local latest_target_dir="${target_dir/\/$version//$major_version}"
     echo "... Uploading archive for version '$version' to '$latest_target_dir'"
     upload_dir_to_getaiwarecom --force $safe "$archive_dir" "$latest_target_dir" || return 1
+  }
 
-    # Also upload to the 'latest' directory (always overwriting it)
+  # If this is the latest major version, upload to the latest directory
+  is_latest_major_version "$version" && {
     local latest_dir="${target_dir/\/$version//latest}"
     echo "... Uploading archive for version '$version' to '$latest_dir'"
     upload_dir_to_getaiwarecom --force $safe "$archive_dir" "$latest_dir" || return 1
@@ -419,18 +463,18 @@ upload_to_getaiwarecom() {
 
 # main script logic
 {
-  safe=
-  force=
-  latest=
-  release=
+  safe=           # Will not perform any actions, but will print what it would do.
+  force=          # Will overwrite the existing archive directory if it exists
+  release=        # Will upload the archive to the release directory instead of the pre-release directory
+  archive_only=   # Will only create the archive without uploading
 
   # Handle flags
   while [[ "$1" == --* ]]; do
     case "$1" in
       --safe|--dryrun) safe="--safe" ;;
       --force) force="--force" ;;
-      --latest) latest="--latest" ;;
       --release) release="--release" ;;
+      --archive-only) archive_only="--archive-only" ;;
       *) error "Unknown option: $1"; exit 1 ;;
     esac
     shift
@@ -439,7 +483,6 @@ upload_to_getaiwarecom() {
   # TODO(km): this should be smarter about some things like:
   # - Version number should be a placeholder in all the files since we don't know it yet
   # - If no version number is provided, make one by incrementing the last version
-  # - If the version number is the highest one, then latest should be implied
   # - If version number is provided, bail if not --force and the version directory already
   #   exists
   # - Move some of the above logic from functions to here?
@@ -454,6 +497,10 @@ upload_to_getaiwarecom() {
 
   # Create the archive for the version
   create_archive $force $safe "$version" || exit
+  [[ "$archive_only" ]] && { 
+    echo "Archive created successfully at 'archive/schemas/$version'"
+    exit 0
+  }
 
   # Upload the archive to the S3 bucket
   upload_to_getaiwarecom $safe $force $latest $release "$version" || exit

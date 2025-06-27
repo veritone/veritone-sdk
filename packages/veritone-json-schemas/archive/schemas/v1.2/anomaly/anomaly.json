@@ -1,0 +1,89 @@
+{
+    "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+    "$id": "https://docs.veritone.com/schemas/vtn-standard/anomaly/anomaly.json",
+    "title": "vtn-standard.anomaly",
+    "description": "Standard engine output for Anomalies at Veritone",
+    "type": "object",
+    "definitions": {
+      "anomalyObject": {
+        "allOf": [
+          {
+            "$ref": "../master.json#/definitions/objectResult"
+          },
+          {
+            "properties": {
+              "type": {
+                "const": "anomaly"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "../master.json#/definitions/PREAMBLE"
+      },
+      {
+        "$ref": "../master.json#/definitions/validated"
+      },
+      {
+        "properties": {
+          "validationContracts": {
+            "type": "array",
+            "contains": {
+              "const": "anomaly"
+            }
+          },
+          "object": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/anomalyObject"
+            }
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "../master.json#/definitions/seriesItem"
+                },
+                {
+                  "properties": {
+                    "object": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/anomalyObject"
+                        },
+                        {
+                          "$ref": "../master.json#/definitions/noDocumentIndexing"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["object"]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "anyOf": [
+          {
+            "required": ["object"]
+          },
+          {
+            "required": ["series"]
+          }
+        ]
+      }
+    ]
+  }
+  
+  
+  
+  
+  
+  
+  

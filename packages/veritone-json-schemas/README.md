@@ -1,7 +1,8 @@
 # veritone-json-schemas
 
 This repo contains all the static JSON schemas used by Veritone.
-This does **not** include the [user-defined schemas registered through Veritone Developer](https://docs.veritone.com/#/developer/data/),
+This does **not** include 
+[user-defined schemas created through the aiWARE Resource Center](https://support.veritone.com/s/article/000004213?language=en_US),
 just the ones that are core to our platform.
 
 ## Adding a new validation contract to AION
@@ -66,6 +67,8 @@ schema file.
 
 ## Publishing
 
+> This section is obsolete... Updates TBD (VE-12797)
+
 The JSON schema is deployed to the get.aiware.com
 site (https://get.aiware.com/schemas/index.html). 
 This may be deployed manually with
@@ -100,8 +103,7 @@ It also outputs all the json-schemas and the valid and invalid examples used in 
 > **PLEASE NOTE that the json-schema validation ecosystem is not 100% compatible.**
 > Different json-schema parsers and validators may behave slightly differently.
 > At Veritone, we use [`ajv`](https://www.npmjs.com/package/ajv) which works great with the draft-07 json-schemas we've written.
-> And we try to keep our schemas simple and not use too many advanced features to increase the chance of compatibility with other packages.
-> So if you do use another package to parse our json-schemas, hopefully things will "just work" but don't be surprised if there's a few quirks.
+> If you use another package to parse our json-schemas, hopefully things will "just work" but don't be surprised if there's a few quirks.
 
 ## AI Object Notation (AION)
 
@@ -132,7 +134,26 @@ schema.
 
 The typical naming convention is `<category-in-kabob-case>_<description-in-kabob-case>`. Specific
 examples that test contract validation should start with `cc` for Capability Contracts and `oc`
-for Object Contracts
+for Object Contracts.
+
+Each example should start with a `$schema` for the relevant version of the example, and a
+`$comment` describing what this file is an example of:
+
+```
+{
+   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+   "$comment": "A transcription that is missing words",
+   ...
+}
+
+In addition, if you want an example to be uploaded to the public schema page, then the `$comment` MUST have the format
+
+```
+  "$comment": "PublicExample: Audio transcription with disfluency detectaion. Disfluencies are non-word sounds like "um", "uh", coughs and sneezes.",
+```
+
+The leading "PublicExample:" tag flags this example as a public example file, and the first sentence 
+(everything to the first period) will be the example's description in the table of contents.
 
 ### Running tests
 

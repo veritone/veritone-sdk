@@ -1,0 +1,78 @@
+{
+  "$schema": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/object/object.json",
+  "title": "vtn-standard.object",
+  "description": "Standard engine output for Object at Veritone",
+  "definitions": {
+    "objectTypeObject": {
+      "allOf": [
+        {
+          "$ref": "../master.json#/definitions/objectResult"
+        },
+        {
+          "$ref": "../master.json#/definitions/noDocumentIndexing"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "object"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/PREAMBLE"
+    },
+    {
+      "$ref": "../master.json#/definitions/validated"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "object"
+          }
+        },
+        "object": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectTypeObject"
+          }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../master.json#/definitions/seriesItem"
+              },
+              {
+                "properties": {
+                  "object": {
+                    "$ref": "#/definitions/objectTypeObject"
+                  }
+                },
+                "required": ["object"]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "anyOf": [
+        {
+          "required": ["object"]
+        },
+        {
+          "required": ["series"]
+        }
+      ]
+    }
+  ]
+}
