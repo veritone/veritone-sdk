@@ -40,8 +40,7 @@ It also outputs all the json-schemas and the valid and invalid examples used in 
 > **PLEASE NOTE that the json-schema validation ecosystem is not 100% compatible.**
 > Different json-schema parsers and validators may behave slightly differently.
 > At Veritone, we use [`ajv`](https://www.npmjs.com/package/ajv) which works great with the draft-07 json-schemas we've written.
-> And we try to keep our schemas simple and not use too many advanced features to increase the chance of compatibility with other packages.
-> So if you do use another package to parse our json-schemas, hopefully things will "just work" but don't be surprised if there's a few quirks.
+> If you use another package to parse our json-schemas, hopefully things will "just work" but don't be surprised if there's a few quirks.
 
 ## AI Object Notation (AION)
 
