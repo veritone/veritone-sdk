@@ -772,11 +772,7 @@ upload_to_getaiwarecom() {
   [[ -z "$archive" && -z "$upload" ]] && { archive="--archive"; upload="--upload"; }
 
   # TODO(km): this should be smarter about some things like:
-  # - Version number should be a placeholder in all the files since we don't know it yet
   # - If no version number is provided, make one by incrementing the last version
-  # - If version number is provided, bail if not --force and the version directory already
-  #   exists
-  # - Move some of the above logic from functions to here?
 
   # Validate version argument
   version="$1"
