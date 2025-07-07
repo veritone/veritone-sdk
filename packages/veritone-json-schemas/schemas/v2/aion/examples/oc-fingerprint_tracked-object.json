@@ -1,10 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Fingerprint of a tracked object.",
-  "sourceEngineId": "cf22a20d-62a6-4b5b-bcd3-ef1269332b2f",
-  "taskId": "25020925_I33dStDoBukfTJZ",
-  "internalTaskId": "b76ba1fd-e9c5-4f51-b569-0fa6e76711c3",
-  "generatedDateUTC": "2025-02-25T15:52:12.956941858Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-fingerprint_tracked-object.json",
+  "$example": "Object Contract: Fingerprint (tracking)",
+  "$comment": "Fingerprint object used to identify a unique object (person, vehicle, etc.) in a video stream. This fingerprint may also be used to track the object between different videos. These fingerprints MUST include a 256-, 512-, or 1024-dimensional fingerprintVector, referenceId, label, and tags, and MAY include some other properties.",
   "object": [
     {
       "label": "person",

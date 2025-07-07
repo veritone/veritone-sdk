@@ -1,0 +1,1108 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/cc-transcript.json",
+  "$comment": "Transcription of audio documents. This example contains a transcript of a video about spider silk. Transcript contracts may also be used for translations of spoken language as well.",
+  "validationContracts": [
+    "transcript"
+  ],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 3000,
+      "words": [
+        {
+          "word": "It's tougher than any man-made material."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 3000,
+      "stopTimeMs": 7000,
+      "words": [
+        {
+          "word": "It's a combination of strength and elasticity."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 7000,
+      "stopTimeMs": 10000,
+      "words": [
+        {
+          "word": "No other material can actually combine these two features."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 10000,
+      "stopTimeMs": 14000,
+      "words": [
+        {
+          "word": "Either material is strong or it's elastic, and spider silk is both."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 14000,
+      "stopTimeMs": 16000,
+      "words": [
+        {
+          "word": "Five times stronger than steel,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 16000,
+      "stopTimeMs": 20000,
+      "words": [
+        {
+          "word": "spider silk has been tantalizing the human imagination for decades."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 20000,
+      "stopTimeMs": 23000,
+      "words": [
+        {
+          "word": "You want to be Spider-Man, you have to make fibers."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 23000,
+      "stopTimeMs": 27000,
+      "words": [
+        {
+          "word": "But we can't just farm the silk, because spiders eat each other."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 27000,
+      "stopTimeMs": 30000,
+      "words": [
+        {
+          "word": "So scientists have pursued other routes."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 30000,
+      "stopTimeMs": 32000,
+      "words": [
+        {
+          "word": "A DNA sequencing breakthrough in Germany"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 32000,
+      "stopTimeMs": 36000,
+      "words": [
+        {
+          "word": "means manufacturing spider silk fiber is no longer pure fantasy."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 36000,
+      "stopTimeMs": 40000,
+      "words": [
+        {
+          "word": "The next step is really producing tons of the material."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 47000,
+      "stopTimeMs": 51000,
+      "words": [
+        {
+          "word": "In all the offices, we have spiders and, you know, they're like pets."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 51000,
+      "stopTimeMs": 54000,
+      "words": [
+        {
+          "word": "We like to have them around. We think they're beautiful."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 55000,
+      "stopTimeMs": 57000,
+      "words": [
+        {
+          "word": "If eight-legged co-workers"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 57000,
+      "stopTimeMs": 58000,
+      "words": [
+        {
+          "word": "can make your skin crawl,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 58000,
+      "stopTimeMs": 62000,
+      "words": [
+        {
+          "word": "then the biomaterials lab at Bayreuth University probably isn't for you."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 64000,
+      "stopTimeMs": 66000,
+      "words": [
+        {
+          "word": "It's here that Professor Thomas Scheibel and his team"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 66000,
+      "stopTimeMs": 69000,
+      "words": [
+        {
+          "word": "study natural substances like spider silk"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 69000,
+      "stopTimeMs": 72000,
+      "words": [
+        {
+          "word": "in the hope of turning them into super materials."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 72000,
+      "stopTimeMs": 75000,
+      "words": [
+        {
+          "word": "Spider silk has, for a lot of material scientists,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 75000,
+      "stopTimeMs": 77000,
+      "words": [
+        {
+          "word": "been the Holy Grail for decades."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 77000,
+      "stopTimeMs": 81000,
+      "words": [
+        {
+          "word": "If we take a thumb-thick spider fiber,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 81000,
+      "stopTimeMs": 85000,
+      "words": [
+        {
+          "word": "we could actually get a jumbo jet holding up in air"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 85000,
+      "stopTimeMs": 86000,
+      "words": [
+        {
+          "word": "without tearing it apart."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 86000,
+      "stopTimeMs": 89000,
+      "words": [
+        {
+          "word": "It can withstand hundreds of tons of load"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 89000,
+      "stopTimeMs": 92000,
+      "words": [
+        {
+          "word": "in full speed without breaking."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 92000,
+      "stopTimeMs": 95000,
+      "words": [
+        {
+          "word": "The best silk producers are orb-weaving spiders."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 95000,
+      "stopTimeMs": 97000,
+      "words": [
+        {
+          "word": "They have seven different types of silk"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 97000,
+      "stopTimeMs": 99000,
+      "words": [
+        {
+          "word": "with different properties."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 99000,
+      "stopTimeMs": 101000,
+      "words": [
+        {
+          "word": "We find dramatic differences there"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 101000,
+      "stopTimeMs": 105000,
+      "words": [
+        {
+          "word": "concerning mechanics, but also concerning other properties."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 106000,
+      "stopTimeMs": 108000,
+      "words": [
+        {
+          "word": "Wanting to harness these characteristics"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 108000,
+      "stopTimeMs": 111000,
+      "words": [
+        {
+          "word": "led to Scheibel's breakthrough in genetically modifying bacteria"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 111000,
+      "stopTimeMs": 113000,
+      "words": [
+        {
+          "word": "to produce spider silk proteins."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 113000,
+      "stopTimeMs": 115000,
+      "words": [
+        {
+          "word": "This patented technology formed the basis"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 115000,
+      "stopTimeMs": 118000,
+      "words": [
+        {
+          "word": "of AmSilk, the company Scheibel founded"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 118000,
+      "stopTimeMs": 121000,
+      "words": [
+        {
+          "word": "with a postdoc from his research lab, Lin Romer."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 121000,
+      "stopTimeMs": 124000,
+      "words": [
+        {
+          "word": "The bacteria we're using as working horse"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 124000,
+      "stopTimeMs": 126000,
+      "words": [
+        {
+          "word": "are very simple organisms."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 126000,
+      "stopTimeMs": 130000,
+      "words": [
+        {
+          "word": "They only try to grow, and we exploit that."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 130000,
+      "stopTimeMs": 133000,
+      "words": [
+        {
+          "word": "We feed them, we give them perfect conditions to live,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 133000,
+      "stopTimeMs": 135000,
+      "words": [
+        {
+          "word": "and they multiply and multiply."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 135000,
+      "stopTimeMs": 138000,
+      "words": [
+        {
+          "word": "And afterwards, we change their way of living."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 138000,
+      "stopTimeMs": 141000,
+      "words": [
+        {
+          "word": "We give a trigger so that they stop proliferating"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 141000,
+      "stopTimeMs": 143000,
+      "words": [
+        {
+          "word": "and they start producing our protein."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 143000,
+      "stopTimeMs": 144000,
+      "words": [
+        {
+          "word": "After purification,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 144000,
+      "stopTimeMs": 148000,
+      "words": [
+        {
+          "word": "we have the protein in the form of a white powder."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 148000,
+      "stopTimeMs": 150000,
+      "words": [
+        {
+          "word": "AmSilk takes the protein powder"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 150000,
+      "stopTimeMs": 153000,
+      "words": [
+        {
+          "word": "and spins it into a fibre."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 153000,
+      "stopTimeMs": 156000,
+      "words": [
+        {
+          "word": "So what you can see here is our spinning machine"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 156000,
+      "stopTimeMs": 158000,
+      "words": [
+        {
+          "word": "where we produce our bio-steel fibre,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 158000,
+      "stopTimeMs": 160000,
+      "words": [
+        {
+          "word": "which is then transferred to the yarner"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 160000,
+      "stopTimeMs": 162000,
+      "words": [
+        {
+          "word": "who can make the yarn and then later"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 162000,
+      "stopTimeMs": 164000,
+      "words": [
+        {
+          "word": "the fabric out of the material."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 167000,
+      "stopTimeMs": 169000,
+      "words": [
+        {
+          "word": "The material is a vegan and biodegradable"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 169000,
+      "stopTimeMs": 172000,
+      "words": [
+        {
+          "word": "synthetic biopolymer."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 172000,
+      "stopTimeMs": 174000,
+      "words": [
+        {
+          "word": "Rather than use the bio-steel material,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 174000,
+      "stopTimeMs": 177000,
+      "words": [
+        {
+          "word": "AmSilk wants to produce it for established brands"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 177000,
+      "stopTimeMs": 178000,
+      "words": [
+        {
+          "word": "who have expertise."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 178000,
+      "stopTimeMs": 181000,
+      "words": [
+        {
+          "word": "Adidas used it to create a concept shoe"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 181000,
+      "stopTimeMs": 184000,
+      "words": [
+        {
+          "word": "and Omega made a special edition watch strap."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 184000,
+      "stopTimeMs": 188000,
+      "words": [
+        {
+          "word": "Airbus are also exploring how it can be used in aviation."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 188000,
+      "stopTimeMs": 189000,
+      "words": [
+        {
+          "word": "They know their product."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 189000,
+      "stopTimeMs": 191000,
+      "words": [
+        {
+          "word": "We developed together with them."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 191000,
+      "stopTimeMs": 193000,
+      "words": [
+        {
+          "word": "The product has much higher quality"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 193000,
+      "stopTimeMs": 196000,
+      "words": [
+        {
+          "word": "in comparison to what we could do on our own."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 196000,
+      "stopTimeMs": 199000,
+      "words": [
+        {
+          "word": "The company has raised millions in venture capital,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 199000,
+      "stopTimeMs": 201000,
+      "words": [
+        {
+          "word": "but producing enough of the material"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 201000,
+      "stopTimeMs": 203000,
+      "words": [
+        {
+          "word": "is the biggest challenge."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 203000,
+      "stopTimeMs": 204000,
+      "words": [
+        {
+          "word": "Yes, it's very thin."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 204000,
+      "stopTimeMs": 205000,
+      "words": [
+        {
+          "word": "You need a lot of the fibre."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 205000,
+      "stopTimeMs": 206000,
+      "words": [
+        {
+          "word": "In a normal sports shoe,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 206000,
+      "stopTimeMs": 209000,
+      "words": [
+        {
+          "word": "there are more than 170 kilometres of this fibre"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 209000,
+      "stopTimeMs": 211000,
+      "words": [
+        {
+          "word": "processed into the yarn"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 211000,
+      "stopTimeMs": 213000,
+      "words": [
+        {
+          "word": "and later the fabric of the shoe."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 217000,
+      "stopTimeMs": 219000,
+      "words": [
+        {
+          "word": "The company says it has made hundreds of thousands"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 219000,
+      "stopTimeMs": 221000,
+      "words": [
+        {
+          "word": "of kilometres of fibre so far,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 221000,
+      "stopTimeMs": 224000,
+      "words": [
+        {
+          "word": "but scaling it up further will take time and money."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 224000,
+      "stopTimeMs": 226000,
+      "words": [
+        {
+          "word": "But like the orb-weaving spider"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 226000,
+      "stopTimeMs": 229000,
+      "words": [
+        {
+          "word": "which uses different silks for different parts of the web,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 229000,
+      "stopTimeMs": 231000,
+      "words": [
+        {
+          "word": "AmSilk is putting the spider silk proteins"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 231000,
+      "stopTimeMs": 232000,
+      "words": [
+        {
+          "word": "to use elsewhere."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 233000,
+      "stopTimeMs": 235000,
+      "words": [
+        {
+          "word": "In the beginning we had this great innovation."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 235000,
+      "stopTimeMs": 237000,
+      "words": [
+        {
+          "word": "We had thousands of opportunities"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 237000,
+      "stopTimeMs": 239000,
+      "words": [
+        {
+          "word": "how to use that for industry"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 239000,
+      "stopTimeMs": 242000,
+      "words": [
+        {
+          "word": "and this was a beautiful problem."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 246000,
+      "stopTimeMs": 249000,
+      "words": [
+        {
+          "word": "You can use it for different applications."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 249000,
+      "stopTimeMs": 251000,
+      "words": [
+        {
+          "word": "Everyone had the experience when he goes to the basement"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 251000,
+      "stopTimeMs": 252000,
+      "words": [
+        {
+          "word": "that there might be a spider's web"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 252000,
+      "stopTimeMs": 253000,
+      "words": [
+        {
+          "word": "and if it's an old house"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 253000,
+      "stopTimeMs": 255000,
+      "words": [
+        {
+          "word": "it might be there for hundreds of years"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 255000,
+      "stopTimeMs": 257000,
+      "words": [
+        {
+          "word": "and it's not degraded."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 257000,
+      "stopTimeMs": 259000,
+      "words": [
+        {
+          "word": "So the question is why?"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 259000,
+      "stopTimeMs": 263000,
+      "words": [
+        {
+          "word": "Microbes have a big problem sticking to the web."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 263000,
+      "stopTimeMs": 265000,
+      "words": [
+        {
+          "word": "If you're lost in the woods,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 265000,
+      "stopTimeMs": 266000,
+      "words": [
+        {
+          "word": "get a web,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 266000,
+      "stopTimeMs": 268000,
+      "words": [
+        {
+          "word": "you can use it as a wound coverage device,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 268000,
+      "stopTimeMs": 269000,
+      "words": [
+        {
+          "word": "you can wrap your food,"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 269000,
+      "stopTimeMs": 271000,
+      "words": [
+        {
+          "word": "you can actually prevent your food from rotting"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 271000,
+      "stopTimeMs": 273000,
+      "words": [
+        {
+          "word": "for a few days."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 273000,
+      "stopTimeMs": 275000,
+      "words": [
+        {
+          "word": "The material is a proteinaceous material."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 275000,
+      "stopTimeMs": 277000,
+      "words": [
+        {
+          "word": "We are all made out of proteins"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 277000,
+      "stopTimeMs": 280000,
+      "words": [
+        {
+          "word": "and our body responds very good to the protein"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 280000,
+      "stopTimeMs": 284000,
+      "words": [
+        {
+          "word": "and that's very suitable for a lot of medical devices."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 284000,
+      "stopTimeMs": 287000,
+      "words": [
+        {
+          "word": "We probably have more than 80 different variants"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 287000,
+      "stopTimeMs": 290000,
+      "words": [
+        {
+          "word": "of silk molecules that we can play with."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 290000,
+      "stopTimeMs": 292000,
+      "words": [
+        {
+          "word": "Some of them are very well suited"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 292000,
+      "stopTimeMs": 294000,
+      "words": [
+        {
+          "word": "for tissue regeneration."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 294000,
+      "stopTimeMs": 296000,
+      "words": [
+        {
+          "word": "Some of them are absolutely the opposite."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 296000,
+      "stopTimeMs": 298000,
+      "words": [
+        {
+          "word": "We really just at the beginning"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 298000,
+      "stopTimeMs": 301000,
+      "words": [
+        {
+          "word": "into understanding how this material has evolved"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 301000,
+      "stopTimeMs": 304000,
+      "words": [
+        {
+          "word": "to actually feature different kind of applications"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 304000,
+      "stopTimeMs": 306000,
+      "words": [
+        {
+          "word": "and that's exactly what we want."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 306000,
+      "stopTimeMs": 308000,
+      "words": [
+        {
+          "word": "Amsilk is building up production facilities"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 308000,
+      "stopTimeMs": 310000,
+      "words": [
+        {
+          "word": "to make its material at mass scale."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 310000,
+      "stopTimeMs": 313000,
+      "words": [
+        {
+          "word": "It's hoping to capitalize on the product's broad potential"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 313000,
+      "stopTimeMs": 315000,
+      "words": [
+        {
+          "word": "and take a lead in an industry"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 315000,
+      "stopTimeMs": 318000,
+      "words": [
+        {
+          "word": "harnessing the best attributes of natural substances."
+        }
+      ]
+    },
+    {
+      "startTimeMs": 318000,
+      "stopTimeMs": 320000,
+      "words": [
+        {
+          "word": "We are living in a time"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 320000,
+      "stopTimeMs": 322000,
+      "words": [
+        {
+          "word": "where materials made from proteins"
+        }
+      ]
+    },
+    {
+      "startTimeMs": 322000,
+      "stopTimeMs": 324000,
+      "words": [
+        {
+          "word": "will become more important every day."
+        }
+      ]
+    }
+  ]
+}

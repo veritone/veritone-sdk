@@ -1,10 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "OCR object is a special type of text object that has a position.",
-  "sourceEngineId": "742b5b8b-7cbb-41f7-8fb3-3747791b69f0",
-  "taskId": "25062409_aoqrboSU4kiIAPL",
-  "internalTaskId": "df03fc05-a2f1-4e30-871b-6d2277842092",
-  "generatedDateUTC": "2025-06-09T07:59:02.060710826Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-ocr.json",
+  "$example": "Object Contract: OCR (Optical Character Recognition)",
+  "$comment": "OCR is the extraction of text from images or video frames. OCR objects are a specialization of 'text' objects that include bounding polygons for the text. OCR objects MUST include 'text' and 'boundingPoly', and MAY include some other properties.",
   "series": [
     {
       "startTimeMs": 0,

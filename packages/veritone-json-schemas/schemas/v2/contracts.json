@@ -699,7 +699,7 @@
       }
     },
     "objectFingerprint": {
-      "$comment": "Objects of type 'fingerprint' are overloaded and can mean one of two things: 1) It could refer to a tracked object fingerprint which MUST include fingerprintVector, referenceId, label, and tags, and MAY include confidence, boundingPoly, uri and vendor 2) It could also refer to a watermark fingerprint which MUST have a label (which is the watermark code) and text and MAY have vendor",
+      "$comment": "Objects of type 'fingerprint' are overloaded and can mean one of two things: 1) It could refer to a tracked object fingerprint which MUST include 'fingerprintVector', 'referenceId', 'label', and 'tags', and MAY include 'confidence', boundingPoly, uri and vendor 2) It could also refer to a watermark fingerprint which MUST have a label (which is the watermark code) and text and MAY have vendor",
       "if": {
         "properties": {
           "type": {

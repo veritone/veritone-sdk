@@ -1,0 +1,133 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-namedentity.json",
+  "$comment": "Named entity objects refer to specific entities (individuals, locations, times, organizations, etc) in a document along with an identifying category for that entity. Named entities MUST include a 'label' for the entity and an 'objectCategory' for the identification, and MAY include some other properties.",
+  "object": [
+    {
+      "label": "Washington",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "AdministrativeRegion"
+        }
+      ]
+    },
+    {
+      "label": "CNN",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "TelevisionStation"
+        }
+      ]
+    },
+    {
+      "label": "Environmental Protection Agency",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "GovernmentAgency"
+        }
+      ]
+    },
+    {
+      "label": "Donald Trump",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Politician"
+        }
+      ]
+    },
+    {
+      "label": "Barack Obama",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Politician"
+        }
+      ]
+    },
+    {
+      "label": "Heart attack",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Disease"
+        }
+      ]
+    },
+    {
+      "label": "Asthma",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Disease"
+        }
+      ]
+    },
+    {
+      "label": "Environmental Protection Agency",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "GovernmentAgency"
+        }
+      ]
+    },
+    {
+      "label": "Barack Obama",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Politician"
+        }
+      ]
+    },
+    {
+      "label": "Glass Casket",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Band"
+        }
+      ]
+    },
+    {
+      "label": "Andrew R. Wheeler",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Politician"
+        }
+      ]
+    },
+    {
+      "label": "Environmental Protection Agency",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "GovernmentAgency"
+        }
+      ]
+    },
+    {
+      "label": "Barack Obama",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "Politician"
+        }
+      ]
+    },
+    {
+      "label": "Communist Party of the Philippines",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+          "class": "PoliticalParty"
+        }
+      ]
+    }
+  ]
+}

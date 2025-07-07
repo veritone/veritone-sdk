@@ -1,0 +1,32 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/cc-sentiment_sentiments.json",
+  "$comment": "Sentiment detected in a brief review. Sentiment analysis engines analyze text to determine the emotional tone behind it, classifying it as positive, negative, or neutral. Multiple sentiments may be detected in the same phrase or document with varying confidence levels.",
+  "validationContracts": [
+    "sentiment"
+  ],
+  "sentiment": {
+    "positiveValue": 0.793,
+    "positiveConfidence": 0.80,
+    "negativeValue": 0.121,
+    "negativeConfidence": 0.62
+  },
+  "object": [
+    {
+      "type": "text",
+      "text": "My overall experience was great!",
+      "sentence": 1,
+      "sentiment": {
+        "positiveValue": 0.793
+      }
+    },
+    {
+      "type": "text",
+      "text": "But I encountered one issue that left me feeling a little frustrated.",
+      "sentence": 2,
+      "sentiment": {
+        "negativeValue": 0.121
+      }
+    }
+  ]
+}

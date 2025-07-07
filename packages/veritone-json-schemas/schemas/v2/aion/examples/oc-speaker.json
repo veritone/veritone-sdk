@@ -1,11 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Speaker objects.",
-  "schemaId": "https://docs.veritone.com/schemas/vtn-standard/master.json",
-  "sourceEngineId": "02f4d710-cbcd-4534-98d6-a31522f8f4a6",
-  "taskId": "24083101_2FHaXhYPrtUgWkv",
-  "internalTaskId": "9193ba22-73eb-46fd-8646-3a692e2281d8",
-  "generatedDateUTC": "2024-08-01T07:04:01.50287487Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-speaker.json",
+  "$example": "Object Contract: Speaker",
+  "$comment": "Speaker identification processes audio files and identifies individual speakers. The speaker object MUST include a 'label' to identify the speaker. The object MAY include some other properties as well. Typically, the speakers are identified within the context of one audio file, and are labeled something like 'Speaker 1' and 'Speaker 2' or simply 'A' and 'B', but if an external reference is available, the speaker may be identified by name or entityId.",
   "series": [
     {
       "startTimeMs": 660,

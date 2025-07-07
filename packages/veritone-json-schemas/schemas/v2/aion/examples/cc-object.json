@@ -1,8 +1,8 @@
 {
-    "sourceEngineId": "e718f832-0f1b-4729-b661-ed42d56d367f",
-    "taskId": "24083209_aqm9teQohQSbXtr",
-    "internalTaskId": "7e8c3053-f6ea-4282-b4d9-5359d89f656d",
-    "generatedDateUTC": "2024-08-09T21:46:32.983890571Z",
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-object.json",
+    "$example": "Capability Contract: Objects",
+    "$comment": "Objects identified in a image. An object document only contains objects of type 'object'. Object detection engines identify various objects in images or video and label their position and attributes. Object detection engines are the most common engine types, and the 'object' contract is the most general contract for storing any generic object. There are also more specific object types such as 'face', 'motorVehicle', 'logo', 'barcode' that may be more appropriate for specific use cases.",
     "validationContracts": [
         "object"
     ],

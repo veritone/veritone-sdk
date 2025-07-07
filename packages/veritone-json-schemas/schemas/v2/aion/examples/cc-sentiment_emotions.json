@@ -1,10 +1,8 @@
 {
     "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-    "$comment": "Sentiment document example 2.",
-    "sourceEngineId": "76e005b3-1e5c-45c4-be45-c01b7371bb93",
-    "taskId": "24083314_zN3asNlhzhWvGaO",
-    "internalTaskId": "9d073713-6f1f-4c50-8b41-6260d83dc276",
-    "generatedDateUTC": "2024-08-14T18:47:57.377174216Z",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-sentiment_emotions.json",
+    "$example": "Capability Contract: Sentiment (emotions)",
+    "$comment": "Detecting emotions on a face. Emotion analysis engines analyze context or images to determine the emotions portrayed. In this document, a single face is analyzed and the confidence levels for each emotion are provided.",
     "validationContracts": [
         "sentiment"
     ],
@@ -18,11 +16,11 @@
             "emotions": [
                 {
                     "emotion": "CALM",
-                    "emotionConfidence": 0.7052734375
+                    "emotionConfidence": 0.0523681640625
                 },
                 {
                     "emotion": "HAPPY",
-                    "emotionConfidence": 0.0523681640625
+                    "emotionConfidence": 0.7052734375
                 },
                 {
                     "emotion": "SAD",

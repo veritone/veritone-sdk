@@ -1,10 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Summary document example.",
-  "sourceEngineId": "1abfe013-36a7-48cb-bc58-d0e925408674",
-  "taskId": "25051907_Dte4hfq1mAGcCD6",
-  "internalTaskId": "813476d7-f198-40fc-897c-8e4223f616f9",
-  "generatedDateUTC": "2025-05-07T19:41:45.405888865Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-summary.json",
+  "$example": "Capability Contract: Summary",
+  "$comment": "Summary of textual documents. This example contains a summary of a text discussing the development of spider silk in an industrial context.",
   "validationContracts": [
     "summary"
   ],

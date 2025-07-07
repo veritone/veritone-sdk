@@ -1,9 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Fingerprint of an audio watermark.",
-  "sourceEngineId": "b92f0241-37e7-474c-8d86-9d22bae7ea83",
-  "taskId": "22062630_TVLN7HVE9jCD8tN",
-  "internalTaskId": "544fd925-6dbd-49fd-a53b-8b7047217ece",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-fingerprint_watermark.json",
+  "$example": "Object Contract: Fingerprint (watermark)",
+  "$comment": "Fingerprint object used to identify unique audio or video content. A fingerprint for watermarked content MUST include a 'label' (the unique fingerprint) and 'text'.",
   "object": [
     {
       "label": "3337313135342d313630313834202020",

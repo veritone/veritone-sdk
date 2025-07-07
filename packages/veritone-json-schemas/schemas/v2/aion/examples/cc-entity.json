@@ -1,10 +1,8 @@
 {
     "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-    "$comment": "Entity document example.",
-    "sourceEngineId": "cb2b77b9-3478-4e51-844f-e4064384bb33",
-    "taskId": "24083314_3L2wPhJ7bsly688",
-    "internalTaskId": "7e59a451-2c41-40e9-a4da-6fbcf52c67e4",
-    "generatedDateUTC": "2024-08-14T18:38:44.503472884Z",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-entity.json",
+    "$example": "Capability Contract: Entity",
+    "$comment": "Entities found in a text message. An entity document contains objects of type 'namedEntity'. Entity extraction engines classify named entities, located in unstructured text, into predefined categories such as People, Organizations, or Locations.",
     "validationContracts": [
         "entity"
     ],

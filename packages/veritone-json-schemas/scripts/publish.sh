@@ -1,11 +1,36 @@
 #!/usr/bin/env bash
 
-###############################################################################
-# TODO(km): Implement publishing logic
-# Eventually, this script should handle the automatic publishing of the JSON 
-# schemas, but at the current time it is serving as a library of functions
-# that may be useful both for automated publishing and for manual publishing.
-###############################################################################
+# TODO(km):
+# - If no version number is provided, make one by incrementing the last version?
+# - If --release is specified, get the ITSM ticket number and verify it is approved before proceeding
+
+usage() {
+  cat <<EOF
+Usage: 
+        $(basename "$0") [--release] [--archive] [--upload] [--safe] [--force] <version>
+
+Where: 
+        <version> is the version to publish (e.g., v2.7)
+        --release: Will upload the archive to the schemas directory instead of the schemas/pre-release directory.
+        --archive: Create the archive directory, but do not upload it. An archive directory may only be created
+                if the version is, or will be, the latest minor version of its major version.
+        --upload: Upload an existing archive to the S3 bucket (do not create the archive if it does not exist)
+        --safe: Will not perform any actions, but will print what it would do.
+        --force: Required if you want to overwrite an existing version in the archive directory or S3 bucket
+
+This script is used to publish JSON schemas to the https://get.aiware.com/schemas/ directory. See the README.md
+file for details, but the general flow is as follows:
+1. Update the affected schema in the 'schema/vX' directory to include the desired changes.
+2. Update the CHANGELOG.md file in the same directory to include a reference to the new version.
+3. Update the index.md file in the 'veritone-json-schemas' directory to include a link to the new version.
+4. Run this script with the desired version to create an archive of the schemas and upload it to the pre-release
+    directory in the S3 bucket.
+5. Once the changes have been approved and are ready for the release, create an ITSM ticket.
+6. Once approved, re-run this script with the --release flag to upload the archive to the release directory in the S3 bucket.
+7. The archive will be available at https://get.aiware.com/schemas/<version>/
+EOF
+  return 0
+}
 
 # Reports an error
 error() {
@@ -26,6 +51,29 @@ cd_json_schemas() {
     return 1
   fi
   cd "$dir" || { error "cd_json_schemas: Failed to change directory to '$dir'"; return 1; }
+}
+
+# Verifies that the environment is set up correctly and all tools are available
+verify_environment() {
+  # verify docker is installed
+  command -v docker >/dev/null 2>&1 || {
+    error "docker is not installed. Please install Docker and try again."
+    return 1
+  }
+
+  # verify jq is installed
+  command -v jq >/dev/null 2>&1 || {
+    error "jq is not installed. Please install jq and try again."
+    return 1
+  }
+
+  # verify aws is installed
+  command -v aws >/dev/null 2>&1 || {
+    error "aws is not installed. Please install aws-cli and try again."
+    return 1
+  }
+
+  return 0
 }
 
 # Checks if the given version is a valid version string in the format vX.Y
@@ -94,9 +142,11 @@ assume_prod_role() {
 convert_markdown_to_html() {
   local in_file="$1"
 
-  local out_file="${in_file%.md}.html"
-
-  docker run --rm -v "$(pwd):/data" pandoc/core:3-alpine "$in_file" -o "$out_file" --standalone
+  local file_path=$(realpath "$(dirname "$in_file")")
+  local file_name=$(basename "$in_file")
+  local out_name="${file_name%.md}.html"
+  
+  docker run --rm -v "${file_path}:/data" pandoc/core:3-alpine "$file_name" -o "$out_name" --standalone
 }
 
 # Converts all "*.md" files in a directory to "*.html"
@@ -151,6 +201,93 @@ verify_version_links() {
   return 0
 }
 
+# Given an archive directory, updates the '$id' property in all JSON schema files to include the
+# version number from the directory name. The '$id' property is used to identify the schema and
+# must be unique for each version.
+#
+# Schema files are identified by the presence of a "$schema" property that references
+# "json-schema.org" (e.g., "$schema": "http://json-schema.org/draft-07/schema#").
+update_id_to_version() {
+  local dir="$1"          # like "archive/schemas/v2.7/examples"
+
+  # extract the version from the directory
+  local version="${dir#*/schemas/}"
+  version="${version%%/*}"
+
+  [[ -d "$dir" ]] || { error "Archive directory '$dir' does not exist."; return 1; }
+  is_version_valid "$version" || return 1
+
+  # Update the '$id' property in all JSON schema files
+  echo "... Updating \$id fields in '$dir' for version '$version'"
+  local schema_file
+  for schema_file in $(grep -Rl '"\$id"' "$dir"); do
+    local file_path="${schema_file#$dir/}"  # Remove the archive directory prefix
+    if [[ "$safe" ]]; then
+      echo SAFE: "sed 's|\"\$id\": *\"[^\"]*\"|\"\$id\": \"https://get.aiware.com/schemas/'$version'/'$file_path'\"|' \"$schema_file\""
+    fi
+    sed 's|"\$id": *"[^"]*"|"\$id": "https://get.aiware.com/schemas/'$version'/'$file_path'"|' "$schema_file" >"${schema_file}.tmp" || {
+      error "Failed to update \$id field in '$schema_file'"
+      return 1
+    }
+    mv "${schema_file}.tmp" "$schema_file"
+  done
+
+  return 0
+}
+
+# Creates an index of the examples in the given directory and writes it to the specified
+# markdown file. The index will include links to the examples. Each example file will be added
+# to the index file with a link to the example file and a description if it has a
+# "$example" property at the root.
+#
+# Usage: create_examples_index <index_file.md> <dir>
+# Where: <index_file.md> is the file to write the index to (e.g, examples.md)
+#        <dir> is the directory containing the examples (e.g., ./archive/schemas/v2.7)
+create_examples_index() {
+  local index_file="$1"  # like "archive/schemas/v2.7/examples.md"
+  local dir="$2"          # like "archive/schemas/v2.7"
+
+  [[ -z "$index_file" ]] && { error "create_examples_index: No index file specified"; return 1; }
+  [[ -z "$dir" ]] && { error "create_examples_index: No directory specified"; return 1; }
+  [[ -d "$dir" ]] || { error "create_examples_index: Directory '$dir' does not exist."; return 1; }
+
+  # Create the index file
+  echo "... Creating examples index in '$index_file'"
+  {
+    echo "# Examples"
+    echo ""
+    local cur_schema_name=
+    local example_file
+    for example_file in $(find "$dir" -name "*.json" | sort); do
+      # Get the title and description and skip non-public examples
+      local title=$(jq -r '."$example"' "$example_file" 2>/dev/null)
+      [[ "$title" == null ]] && continue
+
+      local description=$(jq -r '."$comment"' "$example_file" 2>/dev/null)
+      [[ "$description" == null ]] && description=""
+      
+      # If the directory name has changed, add a header for the new schema
+      local schema_name="$(basename "${example_file%%/examples/*}")"
+      if [[ "$cur_schema_name" != "$schema_name" ]]; then
+        cur_schema_name="$schema_name"
+        echo "## $cur_schema_name"
+        echo ""
+      fi
+
+      echo "- [**${title}**](./${example_file#$dir/})  " # <-- 2 spaces at end required for markdown formatting
+      echo "$description"
+
+      # Remove the "$example" property from the file
+      jq . "$example_file" | grep -v '"\$example"' >"${example_file}.tmp" && mv "${example_file}.tmp" "$example_file"
+    done
+  } > "$index_file" || {
+    error "create_examples_index: Failed to create index file '$index_file'"
+    return 1
+  }
+
+  return 0
+}
+
 # Creates an archive of a version of the JSON schemas. Given a version like "v2.7", copies the
 # relevant files from the major version schema (e.g., "v2") to a new archive schema directory
 # (e.g., "v2.7") and converts all "*.md" files to "*.html" (removing the "*.md" files).
@@ -183,26 +320,39 @@ create_archive() {
   ## Verify that the indexes and changelog are ready for the new version
   ##
 
-  echo "Verifying version history for $version exists"
+  #echo "Verifying version history for $version exists"
   verify_version_links "$source_dir" "$version" || return 1
 
   ##
   ## Verify the archive directory does not already exist, or remove it if --force is specified
   ##
 
-  # Verify the archive directory does not already exist
+  # Compute the archive directory
   local archive_schema_dir="archive/schemas"
   local archive_dir="$archive_schema_dir/$version"
-  echo "Creating archive for $version from '$source_dir' to '$archive_dir'"
+
+  ## Create a record of the original archive directory, then redirect to a temporary directory if --safe is specified
+  if [[ "$safe" ]]; then
+    archive_schema_dir="/tmp/archive/schemas"
+    archive_dir="$archive_schema_dir/$version"
+    echo "╭────────────────────────────────────────────────────────────────────────────────────────"
+    echo "│ SAFE MODE:"
+    echo "├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌"
+    echo "│ Because of --safe, the archive will be created in the directory '$archive_dir'"
+    echo "│ instead of './archive/schemas/$version'."
+    echo "╰──────────────────────────────────────────────────────────────────────────────────────────────"
+  fi
+
+  # Verify the archive directory does not already exist
+  echo "📀 Creating archive for $version from '$source_dir' to '$archive_dir'"
   if [[ "$force" ]]; then
     # If the archive directory exists, remove it
     [[ -d "$archive_dir" ]] && {
       echo "... Removing existing archive directory '$archive_dir'..."
       if [[ "$safe" ]]; then
         echo SAFE: "rm -rf \"$archive_dir\""
-      else
-        rm -rf "$archive_dir" || { error "Failed to remove existing archive directory '$archive_dir'"; return 1; }
       fi
+      rm -rf "$archive_dir" || { error "Failed to remove existing archive directory '$archive_dir'"; return 1; }
     }
   else
     [[ -d "$archive_dir" ]] && { error "Archive directory '$archive_dir' already exists. Use --force to overwrite"; return 1; }
@@ -216,62 +366,189 @@ create_archive() {
   local index_file="$source_dir/../index.md"
   if [[ "$safe" ]]; then
     echo SAFE: "cp \"$index_file\" \"$archive_schema_dir\""
-  else
-    cp "$index_file" "$archive_schema_dir" || {
-      error "create_archive: Failed to copy index file '$index_file'"
-      return 1
-    }
   fi
+  cp "$index_file" "$archive_schema_dir" || {
+    error "create_archive: Failed to copy index file '$index_file'"
+    return 1
+  }
 
   # Convert the index file to HTML
   echo "... Converting index file '$archive_schema_dir/index.md' to HTML"
   if [[ "$safe" ]]; then
     echo SAFE: "convert_markdown_to_html \"$archive_schema_dir/index.md\""
     echo SAFE: "rm \"$archive_schema_dir/index.md\""
-  else
-    convert_markdown_to_html "$archive_schema_dir/index.md" || {
-      error "Failed to convert index file '$archive_schema_dir/index.md' to HTML"
-      return 1
-    }
-    rm "$archive_schema_dir/index.md" || {
-      error "create_archive: Failed to remove index file '$archive_schema_dir/index.md'"
-      return 1
-    }
   fi
+  convert_markdown_to_html "$archive_schema_dir/index.md" || {
+    error "Failed to convert index file '$archive_schema_dir/index.md' to HTML"
+    return 1
+  }
+  rm "$archive_schema_dir/index.md" || {
+    error "create_archive: Failed to remove index file '$archive_schema_dir/index.md'"
+    return 1
+  }
 
   ##
   ## Create the archive directory for the new version
   ##
 
-  # Copy files from source to archive
-  echo "... Copying files for version '$version' from '$source_dir' to '$archive_dir'"
-  if [[ "$safe" ]]; then
-    echo SAFE: "mkdir -p \"$archive_dir\""
-    echo SAFE: "cp -r \"$source_dir\"/* \"$archive_dir/\""
-  else
-    mkdir -p "$archive_dir" || { error "create_archive: Failed to create archive directory '$archive_dir'"; return 1; }
-    cp -r "$source_dir"/* "$archive_dir/" || { error "create_archive: Failed to copy files to '$archive_dir'"; return 1; }
-  fi
+  # Copy all files as well as the public examples from the source directory to the archive directory
+  echo "... Copying files from '$source_dir' to '$archive_dir'"
+  local t
+  for t in $(find "$source_dir" -type f); do
+    # Skip invalid examples
+    [[ "$t" == *"/invalid-examples/"* ]] && continue
+
+    # Files in the examples directories must have an "$example" property to be included in the archive
+    [[ "$t" == *"/examples/"* ]] && {
+      [[ "$(jq -r '."$example"' "$t")" == null ]] && continue
+    }
+
+    # Copy the file to the archive directory
+    local target_file="$archive_dir/${t#$source_dir/}"
+    if [[ "$safe" ]]; then
+      echo SAFE: "cp -f \"$t\" \"$archive_dir/\""
+    fi
+    mkdir -p "$(dirname "$target_file")" && cp -f "$t" "$target_file" || {
+      error "create_archive: Failed to copy '$t' to '$archive_dir'"
+      return 1
+    }
+  done
+
+  # Update the $ids of all files to include the specific version number
+  update_id_to_version "$archive_dir"
+  
+
+  # Create an index of the examples in the archive directory
+  echo "... Creating index of examples in '$archive_dir/examples.md'"
+  create_examples_index "$archive_dir/examples.md" "$archive_dir" || {
+    error "create_archive: Failed to create examples index in '$archive_dir/examples/index.md'"
+    return 1
+  }
   
   # Convert documentation to HTML and remove markdown files
   echo "... Converting markdown files to HTML in '$archive_dir'"
   if [[ "$safe" ]]; then
     echo SAFE: "convert_all_markdown_to_html \"$archive_dir\""
     echo SAFE: "find \"$archive_dir\" -name \"*.md\" -exec rm -f {} \\;"
-  else
-    convert_all_markdown_to_html "$archive_dir" || return 1
-    find "$archive_dir" -name "*.md" -exec rm -f {} \; || { error "create_archive: Failed to remove markdown files in '$archive_dir'"; return 1; }
   fi
-
-  # Delete example directories (not ready for this yet)
-  # TODO(km): Remove this when we have examples ready
-  echo "... Removing example directories from '$archive_dir'"
-  if [[ ! "$safe" ]]; then
-    rm -rf "$archive_dir"/*/examples || { error "create_archive: Failed to remove '*/examples' directory in '$archive_dir'"; return 1; }
-    rm -rf "$archive_dir"/*/invalid-examples || { error "create_archive: Failed to remove '*/invalid-examples' directory in '$archive_dir'"; return 1; }
-  fi
+  convert_all_markdown_to_html "$archive_dir" || return 1
+  find "$archive_dir" -name "*.md" -exec rm -f {} \; || { error "create_archive: Failed to remove markdown files in '$archive_dir'"; return 1; }
 
   echo "Archive created successfully at '$archive_dir'"
+  return 0
+}
+
+# Uploads a single  file to an AWS S3 bucket. The file may be of any type, but the following
+# special processing is done:
+# - If the file is a JSON schema file (identified by the presence of a "$schema" property that
+#   references "json-schema.org"), the content type will be set to "application/schema+json"
+# - If the file is a JSON schema file, all '$ref' fields will be update to use a full URL
+#   instead of a relative path, so that the schema can be accessed directly by a validator.
+# - If the file is a JSON file with an '$id' property, the '$id' property will be updated to
+#   include the full URL to the file on get.aiware.com
+#
+# Usage: upload_file_to_getaiwarecom [--safe] <source_file> <target_dir>
+# Where: 
+#        <source_file> is the local file to upload (e.g., ./archive/schemas/v2.7/aion/examples/empty.json)
+#        <target_dir> is the target S3 directory (e.g., s3://aiware-prod-public/schemas/v2.7)
+upload_file_to_getaiwarecom() {
+  local dryrun=
+  # Handle flags
+  while [[ "$1" == --* ]]; do
+    case "$1" in
+      --safe|--dryrun) dryrun="--dryrun" ;;
+    esac
+    shift
+  done
+
+  local source_file="$1"
+  local target_dir="$2"
+
+  [[ -z "$source_file" ]] && { error "upload_dir_to_getaiwarecom: No source file specified"; return 1; }
+  [[ -z "$target_dir" ]] && { error "upload_dir_to_getaiwarecom: No target directory specified"; return 1; }
+  [[ -f "$source_file" ]] || { error "upload_dir_to_getaiwarecom: Source file '$source_file' does not exist."; return 1; }
+
+  # Determine information we'll need for doing the upload
+  local tmp_source_file="$tmp_dir/${source_file##*/}"    # like "/tmp/veritone-json-schemas/empty.json"
+  local target_version=$(basename "${target_dir}")       # like "v2.7" or "latest"
+  local version_rel_path="${source_file#*/schemas/v*/}"  # like "aion/examples/empty.json"
+  local target_file="${target_dir}/${version_rel_path}"  # like "s3://aiware-prod-public/schemas/v2.7/aion/examples/empty.json"
+  local version_url="https://get.aiware.com/${target_dir#*aiware-prod-public/}"  # like "https://get.aiware.com/schemas/v2.7"
+  local target_id="${version_url}/${version_rel_path}"  # like "https://get.aiware.com/schemas/v2.7/aion/examples/empty.json"
+
+  # Make a copy of the source file to upload (and determine content type)
+  local content_type_param=""   # default to letting AWS S3 determine the content type
+  case "${source_file##*.}" in
+    json)
+      # Copy and format the JSON file
+      jq . "$source_file" > "$tmp_source_file" || {
+        error "upload_file_to_getaiwarecom: Failed to copy '$source_file' to '$tmp_source_file'"
+        return 1
+      }
+
+      # If the file is a JSON schema file...
+      if grep -q '"\$schema".*json-schema\.org' "$tmp_source_file"; then
+        # Set the content type for a json schema file
+        content_type_param="--content-type=application/schema+json"
+        # Update the $ref fields to use the full URL to the referenced schema file.
+        # For example, replace 
+        #  "$ref": "../master.json#definitions/PREAMBLE" 
+        # with 
+        #  "$ref": "https://get.aiware.com/schemas/v2.7/master.json#definitions/PREAMBLE"
+        # (The following only works because we already ran this through jq so we know the
+        # format)
+        sed 's|"\$ref": "\.\.*/|"\$ref": "'"${version_url}"'/|' "$tmp_source_file" > "${tmp_source_file}.tmp" || {
+          error "upload_file_to_getaiwarecom: Failed to update \$ref fields in '$tmp_source_file'"
+          return 1
+        }
+        mv "${tmp_source_file}.tmp" "$tmp_source_file"
+      else  
+        # Is a JSON file, but not a schema file. This can only happen for an example file that
+        # is in the examples directory, like "archive/schemas/v2.7/aion/examples/empty.json"
+        echo "$source_file" | grep -q '/examples/' || {
+          error "upload_file_to_getaiwarecom: '$source_file' is not a JSON schema file or an example file."
+          return 1
+        }
+        
+        # Find the schema for this type "aion" which will be the only schema in the parent
+        # directory
+        local example_dir="$(dirname "$source_file")"                # like "archive/schemas/v2.7/aion/examples/"
+        local schema_dir="$(dirname "$example_dir")"                 # like "archive/schemas/v2.7/aion"
+        local schema_name="$(basename "$schema_dir")"                # like "aion"
+        local schema_file="$(basename "$schema_dir"/*.json)"         # like "schema.json" or "aion.json"
+        local schema="${version_url}/${schema_name}/${schema_file}"  # like "https://get.aiware.com/schemas/v2.7/aion/schema.json"
+
+        jq --arg schema "$schema" '."$schema" = $schema' "$tmp_source_file" > "${tmp_source_file}.tmp" || {
+          error "upload_file_to_getaiwarecom: Failed to update \$schema in '$tmp_source_file'"
+          return 1
+        }
+        mv "${tmp_source_file}.tmp" "$tmp_source_file"
+      fi
+
+      # For all JSON files...
+
+      # ... set the $id property to the full URL to the file
+      jq --arg id "$target_id" '."$id" = $id' "$tmp_source_file" > "${tmp_source_file}.tmp" || {
+        error "upload_file_to_getaiwarecom: Failed to update \$id in '$tmp_source_file'"
+        return 1
+      }
+      mv "${tmp_source_file}.tmp" "$tmp_source_file"
+      ;;
+    *)
+      # All other files are unchanged
+      cp "$source_file" "$tmp_source_file" || {
+        error "upload_file_to_getaiwarecom: Failed to copy '$source_file' to '$tmp_source_file'"
+        return 1
+      }
+      ;;
+  esac
+
+  # Upload the file to the target directory
+  aws s3 cp $dryrun $content_param "$tmp_source_file" "$target_file" || {
+    error "upload_file_to_getaiwarecom: Failed to upload '$source_file' to '$target_dir'"
+    return 1
+  }
+
   return 0
 }
 
@@ -313,42 +590,43 @@ upload_dir_to_getaiwarecom() {
     fi
   }
 
-  # Upload the directory to the S3 bucket
   echo "... Uploading directory '$source_dir' to '$target_dir'"
-  aws s3 cp $dryrun "$source_dir" "$target_dir" --recursive || {
-    error "upload_dir_to_getaiwarecom: Failed to upload '$source_dir' to '$target_dir'"
-    return 1
-  }
-
-  # Reupload the schema files with the correct content type. Schema files always declare a $schema
-  # value referencing json-schema.org
-  echo "... Updating the content type for the schema files to 'application/schema+json'"
   local schema_file
-  for schema_file in $(grep -Rl "\$schema.*json-schema\.org" "$source_dir"); do
-    # schema_file like "schemas/v2.7/aion/schema.json" -> target_file like "s3://aiware-prod-public/schemas/v2.7/aion/schema.json"
-    local target_file="${schema_file/${source_dir}\//${target_dir}/}"
-    aws s3 cp $dryrun "$schema_file" "$target_file" --content-type "application/schema+json" \
-      --no-guess-mime-type --metadata-directive="REPLACE" || {
-      error "Failed to update content type for '$target_file'"
-    }
+  for schema_file in $(find "$source_dir" -type f | sort -r); do
+    # Upload each file to the target directory
+    upload_file_to_getaiwarecom $dryrun "$schema_file" "$target_dir" || return 1
   done
 
   return 0
 }
 
-# Checks if the given version is the latest minor version of its major version.
-# For example, if the version is v2.7, it checks if there are no other v2.x versions
-# that are greater than v2.7. Returns 0 if it is the latest minor version, 1 otherwise.
+# Checks if the given version is or would be the latest minor version of its major version. If
+# the version does not exist, it checks if it would be the latest minor version if it were to be
+# created. 
+#
+# For example, if the version is v2.7, it checks if that version exists and is the highest v2.x
+# version, otherwise it checks if the highest version is v2.6 so v2.7 would be the latest minor
+# version.
+#
+# Returns 0 if it is the latest minor version, 1 otherwise.
 is_latest_minor_version() {
   local version="$1"
   is_version_valid "$version" || return
 
   local major_version="${version%%.*}"
 
+  # Find the latest minor version for the major version
   local schemas_dir="archive/schemas"
   local latest_version=$(ls "$schemas_dir" | grep "^$major_version\." | sort -V | tail -n 1)
   
-  [[ "$latest_version" == "$version" ]]
+  # If this is the latest minor version, return 0
+  [[ "$version" == "$latest_version" ]] && return 0
+
+  # If this is one more than the latest minor version, return 0
+  local incremented_latest_version="${major_version}.$(( ${latest_version#*.} + 1))"
+  [[ "$version" == "$incremented_latest_version" ]] && return 0
+
+  return 1
 }
 
 # Checks if the given version is the latest major version.
@@ -416,14 +694,14 @@ upload_to_getaiwarecom() {
   local target_dir="$target_schemas_dir/$version"
 
   # Upload the version index file to the target directory
-  echo "Uploading schema index file to '$target_schemas_dir/index.html'"
+  echo "⬆️ Uploading schema index file to '$target_schemas_dir/index.html'"
   aws s3 cp $dryrun "$schemas_dir/index.html" "$target_schemas_dir/index.html" || {
     error "Failed to upload index file to '$target_schemas_dir/index.html'"
     return 1
   }
 
   # Upload the archive directory to the target directory
-  echo "Uploading archive for version '$version' to '$target_dir'"
+  echo "⬆️ Uploading archive for version '$version' to '$target_dir'"
   upload_dir_to_getaiwarecom $force $safe "$archive_dir" "$target_dir" || return 1
 
   # If this is the latest of the minor versions, also upload to the major version directory
@@ -431,14 +709,15 @@ upload_to_getaiwarecom() {
     # Upload to the major version directory (e.g., v2.7 -> v2) (always overwriting it)
     local major_version="${version%.*}"
     local latest_target_dir="${target_dir/\/$version//$major_version}"
-    echo "... Uploading archive for version '$version' to '$latest_target_dir'"
+    echo "⬆️ Uploading archive for version '$version' to '$latest_target_dir'"
     upload_dir_to_getaiwarecom --force $safe "$archive_dir" "$latest_target_dir" || return 1
   }
 
   # If this is the latest major version, upload to the latest directory
   is_latest_major_version "$version" && {
+    # Upload to the latest directory (e.g., v2.7 -> latest) (always overwriting it)
     local latest_dir="${target_dir/\/$version//latest}"
-    echo "... Uploading archive for version '$version' to '$latest_dir'"
+    echo "⬆️ Uploading archive for version '$version' to '$latest_dir'"
     upload_dir_to_getaiwarecom --force $safe "$archive_dir" "$latest_dir" || return 1
   }
 
@@ -463,22 +742,34 @@ upload_to_getaiwarecom() {
 
 # main script logic
 {
+  # Prepare the temporary directory for storing JSON schemas
+  tmp_dir="/tmp/veritone-json-schemas"
+  [[ -d "$tmp_dir" ]] || mkdir -p "$tmp_dir"
+  rm -rf "$tmp_dir"/*
+
+
   safe=           # Will not perform any actions, but will print what it would do.
   force=          # Will overwrite the existing archive directory if it exists
   release=        # Will upload the archive to the release directory instead of the pre-release directory
-  archive_only=   # Will only create the archive without uploading
+  archive=        # Will create the archive directory for the version, but not upload it
+  upload=         # Will upload the archive to the S3 bucket
 
   # Handle flags
   while [[ "$1" == --* ]]; do
     case "$1" in
+      --help|-h) usage; exit 0 ;;
       --safe|--dryrun) safe="--safe" ;;
       --force) force="--force" ;;
       --release) release="--release" ;;
-      --archive-only) archive_only="--archive-only" ;;
+      --archive) archive="--archive" ;;
+      --upload) upload="--upload" ;;
       *) error "Unknown option: $1"; exit 1 ;;
     esac
     shift
   done
+
+  # If neither archive nor upload is specified, default to both
+  [[ -z "$archive" && -z "$upload" ]] && { archive="--archive"; upload="--upload"; }
 
   # TODO(km): this should be smarter about some things like:
   # - Version number should be a placeholder in all the files since we don't know it yet
@@ -495,13 +786,22 @@ upload_to_getaiwarecom() {
     exit 1
   fi
 
-  # Create the archive for the version
-  create_archive $force $safe "$version" || exit
-  [[ "$archive_only" ]] && { 
-    echo "Archive created successfully at 'archive/schemas/$version'"
-    exit 0
+  verify_environment || exit
+
+  # Create the archive for the version only if --archive is specified and the version is (or
+  # would be) the latest minor version
+  [[ "$archive" ]] && {
+    if is_latest_minor_version "$version"; then
+      create_archive $force $safe "$version" || exit
+    else
+      echo "⏭️ Version $version is not the latest minor version of ${version%%.*}. Skipping archive creation."
+    fi
   }
 
-  # Upload the archive to the S3 bucket
-  upload_to_getaiwarecom $safe $force $latest $release "$version" || exit
+  # Upload the archive to the S3 bucket only if --upload is specified
+  [[ "$upload" ]] && {
+    upload_to_getaiwarecom $safe $force $latest $release "$version" || exit
+  }
+
+  exit 0
 }

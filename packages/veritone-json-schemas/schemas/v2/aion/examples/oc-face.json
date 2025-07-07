@@ -1,6 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Face object with many supporting fields",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-face.json",
+  "$example": "Object Contract: Face",
+  "$comment": "Face object with many supporting fields. Objects of type 'face' MUST include a 'boundingPoly', SHOULD include 'label', 'confidence', and MAY include select other fields related to facial features.",
   "series": [
     {
       "startTimeMs": 0,

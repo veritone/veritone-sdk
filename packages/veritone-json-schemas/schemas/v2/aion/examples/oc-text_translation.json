@@ -1,13 +1,12 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Text objects from a bulk document translation.",
-  "sourceEngineId": "d5e2acce-b572-4701-b51e-29cb59532c14",
-  "taskId": "24010211_GBmt7Q7AVsx4xYx",
-  "generatedDateUTC": "2025-11-07T01:51:33.850138195Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-translation.json",
+  "$example": "Object Contract: Text (translation)",
+  "$comment": "Text objects may refer to text translated from another file, like in the case of translation of a Memo from German to English.",
   "object": [
     {
       "type": "text",
-      "text": "Hi Hans,\n\nin worst case we will lose our complete testing ability for several moths when we fail in the test Please think the strategy and support us\n\nMany thanks in advance!\nSincerely\n\nVance",
+      "text": "Hi Hans,\n\nin worst case we will lose our complete testing ability for several moths when we fail in the test. Please think the strategy and support us\n\nMany thanks in advance!\nSincerely\n\nVance",
       "language": "en"
     }
   ]

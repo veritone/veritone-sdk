@@ -1,10 +1,8 @@
 {
     "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-    "$comment": "Language document example: Contains the detected language of a document, plus lists confidence of other languages checked.",
-    "sourceEngineId": "a1095ed0-5c2f-467c-a60f-74b53a3f9ced",
-    "taskId": "24125013_x9cvDlcerAPnxyg",
-    "internalTaskId": "59145b5c-5855-4470-a980-a339642543f0",
-    "generatedDateUTC": "2024-12-13T18:36:55.520235233Z",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-language.json",
+    "$example": "Capability Contract: Language",
+    "$comment": "The language detected in a document or media file. The only required information is the 'language' at the root, which must be an ISO-639-1 language code. This document also includes an optional list of other languages checked, along with their confidence scores.",
     "validationContracts": [
         "language"
     ],

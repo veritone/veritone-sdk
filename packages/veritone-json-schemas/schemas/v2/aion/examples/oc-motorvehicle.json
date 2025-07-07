@@ -1,6 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "A motor vehicle object with recommended properties.",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-motorvehicle.json",
+  "$example": "Object Contract: Motor vehicle",
+  "$comment": "This document describes the Dukes of Hazzard's General Lee with the optional license plate. A motor vehicle MUST include 'motorVehicle' property with at least one identifying property in it, and MAY include other properties.",
   "object": [
     {
       "type": "motorVehicle",

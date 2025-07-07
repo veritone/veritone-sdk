@@ -1,6 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "A license plate object with recommended properties.",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-licenseplate.json",
+  "$example": "Object Contract: License plate",
+  "$comment": "This document describes the license plate of the Dukes of Hazzard's General Lee. A license plate object MUST include 'licensePlate' property, and MAY include some other properties. If the license plate is detected attached to an identifiable vehicle, then 'motorVehicle' type should be used instead.",
   "object": [
     {
       "type": "licensePlate",

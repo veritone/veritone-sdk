@@ -1,6 +1,8 @@
 {
     "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-    "$comment": "Media Translated document containing assets translated into two languages.",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-mediatranslated.json",
+    "$example": "Capability Contract: Media-translated",
+    "$comment": "Translations of full media files. When media is translated, the translation may be attached to TDOs (temporal data objects) as asset documents. The engine stores references to these translation assets in a 'media' list, which identifies the language of each document. In this example, literal translations are also stored as optional 'text' objects, which makes this document also fulfill the Text Capability Contract.",
     "validationContracts": [
         "media-translated",
         "text"

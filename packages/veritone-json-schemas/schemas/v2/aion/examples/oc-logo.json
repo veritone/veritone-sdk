@@ -1,10 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Logo objects with required properties.",
-  "sourceEngineId": "18a9c4ca-ec3a-4d20-8985-c606f5e9eb89",
-  "taskId": "23062309_jtsvNuMJzqxwGp7",
-  "internalTaskId": "f9fd2630-1b37-4616-8a54-c46cc0354937",
-  "generatedDateUTC": "2023-06-09T22:40:27.751171512Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-logo.json",
+  "$example": "Object Contract: Logo",
+  "$comment": "This document describes the logos found in a test document. A logo object MUST include 'label', 'confidence' and 'boundingPoly', and MAY include some other properties.",
   "series": [
     {
       "startTimeMs": 48000,

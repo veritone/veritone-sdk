@@ -146,14 +146,14 @@ Each example should start with a `$schema` for the relevant version of the examp
    ...
 }
 
-In addition, if you want an example to be uploaded to the public schema page, then the `$comment` MUST have the format
+In addition, if you want an example to be uploaded to the public schema page, then the example document must 
+contain an `"$example"` property that contains the title of the example, and the `"$comment"` will become
+the description of the example.
 
 ```
-  "$comment": "PublicExample: Audio transcription with disfluency detectaion. Disfluencies are non-word sounds like "um", "uh", coughs and sneezes.",
+  "$example": "Audio transcription with disfluency detectaion",
+  "$comment": "Disfluencies are non-word sounds like "um", "uh", coughs and sneezes.",
 ```
-
-The leading "PublicExample:" tag flags this example as a public example file, and the first sentence 
-(everything to the first period) will be the example's description in the table of contents.
 
 ### Running tests
 

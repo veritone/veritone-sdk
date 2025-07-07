@@ -1,10 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Sound objects.",
-  "sourceEngineId": "95770be9-9f17-4beb-b696-24fea4091d70",
-  "taskId": "24031115_v1a9IHLFQBEA51H",
-  "internalTaskId": "044128b7-1d4e-49c1-8a4b-374172b79be6",
-  "generatedDateUTC": "2024-03-15T22:01:38.100903236Z",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-sound.json",
+  "$example": "Object Contract: Sound",
+  "$comment": "Sound identification may include music, sound effects, other audio content like silence or static. Sound objects MUST include a 'label', SHOULD include 'confidence', and MAY include some other properties.",
   "series": [
     {
       "startTimeMs": 61320,

@@ -173,18 +173,65 @@
 Schemas</h1>
 <p>This directory contains the standard JSON schemas used by
 Veritone.</p>
-<h2 id="ai-object-notation-aion-schema">AI Object Notation (AION)
-Schema</h2>
+<h2 id="ai-object-notation-aion">AI Object Notation (AION)</h2>
 <p>AION (pronounced “eye-on”) is a universal schema defintion that
 describes all Veritone object notation instance structures.</p>
+<h3 id="contracts">Contracts</h3>
 <p>In addition to structural definitions, the AION schema also includes
 conditional contracts that enforce certain requirements on document
 capabilities as a whole (triggered by the listed
 <code>validationContracts</code>) and object contents (triggered by an
 <code>object</code>s <code>type</code> field).</p>
+<p>The purpose of these contracts is to ensure that all engines that are
+generating data for the same type of cognition processing (like
+logo-detection, face-detection, transcription, etc) adhere to some basic
+rules for how to store data for that type of data. This ensures that the
+data from these engines remains interoperable within the aiWARE
+ecosystem. For example, we don’t want some OCR engines to store their
+data in <code>labels</code> and other OCR engines to store their data in
+<code>text</code> fields, and still others storing data in the
+<code>objectCategory</code> structures as this would make it difficult
+to reliably search for OCR-recognized text.</p>
+<h3 id="capability-contracts">Capability Contracts</h3>
+<p>Capability contracts describe validation contracts for the whole
+document. A capability contract is invoked by including a
+<code>validatenContracts</code> array in the document with one of the
+capability names like <code>concept</code>, <code>sentiment</code>,
+<code>summary</code>, <code>language</code>, etc. When you invoke a
+capability contract, this may impose both requirements and restrictions
+on what data you may include in the document.</p>
+<p>For example, the <code>sentiment</code> contract requires you to
+include either a <code>sentiment</code> or <code>emotions</code> record
+for the whole document or every object in the document. The
+<code>transcript</code> contract requires a time-<code>series</code>
+array containing when <code>words</code> have been spoken.</p>
+<p>Capabiliy contractst are optional… if you do not include a
+<code>validationContracts</code> field, then no capability contracts
+apply.</p>
+<h3 id="object-contracts">Object Contracts</h3>
+<p>Where capability contracts impose requirements on the whole document,
+object contracts impose requirements only on specific objects. If an
+object has a type like <code>licensePlate</code> then that contract
+requires the object to contain a <code>licensePlate</code> record that
+contains a license plate <code>number</code>. Likewise, if an object has
+a type <code>face</code> then that object must describe a polygon that
+identifies the location of the face.</p>
+<p>However, a document can contain <code>licensePlate</code> objects,
+<code>face</code> objects, and any other kinds of objects all mixed
+together, and the object contract only imposes requirements on each
+object in isolation regardless of other objects around it (as opposed to
+capability contracts which often limit the document to only containing
+one type of object.)</p>
+<p>Object contracts are not optional… every object must have a
+<code>type</code> and that automatically imposes the contract for that
+type of object on the object contents.</p>
+<h2 id="validation">Validation</h2>
+<h2 id="aion-schema">AION Schema</h2>
 <ul>
 <li><a href="./aion/schema.json">AI Object Notation (AION)</a></li>
 </ul>
+<h2 id="examples">Examples</h2>
+<p><a href="./examples.html">Examples</a></p>
 <h2 id="definitions">Definitions</h2>
 <p>Definitions referenced by other schemas. These files do not contain
 any schema requirements themselves, only <code>definitions</code> that
@@ -198,7 +245,7 @@ Contains the conditional contracts that are used by the AION schema to
 validate that requirements for capabilities and object are met.</li>
 </ul>
 <h2 id="version-history">Version History</h2>
-<p><a href="./CHANGELOG.html">CHANGELOG</a></p>
+<p><a href="./CHANGELOG.html">Version History</a></p>
 <style>
 body { max-width: 72em !important; }
 </style>

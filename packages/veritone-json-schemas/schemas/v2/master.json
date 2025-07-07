@@ -5,15 +5,42 @@
   "description": "Standard engine output at Veritone",
   "type": "object",
   "definitions": {
+    "IDENTITY": {
+      "description": "Fields to identify this document or parsing schema. Note these fields may be stripped by the aiWARE processing pipeline, so they should not be relied upon to persist data in the final document. If you need to persist these fields, use another field, like 'vendor'.",
+      "$comment": "All fields starting with '$' are for document metadata, and should be ignored by processors",
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "description": "The schema used to validate this document",
+          "type": "string",
+          "examples": [
+            "https://get.aiware.com/schemas/v2/aion/schema.json"
+          ]
+        },
+        "$id": {
+          "description": "The optional unique ID of this document",
+          "type": "string",
+          "examples": [
+            "https://get.aiware.com/schemas/v2/aion/schema.json#document-12345"
+          ]
+        },
+        "$comment": {
+          "$ref": "#/definitions/comment"
+        }
+      },
+      "patternProperties": {
+        "\\$.*": {
+          "description": "Any other metadata field may be added here, but must start with a '$' character, and will be ignored by processors",
+          "type": "string"
+        }
+      }
+    },
     "PREAMBLE": {
       "description": "Metadata for this document: creator, creation time, schemas, etc",
       "type": "object",
       "properties": {
         "schemaId": {
           "$ref": "#/definitions/schemaId"
-        },
-        "$comment": {
-          "$ref": "#/definitions/comment"
         },
         "sourceEngineId": {
           "description": "ID of the engine that generated this file (provided by Veritone)",
@@ -22,7 +49,10 @@
         "sourceEngineName": {
           "description": "Name of the engine that generated this file (provided by Veritone)",
           "type": "string",
-          "examples": ["capio", "Transcription - Medical V3"]
+          "examples": [
+            "capio",
+            "Transcription - Medical V3"
+          ]
         },
         "taskPayload": {
           "$ref": "#/definitions/taskPayload"
@@ -111,7 +141,9 @@
     "schemaId": {
       "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
       "type": "string",
-      "examples": ["https://get.aiware.com/schemas/aion/aion.json"]
+      "examples": [
+        "https://get.aiware.com/schemas/aion/aion.json"
+      ]
     },
     "guid": {
       "description": "A globally unique ID. Typically a UUID in the 8-4-4-4-12 character format, but it doesn't have to be a UUID",
@@ -125,7 +157,9 @@
       "description": "DateTime (ISO8601)",
       "type": "string",
       "format": "date-time",
-      "examples": ["2017-12-08T17:19:02Z"]
+      "examples": [
+        "2017-12-08T17:19:02Z"
+      ]
     },
     "validationContracts": {
       "description": "Defines which capability validation contract(s) should be used to validate this content. May be one of the listed types or the schemaId of a Structured Data Object. If a schemaId is present, the object must contain 'structuredData' with the schemaId as a property.",
@@ -157,7 +191,9 @@
     },
     "validated": {
       "description": "When included, requires that the document declare it's validation contracts",
-      "required": ["validationContracts"]
+      "required": [
+        "validationContracts"
+      ]
     },
     "processedStats": {
       "description": "Statistics about resources used to create the data in this file",
@@ -166,15 +202,21 @@
         "processedBytes": {
           "description": "Optional number of bytes of data processed",
           "type": "string",
-          "examples": ["5532344"]
+          "examples": [
+            "5532344"
+          ]
         },
         "processedMediaSeconds": {
           "description": "Optional total length of audio or video media processed in seconds",
           "type": "string",
-          "examples": ["750"]
+          "examples": [
+            "750"
+          ]
         }
       },
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "taskPayload": {
       "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone). Task payload will be a combination of attributes found on https://docs.veritone.com/#/developer/adapters/quick-start/step-2?id=constructing-a-batch-pull-adapter and any default custom fields (https://docs.veritone.com/#/developer/engines/custom-fields/?id=custom-fields)",
@@ -192,31 +234,69 @@
       "items": {
         "type": "object",
         "properties": {
-          "key": { "type": "string" },
-          "value": { "type": "string", "default": "true" },
-          "score": { "type": "number", "minimum": 0, "maximum": 1 }
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "default": "true"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         },
-        "required": ["key"],
+        "required": [
+          "key"
+        ],
         "examples": [
-          { "key": "foo", "value": "bar", "score": 0.13 },
-          { "key": "gender", "value": "female" },
-          { "key": "groundTruth" },
-          { "key": "moderation", "value": "nudity" },
-          { "key": "moderation", "value": "fakeNews", "score": 0.84 }
+          {
+            "key": "foo",
+            "value": "bar",
+            "score": 0.13
+          },
+          {
+            "key": "gender",
+            "value": "female"
+          },
+          {
+            "key": "groundTruth"
+          },
+          {
+            "key": "moderation",
+            "value": "nudity"
+          },
+          {
+            "key": "moderation",
+            "value": "fakeNews",
+            "score": 0.84
+          }
         ]
       }
     },
     "collateIndex": {
       "description": "Collation order used to preserve ordering, especially when parallel processing. Items with lower collate values come before items with higher collate values. Indexes do not have to be sequential, but may not be duplicated. You may use whatever integers are convenient: indexes, frame/page numbers, byte offsets, etc.",
       "type": "integer",
-      "examples": [0, 1, 2, 18673, -22]
+      "examples": [
+        0,
+        1,
+        2,
+        18673,
+        -22
+      ]
     },
     "confidence": {
       "description": "Confidence expressed as a range of 0.0 (not confident) to 1.0 (maximum confidence)",
       "type": "number",
       "minimum": 0,
       "maximum": 1,
-      "examples": [0.0, 1.0, 0.63, 0.122227]
+      "examples": [
+        0.0,
+        1.0,
+        0.63,
+        0.122227
+      ]
     },
     "point": {
       "description": "A point describing 2 dimensional coordinates in the media.",
@@ -227,17 +307,28 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "examples": [0.0, 0.4, 1.0]
+          "examples": [
+            0.0,
+            0.4,
+            1.0
+          ]
         },
         "y": {
           "description": "A vertical coordinate as a fraction of the y axis:  0.0 (top edge) to 1.0 (bottom edge)",
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "examples": [0.0, 0.4, 1.0]
+          "examples": [
+            0.0,
+            0.4,
+            1.0
+          ]
         }
       },
-      "required": ["x", "y"],
+      "required": [
+        "x",
+        "y"
+      ],
       "additionalProperties": false
     },
     "boundingPoly": {
@@ -265,18 +356,28 @@
           "class": {
             "type": "string",
             "description": "The class of the object recognized.",
-            "examples": ["animal", "mammal", "jerseyNumber", "science & technology", "religion"]
+            "examples": [
+              "animal",
+              "mammal",
+              "jerseyNumber",
+              "science & technology",
+              "religion"
+            ]
           },
           "@id": {
             "type": "string",
             "description": "Private id variable used by the engine to refer to its internal dataset",
-            "examples": ["kg:/m/0dl567"]
+            "examples": [
+              "kg:/m/0dl567"
+            ]
           },
           "confidence": {
             "$ref": "#/definitions/confidence"
           }
         },
-        "required": ["class"],
+        "required": [
+          "class"
+        ],
         "additionalProperties": false
       }
     },
@@ -373,12 +474,20 @@
             },
             "mode": {
               "type": "string",
-              "enum": ["enroll", "verify"]
+              "enum": [
+                "enroll",
+                "verify"
+              ]
             },
             "region": {
               "description": "Region of source a match was found",
               "type": "string",
-              "enum": ["left", "right", "top", "bottom"]
+              "enum": [
+                "left",
+                "right",
+                "top",
+                "bottom"
+              ]
             },
             "entityIdentifierId": {
               "description": "The unique ID of recognized entity identifier (for example, a specific image).",
@@ -395,27 +504,65 @@
               "$ref": "#/definitions/tags"
             }
           },
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "additionalProperties": false
         },
-        { "$ref": "./contracts.json#/definitions/objectAnomaly" },
-        { "$ref": "./contracts.json#/definitions/objectBarcode" },
-        { "$ref": "./contracts.json#/definitions/objectConcept" },
-        { "$ref": "./contracts.json#/definitions/objectFace" },
-        { "$ref": "./contracts.json#/definitions/objectFaceVerification" },
-        { "$ref": "./contracts.json#/definitions/objectFacialFeatures" },
-        { "$ref": "./contracts.json#/definitions/objectFingerprint" },
-        { "$ref": "./contracts.json#/definitions/objectKeyword" },
-        { "$ref": "./contracts.json#/definitions/objectLicensePlate" },
-        { "$ref": "./contracts.json#/definitions/objectLogo" },
-        { "$ref": "./contracts.json#/definitions/objectMotorVehicle" },
-        { "$ref": "./contracts.json#/definitions/objectNamedEntity" },
-        { "$ref": "./contracts.json#/definitions/objectOcr" },
-        { "$ref": "./contracts.json#/definitions/objectObject" },
-        { "$ref": "./contracts.json#/definitions/objectSound" },
-        { "$ref": "./contracts.json#/definitions/objectSpeaker" },
-        { "$ref": "./contracts.json#/definitions/objectSpeakerVerification" },
-        { "$ref": "./contracts.json#/definitions/objectText" }
+        {
+          "$ref": "./contracts.json#/definitions/objectAnomaly"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectBarcode"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectConcept"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectFace"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectFaceVerification"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectFacialFeatures"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectFingerprint"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectKeyword"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectLicensePlate"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectLogo"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectMotorVehicle"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectNamedEntity"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectOcr"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectObject"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectSound"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectSpeaker"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectSpeakerVerification"
+        },
+        {
+          "$ref": "./contracts.json#/definitions/objectText"
+        }
       ]
     },
     "objectResultType": {
@@ -484,7 +631,9 @@
                 "type": "boolean"
               }
             },
-            "required": ["word"],
+            "required": [
+              "word"
+            ],
             "additionalProperties": false
           },
           "uniqueItems": true
@@ -496,12 +645,17 @@
           },
           "then": {
             "items": {
-              "required": ["confidence", "utteranceLength"]
+              "required": [
+                "confidence",
+                "utteranceLength"
+              ]
             },
             "contains": {
               "type": "object",
               "properties": {
-                "bestPath": { "const": true}
+                "bestPath": {
+                  "const": true
+                }
               }
             },
             "maxContains": 1,
@@ -515,17 +669,30 @@
       "type": "integer",
       "minimum": 1,
       "default": 1,
-      "examples": [1, 2]
+      "examples": [
+        1,
+        2
+      ]
     },
     "language": {
       "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt.",
       "type": "string",
-      "examples": ["en", "en-US", "fr", "ko"]
+      "examples": [
+        "en",
+        "en-US",
+        "fr",
+        "ko"
+      ]
     },
     "speakerId": {
       "description": "Identification of a speaker. Could be the source of the speaker (e.g. which channel contained the speech) or the identity of a speaker",
       "type": "string",
-      "examples": ["channel0", "speaker1", "M1", "<libraryId>:<entityId>"]
+      "examples": [
+        "channel0",
+        "speaker1",
+        "M1",
+        "<libraryId>:<entityId>"
+      ]
     },
     "seriesItem": {
       "description": "A time-slice within audio or video media and it's associated data.",
@@ -538,13 +705,17 @@
           "description": "The start time relative to the start of the media asset in milliseconds.",
           "type": "integer",
           "minimum": 0,
-          "examples": [0]
+          "examples": [
+            0
+          ]
         },
         "stopTimeMs": {
           "description": "The stop time relative to the start of the media asset in milliseconds.",
           "type": "integer",
           "minimum": 0,
-          "examples": [3000]
+          "examples": [
+            3000
+          ]
         },
         "tags": {
           "$ref": "#/definitions/tags"
@@ -595,7 +766,10 @@
           "type": "string"
         }
       },
-      "required": ["startTimeMs", "stopTimeMs"],
+      "required": [
+        "startTimeMs",
+        "stopTimeMs"
+      ],
       "additionalProperties": false
     },
     "medias": {
@@ -626,7 +800,9 @@
           "$ref": "#/definitions/language"
         }
       },
-      "required": ["assetId"]
+      "required": [
+        "assetId"
+      ]
     },
     "page": {
       "description": "The page on which the text or insight appears",
@@ -662,7 +838,9 @@
           "$ref": "#/definitions/confidence"
         }
       },
-      "required": ["confidence"]
+      "required": [
+        "confidence"
+      ]
     },
     "sentiment": {
       "description": "General sentiment, either positive (I like you) or negative (I hate you) or a mixture (I hate that I like you).",
@@ -692,16 +870,28 @@
         }
       },
       "anyOf": [
-        { "required": ["positiveValue"] },
-        { "required": ["negativeValue"] }
+        {
+          "required": [
+            "positiveValue"
+          ]
+        },
+        {
+          "required": [
+            "negativeValue"
+          ]
+        }
       ],
       "additionalProperties": false,
       "dependencies": {
         "positiveConfidence": {
-          "required": ["positiveValue"]
+          "required": [
+            "positiveValue"
+          ]
         },
         "negativeConfidence": {
-          "required": ["negativeValue"]
+          "required": [
+            "negativeValue"
+          ]
         }
       }
     },
@@ -716,39 +906,59 @@
             "type": "number",
             "minimum": -90.0,
             "maximum": 90.0,
-            "examples": [38.8951, -22.9068]
+            "examples": [
+              38.8951,
+              -22.9068
+            ]
           },
           "longitude": {
             "description": "Longitude in decimal degrees. East coordinates are positve, and west coordinates can be either negative (preferred) or >180 (e.g. -45=315)",
             "type": "number",
             "minimum": -180.0,
             "maximum": 360.0,
-            "examples": [78.0421, -104.9903, 213.123]
+            "examples": [
+              78.0421,
+              -104.9903,
+              213.123
+            ]
           },
           "precision": {
             "description": "Precision of coordinate in meters",
             "type": "number",
-            "examples": [100]
+            "examples": [
+              100
+            ]
           },
           "direction": {
             "description": "Azimuth the point of view is facing (if no velocity) or traveling (if velocity). 0/360 = north, 90 = east, 180 = south, 270 = west",
             "type": "number",
             "minimum": 0,
             "maximum": 360,
-            "examples": ["10.1"]
+            "examples": [
+              "10.1"
+            ]
           },
           "velocity": {
             "description": "Speed the point of view is traveling in meters/second",
             "type": "number",
-            "examples": [14, 634.6]
+            "examples": [
+              14,
+              634.6
+            ]
           },
           "altitude": {
             "description": "Altitude above sea level in meters",
             "type": "number",
-            "examples": [11000, -27]
+            "examples": [
+              11000,
+              -27
+            ]
           }
         },
-        "required": ["longitude", "latitude"],
+        "required": [
+          "longitude",
+          "latitude"
+        ],
         "additionalProperties": false
       }
     },
@@ -759,7 +969,11 @@
         "properties": {
           "emotion": {
             "type": "string",
-            "examples": ["happy", "angry", "surprised"]
+            "examples": [
+              "happy",
+              "angry",
+              "surprised"
+            ]
           },
           "emotionValue": {
             "description": "Strength of the emotion from 0.0 (none) to 1.0 (overwhelming)",
@@ -772,7 +986,9 @@
             "$ref": "#/definitions/confidence"
           }
         },
-        "required": ["emotion"]
+        "required": [
+          "emotion"
+        ]
       }
     },
     "age": {
@@ -798,7 +1014,12 @@
         "number": {
           "description": "License plate number. No hyphens, spaces or other punctuation",
           "type": "string",
-          "examples": ["GAV1064", "CNH320", "131D92", "IMGROOT"]
+          "examples": [
+            "GAV1064",
+            "CNH320",
+            "131D92",
+            "IMGROOT"
+          ]
         },
         "confidence": {
           "$ref": "#/definitions/confidence"
@@ -806,13 +1027,19 @@
         "issuer": {
           "description": "Region or authority that issued the license plate. List known from largest to smallest separated by hyphens: i.e. COUNTRY-STATE-COUNTY. Use ISO-3166-1:alpha-2 and ISO-3166-2 codes.",
           "type": "string",
-          "examples": ["US-NY", "US-GA-HAZZARD", "IE-LD"]
+          "examples": [
+            "US-NY",
+            "US-GA-HAZZARD",
+            "IE-LD"
+          ]
         },
         "issuerConfidence": {
           "$ref": "#/definitions/confidence"
-        }    
+        }
       },
-      "required": ["number"]
+      "required": [
+        "number"
+      ]
     },
     "motorVehicle": {
       "description": "A licensed motorized vehicle (car or truck)",
@@ -821,11 +1048,17 @@
       "properties": {
         "make": {
           "type": "string",
-          "examples": ["Hyundai", "Ford"]
+          "examples": [
+            "Hyundai",
+            "Ford"
+          ]
         },
         "model": {
           "type": "string",
-          "examples": ["Elantra", "F-250 Super Duty"]
+          "examples": [
+            "Elantra",
+            "F-250 Super Duty"
+          ]
         },
         "makeModelConfidence": {
           "$ref": "#/definitions/confidence"
@@ -833,7 +1066,12 @@
         "bodyStyle": {
           "description": "General classification of vehicle type",
           "type": "string",
-          "examples": ["sedan", "pickup", "minivan", "hatchback"]
+          "examples": [
+            "sedan",
+            "pickup",
+            "minivan",
+            "hatchback"
+          ]
         },
         "bodyStyleConfidence": {
           "$ref": "#/definitions/confidence"
@@ -847,8 +1085,15 @@
         "orientation": {
           "description": "Side of vehicle that is visible",
           "type": "string",
-          "examples": ["front", "rear", "left", "right", "top", "bottom"]
-        }, 
+          "examples": [
+            "front",
+            "rear",
+            "left",
+            "right",
+            "top",
+            "bottom"
+          ]
+        },
         "orientationConfidence": {
           "$ref": "#/definitions/confidence"
         },
@@ -871,7 +1116,9 @@
       "description": "Used for the facial-features engine to describe how confident it is that the lips are moving to produce speech",
       "type": "object",
       "properties": {
-        "confidence": { "$ref": "#/definitions/confidence" }
+        "confidence": {
+          "$ref": "#/definitions/confidence"
+        }
       }
     },
     "faceLandmarks": {
@@ -883,13 +1130,21 @@
           "type": {
             "description": "Which facial feature",
             "type": "string",
-            "examples": ["mouth", "left-eye", "chin", "glasses"]
+            "examples": [
+              "mouth",
+              "left-eye",
+              "chin",
+              "glasses"
+            ]
           },
           "locationPoly": {
             "$ref": "#/definitions/boundingPoly"
           }
         },
-        "required": ["type", "locationPoly"]
+        "required": [
+          "type",
+          "locationPoly"
+        ]
       }
     },
     "structuredData": {

@@ -1,6 +1,8 @@
 {
   "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
-  "$comment": "Concept document actual example.",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-concept.json",
+  "$example": "Object Contract: Concept",
+  "$comment": "Concept objects may be for specific text phrases, or a list of concepts found across the entire document. Concept objects MUST include 'text' and/or 'objectCategory' properties.",
   "sourceEngineId": "06bbc2e7-aa59-4c32-9ec3-1a147fff78a6",
   "taskId": "24093709_SY9NZT9cqq9bJ0r",
   "internalTaskId": "44fcdd60-16ed-4fc1-bcbb-c896bb771965",
@@ -8,11 +10,11 @@
   "object": [
     {
       "type": "concept",
-      "text": "Go on."
+      "text": "Family game night"
     },
     {
       "type": "concept",
-      "text": "Like we're gonna go to walk up to the family room.",
+      "text": "We're gonna go to walk up to the family room.",
       "objectCategory": [
         {
           "class": "Home & Garden",
