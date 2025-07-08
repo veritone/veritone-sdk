@@ -246,7 +246,9 @@ the v1 schemas.</li>
 objects, and series. Taking a page from the json-schema definitions, we
 now allow a <code>$comment</code> property in any document, object or
 series item. The value must be a string, and is ignored by aiWARE
-processing.</li>
+processing. In addition, any property at the root of the document
+starting with a <code>$</code> character is permitted but ignored by the
+aiWARE ecosystem.</li>
 <li><strong>New object types</strong> have been added:
 <ul>
 <li><strong><code>licensePlate</code></strong> requries a

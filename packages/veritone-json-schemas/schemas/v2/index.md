@@ -35,12 +35,32 @@ For example, the `sentiment` contract requires you to include either a `sentimen
 record for the whole document or every object in the document. The `transcript` contract
 requires a time-`series` array containing when `words` have been spoken.
 
-Capabiliy contractst are optional... if you do not include a `validationContracts` field, then
+Capabiliy contracts are optional... if you do not include a `validationContracts` field, then
 no capability contracts apply.
+
+**Example:** Since the `entity` contract is invoked, the document may only contain objects of
+type `namedEntity`
+
+```json
+{
+  "validationContracts": [ "entity" ],
+  "object": [
+    {
+      "label": "Tuesday May 4, 2017",
+      "type": "namedEntity",
+      "objectCategory": [
+        {
+            "class": "TIME"
+        }
+     ]
+    }
+  ]
+}
+```
 
 ### Object Contracts
 
-Where capability contracts impose requirements on the whole document, object contracts impose
+Whereas capability contracts impose requirements on the whole document, object contracts impose
 requirements only on specific objects. If an object has a type like `licensePlate` then
 that contract requires the object to contain a `licensePlate` record that contains a license
 plate `number`. Likewise, if an object has a type `face` then that object must describe a
@@ -54,6 +74,44 @@ limit the document to only containing one type of object.)
 Object contracts are not optional... every object must have a `type` and that automatically
 imposes the contract for that type of object on the object contents.
 
+**Example:** This image contains a license plate, which is recorded as both text discovered by
+OCR processing and as a license plate. Each object type has different requirements and ensures
+that searching for either text in the image or a license plate from Georgia (United States) will
+work.
+
+```json
+{
+  "object": [
+    {
+      "type": "ocr",
+      "confidence": 0.9938,
+      "text": "CNH-320",
+      "boundingPoly": [
+        { "x": 0.15, "y": 0.37 },
+        { "x": 0.15, "y": 0.58 },
+        { "x": 0.51, "y": 0.37 },
+        { "x": 0.51, "y": 0.58 }
+      ]
+    },
+    {
+      "type": "licensePlate",
+      "label": "CNH320",
+      "licensePlate": {
+        "number": "CNH320",
+        "issuer": "US-GA",
+        "issuerConfidence": 0.63
+      },
+      "boundingPoly": [
+        { "x": 0.14, "y": 0.38 },
+        { "x": 0.14, "y": 0.58 },
+        { "x": 0.51, "y": 0.38 },
+        { "x": 0.51, "y": 0.58 }
+      ]
+    }
+  ]
+}
+```
+
 ## Validation
 
 Validation of a JSON instance file against the AION schema can be done with any JSON schema
@@ -62,11 +120,12 @@ validation tool.
 ### Example: Online validator
 
 To use an online tool to validate a file against the AION 2.0 schema, you can do the following:
-1. Go to (for example) https://jsonschemavalidator.net/
+
+1. Go to (for example) [https://jsonschemavalidator.net/](https://jsonschemavalidator.net/)
 2. In the left hand panel, enter a schema that imports the AION v2.0 schema:
 ```json
 {
-  "$ref": "https://get.aiware.com/schemas/v2.0/aion/schema.json"
+  "$ref": "https://get.aiware.com/schemas/v2/aion/schema.json"
 }
 ```
 
@@ -93,9 +152,9 @@ Assuming `docker` is available, the following will allow you to validate an inst
 `file.json` against version 2.0 of the AION schema:
 
 ```bash
-curl https://get.aiware.com/schemas/v2.0/aion/schema.json --output aion.json
-curl https://get.aiware.com/schemas/v2.0/master.json --output master.json
-curl https://get.aiware.com/schemas/v2.0/contracts.json --output contracts.json
+curl https://get.aiware.com/schemas/v2/aion/schema.json --output aion.json
+curl https://get.aiware.com/schemas/v2/master.json --output master.json
+curl https://get.aiware.com/schemas/v2/contracts.json --output contracts.json
 docker run --interactive --rm --volume "$PWD:/workspace" \
   ghcr.io/sourcemeta/jsonschema validate --verbose aion.json file.json \
   -r master.json -r contracts.json

@@ -46,7 +46,9 @@
     continue to use the v1 schemas.
 - **Comment support** has been added for documents, objects, and series. Taking a page from the
   json-schema definitions, we now allow a `$comment` property in any document, object or series 
-  item. The value must be a string, and is ignored by aiWARE processing.
+  item. The value must be a string, and is ignored by aiWARE processing. In addition, any
+  property at the root of the document starting with a `$` character is permitted but
+  ignored by the aiWARE ecosystem.
 - **New object types** have been added:
   - **`licensePlate`** requries a `licensePlate` with a `number`.
   - **`motorVehicle`** requries a `motorVehicle` that may optionally have a `licensePlate`.

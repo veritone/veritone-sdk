@@ -21,7 +21,8 @@
           "description": "The optional unique ID of this document",
           "type": "string",
           "examples": [
-            "https://get.aiware.com/schemas/v2/aion/schema.json#document-12345"
+            "https://get.aiware.com/schemas/v2/aion/examples/document-12345",
+            "06C207C1-B8A8-4C3D-9751-14D61CC9C307"
           ]
         },
         "$comment": {

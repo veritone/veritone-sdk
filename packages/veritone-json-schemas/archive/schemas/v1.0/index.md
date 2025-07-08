@@ -2,8 +2,6 @@
 
 This directory contains the standard JSON schemas used by Veritone.
 
-- [AI Object Notation (AION)](./aion/aion.json)
-
 - [Anomaly](./anomaly/anomaly.json)
 - [Concept](./concept/concept.json)
 - [Entity](./entity/entity.json)

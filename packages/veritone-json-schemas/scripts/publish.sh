@@ -114,6 +114,11 @@ assume_prod_role() {
       --output text)
   [ "$creds" ] || {
     echo "Unable to assume role $aws_role, proceeding using [default] credentials"
+    echo ""
+    error "Please check your AWS credentials. Your default account needs to be able to"
+    error "assume the role $aws_role in account $aws_account. If you have a named profile"
+    error "already configured to access production S3 buckets, export that name in the "
+    error "AWS_PROFILE environment variable to skip this assume-role step."
     return 0
   }
 
@@ -125,7 +130,7 @@ assume_prod_role() {
   export AWS_SESSION_TOKEN="$(echo "$creds" | cut -d' ' -f3)"
 
   aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 || {
-    error "Failed to assume role $aws_role in account $aws_account. Please check your AWS credentials."
+    error "Failed to assume role $aws_role in account $aws_account. "
     return 1
   }
 
@@ -280,6 +285,12 @@ create_examples_index() {
       # Remove the "$example" property from the file
       jq . "$example_file" | grep -v '"\$example"' >"${example_file}.tmp" && mv "${example_file}.tmp" "$example_file"
     done
+    echo ""
+    printf "%s\n" '``` {=html}'
+    printf "%s\n" '<style>'
+    printf "%s\n" 'body { max-width: 72em !important; }'
+    printf "%s\n" '</style>'
+    printf "%s\n" '```'
   } > "$index_file" || {
     error "create_examples_index: Failed to create index file '$index_file'"
     return 1

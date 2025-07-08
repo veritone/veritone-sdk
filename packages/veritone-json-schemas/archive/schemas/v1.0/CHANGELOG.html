@@ -169,10 +169,77 @@
   </style>
 </head>
 <body>
-<h1 id="version-history-for-version-1-schemas">Version history for
-version 1 schemas</h1>
-<h2 id="version-1.0---march-6-2019">Version 1.0 - March 6, 2019</h2>
-<p>Version 1.0 of the Veritone schemas is “pre-history” as versioning
-support wasn’t added until 2025.</p>
+<h1 id="veritone-json-schemas-changelog">veritone-json-schemas
+changelog</h1>
+<h2 id="version-0.1.0">Version 0.1.0</h2>
+<ul>
+<li>initial version published to NPM</li>
+</ul>
+<h2 id="version-0.1.1">Version 0.1.1</h2>
+<ul>
+<li>export a map of the validation contracts to the validation functions
+as VALIDATOR</li>
+<li>basic README.md</li>
+<li>cleanup for object validation contract</li>
+</ul>
+<h2 id="version-0.1.2">Version 0.1.2</h2>
+<ul>
+<li>fix VALIDATORS export</li>
+</ul>
+<h2 id="version-0.1.3">Version 0.1.3</h2>
+<ul>
+<li>revise TRANSCRIPT validator to make words optional</li>
+<li>add { processed: } to positive validations to show only the
+processed fields</li>
+<li>dynamic test loader</li>
+<li>empty words are no longer valid</li>
+</ul>
+<h2 id="version-0.1.4">Version 0.1.4</h2>
+<ul>
+<li>Fix { processed } for transcript.</li>
+<li>More tests, addd vtn-standard headers to transcript</li>
+</ul>
+<h2 id="version-0.1.5">Version 0.1.5</h2>
+<ul>
+<li>Change GUIDS from number to string</li>
+<li>Some minor changes in descriptions</li>
+</ul>
+<h2 id="version-0.1.6">Version 0.1.6</h2>
+<ul>
+<li>Changes to type enum in series / object results</li>
+<li>Support for object recognition/detection</li>
+<li>More examples for transcript</li>
+</ul>
+<h2 id="version-0.1.7">Version 0.1.7</h2>
+<ul>
+<li>Make object required if a series array is present</li>
+<li>Add test cases to prevent empty objects in summaries</li>
+<li>Add test case to make sure that an empty object summary with no
+recognition/detection is a valid result.</li>
+</ul>
+<h2 id="version-1.0.0">Version 1.0.0</h2>
+<ul>
+<li><strong>BREAKING CHANGE</strong> Adds new restrictions to existing
+<code>object</code> and <code>transcription</code> validation contracts
+that caused some previously valid examples to now be categorized as
+invalid examples. All of these centered around disallowing the inclusion
+of additional properties not specified by the schema.</li>
+<li>Add a number of new json-schema validators for engine categories
+centered around text analytics and translation.</li>
+<li>See <a
+href="https://github.com/veritone/veritone-sdk/commit/160904a60180e9e2bcf26c84efacea38c80ad58f">160904a</a>
+for full details.</li>
+</ul>
+<h2 id="version-1.0.1">Version 1.0.1</h2>
+<ul>
+<li>Fixes the schema IDs to reflect their proper public hosting
+location.</li>
+<li>Depending on your use of the json-schemas, this could be considered
+a breaking change if you previously referenced the schema IDs.</li>
+</ul>
+<h2 id="version-1.0.2">Version 1.0.2</h2>
+<ul>
+<li>Changes to examples to integrate nicely with our docs site.</li>
+</ul>
 </body>
 </html>
