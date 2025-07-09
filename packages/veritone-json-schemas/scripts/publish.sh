@@ -354,20 +354,29 @@ create_archive() {
     echo "╰──────────────────────────────────────────────────────────────────────────────────────────────"
   fi
 
-  # Verify the archive directory does not already exist
+  # Prompt to replace existing archive directory if needed
   echo "📀 Creating archive for $version from '$source_dir' to '$archive_dir'"
-  if [[ "$force" ]]; then
-    # If the archive directory exists, remove it
-    [[ -d "$archive_dir" ]] && {
-      echo "... Removing existing archive directory '$archive_dir'..."
-      if [[ "$safe" ]]; then
-        echo SAFE: "rm -rf \"$archive_dir\""
+  [[ -d "$archive_dir" ]] && {
+    if [[ "$force" ]]; then
+      echo "⚠️ Archive directory '$archive_dir' already exists. It will be overwritten."
+    else
+      # Ask the user to type "yes" to confirm overwriting the existing archive directory
+      echo "⚠️ Archive directory '$archive_dir' already exists."
+      local confirm
+      read -p "💬 Type 'yes' to overwrite: " confirm
+      if [[ "$confirm" != "yes" ]]; then
+        echo "⛔️ Aborting archive creation."
+        return 1
       fi
-      rm -rf "$archive_dir" || { error "Failed to remove existing archive directory '$archive_dir'"; return 1; }
-    }
-  else
-    [[ -d "$archive_dir" ]] && { error "Archive directory '$archive_dir' already exists. Use --force to overwrite"; return 1; }
-  fi
+    fi
+
+    # Delete the existing archive directory
+    echo "... Deleting existing directory '$archive_dir'..."
+    if [[ "$safe" ]]; then
+      echo SAFE: "rm -rf \"$archive_dir\""
+    fi
+    rm -rf "$archive_dir" || { error "Failed to remove existing archive directory '$archive_dir'"; return 1; }
+  }
 
   ##
   ## Update the root index file
@@ -587,19 +596,29 @@ upload_dir_to_getaiwarecom() {
   [[ -z "$target_dir" ]] && { error "upload_dir_to_getaiwarecom: No target directory specified"; return 1; }
   [[ -d "$source_dir" ]] || { error "upload_dir_to_getaiwarecom: Source directory '$source_dir' does not exist."; return 1; }
 
-  # Check if target directory already exists and delete it if --force is specified
+  # Check if target directory exists in the S3 bucket
   aws s3 ls "$target_dir" >/dev/null 2>&1 && {
     if [[ "$force" ]]; then
-      echo "... Target directory '$target_dir' already exists. Removing it..."
-      aws s3 rm $dryrun "$target_dir" --recursive || {
-        error "upload_dir_to_getaiwarecom: Failed to remove existing target directory '$target_dir'"
-        return 1
-      }
+      echo "⚠️ S3 directory '$target_dir' already exists. It will be overwritten."
     else
-      error "Target directory '$target_dir' already exists. Use --force to overwrite."
-      return 1
+      # Ask the user to type "yes" to confirm overwriting the existing archive directory
+      echo "⚠️ S3 directory '$target_dir' already exists."
+      local confirm
+      read -p "💬 Type 'yes' to overwrite: " confirm
+      if [[ "$confirm" != "yes" ]]; then
+        echo "⛔️ Aborting upload to S3."
+        return 1
+      fi
     fi
+
+    # Delete the directory
+    echo "... Deleting target directory '$target_dir'..."
+    aws s3 rm $dryrun "$target_dir" --recursive || {
+      error "upload_dir_to_getaiwarecom: Failed to remove existing target directory '$target_dir'"
+      return 1
+    }
   }
+
 
   echo "... Uploading directory '$source_dir' to '$target_dir'"
   local schema_file
@@ -787,7 +806,7 @@ upload_to_getaiwarecom() {
 
   # Validate version argument
   version="$1"
-  [[ -z "$version" ]] && { error "No version specified. Usage: $0 [--safe] [--force] [--latest] [--release] <version>"; exit 1; }
+  [[ -z "$version" ]] && { error "No version specified."; usage; exit 1; }
   if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]]; then
     error "Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
     exit 1
