@@ -7,11 +7,13 @@
 usage() {
   cat <<EOF
 Usage: 
-        $(basename "$0") [--release] [--archive] [--upload] [--safe] [--force] <version>
+        $(basename "$0") [--release[=<ticket_id>]] [--archive] [--upload] [--safe] [--force] <version>
 
 Where: 
         <version> is the version to publish (e.g., v2.7)
-        --release: Will upload the archive to the schemas directory instead of the schemas/pre-release directory.
+        --release: Will upload the archive to the schemas directory instead of the schemas/pre-release 
+                directory. Releasing a final version requires an approved ITSM ticket, which may either be
+                specified as an argument to --release or typed in when prompted.
         --archive: Create the archive directory, but do not upload it. An archive directory may only be created
                 if the version is, or will be, the latest minor version of its major version.
         --upload: Upload an existing archive to the S3 bucket (do not create the archive if it does not exist)
@@ -57,20 +59,45 @@ cd_json_schemas() {
 verify_environment() {
   # verify docker is installed
   command -v docker >/dev/null 2>&1 || {
-    error "docker is not installed. Please install Docker and try again."
+    error "'docker' is not installed. Please install Docker and try again."
+    error ""
+    error "  See: https://docs.orbstack.dev/quick-start"
+    error "  See: https://docs.docker.com/desktop/"
     return 1
   }
 
   # verify jq is installed
   command -v jq >/dev/null 2>&1 || {
-    error "jq is not installed. Please install jq and try again."
+    error "'jq' is not installed. Please install jq and try again."
+    error ""
+    error "  brew install jq"
     return 1
   }
 
   # verify aws is installed
   command -v aws >/dev/null 2>&1 || {
-    error "aws is not installed. Please install aws-cli and try again."
+    error "'aws' is not installed. Please install aws-cli and try again."
+    error ""
+    error "  brew install awscli"
     return 1
+  }
+
+  # if running in release mode, verify that the atlassian CLI is installed
+  [[ "$release" && "$upload" ]] && {
+    command -v acli >/dev/null 2>&1 || {
+      error "'acli' (Atlassian CLI) is not installed. Please install the Atlassian CLI and try again."
+      error ""
+      error "When running with --release, the script must confirm that the ITSM ticket is approved before proceeding."
+      error ""
+      error "To install the Atlassian CLI: "
+      error "  brew tap atlassian/homebrew-acli"
+      error "  brew install acli"
+      error "  acli jira auth login --web"
+      error "References:"
+      error " - Install: https://developer.atlassian.com/cloud/acli/guides/install-macos/"
+      error " - Authenticate: https://developer.atlassian.com/cloud/acli/guides/how-to-get-started/"
+      return 1
+    }
   }
 
   return 0
@@ -97,7 +124,9 @@ is_version_valid() {
 # Checks if we have access to the aiware-prod-public bucket, and if not, assumes the production
 # role for access
 assume_prod_role() {
-  # if we can see the bucket then no need to assume the role
+  # if we can see the bucket then no need to assume a role. This handles cases where we're
+  # running in Jenkins and already have the right IAM roles, or the user has already set up an
+  # AWS_PROFILE for production access
   aws s3 ls s3://aiware-prod-public/schemas >/dev/null 2>&1 && return 0 
 
   unset AWS_ACCESS_KEY_ID
@@ -138,6 +167,42 @@ assume_prod_role() {
   return 0
 }
 
+# Validates that the ITSM ticket is approved and returns 0 if it is, or 1 if it is not. Iff the
+# --release parameter is specified, this function will prompt the user for the ITSM ticket ID if
+# no --itsm parameter was given and verify that the ticket is approved. If the ticket ID is
+# "ITSM-skip" (undocumented), this function will return 0 without checking the ticket status.
+verify_itsm_ticket() {
+  # skip check if not releasing to production
+  [[ "$release" ]] || return 0
+
+  # If we don't have an ITSM ticket ID, prompt the user for it
+  [[ "$itsm_ticket" ]] || { 
+    read -p "💬 Enter the ITSM ticket ID for this deploy: ITSM-" itsm_ticket
+    [[ -z "$itsm_ticket" ]] && { error "No ITSM ticket ID specified"; return 1; }
+  }
+  itsm_ticket="ITSM-${itsm_ticket#ITSM-}"  # Ensure it has the ITSM- prefix
+
+  # Skip check if the ticket is "ITSM-skip"
+  [[ "$itsm_ticket" == "ITSM-skip" ]] && return 0
+
+  [[ "$itsm_ticket" =~ ^ITSM-[0-9]+$ ]] || {
+    error "Invalid ITSM ticket ID '$itsm_ticket'. Expected format: ITSM-xxxxx (e.g., ITSM-12345)"
+    return 1
+  }
+
+  local ticket_status
+  ticket_status=$(acli jira workitem view "$itsm_ticket" --json --fields status | jq -r '.fields.status.name')
+
+  [[ "$ticket_status" == "In Progress" ]] || {
+    error "Ticket '$itsm_ticket' is not approved. Current status is '$ticket_status'."
+    error "If the ticket had been approved by the CCB board, it would be 'In Progress'."
+    error "Please ensure the ticket is approved by the CCB board before trying again."
+    return 1
+  }
+
+  echo "✅ ITSM ticket '$itsm_ticket' is approved with status '$ticket_status'."
+  return 0
+}
 
 # Creates an "*.html" version of the input "*.md" file using the pandoc Docker image.
 #
@@ -707,15 +772,14 @@ upload_to_getaiwarecom() {
   local version="$1"
   is_version_valid "$version" || return
 
-  cd_json_schemas || return 1
+  cd_json_schemas || return
   local schemas_dir="archive/schemas"
   local archive_dir="$schemas_dir/$version"
   [[ -d "$archive_dir" ]] || { error "upload_to_getaiwarecom: Archive directory '$archive_dir' does not exist."; return 1; }
 
-  # In the Jenkins environment, we have a configured AWS CLI with the necessary permissions, on
-  # local machines, we'll use the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment
-  # variables.
-  assume_prod_role || return 1
+  verify_itsm_ticket || return
+
+  assume_prod_role || return
 
   # Compute the target directory in the S3 bucket
   local target_schemas_dir="s3://aiware-prod-public/schemas/pre-release"
@@ -777,12 +841,12 @@ upload_to_getaiwarecom() {
   [[ -d "$tmp_dir" ]] || mkdir -p "$tmp_dir"
   rm -rf "$tmp_dir"/*
 
-
   safe=           # Will not perform any actions, but will print what it would do.
   force=          # Will overwrite the existing archive directory if it exists
   release=        # Will upload the archive to the release directory instead of the pre-release directory
   archive=        # Will create the archive directory for the version, but not upload it
   upload=         # Will upload the archive to the S3 bucket
+  itsm_ticket=    # The ITSM ticket Id to verify before --releasing the production version
 
   # Handle flags
   while [[ "$1" == --* ]]; do
@@ -791,6 +855,7 @@ upload_to_getaiwarecom() {
       --safe|--dryrun) safe="--safe" ;;
       --force) force="--force" ;;
       --release) release="--release" ;;
+      --release=*) release="--release"; itsm_ticket="${1#*=}";;
       --archive) archive="--archive" ;;
       --upload) upload="--upload" ;;
       *) error "Unknown option: $1"; exit 1 ;;
