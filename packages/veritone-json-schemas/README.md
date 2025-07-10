@@ -5,32 +5,29 @@ This does **not** include
 [user-defined schemas created through the aiWARE Resource Center](https://support.veritone.com/s/article/000004213?language=en_US),
 just the ones that are core to our platform.
 
-## Changin AION schema
+## Changing AION schema
 
 For documentation on how to manage and update this package, please see the Confluence page [How
 To: Update AION Schema](https://veritone.atlassian.net/wiki/spaces/VP/pages/4232249479/How+To+Update+AION+Schema)
 
+## Testing
 
-
-
+See
+https://veritone.atlassian.net/wiki/spaces/VP/pages/4232249479/How+To+Update+AION+Schema#Testing
 
 ## Publishing
 
-Once you have updated the 
+See
+https://veritone.atlassian.net/wiki/spaces/VP/pages/4232249479/How+To+Update+AION+Schema#Publishing
 
-The JSON schema is deployed to the get.aiware.com
-site (https://get.aiware.com/schemas/index.html). 
-This may be deployed manually with
-```bash
-AWS_PROFILE=default
-aws --profile=$AWS_PROFILE s3 cp schemas/vtn-standard/index.html s3://aiware-prod-public/schemas/index.html
-for schema in $(find schemas -name '*.json' | grep -v "examples"); do
-  aws --profile=$AWS_PROFILE s3 cp --dryrun $schema s3://aiware-prod-public/$schema}
-done
-```
-(with appropriate updates for the local directory)
 
 ## Usage
+
+### Validating a JSON file
+
+Please see the "Validation" section at https://get.aiware.com/schemas/v2/index.html
+
+### Validation with Node.js
 
 This package exports a map of valid validation contract names to their validating functions and looks like the following:
 
@@ -47,30 +44,14 @@ This package exports a map of valid validation contract names to their validatin
 	}
 ```
 
-It also outputs all the json-schemas and the valid and invalid examples used in our tests for reference and use in non-javascript contexts.
+It also outputs all the json-schemas and the valid and invalid examples used in our tests for
+reference and use in non-javascript contexts.
+
 
 > **PLEASE NOTE that the json-schema validation ecosystem is not 100% compatible.**
 > Different json-schema parsers and validators may behave slightly differently.
 > At Veritone, we use [`ajv`](https://www.npmjs.com/package/ajv) which works great with the draft-07 json-schemas we've written.
 > If you use another package to parse our json-schemas, hopefully things will "just work" but don't be surprised if there's a few quirks.
-
-## AI Object Notation (AION)
-
-The AION validator is in a different class than the other validators. Most validators are tied to the `validationContracts`
-value and are for validating a file for a specific capability like transcription, concepts, object detection, etc. In contrast
-the AION validator will validate an entire file regardless of what specific types of data it represents. Just because a 
-file is a valid AION file does not automatically make it valid for any given capability as different capabilities require
-specific fields for that capability. For instance, a transcription file **MUST** contain a `series` of `words` to be valid,
-but an AION file only **MAY** contain a series of words. Being a valid AION file is _necessary_ for a capability but not 
-_sufficient_ for a capability.
-
-So what is the AION validator for then? It has two purposes:
-1. It enforces a schema that validates any `application/vnd.veritone.aion+json` Media Type file (f.k.a. MIME Types). 
-   See [IANA's list of Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml) for details.
-2. It can be used for any "vtn-standard" file, even those for which a specific validation contract is not available. 
-   For instance, at the time of writing, there is no specific validation contract for validating "location detection", 
-   but you can use the AION validator to ensure that your GPS data conforms to the expected format.
-
 
 ## Local Testing
 
@@ -78,22 +59,25 @@ So what is the AION validator for then? It has two purposes:
 
 Create a test in the `examples` or `invalid-examples` directory. Everything in the `examples`
 directory must be a valid JSON instance of the schema it is associated with. Everything in the
-`invalid-examples` directory must be a JSON instnace that fails validation with the associated
+`invalid-examples` directory must be a JSON instance that fails validation with the associated
 schema. 
 
 The typical naming convention is `<category-in-kabob-case>_<description-in-kabob-case>`. Specific
-examples that test contract validation should start with `cc` for Capability Contracts and `oc`
+examples that test contract validation should start with `cc-` for Capability Contracts and `oc-`
 for Object Contracts.
 
-Each example should start with a `$schema` for the relevant version of the example, and a
+Each example should start with a `$schema` for the relevant version of the example, an `$id`
+with the file path, and a
 `$comment` describing what this file is an example of:
 
-```
+```json
 {
    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+   "$id": "https://get.aiware.com/schemas/v2/aion/examples/transcription_words-missing.json",
    "$comment": "A transcription that is missing words",
    ...
 }
+```
 
 In addition, if you want an example to be uploaded to the public schema page, then the example document must 
 contain an `"$example"` property that contains the title of the example, and the `"$comment"` will become
@@ -112,14 +96,14 @@ so the following can also be used:
 
 ### Test a schema
 
-To run a suite of tests for one schema, run `./test-examples.sh <schema-name>`
+To run a suite of tests for one schema, run `./scripts/test-examples.sh <schema-name>`
 
 In this mode, the test script will verify the schema itself is valid. It will then assert that
 all JSON files in the `examples` directory validate against the schema correctly. It will then
 assert that all JSON files in the `invalid-examples` directory DO NOT validate against the schema.
 
-```
-$ ./test-examples.sh language
+```bash
+$ ./test-examples.sh v1 language
 ok     master.json
 ok     language/language.json
 ok     language/examples/basic.json
@@ -128,15 +112,27 @@ ok     language/invalid-examples/missing-language.json
 ok     language/invalid-examples/missing-validation-contract.json```
 ```
 
-### Test a specific file
+### Test a specific example file
 
-To run a single test for one JSON file, run `./test-examples.sh <file-path>`
+To run a single test for one JSON file in an example directory, run `./scripts/test-examples.sh <partial-file-path>`
 
 In this mode, the only the one file will be validated.
 
-```
-$ ./test-examples.sh language/examples/basic.json
+```bash
+$ ./test-examples.sh schemas/v1/language/examples/basic.json
 ok     language/examples/basic.json
+PASS   1 tests passed
+```
+
+### Test any JSON file
+
+To run a single test for one JSON file, ues a full path `./scripts/test-examples.sh <any-file-path>`
+
+In this mode, the only the one file will be validated.
+
+```bash
+$ ./test-examples.sh /Users/kmurray/tmp/foobar.json
+ok     /Users/kmurray/tmp/foobar.json
 PASS   1 tests passed
 ```
 
@@ -145,7 +141,7 @@ PASS   1 tests passed
 Validate one or more schemas against the jsonschema metadata schema validators with the
 `metaschema` keyword:
 
-```
+```bash
 docker run --interactive --rm --volume "$PWD:/workspace" \
   ghcr.io/sourcemeta/jsonschema \
   metaschema --verbose \
@@ -157,7 +153,10 @@ schema as the first parameter and the instance file as the 2nd. Note that you mu
 include the `$ref`d files as resources (`-r` parameters). The following validates the
 `examples/basic.json` instance file against the `language.json` schema
 
-```
+Note that this is very much like just running `./scripts/test-examples-sh <any-file-path>`, but
+may give you more control over the validation parameters.
+
+```bash
 docker run --interactive --rm --volume "$PWD:/workspace" \
   ghcr.io/sourcemeta/jsonschema \
   validate --verbose \
@@ -168,22 +167,25 @@ docker run --interactive --rm --volume "$PWD:/workspace" \
 
 ## Contributing
 
-> See the [veritone-sdk README](../../README.md) for full information.
+See the [veritone-sdk README](../../README.md) for full information, and the "How To" article
+https://veritone.atlassian.net/wiki/spaces/VP/pages/4232249479/How+To+Update+AION+Schema#Testing
+for specific information about the veritone-json-schemas package
+
 
 ### Local Development
+
+To just run the full suite of tests, use `make test`
 
 1. `yarn install` to install dependencies.
 2. run `yarn test` to run the schema validator against all the examples.
 
 ### To add a new object type
 
-1. Add new enum to the `objectResultsType` field
-2. Add new structure for the object type
-3. Add new Object Contract to the contracts.json file
+See https://veritone.atlassian.net/wiki/spaces/VP/pages/4232249479/How+To+Update+AION+Schema
 
 ## License
 
-Copyright 2019-2021, Veritone Inc.
+Copyright 2019-2025, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
