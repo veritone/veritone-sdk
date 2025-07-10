@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A license plate object with minimal properties.",
+  "object": [
+    {
+      "type": "licensePlate",
+      "licensePlate": {
+        "number": "CNH320"
+      }
+    }
+  ]
+}

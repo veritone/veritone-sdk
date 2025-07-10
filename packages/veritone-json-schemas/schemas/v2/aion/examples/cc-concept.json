@@ -1,0 +1,311 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-concept.json",
+    "$example": "Capability Contract: Concepts",
+    "$comment": "Concepts found in an interview about diabetes. A concept document contains objects and series objects of type 'concept'. This document contains a summary of all concepts found in a transcription, as well as a series with the concepts found at each time-stamp. This example uses eContext library of concepts, but there are many other libraries as well, like IAB's Content Taxonomy or IPTC's Media Topics.",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "concept",
+            "objectCategory": [
+                {
+                    "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                    "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                    "confidence": 0.2969216781400158
+                },
+                {
+                    "class": "Health::Health Conditions & Treatments::Health Conditions & Treatments [No System Specified]::Health Conditions & Treatments [No Cause Specified]::Health Conditions & Treatments [No Condition Specified]::Pain",
+                    "@id": "https://api.econtext.ai/api/category/d7eca93b7ee2ce0892f4580e70b9e27a",
+                    "confidence": 0.08884270684504568
+                },
+                {
+                    "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Muscles::Muscle Conditions & Information::Muscle Cramps",
+                    "@id": "https://api.econtext.ai/api/category/9dd9f0ce5d143332bf82b796a5fe0ae0",
+                    "confidence": 0.08416677490583248
+                },
+                {
+                    "class": "Health::Healthcare Services::Podiatry Services::Podiatry Professionals::Podiatrists",
+                    "@id": "https://api.econtext.ai/api/category/e99178bcc1b66fce8dae4d1cf453b312",
+                    "confidence": 0.07949084296661929
+                },
+                {
+                    "class": "Health::Healthcare Services::Internal Medicine Services::Endocrinology::Endocrinology Professionals::Endocrinologists",
+                    "@id": "https://api.econtext.ai/api/category/1d88b74a7aad7d7cc7e518671de5adda",
+                    "confidence": 0.06546304714898071
+                },
+                {
+                    "class": "Health::Healthcare Information & Organizations::Healthcare Information::Healthcare Professionals::Physicians",
+                    "@id": "https://api.econtext.ai/api/category/50b61b37b07500c088c46dd8619857c7",
+                    "confidence": 0.06546304714898071
+                },
+                {
+                    "class": "Health::Health Conditions & Treatments::Nervous System Conditions & Information::Nervous System Conditions & Information [No Anatomy Specified]::Nervous System Conditions & Information [No Disorder Specified]::Numbness & Tingling",
+                    "@id": "https://api.econtext.ai/api/category/94cd40aa4843824b39dc4c7af2625f5f",
+                    "confidence": 0.046759319392128934
+                },
+                {
+                    "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Musculoskeletal Conditions & Information [No Anatomy Specified]::Musculoskeletal Leg & Foot Conditions & Information::Leg & Foot Pain",
+                    "@id": "https://api.econtext.ai/api/category/c0309d32409ef2a170fffbcdb7abfd41",
+                    "confidence": 0.04208338745291574
+                },
+                {
+                    "class": "Health::Healthcare Services::General Practice Medicine::Primary Care::Primary Care Physicians",
+                    "@id": "https://api.econtext.ai/api/category/93fcc48b7b89a56ec781ad63ad2b1a4d",
+                    "confidence": 0.03506948954409696
+                },
+                {
+                    "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes Treatments",
+                    "@id": "https://api.econtext.ai/api/category/2580242ed87af6a1f2a5ff43503a02ef",
+                    "confidence": 0.02922457462008046
+                }
+            ]
+        }
+    ],
+    "vendor": {
+        "api_calls": 11
+    },
+    "series": [
+        {
+            "startTimeMs": 4530,
+            "stopTimeMs": 8310,
+            "object": {
+                "type": "concept",
+                "text": "What role does a podiatrist play when it comes to diabetes management and care?",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes Treatments",
+                        "@id": "https://api.econtext.ai/api/category/2580242ed87af6a1f2a5ff43503a02ef",
+                        "confidence": 0.66666666666667
+                    },
+                    {
+                        "class": "Health::Healthcare Services::Podiatry Services::Podiatry Professionals::Podiatrists",
+                        "@id": "https://api.econtext.ai/api/category/e99178bcc1b66fce8dae4d1cf453b312",
+                        "confidence": 0.33333333333333
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 9150,
+            "stopTimeMs": 16050,
+            "object": {
+                "type": "concept",
+                "text": "Well, podiatrists specialize in the diagnosis, prevention and treatment of conditions that affect the foot, ankle and lower leg.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Healthcare Products::Healthcare Products [No System Specified]::Healthcare Products [No Condition Specified]::Healthcare Products [No Treatment Specified]::Foot Care Products",
+                        "@id": "https://api.econtext.ai/api/category/c6c951f4d2e6d981833256beae0f700e",
+                        "confidence": 0.5
+                    },
+                    {
+                        "class": "Health::Healthcare Services::Podiatry Services::Podiatry Professionals::Podiatrists",
+                        "@id": "https://api.econtext.ai/api/category/e99178bcc1b66fce8dae4d1cf453b312",
+                        "confidence": 0.5
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 16050,
+            "stopTimeMs": 19620,
+            "object": {
+                "type": "concept",
+                "text": "And diabetics end up with a lot of problems in the foot potentially.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Musculoskeletal Conditions & Information [No Anatomy Specified]::Musculoskeletal Leg & Foot Conditions & Information",
+                        "@id": "https://api.econtext.ai/api/category/edd420b7066309ce352421990c7b2031",
+                        "confidence": 0.5
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                        "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                        "confidence": 0.5
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 19620,
+            "stopTimeMs": 37570,
+            "object": {
+                "type": "concept",
+                "text": "So the role of the podiatrist is really to identify problems before they become a major issue by routine diabetic foot checks, maintaining nail care and counseling the diabetics on proper shoe gear, and then, of course, treating wounds or problems as they may arise.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes Treatments",
+                        "@id": "https://api.econtext.ai/api/category/2580242ed87af6a1f2a5ff43503a02ef",
+                        "confidence": 0.25
+                    },
+                    {
+                        "class": "Health::Healthcare Products::Endocrine System Products::Diabetic Products::Diabetic Foot & Leg Care Products::Diabetic Shoes",
+                        "@id": "https://api.econtext.ai/api/category/4f8a33d7886017b35bbc0d7775a083e4",
+                        "confidence": 0.125
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Health Conditions & Treatments [No System Specified]::Emergency & Trauma::Injuries::Wound Care Treatments",
+                        "@id": "https://api.econtext.ai/api/category/aca82a49ccbbfd740d01dcbebf9796c2",
+                        "confidence": 0.125
+                    },
+                    {
+                        "class": "Apparel::Footwear::Footwear [No Form Specified]::Footwear Parts & Accessories::Shoe Polish & Care",
+                        "@id": "https://api.econtext.ai/api/category/b1bc578f77cd7b7e5649de0ebb3b0011",
+                        "confidence": 0.125
+                    },
+                    {
+                        "class": "Health::Healthcare Products::Healthcare Products [No System Specified]::Healthcare Products [No Condition Specified]::Healthcare Products [No Treatment Specified]::Foot Care Products",
+                        "@id": "https://api.econtext.ai/api/category/c6c951f4d2e6d981833256beae0f700e",
+                        "confidence": 0.125
+                    },
+                    {
+                        "class": "Beauty::Nail Care",
+                        "@id": "https://api.econtext.ai/api/category/fc249e49c5bacefc444a6597089ea8c8",
+                        "confidence": 0.125
+                    },
+                    {
+                        "class": "Health::Healthcare Services::Podiatry Services::Podiatry Professionals::Podiatrists",
+                        "@id": "https://api.econtext.ai/api/category/e99178bcc1b66fce8dae4d1cf453b312",
+                        "confidence": 0.125
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 37590,
+            "stopTimeMs": 45900,
+            "object": {
+                "type": "concept",
+                "text": "And Dr. Kim, how often are your patients surprised of this correlation between diabetes or between and and foot care?",
+                "objectCategory": [
+                    {
+                        "class": "Health::Healthcare Products::Healthcare Products [No System Specified]::Healthcare Products [No Condition Specified]::Healthcare Products [No Treatment Specified]::Foot Care Products",
+                        "@id": "https://api.econtext.ai/api/category/c6c951f4d2e6d981833256beae0f700e",
+                        "confidence": 0.33333333333333
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes Treatments",
+                        "@id": "https://api.econtext.ai/api/category/2580242ed87af6a1f2a5ff43503a02ef",
+                        "confidence": 0.33333333333333
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                        "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                        "confidence": 0.33333333333333
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 47040,
+            "stopTimeMs": 53430,
+            "object": {
+                "type": "concept",
+                "text": "Well, very often it's surprising that diabetic patients aren't aware of the complications that can develop in their feet.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetic Complications",
+                        "@id": "https://api.econtext.ai/api/category/4b5cbd091563e7b1eb8c04d0e7745841",
+                        "confidence": 0.5
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                        "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                        "confidence": 0.5
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 53430,
+            "stopTimeMs": 58350,
+            "object": {
+                "type": "concept",
+                "text": "And so the astute primary care doctors or endocrinologists will send them to us.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Healthcare Services::General Practice Medicine::Primary Care::Primary Care Physicians",
+                        "@id": "https://api.econtext.ai/api/category/93fcc48b7b89a56ec781ad63ad2b1a4d",
+                        "confidence": 0.75
+                    },
+                    {
+                        "class": "Health::Healthcare Services::Internal Medicine Services::Endocrinology::Endocrinology Professionals::Endocrinologists",
+                        "@id": "https://api.econtext.ai/api/category/1d88b74a7aad7d7cc7e518671de5adda",
+                        "confidence": 0.25
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 58350,
+            "stopTimeMs": 64680,
+            "object": {
+                "type": "concept",
+                "text": "But sometimes we'll see diabetic patients with foot problems before they've even been diagnosed with diabetes.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes Diagnostic Procedures",
+                        "@id": "https://api.econtext.ai/api/category/4b74ef6ff88f2709a33e04731f79583b",
+                        "confidence": 0.33333333333333
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                        "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                        "confidence": 0.33333333333333
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Musculoskeletal Conditions & Information [No Anatomy Specified]::Musculoskeletal Leg & Foot Conditions & Information",
+                        "@id": "https://api.econtext.ai/api/category/edd420b7066309ce352421990c7b2031",
+                        "confidence": 0.33333333333333
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 64950,
+            "stopTimeMs": 73110,
+            "object": {
+                "type": "concept",
+                "text": "They'll present with numbness or pain in their feet or clot occasion symptoms, cramping in their legs or feet related to peripheral arterial disease.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Musculoskeletal Conditions & Information [No Anatomy Specified]::Musculoskeletal Leg & Foot Conditions & Information::Leg & Foot Pain",
+                        "@id": "https://api.econtext.ai/api/category/c0309d32409ef2a170fffbcdb7abfd41",
+                        "confidence": 0.4
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Circulatory System Conditions & Information::Cardiovascular System::Cardiovascular Conditions & Information::Peripheral Vascular Disease",
+                        "@id": "https://api.econtext.ai/api/category/3ff251889b870e137ae900bf78b7f686",
+                        "confidence": 0.2
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Musculoskeletal System Conditions & Information::Muscles::Muscle Conditions & Information::Muscle Cramps",
+                        "@id": "https://api.econtext.ai/api/category/9dd9f0ce5d143332bf82b796a5fe0ae0",
+                        "confidence": 0.2
+                    },
+                    {
+                        "class": "Health::Health Conditions & Treatments::Nervous System Conditions & Information::Nervous System Conditions & Information [No Anatomy Specified]::Nervous System Conditions & Information [No Disorder Specified]::Numb Feet",
+                        "@id": "https://api.econtext.ai/api/category/b4762676cdba6cb176e55af6cf11e0c6",
+                        "confidence": 0.2
+                    }
+                ]
+            }
+        },
+        {
+            "startTimeMs": 73110,
+            "stopTimeMs": 77760,
+            "object": {
+                "type": "concept",
+                "text": "And these things are actually manifestations of their undiagnosed diabetes.",
+                "objectCategory": [
+                    {
+                        "class": "Health::Health Conditions & Treatments::Endocrine System Conditions & Information::Endocrine Glands::Pancreas::Diabetes",
+                        "@id": "https://api.econtext.ai/api/category/2b3e84efa8e28302909a2387e32492a7",
+                        "confidence": 1
+                    }
+                ]
+            }
+        }
+    ]
+}

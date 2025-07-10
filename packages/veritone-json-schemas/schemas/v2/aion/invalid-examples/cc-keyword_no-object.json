@@ -1,0 +1,9 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Keyword document missing object.",
+    "validationContracts": [
+        "keyword"
+    ],
+    "language": "en-US",
+    "text": "Today's stock market performance shows a significant increase in technology stocks, particularly in the software sector."
+}

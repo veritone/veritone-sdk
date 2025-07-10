@@ -1,0 +1,1015 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://get.aiware.com/schemas/v2/contracts.json",
+  "title": "Capability and Object Contracts",
+  "description": "Defines the contracts for various engine capabilities and objects",
+  "definitions": {
+    "capabilityAnomaly": {
+      "$comment": "Capability Anomaly: there must be an 'object' or 'series' and all objects must be of type 'anomaly'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "anomaly"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'anomaly'",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "anomaly"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series may only contain objects of type 'anomaly'",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "object"
+                  ],
+                  "properties": {
+                    "object": {
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "anomaly"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilityConcept": {
+      "$comment": "Capability Concept: must only contain 'object's of type 'concept'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "concept"
+            }
+          }
+        }
+      },
+      "then": {
+        "$comment": "must contain 'object' property",
+        "required": [
+          "object"
+        ],
+        "properties": {
+          "object": {
+            "type": "array",
+            "items": {
+              "required": [
+                "type"
+              ],
+              "$comment": "every object must be of type 'concept'",
+              "properties": {
+                "type": {
+                  "const": "concept"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "capabilityEntity": {
+      "$comment": "Capability Entity: must only contain 'object's of type 'namedEntity'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "entity"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "object"
+        ],
+        "properties": {
+          "object": {
+            "type": "array",
+            "items": {
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "namedEntity"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "capabilityKeyword": {
+      "$comment": "Capability Keyword: must only contain 'object's of type 'keyword' with a 'label' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "keyword"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "object"
+        ],
+        "properties": {
+          "object": {
+            "type": "array",
+            "items": {
+              "required": [
+                "type",
+                "label"
+              ],
+              "properties": {
+                "type": {
+                  "const": "keyword"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "capabilityLanguage": {
+      "$comment": "Capability Language: the root object must contain a 'language' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "language"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "language"
+        ]
+      }
+    },
+    "capabilityMediaTranslated": {
+      "$comment": "Capability Media Translated: must contain 'media' property with 'language' in each item",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "media-translated"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "media"
+        ],
+        "properties": {
+          "media": {
+            "type": "array",
+            "items": {
+              "required": [
+                "language"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "capabilityObject": {
+      "$comment": "Capability Object: must contain 'object' or 'series' property with items of type 'object'",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "object"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'object'",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "const": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must only contain objects of type 'object'",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "object"
+                  ],
+                  "properties": {
+                    "object": {
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilitySchemaId_Pattern": {
+      "$comment": "SchemaId Pattern: must contain 'object' or 'series' with non-empty 'structuredData' properties. The 'structuredData' must contain a property that matches this schemaId, and the value of that property must match the schema definition in the aiWARE platform. Since json-schema cannot access the aiWARE platform, we can only verify that the structuredData is present.",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All object must contain a non-empty 'structuredData' property",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "structuredData"
+                  ],
+                  "properties": {
+                    "structuredData": {
+                      "type": "object",
+                      "minProperties": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must contain a non-empty 'structuredData' property",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "structuredData"
+                  ],
+                  "properties": {
+                    "structuredData": {
+                      "type": "object",
+                      "minProperties": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilitySentiment": {
+      "$comment": "Capability Sentiment: must contain 'sentiment' or 'emotions' property at the root or in all 'object's",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "sentiment"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "required": [
+              "sentiment"
+            ]
+          },
+          {
+            "required": [
+              "emotions"
+            ]
+          },
+          {
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "sentiment"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "emotions"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilitySummary": {
+      "$comment": "Capability Summary: the root object must contain a 'summary' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "summary"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "summary"
+        ]
+      }
+    },
+    "capabilityText": {
+      "$comment": "Capability Text: must contain 'object' or 'series' property with items of type 'text' and containing a 'text' property",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "text"
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "$comment": "All objects must be of type 'text' or 'ocr' and contain a 'text' property",
+            "required": [
+              "object"
+            ],
+            "properties": {
+              "object": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "type",
+                    "text"
+                  ],
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "text",
+                        "ocr"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$comment": "All series must only contain objects of type 'text' or 'ocr' with a 'text' property",
+            "required": [
+              "series"
+            ],
+            "properties": {
+              "series": {
+                "type": "array",
+                "items": {
+                  "required": [
+                    "object"
+                  ],
+                  "properties": {
+                    "object": {
+                      "required": [
+                        "type",
+                        "text"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "text",
+                            "ocr"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilityTranscript": {
+      "$comment": "Capability Transcript: MUST contain a 'series' of 'words'. 'series' MAY be an empty array if there was nothing to transcribe",
+      "if": {
+        "required": [
+          "validationContracts"
+        ],
+        "properties": {
+          "validationContracts": {
+            "contains": {
+              "const": "transcript"
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "series"
+        ],
+        "properties": {
+          "series": {
+            "type": "array",
+            "items": {
+              "required": [
+                "words"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "objectAnomaly": {
+      "$comment": "Object of type 'anomaly' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "anomaly"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectBarcode": {
+      "$comment": "Object of type 'barcode' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "barcode"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectConcept": {
+      "$comment": "Object of type 'concept' MUST include 'text' or 'objectCategory', MAY include 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "concept"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "objectCategory": {},
+          "$comment": {},
+          "vendor": {}
+        },
+        "anyOf": [
+          {
+            "required": [
+              "type",
+              "text"
+            ]
+          },
+          {
+            "required": [
+              "type",
+              "objectCategory"
+            ]
+          }
+        ]
+      }
+    },
+    "objectFace": {
+      "$comment": "Object of type 'face' MUST include a 'boundingPoly', SHOULD include 'label', 'confidence', and MAY include a number of other properties related to faces",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "face"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "$comment": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "boundingPoly"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFaceVerification": {
+      "$comment": "Object of type 'face-verification' is unused but MAY contain many of the same properties as 'face'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "face-verification"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "$comment": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFacialFeatures": {
+      "$comment": "Object of type 'facial-features' is unused but MAY contain many of the same properties as 'face'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "facial-features"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "$comment": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "uri": {},
+          "emotions": {},
+          "age": {},
+          "faceLandmarks": {},
+          "lipVoiceCorrelation": {},
+          "lipMovement": {},
+          "vendor": {}
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectFingerprint": {
+      "$comment": "Objects of type 'fingerprint' are overloaded and can mean one of two things: 1) It could refer to a tracked object fingerprint which MUST include 'fingerprintVector', 'referenceId', 'label', and 'tags', and MAY include 'confidence', boundingPoly, uri and vendor 2) It could also refer to a watermark fingerprint which MUST have a label (which is the watermark code) and text and MAY have vendor",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "fingerprint"
+          }
+        }
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$comment": "Object of type 'fingerprint' as a unique reference to a tracked object",
+            "properties": {
+              "type": {},
+              "fingerprintVector": {},
+              "referenceId": {},
+              "label": {},
+              "tags": {},
+              "$comment": {},
+              "confidence": {},
+              "uri": {},
+              "boundingPoly": {},
+              "vendor": {}
+            },
+            "required": [
+              "type",
+              "fingerprintVector",
+              "referenceId",
+              "label",
+              "tags"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Object of type 'fingerprint' as a watermark",
+            "properties": {
+              "type": {},
+              "label": {},
+              "text": {},
+              "$comment": {},
+              "vendor": {}
+            },
+            "required": [
+              "type",
+              "label",
+              "text"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "objectKeyword": {
+      "$comment": "Object of type 'keyword' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "keyword"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectLicensePlate": {
+      "$comment": "Object of type 'licensePlate' MUST include 'licensePlate' property, MAY include 'label', 'boundingPoly', 'uri' and 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "licensePlate"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "licensePlate": {},
+          "$comment": {},
+          "label": {},
+          "boundingPoly": {},
+          "uri": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "licensePlate"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectLogo": {
+      "$comment": "Object of type 'logo' MUST include 'label', 'confidence' and 'boundingPoly', MAY include 'vendor' and 'uri'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "logo"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "boundingPoly": {},
+          "label": {},
+          "confidence": {},
+          "$comment": {},
+          "vendor": {},
+          "uri": {}
+        },
+        "required": [
+          "type",
+          "boundingPoly",
+          "label",
+          "confidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectMotorVehicle": {
+      "$comment": "Object of type 'motorVehicle' MUST include 'motorVehicle' property, MAY include 'label', 'boundingPoly', 'uri' and 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "motorVehicle"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "motorVehicle": {},
+          "$comment": {},
+          "label": {},
+          "boundingPoly": {},
+          "uri": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "motorVehicle"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectNamedEntity": {
+      "$comment": "Object of type 'namedEntity' MUST include 'label' and 'objectCategory', MAY include other properties related to location or ID of the entity",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "namedEntity"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "objectCategory": {},
+          "$comment": {},
+          "page": {},
+          "paragraph": {},
+          "sentence": {},
+          "libraryId": {},
+          "entityId": {},
+          "text": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "label",
+          "objectCategory"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectOcr": {
+      "$comment": "Object of type 'ocr' MUST include 'text' and 'boundingPoly', MAY include 'label', 'confidence', 'language' and 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "ocr"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "boundingPoly": {},
+          "$comment": {},
+          "label": {},
+          "language": {},
+          "confidence": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "text",
+          "boundingPoly"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectObject": {
+      "$comment": "Object of type 'object' is a general object type and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "object"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectSound": {
+      "$comment": "Object of type 'sound' MUST include 'label', SHOULD include 'confidence', MAY include 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "sound"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "$comment": {},
+          "confidence": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectSpeaker": {
+      "$comment": "Object of type 'speaker' MUST include 'label', MAY include 'confidence', 'libraryId', 'entityId' and 'vendor'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "speaker"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "label": {},
+          "$comment": {},
+          "confidence": {},
+          "libraryId": {},
+          "entityId": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "objectSpeakerVerification": {
+      "$comment": "Object of type 'speakerVerification' is unused and has no specific contract requirements",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "speakerVerification"
+          }
+        }
+      },
+      "then": {
+        "type": "object"
+      }
+    },
+    "objectText": {
+      "$comment": "Object of type 'text' MUST include 'text', MAY include other properties related to the text location or analysis",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "text"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "text": {},
+          "$comment": {},
+          "label": {},
+          "language": {},
+          "confidence": {},
+          "boundingPoly": {},
+          "page": {},
+          "paragraph": {},
+          "sentence": {},
+          "sentiment": {},
+          "emotions": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

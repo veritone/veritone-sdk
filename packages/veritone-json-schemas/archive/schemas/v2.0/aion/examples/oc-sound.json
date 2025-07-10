@@ -1,0 +1,94 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-sound.json",
+  "$comment": "Sound identification may include music, sound effects, other audio content like silence or static. Sound objects MUST include a 'label', SHOULD include 'confidence', and MAY include some other properties.",
+  "series": [
+    {
+      "startTimeMs": 61320,
+      "stopTimeMs": 63420,
+      "object": {
+        "label": "Channa Kishanpuria - Yaari",
+        "type": "sound",
+        "confidence": 0.67,
+        "vendor": {
+          "album": "Yaari",
+          "artist": "Channa Kishanpuria",
+          "end_offset": 3420,
+          "isrc": "INM231400491",
+          "label": "WMG - Sky Digital",
+          "release_date": "2015-07-25",
+          "score": 67,
+          "song_link": "https://lis.tn/LmMPvW",
+          "start_offset": 1320,
+          "timecode": "00:03",
+          "title": "Yaari",
+          "upc": "3614594077101"
+        }
+      },
+      "vendor": {
+        "offset": "01:00"
+      }
+    },
+    {
+      "startTimeMs": 61340,
+      "stopTimeMs": 63420,
+      "object": {
+        "label": "Sayem - Monster",
+        "type": "sound",
+        "confidence": 0.81,
+        "vendor": {
+          "album": "A City Gone Mad With Fever (Deluxe Version)",
+          "artist": "Sayem",
+          "end_offset": 3420,
+          "isrc": "FR1LX1000170",
+          "label": "MERLIN - Pour ouvrir une parenthèse",
+          "release_date": "2011-10-10",
+          "score": 81,
+          "song_link": "https://lis.tn/HLipxv",
+          "start_offset": 1340,
+          "timecode": "00:04",
+          "title": "Monster",
+          "upc": "3700551742011"
+        }
+      },
+      "vendor": {
+        "offset": "01:00"
+      }
+    },
+    {
+      "startTimeMs": 61500,
+      "stopTimeMs": 63420,
+      "object": {
+        "label": "I.L Will - Exotic",
+        "type": "sound",
+        "confidence": 0.65,
+        "vendor": {
+          "album": "Kill Or Make A Killin 2",
+          "artist": "I.L Will",
+          "end_offset": 3420,
+          "isrc": "QZNWY2140094",
+          "label": "K-TOWN GROWTH INC.",
+          "release_date": "2021-11-23",
+          "score": 65,
+          "song_link": "https://lis.tn/FSnwHl",
+          "start_offset": 1500,
+          "timecode": "01:18",
+          "title": "Exotic",
+          "upc": "0196512923903"
+        }
+      },
+      "vendor": {
+        "offset": "01:00"
+      }
+    },
+    {
+      "startTimeMs": 62120,
+      "stopTimeMs": 74160,
+      "object": {
+        "label": "applause",
+        "type": "sound",
+        "confidence": 0.7567920684814453
+      }
+    }
+  ]
+}

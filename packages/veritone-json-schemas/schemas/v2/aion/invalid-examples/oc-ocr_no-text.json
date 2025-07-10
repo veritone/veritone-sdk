@@ -1,0 +1,32 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "OCR object is a special type of text object that has a position.",
+  "sourceEngineId": "742b5b8b-7cbb-41f7-8fb3-3747791b69f0",
+  "taskId": "25062409_aoqrboSU4kiIAPL",
+  "internalTaskId": "df03fc05-a2f1-4e30-871b-6d2277842092",
+  "generatedDateUTC": "2025-06-09T07:59:02.060710826Z",
+  "object": [
+    {
+      "type": "ocr",
+      "label": "FIFA",
+      "boundingPoly": [
+        {
+          "x": 0.7247772216796875,
+          "y": 0.57421875
+        },
+        {
+          "x": 0.7507781982421875,
+          "y": 0.57421875
+        },
+        {
+          "x": 0.7507781982421875,
+          "y": 0.5888671875
+        },
+        {
+          "x": 0.7247772216796875,
+          "y": 0.5888671875
+        }
+      ]
+    }
+  ]
+}

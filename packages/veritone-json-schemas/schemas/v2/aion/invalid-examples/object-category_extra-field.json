@@ -1,0 +1,17 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Object category must not contain extra fields.",
+  "object": [
+    {
+      "type": "object",
+      "label": "dog",
+      "objectCategory": [
+        {
+          "class": "animal",
+          "@id": "1576",
+          "extra": "data"
+        }
+      ]
+    }
+  ]
+}

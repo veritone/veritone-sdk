@@ -1,0 +1,51 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-text_transcription.json",
+  "$comment": "Text objects may contain transcriptions of spoken recordings. Note that the 'transcript' Capability Contract requires word-by-word transcription, whereas a transcription stored in 'text' may be more generalized.",
+  "object": [
+    {
+      "type": "text",
+      "text": "Hello, this is Mike. How may I help you "
+    },
+    {
+      "type": "text",
+      "text": ", Mike? Um, my name is Paul. Um, I'm your customer. And, uh, frankly, um, I'm getting quite angry "
+    },
+    {
+      "type": "text",
+      "text": ", uh, about the the way that you're handling my account. "
+    },
+    {
+      "type": "text",
+      "text": "Your guys said they would come back to me by yesterday. It's now 24 hours later. Where is the information that I requested "
+    },
+    {
+      "type": "text",
+      "text": "? Uh. Hi, Paul. I'm sorry to hear that. "
+    },
+    {
+      "type": "text",
+      "text": "So I can assure you, we did everything we possibly could. But I haven't had a phone call "
+    },
+    {
+      "type": "text",
+      "text": ", and I haven't had an email or text or anything "
+    },
+    {
+      "type": "text",
+      "text": " Well, you know, I'd have to say I apologize. "
+    },
+    {
+      "type": "text",
+      "text": " I will do all that's in my power to get back to you today "
+    },
+    {
+      "type": "text",
+      "text": ". Thank you. Thank you "
+    },
+    {
+      "type": "text",
+      "text": ". "
+    }
+  ]
+}

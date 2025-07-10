@@ -1,0 +1,16 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Concept document missing concept object.",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "text",
+            "text": "Today's stock market performance shows a significant increase in technology stocks, particularly in the software sector.",
+            "page": 7,
+            "paragraph": 6,
+            "sentence": 3
+        }
+    ]
+}

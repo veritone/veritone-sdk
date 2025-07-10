@@ -1,0 +1,49 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Sentiment document containing sentiment for whole document.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "sentiment": {
+        "positiveValue": 0.56,
+        "negativeValue": 0.2
+    },
+    "emotions": [
+        {
+            "emotion": "excited",
+            "emotionValue": 0.14,
+            "emotionConfidence": 0.88
+        },
+        {
+            "emotion": "confused",
+            "emotionValue": 0.82,
+            "emotionConfidence": 0.75
+        }
+    ],
+    "object": [
+        {
+            "type": "text",
+            "text": "I am looking forward to this new project, but a bit confused about the first steps.",
+            "emotions": [
+                {
+                    "emotion": "excited",
+                    "emotionValue": 0.14,
+                    "emotionConfidence": 0.88
+                },
+                {
+                    "emotion": "confused",
+                    "emotionValue": 0.82,
+                    "emotionConfidence": 0.75
+                }
+            ]
+        },
+        {
+            "type": "text",
+            "text": "It was pretty good, but could have been better.",
+            "sentiment": {
+                "positiveValue": 0.56,
+                "negativeValue": 0.2
+            }
+        }
+    ]
+}

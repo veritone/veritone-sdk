@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/transcript/transcript.json",
+  "title": "vtn-standard.transcript",
+  "description": "Standard engine output for Transcription at Veritone",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "transcript"
+          }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../master.json#/definitions/seriesItem"
+              },
+              {
+                "required": ["words"]
+              }
+            ]
+          }
+        }
+      },
+      "required": ["series"]
+    }
+  ]
+}

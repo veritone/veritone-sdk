@@ -1,0 +1,96 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-face.json",
+  "$comment": "Face object with many supporting fields. Objects of type 'face' MUST include a 'boundingPoly', SHOULD include 'label', 'confidence', and MAY include select other fields related to facial features.",
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "libraryId": "e6bc4816-ce66-485a-8d54-94459d2230c2",
+      "object": {
+        "type": "face",
+        "libraryId": "e6bc4816-ce66-485a-8d54-94459d2230c2",
+        "age": {
+          "min": 20,
+          "max": 30,
+          "confidence": 0.8734419941902161
+        },
+        "faceLandmarks": [
+          {
+            "type": "left_eye",
+            "locationPoly": [
+              {
+                "x": 0.46441978878445095,
+                "y": 0.39038454161749947
+              }
+            ]
+          },
+          {
+            "type": "right_eye",
+            "locationPoly": [
+              {
+                "x": 0.6728788481818305,
+                "y": 0.3879580232832167
+              }
+            ]
+          },
+          {
+            "type": "nose",
+            "locationPoly": [
+              {
+                "x": 0.5941059324476454,
+                "y": 0.5093195703294542
+              }
+            ]
+          },
+          {
+            "type": "mouth_left",
+            "locationPoly": [
+              {
+                "x": 0.4668315781487359,
+                "y": 0.58770751953125
+              }
+            ]
+          },
+          {
+            "type": "mouth_right",
+            "locationPoly": [
+              {
+                "x": 0.6798791355556912,
+                "y": 0.5846857494778104
+              }
+            ]
+          }
+        ],
+        "boundingPoly": [
+          {
+            "x": 0.3415679666731093,
+            "y": 0.14463057782914904
+          },
+          {
+            "x": 0.7726799647013346,
+            "y": 0.14463057782914904
+          },
+          {
+            "x": 0.7726799647013346,
+            "y": 0.7595758967929416
+          },
+          {
+            "x": 0.3415679666731093,
+            "y": 0.7595758967929416
+          }
+        ],
+        "vendor": {
+          "acceptability": 0.9987643361091614,
+          "eyes": "OPEN",
+          "gender": "FEMALE",
+          "glasses": "NONE",
+          "headwear": "NONE",
+          "mask": 0.011145402,
+          "quality": 0.7680397,
+          "smile": "SMILING"
+        }
+      }
+    }
+  ]
+}

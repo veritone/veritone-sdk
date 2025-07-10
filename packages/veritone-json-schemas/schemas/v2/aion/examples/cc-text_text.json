@@ -1,0 +1,16 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-text_text.json",
+  "$example": "Capability Contract: Text (text)",
+  "$comment": "Text extracted or generated from a document or media file. There are many engine types that generate 'text' objects: translations, OCR, and text extraction (there is a separate contract for transcriptions, though). This document contains text translated to Welsh, but any engine that extracts or generates text from an input file can use this contract.",
+  "validationContracts": [
+    "text"
+  ],
+  "object": [
+    {
+      "type": "text",
+      "text": "Diolch am wylio'r fideo.  Diolch am wylio'.  Diolch am wylio'.  ",
+      "language": "cy"
+    }
+  ]
+}

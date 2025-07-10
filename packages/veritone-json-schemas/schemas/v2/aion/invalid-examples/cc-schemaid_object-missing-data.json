@@ -1,0 +1,15 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract containing an object that has no 'structuredData'.",
+  "validationContracts": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "object": [
+    {
+      "type": "object",
+      "label": "OCR",
+      "text": "This is a sample text for the object.",
+      "language": "en"
+    }
+  ]
+}

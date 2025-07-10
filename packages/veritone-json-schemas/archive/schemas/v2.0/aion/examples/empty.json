@@ -1,0 +1,5 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/empty.json",
+  "$comment": "An empty object is a valid AION file"
+}

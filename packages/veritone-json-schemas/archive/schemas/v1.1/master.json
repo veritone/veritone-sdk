@@ -1,0 +1,397 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/master.json",
+  "title": "vtn-standard",
+  "description": "Standard engine output at Veritone",
+  "type": "object",
+  "definitions": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "schemaId": {
+          "type": "string",
+          "description": "vtn-standard.master.schema.json or subschema.schema.json (provided by Veritone)",
+          "example": "https://docs.veritone.com/schemas/vtn-standard/master.json"
+        },
+        "sourceEngineId": {
+          "type": "string",
+          "description": "<GUID> of the engine (provided by Veritone)",
+          "example": "fe261482-af8d-4709-aefb-ff1c19b61eb9"
+        },
+        "sourceEngineName": {
+          "type": "string",
+          "description": "Engine name used to generate output (provided by Veritone)",
+          "example": "capio"
+        },
+        "taskPayload": {
+          "type": "object",
+          "description": "JSON key/value task payload describing the tasks used to start the engine run (provided by Veritone). Task payload will be a combination of attributes found on https://docs.veritone.com/#/developer/adapters/quick-start/step-2?id=constructing-a-batch-pull-adapter and any default custom fields (https://docs.veritone.com/#/developer/engines/custom-fields/?id=custom-fields)",
+          "example": {
+            "detectionThreshold": 0.7,
+            "processingFPS": 30
+          }
+        },
+        "taskId": {
+          "type": "string",
+          "description": "<GUID> of the task (provided by Veritone)",
+          "example": "6b9cd86e-de5c-4795-b605-a9b3b29fa3cf"
+        },
+        "generatedDateUTC": {
+          "type": "string",
+          "description": "DateTime (ISO8601) of when the engine result was generated (provided by Veritone if not included)",
+          "format": "date-time",
+          "example": "2017-12-08T17:19:02Z"
+        },
+        "externalSourceId": {
+          "type": "string",
+          "description": "Vendor specific referenceId to this engine result (optional)",
+          "example": "1"
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        },
+        "validationContracts": {
+          "type": "array",
+          "minItems": 1,
+          "items": [
+            {
+              "$ref": "#/definitions/validationContracts"
+            }
+          ]
+        }
+      },
+      "required": ["validationContracts"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence of the result expressed as a range of 0.0 to 1.0"
+    },
+    "point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the x axis (1.0 would be right of the axis)"
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A floating point describing the location via percentage on the y axis (1.0 would be the bottom of the axis)"
+        }
+      },
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "description": "A point describing the 2d coordinates from the top left corner of the source."
+    },
+    "boundingPoly": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/point"
+      }
+    },
+    "objectCategory": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "class": {
+            "type": "string",
+            "description": "The class of the object recognized",
+            "example": "For example, if the label of an object was dog, the class of the object could be animal"
+          },
+          "@id": {
+            "type": "string",
+            "description": "Private id variable used by the engine to refer to its internal dataset",
+            "example": "1"
+          },
+          "confidence": {
+            "$ref": "#/definitions/confidence"
+          }
+        },
+        "required": ["class"],
+        "additionalProperties": false
+      },
+      "description": "Optional categories for object recognition. Used for referencing external taxonomies."
+    },
+    "objectResultType": {
+      "type": "string",
+      "enum": [
+        "object",
+        "face",
+        "licensePlate",
+        "logo",
+        "fingerprint",
+        "speaker",
+        "sound",
+        "concept",
+        "keyword",
+        "text",
+        "namedEntity",
+        "barcode",
+        "anomaly"
+      ]
+    },
+    "objectResult": {
+      "type": "object",
+      "properties": {
+        "boundingPoly": {
+          "$ref": "#/definitions/boundingPoly"
+        },
+        "confidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "entityIdentifierId": {
+          "type": "string",
+          "description": "The unique ID of recognized entity identifier (for example, a specific image). This information is not always available and is therefore optional."
+        },
+        "libraryId": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "objectCategory": {
+          "$ref": "#/definitions/objectCategory"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/objectResultType"
+        },
+        "sentiment": {
+          "$ref": "#/definitions/sentiment"
+        },
+        "emotions": {
+          "$ref": "#/definitions/emotions"
+        },
+        "text": {
+          "$ref": "#/definitions/objectText"
+        },
+        "page": {
+          "$ref": "#/definitions/page"
+        },
+        "paragraph": {
+          "$ref": "#/definitions/paragraph"
+        },
+        "sentence": {
+          "$ref": "#/definitions/sentence"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "objectText": {
+      "description": "The extracted textual content of a found object.",
+      "type": "string"
+    },
+    "word": {
+      "description": "Transcript. JSON utterance (all word edges between 2 time nodes). Array of n objects describing each alternative word",
+      "type": "string"
+    },
+    "words": {
+      "allOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": {
+                "$ref": "#/definitions/word"
+              },
+              "confidence": {
+                "$ref": "#/definitions/confidence"
+              },
+              "utteranceLength": {
+                "$ref": "#/definitions/utteranceLength"
+              },
+              "bestPath": {
+                "type": "boolean"
+              }
+            },
+            "required": ["word"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "array",
+          "if": {
+            "minItems": 2
+          },
+          "then": {
+            "items": {
+              "required": ["confidence", "utteranceLength"]
+            },
+            "uniqueItems": true,
+            "requireBestPath": true
+          }
+        }
+      ]
+    },
+    "utteranceLength": {
+      "description": "Number of consecutive time-slices the utterance spans. example: of->thrones----->of->their-->own-> utteranceLength: thrones: 2; their,own: 1",
+      "type": "integer",
+      "minimum": 1,
+      "example": 2
+    },
+    "language": {
+      "description": "Language Identification. Format: BCP-47 https://tools.ietf.org/rfc/bcp/bcp47.txt",
+      "type": "string",
+      "examples": ["en", "en-US"]
+    },
+    "seriesItem": {
+      "type": "object",
+      "properties": {
+        "startTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The start time relative to the start of the media asset in milliseconds.",
+          "example": 0
+        },
+        "stopTimeMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The stop time relative to the start of the media asset in milliseconds.",
+          "example": 3000
+        },
+        "language": {
+          "$ref": "#/definitions/language"
+        },
+        "object": {
+          "$ref": "#/definitions/objectResult"
+        },
+        "words": {
+          "$ref": "#/definitions/words"
+        }
+      },
+      "required": ["startTimeMs", "stopTimeMs"],
+      "additionalProperties": false
+    },
+    "series": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/seriesItem"
+      }
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "description": "The ID of the asset output by the engine"
+          },
+          "language": {
+            "$ref": "#/definitions/language"
+          }
+        },
+        "required": ["assetId"]
+      }
+    },
+    "validationContracts": {
+      "type": "string",
+      "enum": [
+        "concept",
+        "entity",
+        "keyword",
+        "language",
+        "media-translated",
+        "object",
+        "sentiment",
+        "summary",
+        "text",
+        "transcript",
+        "anomaly"
+      ]
+    },
+    "page": {
+      "type": "integer",
+      "description": "The page on which the text or insight appears"
+    },
+    "paragraph": {
+      "type": "integer",
+      "description": "The paragraph in which the text or insight appears. If page is provided, it should be the paragraph number on the page (restart at 1 for each new page). Otherwise it may be an increasing number for the whole document."
+    },
+    "sentence": {
+      "type": "integer",
+      "description": "The sentence in which the text or insight appears. If paragraph is provided, it should be the sentence number within the paragraph (restart at 1 for each new paragraph). Otherwise it may be an increasing number for the whole document."
+    },
+    "noDocumentIndexing": {
+      "description": "Disable document indexing (page/paragraph/sentence) for the object",
+      "properties": {
+        "page": false,
+        "paragraph": false,
+        "sentence": false
+      }
+    },
+    "sentiment": {
+      "type": "object",
+      "properties": {
+        "positiveValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Positive sentiment rating"
+        },
+        "positiveConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of positive sentiment rating"
+        },
+        "negativeValue": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Negative sentiment rating"
+        },
+        "negativeConfidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence of negative sentiment rating"
+        }
+      },
+      "dependencies": {
+        "positiveConfidence": {
+          "required": ["positiveValue"]
+        },
+        "negativeConfidence": {
+          "required": ["negativeValue"]
+        }
+      }
+    },
+    "emotions": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "emotion": {
+            "type": "string"
+          },
+          "emotionValue": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "emotionConfidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["emotion"]
+      }
+    }
+  }
+}

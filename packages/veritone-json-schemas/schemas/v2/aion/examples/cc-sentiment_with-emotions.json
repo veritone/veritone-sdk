@@ -1,0 +1,19 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Sentiment document containing emotions for whole document.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "emotions": [
+        {
+            "emotion": "excited",
+            "emotionValue": 0.14,
+            "emotionConfidence": 0.88
+        },
+        {
+            "emotion": "confused",
+            "emotionValue": 0.82,
+            "emotionConfidence": 0.75
+        }
+    ]
+}

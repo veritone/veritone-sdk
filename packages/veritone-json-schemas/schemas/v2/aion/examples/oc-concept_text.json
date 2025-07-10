@@ -1,0 +1,10 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Concept object with text field",
+  "object": [
+    {
+      "type": "concept",
+      "text": "I found some Lego under the couch."
+    }
+  ]
+}

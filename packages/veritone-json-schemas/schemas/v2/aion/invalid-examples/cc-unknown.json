@@ -1,0 +1,7 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Document for a contract that doesn't exist.",
+  "validationContracts": [
+    "unknown"
+  ]
+}

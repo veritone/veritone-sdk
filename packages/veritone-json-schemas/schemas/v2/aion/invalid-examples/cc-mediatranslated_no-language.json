@@ -1,0 +1,16 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Media Translated document containing media without a language.",
+    "validationContracts": [
+        "media-translated"
+    ],
+    "media": [
+        {
+            "assetId": "3190799828_SHBrXAuFGv"
+        },
+        {
+            "language": "fr",
+            "assetId": "3190799828_0lYoNodINr"
+        }
+    ]
+}

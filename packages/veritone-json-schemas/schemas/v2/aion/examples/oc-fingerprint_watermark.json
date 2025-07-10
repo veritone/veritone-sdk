@@ -1,0 +1,23 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-fingerprint_watermark.json",
+  "$example": "Object Contract: Fingerprint (watermark)",
+  "$comment": "Fingerprint object used to identify unique audio or video content. A fingerprint for watermarked content MUST include a 'label' (the unique fingerprint) and 'text'.",
+  "object": [
+    {
+      "label": "3337313135342d313630313834202020",
+      "type": "fingerprint",
+      "text": "371154-160184",
+      "vendor": {
+        "encode": true,
+        "inputFilePath": "/cache/2/0f221b28-e7ef-416c-b9fc-1234b6959825/job/77f/77f66ddf-c665-46ad-b671-5390e9a15f88/task/544fd925-6dbd-49fd-a53b-8b7047217ece/tmp/1656581120650168478-000000.000000000.000000000_1656581048923332109_d6843c10-257d-4ced-a428-b20c8a0fed1c.in",
+        "messageAscii": "371154-160184",
+        "messageHex": "3337313135342d313630313834202020",
+        "outputFilePath": "/cache/2/0f221b28-e7ef-416c-b9fc-1234b6959825/job/77f/77f66ddf-c665-46ad-b671-5390e9a15f88/task/544fd925-6dbd-49fd-a53b-8b7047217ece/tmp/1656581120650168478-000000.000000000.000000000_1656581048923332109_d6843c10-257d-4ced-a428-b20c8a0fed1c.wmark.in",
+        "secretKey": "56657269746f6e65576174724d61726b",
+        "strength": 10,
+        "uploadUrl": "s3://s3-vtn-marvelai-or-1/15092/371154/37115458563_wm.wav"
+      }
+    }
+  ]
+}

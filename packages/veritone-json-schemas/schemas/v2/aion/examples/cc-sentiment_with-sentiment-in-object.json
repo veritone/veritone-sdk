@@ -1,0 +1,17 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Sentiment document containing sentiment for an object.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "object": [
+        {
+            "type": "text",
+            "text": "It was pretty good, but could have been better.",
+            "sentiment": {
+                "positiveValue": 0.56,
+                "negativeValue": 0.2
+            }
+        }
+    ]
+}

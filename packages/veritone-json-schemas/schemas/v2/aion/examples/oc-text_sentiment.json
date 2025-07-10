@@ -1,0 +1,20 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-text_sentiment.json",
+  "$example": "Object Contract: Text (analysis)",
+  "$comment": "Text objects may refer to text accompanied by an analysis of deeper meaning, like sentiment, intent, or emotional tone.",
+  "object": [
+    {
+      "type": "text",
+      "text": "Ignition sequence start . Six , five , four , three , two , one , zero . All engine running . Liftoff . We have a little . 32 minutes past the hour . Liftoff on Apollo 11 . Our clear role program . ",
+      "page": 1,
+      "paragraph": 1,
+      "sentence": 4,
+      "sentiment": {
+        "positiveValue": 1,
+        "positiveConfidence": 0.8942003647486371,
+        "negativeValue": 0
+      }
+    }
+  ]
+}

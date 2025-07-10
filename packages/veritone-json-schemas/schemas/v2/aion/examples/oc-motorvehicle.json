@@ -1,0 +1,47 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-motorvehicle.json",
+  "$example": "Object Contract: Motor vehicle",
+  "$comment": "This document describes the Dukes of Hazzard's General Lee with the optional license plate. A motor vehicle MUST include 'motorVehicle' property with at least one identifying property in it, and MAY include other properties.",
+  "object": [
+    {
+      "type": "motorVehicle",
+      "label": "CNH320",
+      "motorVehicle": {
+        "make": "Dodge",
+        "model": "Charger",
+        "makeModelConfidence": 0.92,
+        "bodyStyle": "2 door",
+        "bodyStyleConfidence": 0.8,
+        "color": "orange",
+        "colorConfidence": 0.85,
+        "orientation": "front",
+        "orientationConfidence": 0.95,
+        "licensePlate": {
+          "number": "CNH320",
+          "confidence": 0.95,
+          "issuer": "US-GA-HAZZARD",
+          "issuerConfidence": 0.63
+        }
+      },
+      "boundingPoly": [
+        {
+          "x": 0.8046875,
+          "y": 0.4597222222222222
+        },
+        {
+          "x": 0.83984375,
+          "y": 0.4597222222222222
+        },
+        {
+          "x": 0.83984375,
+          "y": 0.5041666666666667
+        },
+        {
+          "x": 0.8046875,
+          "y": 0.5041666666666667
+        }
+      ]
+    }
+  ]
+}

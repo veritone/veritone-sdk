@@ -1,0 +1,19 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Example: Demonstrates inclusion of comments in AION files.Any AION file may have '$comment' in the root object which is ignored by aiWARE",
+  "object": [
+    {
+      "$comment": "Any object may have '$comment' which is ignored by aiWARE",
+      "type": "text",
+      "text": "Text field"
+    }
+  ],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "$comment": "Any series may have '$comment' which is ignored by aiWARE",
+      "speakerId": "Vox12-m"
+    }
+  ]
+}

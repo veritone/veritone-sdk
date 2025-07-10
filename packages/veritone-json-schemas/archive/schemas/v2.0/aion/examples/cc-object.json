@@ -1,0 +1,362 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/cc-object.json",
+  "$comment": "Objects identified in a image. An object document only contains objects of type 'object'. Object detection engines identify various objects in images or video and label their position and attributes. Object detection engines are the most common engine types, and the 'object' contract is the most general contract for storing any generic object. There are also more specific object types such as 'face', 'motorVehicle', 'logo', 'barcode' that may be more appropriate for specific use cases.",
+  "validationContracts": [
+    "object"
+  ],
+  "object": [
+    {
+      "type": "object",
+      "label": "person",
+      "referenceId": "ca5b236e-f887-46a2-81fe-1e19add86318",
+      "boundingPoly": [
+        {
+          "x": 0.3911458,
+          "y": 0.7
+        },
+        {
+          "x": 0.446875,
+          "y": 0.7
+        },
+        {
+          "x": 0.446875,
+          "y": 0.9972222
+        },
+        {
+          "x": 0.3911458,
+          "y": 0.9972222
+        }
+      ],
+      "tags": [
+        {
+          "key": "Accessory",
+          "value": "BagAny"
+        },
+        {
+          "key": "Body",
+          "value": "Average"
+        },
+        {
+          "key": "Face",
+          "value": "Back"
+        },
+        {
+          "key": "Gender",
+          "value": "Female"
+        },
+        {
+          "key": "HairColor",
+          "value": "Black"
+        },
+        {
+          "key": "HairType",
+          "value": "Long"
+        },
+        {
+          "key": "LowerColor",
+          "value": "Blue"
+        },
+        {
+          "key": "LowerType",
+          "value": "Trousers"
+        },
+        {
+          "key": "UpperColor",
+          "value": "Black"
+        },
+        {
+          "key": "UpperSleeve",
+          "value": "Long"
+        },
+        {
+          "key": "UpperType",
+          "value": "Jacket"
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "label": "person",
+      "referenceId": "8591f4d8-d0fc-43f9-a502-651f9c08df63",
+      "boundingPoly": [
+        {
+          "x": 0.465625,
+          "y": 0.1657407
+        },
+        {
+          "x": 0.5161458,
+          "y": 0.1657407
+        },
+        {
+          "x": 0.5161458,
+          "y": 0.4351852
+        },
+        {
+          "x": 0.465625,
+          "y": 0.4351852
+        }
+      ],
+      "tags": [
+        {
+          "key": "Accessory",
+          "value": "BagAny"
+        },
+        {
+          "key": "Body",
+          "value": "Average"
+        },
+        {
+          "key": "FootwearColor",
+          "value": "White"
+        },
+        {
+          "key": "Gender",
+          "value": "Male"
+        },
+        {
+          "key": "HairColor",
+          "value": "Gray"
+        },
+        {
+          "key": "HairType",
+          "value": "Short"
+        },
+        {
+          "key": "LowerColor",
+          "value": "Black"
+        },
+        {
+          "key": "LowerType",
+          "value": "Trousers"
+        },
+        {
+          "key": "UpperColor",
+          "value": "White"
+        },
+        {
+          "key": "UpperSleeve",
+          "value": "Short"
+        }
+      ]
+    }
+  ],
+  "series": [
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Person",
+        "type": "object",
+        "confidence": 0.969150185585022
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Adult",
+        "type": "object",
+        "confidence": 0.9389280676841736
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Male",
+        "type": "object",
+        "confidence": 0.9389280676841736
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Man",
+        "type": "object",
+        "confidence": 0.9389280676841736
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Face",
+        "type": "object",
+        "confidence": 0.9062963128089905
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Head",
+        "type": "object",
+        "confidence": 0.9062963128089905
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Urban",
+        "type": "object",
+        "confidence": 0.8651825189590454
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Clothing",
+        "type": "object",
+        "confidence": 0.8133789300918579
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Hat",
+        "type": "object",
+        "confidence": 0.8133789300918579
+      }
+    },
+    {
+      "startTimeMs": 500,
+      "stopTimeMs": 1500,
+      "object": {
+        "label": "Beverage",
+        "type": "object",
+        "confidence": 0.8080576062202454
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Head",
+        "type": "object",
+        "confidence": 0.9964983463287354
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Person",
+        "type": "object",
+        "confidence": 0.9964983463287354
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Cap",
+        "type": "object",
+        "confidence": 0.9959431290626526
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Clothing",
+        "type": "object",
+        "confidence": 0.9959431290626526
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Hat",
+        "type": "object",
+        "confidence": 0.9959431290626526
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Face",
+        "type": "object",
+        "confidence": 0.9954925775527954
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Baseball Cap",
+        "type": "object",
+        "confidence": 0.9941529631614685
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Urban",
+        "type": "object",
+        "confidence": 0.9566733837127686
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Photography",
+        "type": "object",
+        "confidence": 0.7990989685058594
+      }
+    },
+    {
+      "startTimeMs": 1500,
+      "stopTimeMs": 2500,
+      "object": {
+        "label": "Portrait",
+        "type": "object",
+        "confidence": 0.7990989685058594
+      }
+    },
+    {
+      "startTimeMs": 13000,
+      "stopTimeMs": 14000,
+      "object": {
+        "label": "indoor",
+        "type": "object",
+        "confidence": 0.8950548768043518
+      }
+    },
+    {
+      "startTimeMs": 13000,
+      "stopTimeMs": 14000,
+      "object": {
+        "label": "fruit",
+        "type": "object",
+        "confidence": 0.874628484249115
+      }
+    },
+    {
+      "startTimeMs": 13000,
+      "stopTimeMs": 14000,
+      "object": {
+        "label": "apple",
+        "type": "object",
+        "confidence": 0.8403022885322571
+      }
+    },
+    {
+      "startTimeMs": 13000,
+      "stopTimeMs": 14000,
+      "object": {
+        "label": "wooden",
+        "type": "object",
+        "confidence": 0.7696489095687866
+      }
+    }
+  ]
+}

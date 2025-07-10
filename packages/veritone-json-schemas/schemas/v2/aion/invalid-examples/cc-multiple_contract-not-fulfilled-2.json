@@ -1,0 +1,16 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Document for anomaly and language, but doesn't fulfill the anomaly contract.",
+  "$comments": "Does not fulfill the 'anomaly' contract",
+  "validationContracts": [
+    "anomaly",
+    "language"
+  ],
+  "language": "en",
+  "object": [
+    {
+      "type": "text",
+      "text": "hi"
+    }
+  ]
+}

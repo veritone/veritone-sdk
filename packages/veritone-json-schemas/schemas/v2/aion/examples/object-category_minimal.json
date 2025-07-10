@@ -1,0 +1,15 @@
+{
+     "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Object category must have a class, other fields are optional.",
+ "object": [
+    {
+      "type": "object",
+      "label": "dog",
+      "objectCategory": [
+        {
+          "class": "animal"
+        }
+      ]
+    }
+  ]
+}

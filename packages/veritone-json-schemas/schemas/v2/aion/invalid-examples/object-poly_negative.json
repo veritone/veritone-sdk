@@ -1,0 +1,9 @@
+{
+  "object": [
+    {
+      "type": "object",
+      "label": "negative coordinate",
+      "boundingPoly": [{ "x": -0.1, "y": 0.1 }]
+    }
+  ]
+}

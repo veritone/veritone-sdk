@@ -1,0 +1,22 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "This motor vehicle object is invalid because it contains lip movement.",
+  "object": [
+    {
+      "type": "motorVehicle",
+      "motorVehicle": {
+        "make": "Dodge",
+        "model": "Charger",
+        "bodyStyle": "2 door",
+        "color": "orange",
+        "orientation": "front",
+        "licensePlate": "CNH320",
+        "licensePlateRegion": "US-GA-HAZZARD"
+      },
+      "lipMovement": {
+        "$comment": "lip movement is forbidden in a motorVehicle object",
+        "confidence": 0.00
+      }
+    }
+  ]
+}

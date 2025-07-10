@@ -1,0 +1,25 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract containing multiple schemaIds.",
+  "validationContracts": [
+    "00000000-0000-0000-0000-000000000000",
+    "dc71be16-120a-4ad0-a2f6-f9d1289b587f"
+  ],
+  "object": [
+    {
+      "type": "object",
+      "structuredData": {
+        "00000000-0000-0000-0000-000000000000": {
+          "label": "OCR",
+          "text": "This is a sample text for the object.",
+          "language": "en"
+        },
+        "dc71be16-120a-4ad0-a2f6-f9d1289b587f": {
+          "label": "OCR",
+          "text": "This is a sample text for the object.",
+          "language": "en"
+        }
+      }
+    }
+  ]
+}

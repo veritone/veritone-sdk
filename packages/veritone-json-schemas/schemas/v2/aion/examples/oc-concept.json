@@ -1,0 +1,82 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-concept.json",
+  "$example": "Object Contract: Concept",
+  "$comment": "Concept objects may be for specific text phrases, or a list of concepts found across the entire document. Concept objects MUST include 'text' and/or 'objectCategory' properties.",
+  "sourceEngineId": "06bbc2e7-aa59-4c32-9ec3-1a147fff78a6",
+  "taskId": "24093709_SY9NZT9cqq9bJ0r",
+  "internalTaskId": "44fcdd60-16ed-4fc1-bcbb-c896bb771965",
+  "generatedDateUTC": "2024-09-09T20:43:18.189224743Z",
+  "object": [
+    {
+      "type": "concept",
+      "text": "Family game night"
+    },
+    {
+      "type": "concept",
+      "text": "We're gonna go to walk up to the family room.",
+      "objectCategory": [
+        {
+          "class": "Home & Garden",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=274",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "type": "concept",
+      "objectCategory": [
+        {
+          "class": "Shopping::Children's Games and Toys",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=482",
+          "confidence": 0.14759358288770202
+        },
+        {
+          "class": "Food & Drink",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=210",
+          "confidence": 0.0855614973262032
+        },
+        {
+          "class": "Pets::Dogs",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=425",
+          "confidence": 0.08342245989304746
+        },
+        {
+          "class": "Automotive",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=1",
+          "confidence": 0.0791443850267376
+        },
+        {
+          "class": "Food & Drink::Desserts and Baking",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=217",
+          "confidence": 0.07807486631016014
+        },
+        {
+          "class": "Style & Fashion",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=552",
+          "confidence": 0.04598930481283431
+        },
+        {
+          "class": "Hobbies & Interests::Games and Puzzles::Board Games and Puzzles",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=270",
+          "confidence": 0.03743315508021336
+        },
+        {
+          "class": "Television",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=640",
+          "confidence": 0.033155080213903496
+        },
+        {
+          "class": "Fine Art::Dance",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=203",
+          "confidence": 0.027807486631016155
+        },
+        {
+          "class": "Technology & Computing::Robotics",
+          "@id": "https://www.iab.com/guidelines/taxonomy?iab_id=638",
+          "confidence": 0.025668449197861223
+        }
+      ]
+    }
+  ]
+}

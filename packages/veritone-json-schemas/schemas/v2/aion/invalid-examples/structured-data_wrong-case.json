@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Structured data must contain lower case UUIDs.",
+  "object": [
+    {
+      "type": "object",
+      "structuredData": {
+        "12345678-90AB-CDEF-1234-567890ABCDEF": {
+          "language": "en"
+        }
+      }
+    }
+  ]
+}

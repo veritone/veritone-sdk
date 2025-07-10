@@ -1,0 +1,13 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Keyword document missing keyword object.",
+    "validationContracts": [
+        "keyword"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "true gentleman"
+        }
+    ]
+}

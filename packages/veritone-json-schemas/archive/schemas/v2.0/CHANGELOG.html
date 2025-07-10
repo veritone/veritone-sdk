@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CHANGELOG</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="version-history-for-version-2-schemas">Version history for
+version 2 schemas</h1>
+<h2 id="version-2.0---july-3-2025">Version 2.0 - July 3, 2025</h2>
+<ul>
+<li><strong>Versioning introduced.</strong> The reason for introducing
+versioning is to be more deliberate and concise about what is supported.
+As new cognitive and generative capabilities are added to the aiWARE
+ecosystem, it is becoming more critical to update the AION specification
+in a controlled manner to adjust best practices while still maintaining
+backward compatibility.
+<ul>
+<li>Prior versions are “version 1” and available at <a
+href="https://get.aiware.com/schemas/v1/index.html">https://get.aiware.com/schemas/v1/index.html</a></li>
+<li>Uses <a href="https://semver.org/">symantic versioning</a>
+conventions: major versions are not backward compatible, but minor
+versions are.</li>
+<li>Individual versions are now immutable, and version number will be
+incremented for every change.</li>
+<li>The official schema for each version is now at
+<code>https://get.aiware.com/schemas/vM.N/...</code> where the version
+is like <code>v1.0</code>, <code>v1.1</code>, <code>v2.0</code>,
+<code>v2.1</code>, etc. Example: <a
+href="https://get.aiware.com/schemas/v2.0/index.html">https://get.aiware.com/schemas/v2.0/index.html</a>
+<ul>
+<li>The latest minor version for every major version is also linked
+under the major version number <code>vM</code>. For example, at the time
+of writing, <code>v2</code> is a link to <code>v2.0</code>, and will be
+moved to link to <code>v2.1</code> when that version is released.
+Example: <a
+href="https://get.aiware.com/schemas/v2/index.html">https://get.aiware.com/schemas/v2/index.html</a></li>
+<li>The overall latest version will always be version number “latest”.
+Example: <a
+href="https://get.aiware.com/schemas/latest/index.html">https://get.aiware.com/schemas/latest/index.html</a></li>
+<li>A full index of all released versions is available at <a
+href="https://get.aiware.com/schemas/index.html">https://get.aiware.com/schemas/index.html</a></li>
+</ul></li>
+</ul></li>
+<li><strong>Renamed the schema</strong> from
+“<code>aion/aion.json</code>” to “<code>aion/schema.json</code>” to
+match best practice for schema names.</li>
+<li><strong>Changed the Content-Type</strong> of all schemas from
+<code>application/json</code> to <code>application/schema+json</code>
+per best practices.</li>
+<li><strong>Capability validation</strong> is now performed in the AION
+schema. Capability validation is the validation contract for the AION
+document as a whole. Any AION document that contains a list of contracts
+in the <code>validationContracts</code> array is required to validate
+against the contracts that are listed
+<ul>
+<li>The separate “Capability Schema” documents have been deprecated. Now
+that AION contains all capability validation, there is no longer a need
+for a separate schema for each capability. If you still need separate
+schemas for capability validation, please use <a
+href="http://get.aiware.com/schemas/v1/index.html">version 1</a> of the
+schemas.</li>
+</ul></li>
+<li><strong>Object validation</strong> has been added to AION. Object
+validation is the validation contract of each individual
+<code>object</code> in AION. Based on the <code>type</code> of
+<code>object</code>, that object may need to validate against a contract
+for the object type. For example, if you specify an object is of
+<code>"type": "entity"</code>, you <em>MUST</em> include a
+<code>label</code> and <code>objectCategory</code> for that object, you
+<em>MAY</em> provide other fields like <code>page</code> or
+<code>text</code>, and you <em>MUST NOT</em> provide irrelevant fields
+like <code>lipMovement</code>, <code>age</code>, or <code>mode</code>.
+<ul>
+<li>All legacy object types have object validation requirements. These
+requirements were designed to accommodate as much of the legacy usage as
+possible. If your engine does not meet these requirement, we recommend
+you update your engine. If this is not possible, then continue to use
+the v1 schemas.</li>
+</ul></li>
+<li><strong>Comment support</strong> has been added for documents,
+objects, and series. Taking a page from the json-schema definitions, we
+now allow a <code>$comment</code> property in any document, object or
+series item. The value must be a string, and is ignored by aiWARE
+processing. In addition, any property at the root of the document
+starting with a <code>$</code> character is permitted but ignored by the
+aiWARE ecosystem.</li>
+<li><strong>New object types</strong> have been added:
+<ul>
+<li><strong><code>licensePlate</code></strong> requries a
+<code>licensePlate</code> with a <code>number</code>.</li>
+<li><strong><code>motorVehicle</code></strong> requries a
+<code>motorVehicle</code> that may optionally have a
+<code>licensePlate</code>.</li>
+<li><strong><code>ocr</code></strong> requires a <code>text</code> and
+<code>boundingPoly</code>. The type <code>"ocr"</code> is a
+specialization of the <code>"text"</code> type, so an <code>ocr</code>
+object counts as a <code>text</code> object for the purposes of
+validating <code>"validationContracts": ["text"]</code>.</li>
+</ul></li>
+<li><strong>Partial word transcription</strong> support has been added.
+Transcribed <code>words</code> now have an optional <code>partial</code>
+property that can be set to <code>true</code> when doing real-time
+trasncription to indicate that the word or phrase has only been
+partially transcribed, and may be changed as more context becomes
+available.</li>
+</ul>
+<style>
+body { max-width: 72em !important; }
+</style>
+</body>
+</html>

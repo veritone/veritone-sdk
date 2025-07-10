@@ -1,0 +1,100 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-text_generation.json",
+  "$example": "Object Contract: Text (generation)",
+  "$comment": "Text objects may store generated text like this output from an input document containing 'Provide a three sentence summary of The Hobbit'",
+  "object": [
+    {
+      "label": "summary",
+      "type": "text",
+      "text": "The Hobbit: A Three-Sentence Summary"
+    },
+    {
+      "label": "summary",
+      "type": "text",
+      "text": "Bilbo Baggins, a home-loving hobbit, is unexpectedly swept away on an adventure by Gandalf the wizard and a company of dwarves to reclaim their stolen treasure from the dragon Smaug. "
+    },
+    {
+      "label": "summary",
+      "type": "text",
+      "text": "Along the perilous journey, Bilbo discovers courage, cunning, and a magical ring, ultimately playing a pivotal role in the dwarves' quest and the ensuing battle for the treasure."
+    },
+    {
+      "label": "summary",
+      "type": "text",
+      "text": "He returns to the Shire a changed hobbit, richer in experience and possessions, though forever marked by his extraordinary escapade."
+    }
+  ],
+  "vendor": {
+    "FullResponse": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0
+        }
+      ],
+      "created": 1733342200,
+      "id": "chatcmpl-AapmCB6BnTzlbcEBeXVul9e6fUkyS",
+      "model": "gpt-4o-2024-08-06",
+      "prompt_filter_results": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "prompt_index": 0
+        }
+      ],
+      "system_fingerprint": "fp_d54531d9eb",
+      "usage": {
+        "completion_tokens": 172,
+        "prompt_tokens": 13,
+        "total_tokens": 185
+      }
+    }
+  }
+}

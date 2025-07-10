@@ -1,0 +1,8 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract using upper case schemaIds.",
+  "validationContracts": [
+    "12345678-90AB-CDEF-1234-567890ABCDEF"
+  ],
+  "object": []
+}

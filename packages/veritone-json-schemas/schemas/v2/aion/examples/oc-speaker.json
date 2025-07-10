@@ -1,0 +1,88 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-speaker.json",
+  "$example": "Object Contract: Speaker",
+  "$comment": "Speaker identification processes audio files and identifies individual speakers. The speaker object MUST include a 'label' to identify the speaker. The object MAY include some other properties as well. Typically, the speakers are identified within the context of one audio file, and are labeled something like 'Speaker 1' and 'Speaker 2' or simply 'A' and 'B', but if an external reference is available, the speaker may be identified by name or entityId.",
+  "series": [
+    {
+      "startTimeMs": 660,
+      "stopTimeMs": 20320,
+      "object": {
+        "label": "E",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 1620,
+      "stopTimeMs": 8270,
+      "speakerId": "S1",
+      "object": {
+        "label": "S1",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 8550,
+      "stopTimeMs": 30980,
+      "speakerId": "S2",
+      "object": {
+        "label": "S2",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 20860,
+      "stopTimeMs": 33780,
+      "object": {
+        "label": "B",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 33870,
+      "stopTimeMs": 38370,
+      "object": {
+        "label": "E",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 38430,
+      "stopTimeMs": 42840,
+      "object": {
+        "label": "B",
+        "type": "speaker"
+      }
+    },
+    {
+      "startTimeMs": 4782405,
+      "stopTimeMs": 4821085,
+      "object": {
+        "label": "Tom McKernan",
+        "type": "speaker",
+        "entityId": "6db546cf-02f9-40d8-b94f-324bfb8e0cad",
+        "libraryId": "f47900f3-6493-475f-b049-aaa853e7f104",
+        "confidence": 0.97
+      }
+    },
+    {
+      "startTimeMs": 7897440,
+      "stopTimeMs": 7904210,
+      "object": {
+        "label": "Toby Hlavinka",
+        "type": "speaker",
+        "entityId": "994be2d7-4677-4eb3-8967-0bfa1772d064",
+        "libraryId": "f47900f3-6493-475f-b049-aaa853e7f104",
+        "confidence": 0.68
+      }
+    },
+    {
+      "startTimeMs": 7904530,
+      "stopTimeMs": 7912700,
+      "object": {
+        "label": "?",
+        "type": "speaker"
+      }
+    }
+  ]
+}

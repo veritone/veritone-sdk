@@ -1,0 +1,63 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Transcription document containing a transcription lattice where alternate paths are represented.",
+    "validationContracts": [
+        "transcript"
+    ],
+    "series": [
+        {
+            "startTimeMs": 0,
+            "stopTimeMs": 200,
+            "words": [
+                {
+                    "word": "veritone",
+                    "confidence": 0.7,
+                    "bestPath": true,
+                    "utteranceLength": 2
+                },
+                {
+                    "word": "baritone",
+                    "confidence": 0.1,
+                    "utteranceLength": 2
+                },
+                {
+                    "word": "very",
+                    "confidence": 0.1,
+                    "utteranceLength": 1
+                },
+                {
+                    "word": "berry",
+                    "confidence": 0.1,
+                    "utteranceLength": 1
+                }
+            ]
+        },
+        {
+            "startTimeMs": 200,
+            "stopTimeMs": 300,
+            "words": [
+                {
+                    "word": "veritone",
+                    "confidence": 0.7,
+                    "bestPath": true,
+                    "utteranceLength": 1
+                },
+                {
+                    "word": "baritone",
+                    "confidence": 0.1,
+                    "utteranceLength": 1
+                },
+                {
+                    "word": "tone",
+                    "confidence": 0.1,
+                    "utteranceLength": 1
+                },
+                {
+                    "word": "phone",
+                    "confidence": 0.1,
+                    "utteranceLength": 1
+                }
+            ]
+        }
+    ]
+}

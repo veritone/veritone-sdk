@@ -1,0 +1,32 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Text document containing an OCR object.",
+  "validationContracts": [
+    "text"
+  ],
+  "object": [
+    {
+      "type": "ocr",
+      "text": "Annual Report",
+      "language": "en",
+      "boundingPoly": [
+        {
+          "x": 0.6916666030883789,
+          "y": 0.9012345671653748
+        },
+        {
+          "x": 0.8222220540046692,
+          "y": 0.9012345671653748
+        },
+        {
+          "x": 0.8222220540046692,
+          "y": 0.924691379070282
+        },
+        {
+          "x": 0.6916666030883789,
+          "y": 0.924691379070282
+        }
+      ]
+    }
+  ]
+}

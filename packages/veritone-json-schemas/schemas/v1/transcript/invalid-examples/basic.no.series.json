@@ -1,0 +1,4 @@
+{
+  "schemaId": "https://get.aiware.com/schemas/transcript.json",
+  "validationContracts": ["transcript"]
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "A schemaId validation contract containing neither 'object' nor 'series'.",
+  "validationContracts": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "language": "en"
+}

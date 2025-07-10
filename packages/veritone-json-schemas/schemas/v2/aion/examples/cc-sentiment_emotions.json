@@ -1,0 +1,74 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-sentiment_emotions.json",
+    "$example": "Capability Contract: Sentiment (emotions)",
+    "$comment": "Detecting emotions on a face. Emotion analysis engines analyze context or images to determine the emotions portrayed. In this document, a single face is analyzed and the confidence levels for each emotion are provided.",
+    "validationContracts": [
+        "sentiment"
+    ],
+    "object": [
+        {
+            "type": "face",
+            "label": "Charles Bolden Jr.",
+            "entityId": "91d044ce-d9e4-4906-bcf1-14fd40bb0d2e",
+            "libraryId": "b0ad8e91-62ad-4298-a307-9d51422fb2b4",
+            "confidence": 0.9999669647216797,
+            "emotions": [
+                {
+                    "emotion": "CALM",
+                    "emotionConfidence": 0.0523681640625
+                },
+                {
+                    "emotion": "HAPPY",
+                    "emotionConfidence": 0.7052734375
+                },
+                {
+                    "emotion": "SAD",
+                    "emotionConfidence": 0.0792694091796875
+                },
+                {
+                    "emotion": "SURPRISED",
+                    "emotionConfidence": 0.02219676971435547
+                },
+                {
+                    "emotion": "CONFUSED",
+                    "emotionConfidence": 0.011793772131204605
+                },
+                {
+                    "emotion": "ANGRY",
+                    "emotionConfidence": 0.0043010711669921875
+                },
+                {
+                    "emotion": "DISGUSTED",
+                    "emotionConfidence": 0.0030851364135742188
+                },
+                {
+                    "emotion": "FEAR",
+                    "emotionConfidence": 0.0006639957427978516
+                }
+            ],
+            "age": {
+                "min": 22,
+                "max": 28
+            },
+            "boundingPoly": [
+                {
+                    "x": 0.3415679666731093,
+                    "y": 0.14463057782914904
+                },
+                {
+                    "x": 0.7726799647013346,
+                    "y": 0.14463057782914904
+                },
+                {
+                    "x": 0.7726799647013346,
+                    "y": 0.7595758967929416
+                },
+                {
+                    "x": 0.3415679666731093,
+                    "y": 0.7595758967929416
+                }
+            ]
+        }
+    ]
+}

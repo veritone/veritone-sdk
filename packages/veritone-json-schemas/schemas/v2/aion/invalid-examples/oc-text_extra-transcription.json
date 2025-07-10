@@ -1,0 +1,26 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Text objects with a transcription (which is only supported for type 'object').",
+  "sourceEngineId": "a95f6fd7-9041-4fe3-ad8a-dc3659ca12b1",
+  "taskId": "24125116_oAoxaxSeMv9u7FD",
+  "internalTaskId": "f3081e5a-1ace-4619-85e2-36390a246f5c",
+  "generatedDateUTC": "2024-12-16T12:20:50.532020548Z",
+  "object": [
+    {
+      "type": "text",
+      "text": "Hello, this is Mike. How may I help you ",
+      "transcription": {
+        "text": "Hello, this is Mike. How may I help you ",
+        "confidence": 0.95
+      }
+    },
+    {
+      "type": "text",
+      "text": ", Mike? Um, my name is Paul. Um, I'm your customer. And, uh, frankly, um, I'm getting quite angry ",
+      "transcription": {
+        "text": ", Mike? Um, my name is Paul. Um, I'm your customer. And, uh, frankly, um, I'm getting quite angry ",
+        "confidence": 0.42
+      }
+    }
+ ]
+}

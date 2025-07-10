@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>examples</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="examples">Examples</h1>
+<h2 id="aion">aion</h2>
+<ul>
+<li><a href="./aion/examples/cc-concept.json"><strong>Capability
+Contract: Concepts</strong></a><br />
+Concepts found in an interview about diabetes. A concept document
+contains objects and series objects of type ‘concept’. This document
+contains a summary of all concepts found in a transcription, as well as
+a series with the concepts found at each time-stamp. This example uses
+eContext library of concepts, but there are many other libraries as
+well, like IAB’s Content Taxonomy or IPTC’s Media Topics.</li>
+<li><a href="./aion/examples/cc-entity.json"><strong>Capability
+Contract: Entity</strong></a><br />
+Entities found in a text message. An entity document contains objects of
+type ‘namedEntity’. Entity extraction engines classify named entities,
+located in unstructured text, into predefined categories such as People,
+Organizations, or Locations.</li>
+<li><a href="./aion/examples/cc-keyword.json"><strong>Capability
+Contract: Keyword</strong></a><br />
+Keywwords and descriptions extracted from a description of a person. A
+keyword document contains objects of type ‘keyword’. Keyword extraction
+engines find and extract significant words or phrases from a text, which
+can be used for indexing, searching, or summarizing content.</li>
+<li><a href="./aion/examples/cc-language.json"><strong>Capability
+Contract: Language</strong></a><br />
+The language detected in a document or media file. The only required
+information is the ‘language’ at the root, which must be an ISO-639-1
+language code. This document also includes an optional list of other
+languages checked, along with their confidence scores.</li>
+<li><a href="./aion/examples/cc-mediatranslated.json"><strong>Capability
+Contract: Media-translated</strong></a><br />
+Translations of full media files. When media is translated, the
+translation may be attached to TDOs (temporal data objects) as asset
+documents. The engine stores references to these translation assets in a
+‘media’ list, which identifies the language of each document. In this
+example, literal translations are also stored as optional ‘text’
+objects, which makes this document also fulfill the Text Capability
+Contract.</li>
+<li><a href="./aion/examples/cc-object.json"><strong>Capability
+Contract: Objects</strong></a><br />
+Objects identified in a image. An object document only contains objects
+of type ‘object’. Object detection engines identify various objects in
+images or video and label their position and attributes. Object
+detection engines are the most common engine types, and the ‘object’
+contract is the most general contract for storing any generic object.
+There are also more specific object types such as ‘face’,
+‘motorVehicle’, ‘logo’, ‘barcode’ that may be more appropriate for
+specific use cases.</li>
+<li><a
+href="./aion/examples/cc-sentiment_emotions.json"><strong>Capability
+Contract: Sentiment (emotions)</strong></a><br />
+Detecting emotions on a face. Emotion analysis engines analyze context
+or images to determine the emotions portrayed. In this document, a
+single face is analyzed and the confidence levels for each emotion are
+provided.</li>
+<li><a
+href="./aion/examples/cc-sentiment_sentiments.json"><strong>Capability
+Contract: Sentiment (sentiments)</strong></a><br />
+Sentiment detected in a brief review. Sentiment analysis engines analyze
+text to determine the emotional tone behind it, classifying it as
+positive, negative, or neutral. Multiple sentiments may be detected in
+the same phrase or document with varying confidence levels.</li>
+<li><a href="./aion/examples/cc-summary.json"><strong>Capability
+Contract: Summary</strong></a><br />
+Summary of textual documents. This example contains a summary of a text
+discussing the development of spider silk in an industrial context.</li>
+<li><a href="./aion/examples/cc-text_ocr.json"><strong>Capability
+Contract: Text (OCR)</strong></a><br />
+Text read from an image. This example demonstrates the output of OCR on
+a low-resolution news video.</li>
+<li><a href="./aion/examples/cc-text_text.json"><strong>Capability
+Contract: Text (text)</strong></a><br />
+Text extracted or generated from a document or media file. There are
+many engine types that generate ‘text’ objects: translations, OCR, and
+text extraction (there is a separate contract for transcriptions,
+though). This document contains text translated to Welsh, but any engine
+that extracts or generates text from an input file can use this
+contract.</li>
+<li><a href="./aion/examples/cc-transcript.json"><strong>Capability
+Contract: Transcript</strong></a><br />
+Transcription of audio documents. This example contains a transcript of
+a video about spider silk. Transcript contracts may also be used for
+translations of spoken language as well.</li>
+<li><a href="./aion/examples/empty.json"><strong>Empty
+Object</strong></a><br />
+An empty object is a valid AION file</li>
+<li><a href="./aion/examples/oc-concept.json"><strong>Object Contract:
+Concept</strong></a><br />
+Concept objects may be for specific text phrases, or a list of concepts
+found across the entire document. Concept objects MUST include ‘text’
+and/or ‘objectCategory’ properties.</li>
+<li><a href="./aion/examples/oc-face.json"><strong>Object Contract:
+Face</strong></a><br />
+Face object with many supporting fields. Objects of type ‘face’ MUST
+include a ‘boundingPoly’, SHOULD include ‘label’, ‘confidence’, and MAY
+include select other fields related to facial features.</li>
+<li><a
+href="./aion/examples/oc-fingerprint_tracked-object.json"><strong>Object
+Contract: Fingerprint (tracking)</strong></a><br />
+Fingerprint object used to identify a unique object (person, vehicle,
+etc.) in a video stream. This fingerprint may also be used to track the
+object between different videos. These fingerprints MUST include a 256-,
+512-, or 1024-dimensional fingerprintVector, referenceId, label, and
+tags, and MAY include some other properties.</li>
+<li><a
+href="./aion/examples/oc-fingerprint_watermark.json"><strong>Object
+Contract: Fingerprint (watermark)</strong></a><br />
+Fingerprint object used to identify unique audio or video content. A
+fingerprint for watermarked content MUST include a ‘label’ (the unique
+fingerprint) and ‘text’.</li>
+<li><a href="./aion/examples/oc-licenseplate.json"><strong>Object
+Contract: License plate</strong></a><br />
+This document describes the license plate of the Dukes of Hazzard’s
+General Lee. A license plate object MUST include ‘licensePlate’
+property, and MAY include some other properties. If the license plate is
+detected attached to an identifiable vehicle, then ‘motorVehicle’ type
+should be used instead.</li>
+<li><a href="./aion/examples/oc-logo.json"><strong>Object Contract:
+Logo</strong></a><br />
+This document describes the logos found in a test document. A logo
+object MUST include ‘label’, ‘confidence’ and ‘boundingPoly’, and MAY
+include some other properties.</li>
+<li><a href="./aion/examples/oc-motorvehicle.json"><strong>Object
+Contract: Motor vehicle</strong></a><br />
+This document describes the Dukes of Hazzard’s General Lee with the
+optional license plate. A motor vehicle MUST include ‘motorVehicle’
+property with at least one identifying property in it, and MAY include
+other properties.</li>
+<li><a href="./aion/examples/oc-namedentity.json"><strong>Object
+Contract: Named Entity</strong></a><br />
+Named entity objects refer to specific entities (individuals, locations,
+times, organizations, etc) in a document along with an identifying
+category for that entity. Named entities MUST include a ‘label’ for the
+entity and an ‘objectCategory’ for the identification, and MAY include
+some other properties.</li>
+<li><a href="./aion/examples/oc-object.json"><strong>Object Contract:
+Object</strong></a><br />
+Object detection is the process of identifying objects within an image
+or video. Objects are the most general type of visual entity
+identification, and should be used only when more specific types (like
+‘face’ or ‘licensePlate’) are not applicable. Objects SHOULD have a
+‘boundingPoly’ and a ‘confidence’</li>
+<li><a href="./aion/examples/oc-ocr.json"><strong>Object Contract: OCR
+(Optical Character Recognition)</strong></a><br />
+OCR is the extraction of text from images or video frames. OCR objects
+are a specialization of ‘text’ objects that include bounding polygons
+for the text. OCR objects MUST include ‘text’ and ‘boundingPoly’, and
+MAY include some other properties.</li>
+<li><a href="./aion/examples/oc-sound.json"><strong>Object Contract:
+Sound</strong></a><br />
+Sound identification may include music, sound effects, other audio
+content like silence or static. Sound objects MUST include a ‘label’,
+SHOULD include ‘confidence’, and MAY include some other properties.</li>
+<li><a href="./aion/examples/oc-speaker.json"><strong>Object Contract:
+Speaker</strong></a><br />
+Speaker identification processes audio files and identifies individual
+speakers. The speaker object MUST include a ‘label’ to identify the
+speaker. The object MAY include some other properties as well.
+Typically, the speakers are identified within the context of one audio
+file, and are labeled something like ‘Speaker 1’ and ‘Speaker 2’ or
+simply ‘A’ and ‘B’, but if an external reference is available, the
+speaker may be identified by name or entityId.</li>
+<li><a href="./aion/examples/oc-text_extraction.json"><strong>Object
+Contract: Text (extraction)</strong></a><br />
+Text objects may refer to text extracted from a file, like in the case
+of OCR (optical character recognition).</li>
+<li><a href="./aion/examples/oc-text_generation.json"><strong>Object
+Contract: Text (generation)</strong></a><br />
+Text objects may store generated text like this output from an input
+document containing ‘Provide a three sentence summary of The
+Hobbit’</li>
+<li><a href="./aion/examples/oc-text_sentiment.json"><strong>Object
+Contract: Text (analysis)</strong></a><br />
+Text objects may refer to text accompanied by an analysis of deeper
+meaning, like sentiment, intent, or emotional tone.</li>
+<li><a href="./aion/examples/oc-text_transcription.json"><strong>Object
+Contract: Text (transcription)</strong></a><br />
+Text objects may contain transcriptions of spoken recordings. Note that
+the ‘transcript’ Capability Contract requires word-by-word
+transcription, whereas a transcription stored in ‘text’ may be more
+generalized.</li>
+<li><a href="./aion/examples/oc-text_translation.json"><strong>Object
+Contract: Text (translation)</strong></a><br />
+Text objects may refer to text translated from another file, like in the
+case of translation of a Memo from German to English.</li>
+</ul>
+<style>
+body { max-width: 72em !important; }
+</style>
+</body>
+</html>

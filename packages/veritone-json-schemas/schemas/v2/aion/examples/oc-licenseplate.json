@@ -1,0 +1,36 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-licenseplate.json",
+  "$example": "Object Contract: License plate",
+  "$comment": "This document describes the license plate of the Dukes of Hazzard's General Lee. A license plate object MUST include 'licensePlate' property, and MAY include some other properties. If the license plate is detected attached to an identifiable vehicle, then 'motorVehicle' type should be used instead.",
+  "object": [
+    {
+      "type": "licensePlate",
+      "label": "CNH320",
+      "licensePlate": {
+        "number": "CNH320",
+        "confidence": 0.95,
+        "issuer": "US-GA-HAZZARD",
+        "issuerConfidence": 0.63
+      },
+      "boundingPoly": [
+        {
+          "x": 0.14583333333333334,
+          "y": 0.3831360946745562
+        },
+        {
+          "x": 0.14583333333333334,
+          "y": 0.5887573964497042
+        },
+        {
+          "x": 0.5142543859649122,
+          "y": 0.3831360946745562
+        },
+        {
+          "x": 0.5142543859649122,
+          "y": 0.5887573964497042
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Transcription document with series entry missing words.",
+    "validationContracts": [
+        "transcript"
+    ],
+    "series": [
+        {
+            "startTimeMs": 0,
+            "stopTimeMs": 300,
+            "words": [
+                {
+                    "word": "this",
+                    "confidence": 0.9
+                }
+            ]
+        },
+        {
+            "startTimeMs": 300,
+            "stopTimeMs": 500,
+            "words": [
+                {
+                    "word": "is",
+                    "confidence": 0.92
+                }
+            ]
+        },
+        {
+            "startTimeMs": 500,
+            "stopTimeMs": 800
+        },
+        {
+            "startTimeMs": 800,
+            "stopTimeMs": 1200,
+            "words": [
+                {
+                    "word": "sentence",
+                    "confidence": 0.98
+                }
+            ]
+        }
+    ]
+}

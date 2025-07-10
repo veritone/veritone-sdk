@@ -1,0 +1,25 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Concept document that has a series instead of an object.",
+    "validationContracts": [
+        "concept"
+    ],
+    "series": [
+        {
+            "startTimeMs": 17000,
+            "stopTimeMs": 18000,
+            "object": [
+                {
+                    "type": "concept",
+                    "objectCategory": [
+                        {
+                            "class": "arts, culture and entertainment",
+                            "@id": "http://cv.iptc.org/newscodes/subjectcode/01000000",
+                            "confidence": 0.1888580173254013
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

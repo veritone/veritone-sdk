@@ -1,0 +1,70 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/cc-entity.json",
+  "$comment": "Entities found in a text message. An entity document contains objects of type 'namedEntity'. Entity extraction engines classify named entities, located in unstructured text, into predefined categories such as People, Organizations, or Locations.",
+  "validationContracts": [
+    "entity"
+  ],
+  "object": [
+    {
+      "label": "IOS IMESSAGE/SMS/MMS CHAT",
+      "type": "namedEntity",
+      "sentence": 1,
+      "objectCategory": [
+        {
+          "class": "PRODUCT"
+        }
+      ]
+    },
+    {
+      "label": "8:29:54 PM",
+      "type": "namedEntity",
+      "sentence": 1,
+      "objectCategory": [
+        {
+          "class": "TEMPORAL_TIME"
+        }
+      ]
+    },
+    {
+      "label": "Time ( US & Canada ) Local User",
+      "type": "namedEntity",
+      "sentence": 1,
+      "objectCategory": [
+        {
+          "class": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "label": "8:29:54 PM",
+      "type": "namedEntity",
+      "sentence": 2,
+      "objectCategory": [
+        {
+          "class": "TEMPORAL_TIME"
+        }
+      ]
+    },
+    {
+      "label": "him",
+      "type": "namedEntity",
+      "sentence": 2,
+      "objectCategory": [
+        {
+          "class": "PERSON"
+        }
+      ]
+    },
+    {
+      "label": "I 'll text you",
+      "type": "namedEntity",
+      "sentence": 3,
+      "objectCategory": [
+        {
+          "class": "PRODUCT"
+        }
+      ]
+    }
+  ]
+}

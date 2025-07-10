@@ -1,0 +1,8 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Summary document containing a summary of the full content.",
+  "validationContracts": [
+    "summary"
+  ],
+  "summary": "This appears to be a transcript of a meeting between several individuals, likely from the same organization or team. The conversation is informal and covers a range of topics related to their work."
+}

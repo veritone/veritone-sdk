@@ -1,0 +1,84 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-language.json",
+    "$example": "Capability Contract: Language",
+    "$comment": "The language detected in a document or media file. The only required information is the 'language' at the root, which must be an ISO-639-1 language code. This document also includes an optional list of other languages checked, along with their confidence scores.",
+    "validationContracts": [
+        "language"
+    ],
+    "language": "en",
+    "object": [
+        {
+            "label": "English",
+            "type": "object",
+            "confidence": 0.86,
+            "language": "en"
+        },
+        {
+            "label": "German",
+            "type": "object",
+            "confidence": 0.07,
+            "language": "de"
+        },
+        {
+            "label": "French",
+            "type": "object",
+            "confidence": 0.04,
+            "language": "fr"
+        },
+        {
+            "label": "Portuguese",
+            "type": "object",
+            "confidence": 0.01,
+            "language": "pt"
+        },
+        {
+            "label": "Italian",
+            "type": "object",
+            "confidence": 0.01,
+            "language": "it"
+        },
+        {
+            "label": "Spanish, Castilian",
+            "type": "object",
+            "confidence": 0.01,
+            "language": "es"
+        },
+        {
+            "label": "Korean",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "ko"
+        },
+        {
+            "label": "Dutch, Flemish",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "nl"
+        },
+        {
+            "label": "Japanese",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "ja"
+        },
+        {
+            "label": "Mandarin Chinese",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "cmn"
+        },
+        {
+            "label": "Russian",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "ru"
+        },
+        {
+            "label": "Hindi",
+            "type": "object",
+            "confidence": 0.00,
+            "language": "hi"
+        }
+    ]
+}

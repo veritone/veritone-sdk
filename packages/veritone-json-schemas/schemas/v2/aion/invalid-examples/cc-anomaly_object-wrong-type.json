@@ -1,0 +1,29 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Anomaly contract that contains a non-anomaly object.",
+  "validationContracts": [
+    "anomaly"
+  ],
+  "object": [
+    {
+      "type": "anomaly",
+      "objectCategory": [
+        {
+          "class": "face",
+          "@id": "12345",
+          "confidence": 0.468
+        }
+      ]
+    },
+    {
+      "type": "face",
+      "objectCategory": [
+        {
+          "class": "face",
+          "@id": "7665554",
+          "confidence": 0.903
+        }
+      ]
+    }
+  ]
+}

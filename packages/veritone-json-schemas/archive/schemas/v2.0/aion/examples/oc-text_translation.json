@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-text_translation.json",
+  "$comment": "Text objects may refer to text translated from another file, like in the case of translation of a Memo from German to English.",
+  "object": [
+    {
+      "type": "text",
+      "text": "Hi Hans,\n\nin worst case we will lose our complete testing ability for several moths when we fail in the test. Please think the strategy and support us\n\nMany thanks in advance!\nSincerely\n\nVance",
+      "language": "en"
+    }
+  ]
+}

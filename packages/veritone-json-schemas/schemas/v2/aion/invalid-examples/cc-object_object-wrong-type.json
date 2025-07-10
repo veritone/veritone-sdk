@@ -1,0 +1,20 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Object document must contain only 'object's of type 'object'.",
+    "validationContracts": [
+        "object"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "dog",
+            "confidence": 0.9,
+            "objectCategory": [
+                {
+                    "class": "animal",
+                    "@id": "534234"
+                }
+            ]
+        }
+    ]
+}

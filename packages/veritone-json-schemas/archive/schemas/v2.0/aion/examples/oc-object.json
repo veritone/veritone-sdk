@@ -1,0 +1,178 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.0/aion/examples/oc-object.json",
+  "$comment": "Object detection is the process of identifying objects within an image or video. Objects are the most general type of visual entity identification, and should be used only when more specific types (like 'face' or 'licensePlate') are not applicable. Objects SHOULD have a 'boundingPoly' and a 'confidence'",
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "outdoor",
+        "type": "object",
+        "confidence": 0.8980966806411743
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "soccer",
+        "type": "object",
+        "confidence": 0.8319814801216125
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "person",
+        "type": "object",
+        "confidence": 0.826619029045105
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "baseball",
+        "type": "object",
+        "confidence": 0.7461378574371338
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "text",
+        "type": "object",
+        "confidence": 0.6593252420425415
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "net",
+        "type": "object",
+        "confidence": 0.6066089868545532
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "playground",
+        "type": "object",
+        "confidence": 0.6045867800712585
+      }
+    },
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 1000,
+      "object": {
+        "label": "man",
+        "type": "object",
+        "confidence": 0.5727429986000061
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "outdoor",
+        "type": "object",
+        "confidence": 0.9865725636482239
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "wire fencing",
+        "type": "object",
+        "confidence": 0.8468826413154602
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "chain-link fencing",
+        "type": "object",
+        "confidence": 0.8300036191940308
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "mesh",
+        "type": "object",
+        "confidence": 0.8252749443054199
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "fence",
+        "type": "object",
+        "confidence": 0.8022614121437073
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "green",
+        "type": "object",
+        "confidence": 0.8010103702545166
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "player",
+        "type": "object",
+        "confidence": 0.7507511973381042
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "animal",
+        "type": "object",
+        "confidence": 0.7178254127502441
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "cage",
+        "type": "object",
+        "confidence": 0.630023181438446
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "zoo",
+        "type": "object",
+        "confidence": 0.6236413717269897
+      }
+    },
+    {
+      "startTimeMs": 1000,
+      "stopTimeMs": 2000,
+      "object": {
+        "label": "net",
+        "type": "object",
+        "confidence": 0.5595663189888
+      }
+    }
+  ]
+}

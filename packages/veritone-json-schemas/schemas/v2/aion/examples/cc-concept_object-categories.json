@@ -1,0 +1,34 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Concept document containing concept results grouped in one object.",
+    "validationContracts": [
+        "concept"
+    ],
+    "object": [
+        {
+            "type": "concept",
+            "objectCategory": [
+                {
+                    "class": "lifestyle and leisure",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/10000000",
+                    "confidence": 0.24142932891845703
+                },
+                {
+                    "class": "arts, culture and entertainment",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/01000000",
+                    "confidence": 0.1888580173254013
+                },
+                {
+                    "class": "human interest",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/08000000",
+                    "confidence": 0.18299788236618042
+                },
+                {
+                    "class": "science and technology",
+                    "@id": "http://cv.iptc.org/newscodes/subjectcode/13000000",
+                    "confidence": 0.1397240161895752
+                }
+            ]
+        }
+    ]
+}

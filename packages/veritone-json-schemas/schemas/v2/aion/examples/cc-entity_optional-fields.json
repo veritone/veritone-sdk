@@ -1,0 +1,19 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$comment": "Entity document containing optional fields.",
+    "validationContracts": [
+        "entity"
+    ],
+    "object": [
+        {
+            "type": "namedEntity",
+            "label": "Hazard Concrete",
+            "text": "Heavy machinery in use beyond this point.",
+            "objectCategory": [
+                {
+                    "class": "safety equipment"
+                }
+            ]
+        }
+    ]
+}

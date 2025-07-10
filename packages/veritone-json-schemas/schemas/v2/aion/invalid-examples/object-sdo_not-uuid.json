@@ -1,0 +1,16 @@
+{
+  "object": [
+    {
+      "type": "object",
+      "structuredData": {
+        "VTD-metadata":{
+          "Title": "NCAA 1972 Championship",
+          "Description": "Fireflies vs. Bullfrogs",
+          "Resource.Name": "1234567_890",
+          "Resource.Class": "Footage",
+          "Resource.Family": "screener"
+        }
+      }
+    }
+  ]
+}

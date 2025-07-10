@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.veritone.com/schemas/vtn-standard/language/language.json",
+  "title": "vtn-standard.language",
+  "description": "Standard engine output for Language Identification at Veritone",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../master.json#/definitions/header"
+    },
+    {
+      "properties": {
+        "validationContracts": {
+          "type": "array",
+          "contains": {
+            "const": "language"
+          }
+        },
+        "language": {
+          "$ref": "../master.json#/definitions/language"
+        }
+      },
+      "required": ["language"]
+    }
+  ]
+}

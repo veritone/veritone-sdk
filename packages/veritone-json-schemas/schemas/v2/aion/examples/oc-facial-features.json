@@ -1,0 +1,75 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$comment": "Facial features object with many supporting fields",
+  "object": [
+    {
+      "type": "facial-features",
+      "confidence": 0.9952094268798828,
+      "faceLandmarks": [
+        {
+          "type": "eyeLeft",
+          "locationPoly": [
+            {
+              "x": 0.564389705657959,
+              "y": 0.17235144972801208
+            }
+          ]
+        },
+        {
+          "type": "eyeRight",
+          "locationPoly": [
+            {
+              "x": 0.5738433599472046,
+              "y": 0.1691092997789383
+            }
+          ]
+        },
+        {
+          "type": "mouthLeft",
+          "locationPoly": [
+            {
+              "x": 0.569629967212677,
+              "y": 0.20615430176258087
+            }
+          ]
+        },
+        {
+          "type": "mouthRight",
+          "locationPoly": [
+            {
+              "x": 0.5775412321090698,
+              "y": 0.20372293889522552
+            }
+          ]
+        },
+        {
+          "type": "nose",
+          "locationPoly": [
+            {
+              "x": 0.5649203062057495,
+              "y": 0.1935398280620575
+            }
+          ]
+        }
+      ],
+      "boundingPoly": [
+        {
+          "x": 0.5641468167304993,
+          "y": 0.14238609373569489
+        },
+        {
+          "x": 0.5976379886269569,
+          "y": 0.14238609373569489
+        },
+        {
+          "x": 0.5976379886269569,
+          "y": 0.23112238943576813
+        },
+        {
+          "x": 0.5641468167304993,
+          "y": 0.23112238943576813
+        }
+      ]
+    }
+  ]
+}

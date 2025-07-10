@@ -1,0 +1,43 @@
+{
+    "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+    "$id": "https://get.aiware.com/schemas/v2/aion/examples/cc-keyword.json",
+    "$example": "Capability Contract: Keyword",
+    "$comment": "Keywwords and descriptions extracted from a description of a person. A keyword document contains objects of type 'keyword'. Keyword extraction engines find and extract significant words or phrases from a text, which can be used for indexing, searching, or summarizing content.",
+    "validationContracts": [
+        "keyword"
+    ],
+    "object": [
+        {
+            "type": "keyword",
+            "label": "true gentleman"
+        },
+        {
+            "type": "keyword",
+            "label": "courteous"
+        },
+        {
+            "type": "keyword",
+            "label": "pleasant"
+        },
+        {
+            "type": "keyword",
+            "label": "pleasure"
+        },
+        {
+            "type": "keyword",
+            "label": "quiet"
+        },
+        {
+            "type": "keyword",
+            "label": "host"
+        },
+        {
+            "type": "keyword",
+            "label": "clean"
+        },
+        {
+            "type": "keyword",
+            "label": "john"
+        }
+    ]
+}
