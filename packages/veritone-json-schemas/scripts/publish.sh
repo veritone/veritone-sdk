@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO(km):
-# - If no version number is provided, make one by incrementing the last version?
-# - If --release is specified, get the ITSM ticket number and verify it is approved before proceeding
-
 usage() {
   cat <<EOF
 Usage: 
@@ -865,9 +861,6 @@ upload_to_getaiwarecom() {
 
   # If neither archive nor upload is specified, default to both
   [[ -z "$archive" && -z "$upload" ]] && { archive="--archive"; upload="--upload"; }
-
-  # TODO(km): this should be smarter about some things like:
-  # - If no version number is provided, make one by incrementing the last version
 
   # Validate version argument
   version="$1"
