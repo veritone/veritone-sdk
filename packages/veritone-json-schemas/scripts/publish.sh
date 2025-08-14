@@ -845,15 +845,16 @@ upload_to_getaiwarecom() {
   itsm_ticket=    # The ITSM ticket Id to verify before --releasing the production version
 
   # Handle flags
-  while [[ "$1" == --* ]]; do
+  while [[ "$1" ]]; do
     case "$1" in
       --help|-h) usage; exit 0 ;;
       --safe|--dryrun) safe="--safe" ;;
       --force) force="--force" ;;
       --release) release="--release" ;;
-      --release=*) release="--release"; itsm_ticket="${1#*=}";;
+      --release=*) release="--release"; itsm_ticket="${1#*=}" ;;
       --archive) archive="--archive" ;;
       --upload) upload="--upload" ;;
+      v*) version="$1" ;;
       *) error "Unknown option: $1"; exit 1 ;;
     esac
     shift
@@ -863,7 +864,6 @@ upload_to_getaiwarecom() {
   [[ -z "$archive" && -z "$upload" ]] && { archive="--archive"; upload="--upload"; }
 
   # Validate version argument
-  version="$1"
   [[ -z "$version" ]] && { error "No version specified."; usage; exit 1; }
   if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+$ ]]; then
     error "Invalid version format '$version'. Expected format: vX.Y (e.g., v2.7)"
