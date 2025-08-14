@@ -11,11 +11,7 @@
       "type": "fingerprint",
       "referenceId": "5888794a-a250-4e0b-a0ca-930c90e55ade",
       "tags": [],
-      "fingerprintVector": [
-        0,
-        0.07975183,
-        0.02427893
-      ]
+      "fingerprintVector": []
     }
   ]
 }

@@ -1163,29 +1163,12 @@
       "type": "object"
     },
     "vector": {
-      "description": "An array of floats representing objects in vector space. The array must contain 256, 512, 768, or 1024 floats.",
+      "description": "A non-empty array of floats representing objects in vector space.",
       "type": "array",
       "items": {
         "type": "number"
       },
-      "oneOf": [
-        {
-          "minItems": 256,
-          "maxItems": 256
-        },
-        {
-          "minItems": 512,
-          "maxItems": 512
-        },
-        {
-          "minItems": 768,
-          "maxItems": 768
-        },
-        {
-          "minItems": 1024,
-          "maxItems": 1024
-        }
-      ]
+      "minItems": 1
     },
     "embedding": {
       "description": "An array of floats representing objects in vector space.",
