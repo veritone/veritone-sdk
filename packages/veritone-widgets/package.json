@@ -68,7 +68,7 @@
     "cross-env": "^5.1.1",
     "enzyme": "^3.5.0",
     "enzyme-adapter-react-16": "^1.0.0",
-    "eslint": "^4.8.0",
+    "eslint": "^9.26.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-lodash": "^2.4.5",
