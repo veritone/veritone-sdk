@@ -271,6 +271,29 @@
           "value": "bar2"
         }
       ]
+    },
+    {
+      "referenceId": "680f65c8-b6ac-47d1-adb3-9977caa1f596",
+      "vector": [
+        0.0269896,
+        0.0,
+        0.0373786,
+        0.0159118,
+        0.3247486,
+        0.3021988,
+        0.1914165,
+        0.0476071
+      ],
+      "tags": [
+        {
+          "key": "embedding-model",
+          "value": "vsl/fe_vehicle_reid_256_v17_4"
+        },
+        {
+          "key": "embedding-source",
+          "value": "tracklet"
+        }
+      ]
     }
   ]
 }

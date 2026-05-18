@@ -819,7 +819,7 @@
       }
     },
     "objectMotorVehicle": {
-      "$comment": "Object of type 'motorVehicle' MUST include 'motorVehicle' property, MAY include 'label', 'boundingPoly', 'uri' and 'vendor'",
+      "$comment": "Object of type 'motorVehicle' MUST include 'motorVehicle' property, MAY include 'label', 'boundingPoly', 'uri', 'vendor', 'referenceId', 'confidence' and 'tags'",
       "if": {
         "properties": {
           "type": {
@@ -835,7 +835,10 @@
           "label": {},
           "boundingPoly": {},
           "uri": {},
-          "vendor": {}
+          "vendor": {},
+          "referenceId": {},
+          "confidence": {},
+          "tags": {}
         },
         "required": [
           "type",
