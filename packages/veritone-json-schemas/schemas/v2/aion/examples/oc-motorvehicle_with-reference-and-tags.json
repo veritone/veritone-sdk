@@ -1,0 +1,48 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-motorvehicle_with-reference-and-tags.json",
+  "$example": "Object Contract: Motor vehicle with referenceId, confidence and tags",
+  "$comment": "A motor vehicle object using the v2.1 additions: top-level referenceId and confidence, and a tags array for arbitrary key/value attributes with optional score.",
+  "object": [
+    {
+      "type": "motorVehicle",
+      "label": "Red Ford Mustang",
+      "referenceId": "680f65c8-b6ac-47d1-adb3-9977caa1f596",
+      "confidence": 0.9,
+      "motorVehicle": {
+        "make": "Ford",
+        "model": "Mustang",
+        "makeModelConfidence": 0.95,
+        "bodyStyle": "coupe",
+        "bodyStyleConfidence": 0.9,
+        "color": "red",
+        "colorConfidence": 0.85,
+        "licensePlate": {
+          "number": "ABC123",
+          "confidence": 0.92
+        }
+      },
+      "tags": [
+        {
+          "key": "Cosmetic-Damage",
+          "value": "dents",
+          "score": 0.8
+        },
+        {
+          "key": "Decade",
+          "value": "2000s",
+          "score": 0.75
+        },
+        {
+          "key": "Driver",
+          "value": "visible",
+          "score": 0.85
+        }
+      ],
+      "vendor": {
+        "startTimeMs": 1000,
+        "endTimeMs": 5000
+      }
+    }
+  ]
+}
