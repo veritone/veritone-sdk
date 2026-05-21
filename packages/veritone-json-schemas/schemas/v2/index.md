@@ -4,14 +4,14 @@ This directory contains the standard JSON schemas used by Veritone.
 
 ## AI Object Notation (AION)
 
-AION (pronounced "eye-on") is a universal schema defintion 
-that describes all Veritone object notation instance structures. 
+AION (pronounced "eye-on") is a universal schema defintion
+that describes all Veritone object notation instance structures.
 
 ### Contracts
 
-In addition to structural definitions, 
-the AION schema also includes conditional contracts 
-that enforce certain requirements on 
+In addition to structural definitions,
+the AION schema also includes conditional contracts
+that enforce certain requirements on
 document capabilities as a whole (triggered by the listed `validationContracts`)
 and object contents (triggered by an `object`s `type` field).
 
@@ -119,10 +119,10 @@ validation tool.
 
 ### Example: Online validator
 
-To use an online tool to validate a file against the AION 2.0 schema, you can do the following:
+To use an online tool to validate a file against the AION 2.X schema, you can do the following:
 
 1. Go to (for example) [https://jsonschemavalidator.net/](https://jsonschemavalidator.net/)
-2. In the left hand panel, enter a schema that imports the AION v2.0 schema:
+2. In the left hand panel, enter a schema that imports the AION v2.X schema:
 ```json
 {
   "$ref": "https://get.aiware.com/schemas/v2/aion/schema.json"
@@ -149,7 +149,7 @@ and the status will change: `JSON validates against the schema`
 ### Example: Localhost validator
 
 Assuming `docker` is available, the following will allow you to validate an instance file
-`file.json` against version 2.0 of the AION schema:
+`file.json` against version 2.X of the AION schema:
 
 ```bash
 curl https://get.aiware.com/schemas/v2/aion/schema.json --output aion.json
@@ -170,13 +170,13 @@ docker run --interactive --rm --volume "$PWD:/workspace" \
 
 ## Definitions
 
-Definitions referenced by other schemas. 
-These files do not contain any schema requirements themselves, 
+Definitions referenced by other schemas.
+These files do not contain any schema requirements themselves,
 only `definitions` that are referenced by other schema files.
 
-- [Master Definitions](./master.json)  
+- [Master Definitions](./master.json)
   Contains the definitions for individual components referenced by the AION schema.
-- [Contract Definitions](./contracts.json)  
+- [Contract Definitions](./contracts.json)
   Contains the conditional contracts that are used by the AION schema to validate that
   requirements for capabilities and object are met.
 

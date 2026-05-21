@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://get.aiware.com/schemas/v2/contracts.json",
+  "$id": "https://get.aiware.com/schemas/v2.1/contracts.json",
   "title": "Capability and Object Contracts",
   "description": "Defines the contracts for various engine capabilities and objects",
   "definitions": {

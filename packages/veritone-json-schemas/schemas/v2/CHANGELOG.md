@@ -1,5 +1,12 @@
 # Version history for version 2 schemas
 
+## Version 2.1 - May 11, 2026
+
+- **Added fields to objectMotorVehicle** `schemas/v2/contracts.json` — objectMotorVehicle contract: added `referenceId`, `confidence`, and `tags` to the `then.properties` allowlist (all optional).
+  - Updated $comment to reflect the new permitted fields.
+  - added `examples/oc-motorvehicle_with-reference-and-tags.json` — new +ve example
+  - added new test block to `examples/embedding.json`
+
 ## Version 2.0 - July 3, 2025
 
 - **Versioning introduced.** The reason for introducing versioning is to be more deliberate and
@@ -32,7 +39,7 @@
   that are listed
   - The separate "Capability Schema" documents have been deprecated. Now that AION contains all
     capability validation, there is no longer a need for a separate schema for each
-    capability. If you still need separate schemas for capability validation, please use 
+    capability. If you still need separate schemas for capability validation, please use
     [version 1](http://get.aiware.com/schemas/v1/index.html) of the schemas.
 - **Object validation** has been added to AION. Object validation is the validation contract of
   each individual `object` in AION. Based on the `type` of `object`, that object may
@@ -45,7 +52,7 @@
     meet these requirement, we recommend you update your engine. If this is not possible, then
     continue to use the v1 schemas.
 - **Comment support** has been added for documents, objects, and series. Taking a page from the
-  json-schema definitions, we now allow a `$comment` property in any document, object or series 
+  json-schema definitions, we now allow a `$comment` property in any document, object or series
   item. The value must be a string, and is ignored by aiWARE processing. In addition, any
   property at the root of the document starting with a `$` character is permitted but
   ignored by the aiWARE ecosystem.
@@ -56,8 +63,8 @@
     specialization of the `"text"` type, so an `ocr` object counts as a `text` object for the
     purposes of validating `"validationContracts": ["text"]`.
 - **Partial word transcription** support has been added. Transcribed `words` now have an optional
-  `partial` property that can be set to `true` when doing real-time trasncription to indicate 
-  that the word or phrase has only been partially transcribed, and may be changed as more context 
+  `partial` property that can be set to `true` when doing real-time trasncription to indicate
+  that the word or phrase has only been partially transcribed, and may be changed as more context
   becomes available.
 
 ``` {=html}
