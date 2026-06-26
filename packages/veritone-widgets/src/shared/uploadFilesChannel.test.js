@@ -175,15 +175,20 @@ describe('uploadFilesChannel', () => {
       ];
       const { channel } = uploadFilesChannel(descriptors, files);
 
-      // Both PUT XHRs are created upfront
-      MockXHR.instances[0].complete(200); // PUT for file a
-      MockXHR.instances[2].complete(200); // PUT for file b (HEAD for a is instance[1])
+      // forEach creates both PUT XHRs synchronously:
+      // instances[0] = PUT a, instances[1] = PUT b
+      // HEAD XHRs appear only after their respective PUTs complete.
+      MockXHR.instances[0].complete(200); // PUT a → HEAD a created (instances[2])
+      MockXHR.instances[1].complete(200); // PUT b → HEAD b created (instances[3])
 
-      MockXHR.instances[1].complete(200); // HEAD for file a
-      MockXHR.instances[3].complete(200); // HEAD for file b
+      // Interleave takes with puts to avoid overflowing the sliding(2) buffer.
+      MockXHR.instances[2].complete(200); // HEAD a → success a put
+      const successA = await take(channel);
+      expect(successA).toMatchObject({ success: true, file: files[0] });
 
-      const results = [await take(channel), await take(channel)];
-      expect(results.every(e => e.success)).toBe(true);
+      MockXHR.instances[3].complete(200); // HEAD b → success b put, then END put
+      const successB = await take(channel);
+      expect(successB).toMatchObject({ success: true, file: files[1] });
 
       const endEvent = await take(channel);
       expect(endEvent).toBe(END);
@@ -197,24 +202,26 @@ describe('uploadFilesChannel', () => {
       ];
       const { channel } = uploadFilesChannel(descriptors, files);
 
-      // Both PUTs succeed
-      MockXHR.instances[0].complete(200);
+      // instances[0] = PUT a, instances[1] = PUT b
+      MockXHR.instances[0].complete(200); // PUT a → HEAD a (instances[2])
+      MockXHR.instances[1].complete(200); // PUT b → HEAD b (instances[3])
+
+      // Complete only HEAD for file a — pendingFiles is still 1, no END yet
       MockXHR.instances[2].complete(200);
+      await take(channel); // consume success a
 
-      // Only one HEAD completes — END should NOT fire yet
-      MockXHR.instances[1].complete(200); // HEAD for file a
+      // Register a take; it will be fulfilled by the next put (success b, not END)
+      let nextValue = null;
+      channel.take(val => { nextValue = val; });
+      expect(nextValue).toBeNull(); // nothing put yet
 
-      const firstSuccess = await take(channel);
-      expect(firstSuccess.success).toBe(true);
-
-      // Second HEAD still pending — channel should not yet have END
-      let endFired = false;
-      channel.take(val => { endFired = val === END; });
-      expect(endFired).toBe(false);
-
-      // Now complete the second HEAD
+      // Complete HEAD for b: puts success b (triggers our callback) then END
       MockXHR.instances[3].complete(200);
-      expect(endFired).toBe(true);
+      expect(nextValue).toMatchObject({ success: true }); // success b, not END
+
+      // END is now buffered — confirm it arrives last
+      const endEvent = await take(channel);
+      expect(endEvent).toBe(END);
     });
   });
 
