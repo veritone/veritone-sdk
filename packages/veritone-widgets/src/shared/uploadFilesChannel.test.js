@@ -1,3 +1,4 @@
+/* eslint-env node, jest */
 import { END } from 'redux-saga';
 import uploadFilesChannel from './uploadFilesChannel';
 
@@ -226,10 +227,10 @@ describe('uploadFilesChannel', () => {
       expect(requestMap[descriptor.key]).toBe(MockXHR.instances[0]);
     });
 
-    it('removes the entry from requestMap when PUT completes', async () => {
+    it('removes the entry from requestMap when PUT completes', () => {
       const file = makeFile();
       const descriptor = makeDescriptor();
-      const { channel, requestMap } = uploadFilesChannel([descriptor], [file]);
+      const { requestMap } = uploadFilesChannel([descriptor], [file]);
 
       MockXHR.instances[0].complete(200);
 
