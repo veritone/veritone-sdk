@@ -3,6 +3,44 @@
 
 import { buffers, channel, END } from 'redux-saga';
 
+const HEAD_POLL_MAX_RETRIES = 5;
+const HEAD_POLL_BASE_DELAY_MS = 1000;
+
+// After a PUT to a signed URL succeeds, S3 eventual consistency means the
+// object may not be immediately readable. Poll with a HEAD request before
+// signalling success so callers (e.g. createTDOWithAsset) don't race.
+function pollForFileAvailability(
+  getUrl,
+  onReady,
+  maxRetries = HEAD_POLL_MAX_RETRIES,
+  baseDelay = HEAD_POLL_BASE_DELAY_MS
+) {
+  let retries = 0;
+
+  const attempt = () => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('HEAD', getUrl, true);
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== XMLHttpRequest.DONE) {
+        return;
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onReady();
+      } else if (retries < maxRetries) {
+        retries += 1;
+        // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+        setTimeout(attempt, baseDelay * Math.pow(2, retries - 1));
+      } else {
+        // PUT succeeded — proceed even if HEAD never confirmed readability
+        onReady();
+      }
+    };
+    xhr.send();
+  };
+
+  attempt();
+}
+
 export default function uploadFilesChannel(
   uploadDescriptors,
   files,
@@ -14,7 +52,15 @@ export default function uploadFilesChannel(
 
   const requestMap = {};
   const chan = channel(buffers.sliding(2));
-  let remainingFiles = files.length;
+  // Decremented only after the full lifecycle (PUT + optional HEAD) completes
+  let pendingFiles = files.length;
+
+  const onFileDone = () => {
+    pendingFiles -= 1;
+    if (pendingFiles === 0) {
+      chan.put(END);
+    }
+  };
 
   const onFileProgress = (
     file,
@@ -27,39 +73,37 @@ export default function uploadFilesChannel(
     }
   };
 
-  const onStatusCodeFailure = (file, descriptor) => {
-    chan.put({ error: 'Upload failed', file, descriptor });
-  };
-
-  const onXHRError = (file, descriptor, e) => {
+  const onXHRError = (file, descriptor) => {
     chan.put({ error: 'File upload error', file, descriptor });
   };
-
-  const onStatusCodeAbort = (file, descriptor) => {
-    chan.put({ error: 'Upload failed', aborted: 'Upload aborted', file, descriptor });
-  }
 
   const onFileReadyStateChange = (
     file,
     descriptor,
     { target: { readyState, status } }
   ) => {
-    if (readyState === XMLHttpRequest.DONE) {
-      remainingFiles -= 1;
-      // Remove from requestMap cuz it finished
-      delete requestMap[descriptor.key];
+    if (readyState !== XMLHttpRequest.DONE) {
+      return;
+    }
 
-      if (status >= 200 && status < 300) {
-        chan.put({ success: true, file, descriptor });
-      } else if (status == 0) {
-        onStatusCodeAbort(file, descriptor);
+    delete requestMap[descriptor.key];
+
+    if (status >= 200 && status < 300) {
+      if (descriptor.getUrl) {
+        pollForFileAvailability(descriptor.getUrl, () => {
+          chan.put({ success: true, file, descriptor });
+          onFileDone();
+        });
       } else {
-        onStatusCodeFailure(file, descriptor);
+        chan.put({ success: true, file, descriptor });
+        onFileDone();
       }
-
-      if (remainingFiles === 0) {
-        chan.put(END);
-      }
+    } else if (status === 0) {
+      chan.put({ error: 'Upload failed', aborted: 'Upload aborted', file, descriptor });
+      onFileDone();
+    } else {
+      chan.put({ error: 'Upload failed', file, descriptor });
+      onFileDone();
     }
   };
 
