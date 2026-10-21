@@ -1,0 +1,35 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/oc-person_layered.json",
+  "$comment": "A person wearing layered clothing: two clothing items share the 'upperBody' location (a shirt under a vest).",
+  "object": [
+    {
+      "type": "person",
+      "label": "Female, white shirt, black vest",
+      "confidence": 0.9,
+      "person": {
+        "gender": "female",
+        "genderConfidence": 0.87,
+        "clothing": [
+          {
+            "location": "upperBody",
+            "type": "shirt",
+            "typeConfidence": 0.72,
+            "color": "white",
+            "colorConfidence": 0.8,
+            "features": [
+              { "value": "long sleeves", "confidence": 0.81 }
+            ]
+          },
+          {
+            "location": "upperBody",
+            "type": "vest",
+            "typeConfidence": 0.78,
+            "color": "black",
+            "colorConfidence": 0.83
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_extra-field.json",
+  "$comment": "This person object is invalid because the 'person' block contains an unknown property ('shoeSize'). Attributes without a typed field belong in the object's 'tags'.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "gender": "male",
+        "shoeSize": "10"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_with-forbidden.json",
+  "$comment": "This person object is invalid because it contains 'licensePlate', which the person contract does not permit.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "gender": "female"
+      },
+      "licensePlate": {
+        "number": "CNH320"
+      }
+    }
+  ]
+}

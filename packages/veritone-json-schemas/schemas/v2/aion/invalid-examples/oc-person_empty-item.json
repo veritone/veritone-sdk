@@ -1,0 +1,16 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_empty-item.json",
+  "$comment": "This person object is invalid because an item in 'accessories' is empty. A personalItem must contain at least one property.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "accessories": [
+          { "type": "backpack" },
+          {}
+        ]
+      }
+    }
+  ]
+}

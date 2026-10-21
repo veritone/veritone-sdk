@@ -1,5 +1,27 @@
 # Version history for version 2 schemas
 
+## Version 2.2 - October 20, 2026
+
+- **New object type `person`** for detected people and their attributes.
+  - `schemas/v2/master.json` — added `person` to the `objectResultType` enum, the `person` property
+    to `objectResult`, and the new `person` and `personalItem` definitions.
+    - `person` has typed attributes (`gender`, `build`, `orientation`, `height`, `facialHair`), a
+      nested `hair` block (`length`, `style`, `color`), and `clothing` and `accessories` arrays of
+      `personalItem`. Each attribute has a matching `xConfidence` field.
+    - `personalItem` has `type`, `color`, a `location` (one of `head`, `upperBody`, `lowerBody`,
+      `fullBody`, `feet`) and a `features` array of `{ value, confidence }`.
+    - Attribute values are free strings with `examples`; only `personalItem.location` is an enum.
+  - `schemas/v2/contracts.json` — added the `objectPerson` contract: MUST include `person` (which
+    may be empty), MAY include `label`, `boundingPoly`, `uri`, `vendor`, `referenceId`,
+    `confidence`, `tags` and `age`.
+  - added `examples/oc-person.json`, `examples/oc-person_empty.json` and
+    `examples/oc-person_layered.json` — new +ve examples
+  - added `invalid-examples/oc-person_no-person.json`, `invalid-examples/oc-person_bad-location.json`,
+    `invalid-examples/oc-person_extra-field.json`, `invalid-examples/oc-person_with-forbidden.json`,
+    `invalid-examples/oc-person_empty-hair.json`, `invalid-examples/oc-person_empty-item.json` and
+    `invalid-examples/oc-person_feature-no-value.json` — new -ve examples
+  - This change is additive only: all v2.1 documents remain valid.
+
 ## Version 2.1 - May 11, 2026
 
 - **Added fields to objectMotorVehicle** `schemas/v2/contracts.json` — objectMotorVehicle contract: added `referenceId`, `confidence`, and `tags` to the `then.properties` allowlist (all optional).

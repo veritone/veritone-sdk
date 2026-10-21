@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_empty-hair.json",
+  "$comment": "This person object is invalid because the 'hair' block is empty. Unlike 'person', 'hair' must contain at least one property; leave it out when no hair attributes are known.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "gender": "female",
+        "hair": {}
+      }
+    }
+  ]
+}

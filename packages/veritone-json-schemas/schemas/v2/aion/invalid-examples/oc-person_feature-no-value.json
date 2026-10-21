@@ -1,0 +1,21 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_feature-no-value.json",
+  "$comment": "This person object is invalid because a clothing item's feature has a 'confidence' but no 'value'. Every feature must include 'value'.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "clothing": [
+          {
+            "location": "upperBody",
+            "type": "t-shirt",
+            "features": [
+              { "confidence": 0.77 }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

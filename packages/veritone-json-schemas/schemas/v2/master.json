@@ -450,6 +450,9 @@
             "motorVehicle": {
               "$ref": "#/definitions/motorVehicle"
             },
+            "person": {
+              "$ref": "#/definitions/person"
+            },
             "objectCategory": {
               "$ref": "#/definitions/objectCategory"
             },
@@ -553,6 +556,9 @@
           "$ref": "./contracts.json#/definitions/objectObject"
         },
         {
+          "$ref": "./contracts.json#/definitions/objectPerson"
+        },
+        {
           "$ref": "./contracts.json#/definitions/objectSound"
         },
         {
@@ -585,6 +591,7 @@
         "namedEntity",
         "ocr",
         "object",
+        "person",
         "sound",
         "speaker",
         "speaker-verification",
@@ -1100,6 +1107,196 @@
         },
         "licensePlate": {
           "$ref": "#/definitions/licensePlate"
+        }
+      },
+      "minProperties": 1
+    },
+    "person": {
+      "description": "Attributes of a detected person. Any attribute that is not known or does not apply is left out, never set to a placeholder such as 'unknown' or 'none'. May be empty.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gender": {
+          "type": "string",
+          "examples": [
+            "female",
+            "male"
+          ]
+        },
+        "genderConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "build": {
+          "type": "string",
+          "examples": [
+            "slim",
+            "medium",
+            "heavy",
+            "athletic"
+          ]
+        },
+        "buildConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "orientation": {
+          "description": "Side of the person that is visible",
+          "type": "string",
+          "examples": [
+            "front",
+            "back",
+            "left",
+            "right"
+          ]
+        },
+        "orientationConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "height": {
+          "type": "string",
+          "examples": [
+            "short",
+            "medium",
+            "tall"
+          ]
+        },
+        "heightConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "facialHair": {
+          "type": "string",
+          "examples": [
+            "beard",
+            "mustache",
+            "goatee",
+            "clean shaven"
+          ]
+        },
+        "facialHairConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "hair": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "length": {
+              "description": "How long the hair is; use 'bald' for no hair",
+              "type": "string",
+              "examples": [
+                "bald",
+                "short",
+                "long"
+              ]
+            },
+            "lengthConfidence": {
+              "$ref": "#/definitions/confidence"
+            },
+            "style": {
+              "type": "string",
+              "examples": [
+                "ponytail",
+                "curly",
+                "receding"
+              ]
+            },
+            "styleConfidence": {
+              "$ref": "#/definitions/confidence"
+            },
+            "color": {
+              "type": "string",
+              "examples": [
+                "black",
+                "brown",
+                "gray",
+                "blond"
+              ]
+            },
+            "colorConfidence": {
+              "$ref": "#/definitions/confidence"
+            }
+          },
+          "minProperties": 1
+        },
+        "clothing": {
+          "description": "Items worn, each with a location",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/personalItem"
+          }
+        },
+        "accessories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/personalItem"
+          }
+        }
+      }
+    },
+    "personalItem": {
+      "description": "Something a person wears or carries",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "examples": [
+            "cap",
+            "t-shirt",
+            "trousers",
+            "boots",
+            "backpack"
+          ]
+        },
+        "typeConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "color": {
+          "type": "string",
+          "examples": [
+            "black",
+            "blue",
+            "red"
+          ]
+        },
+        "colorConfidence": {
+          "$ref": "#/definitions/confidence"
+        },
+        "location": {
+          "description": "Where on the body a clothing item is worn",
+          "type": "string",
+          "enum": [
+            "head",
+            "upperBody",
+            "lowerBody",
+            "fullBody",
+            "feet"
+          ]
+        },
+        "features": {
+          "description": "Visible characteristics of the item",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "string",
+                "examples": [
+                  "short sleeves",
+                  "long sleeves",
+                  "sleeveless",
+                  "hooded",
+                  "striped",
+                  "logo"
+                ]
+              },
+              "confidence": {
+                "$ref": "#/definitions/confidence"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
         }
       },
       "minProperties": 1
