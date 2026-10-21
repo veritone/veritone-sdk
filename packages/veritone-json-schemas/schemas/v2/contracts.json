@@ -919,6 +919,36 @@
         "type": "object"
       }
     },
+    "objectPerson": {
+      "$comment": "Object of type 'person' MUST include 'person' property (which may be empty), MAY include 'label', 'boundingPoly', 'uri', 'vendor', 'referenceId', 'confidence', 'tags' and 'age'",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "person"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "type": {},
+          "person": {},
+          "age": {},
+          "confidence": {},
+          "$comment": {},
+          "label": {},
+          "boundingPoly": {},
+          "uri": {},
+          "tags": {},
+          "referenceId": {},
+          "vendor": {}
+        },
+        "required": [
+          "type",
+          "person"
+        ],
+        "additionalProperties": false
+      }
+    },
     "objectSound": {
       "$comment": "Object of type 'sound' MUST include 'label', SHOULD include 'confidence', MAY include 'vendor'",
       "if": {

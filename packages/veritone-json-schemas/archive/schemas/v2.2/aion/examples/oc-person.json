@@ -1,0 +1,164 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.2/aion/examples/oc-person.json",
+  "$comment": "A person object with every person attribute populated, including the optional age, height, facialHair and hair style, plus clothing, accessories, alternative candidates in tags, and the linked series and embedding.",
+  "object": [
+    {
+      "type": "person",
+      "label": "Male, red t-shirt, blue trousers",
+      "referenceId": "a41c9d2e-77b1-4c3e-9f28-1d7e6b45a0c9",
+      "confidence": 0.88,
+      "person": {
+        "gender": "male",
+        "genderConfidence": 0.91,
+        "build": "medium",
+        "buildConfidence": 0.8,
+        "orientation": "front",
+        "orientationConfidence": 0.88,
+        "height": "tall",
+        "heightConfidence": 0.6,
+        "facialHair": "beard",
+        "facialHairConfidence": 0.74,
+        "hair": {
+          "length": "short",
+          "lengthConfidence": 0.72,
+          "style": "curly",
+          "styleConfidence": 0.55,
+          "color": "black",
+          "colorConfidence": 0.79
+        },
+        "clothing": [
+          {
+            "location": "head",
+            "type": "cap",
+            "typeConfidence": 0.7,
+            "color": "white",
+            "colorConfidence": 0.66
+          },
+          {
+            "location": "upperBody",
+            "type": "t-shirt",
+            "typeConfidence": 0.8,
+            "color": "red",
+            "colorConfidence": 0.84,
+            "features": [
+              {
+                "value": "short sleeves",
+                "confidence": 0.77
+              }
+            ]
+          },
+          {
+            "location": "lowerBody",
+            "type": "trousers",
+            "typeConfidence": 0.75,
+            "color": "blue",
+            "colorConfidence": 0.82
+          },
+          {
+            "location": "feet",
+            "type": "sports shoes",
+            "typeConfidence": 0.68,
+            "color": "white",
+            "colorConfidence": 0.7
+          }
+        ],
+        "accessories": [
+          {
+            "type": "backpack",
+            "typeConfidence": 0.65,
+            "color": "black",
+            "colorConfidence": 0.6
+          },
+          {
+            "type": "glasses",
+            "typeConfidence": 0.58
+          }
+        ]
+      },
+      "age": {
+        "min": 25,
+        "max": 35,
+        "confidence": 0.5
+      },
+      "tags": [
+        {
+          "key": "UpperType",
+          "value": "Shirt",
+          "score": 0.41
+        }
+      ],
+      "boundingPoly": [
+        {
+          "x": 0.1786458,
+          "y": 0.3388889
+        },
+        {
+          "x": 0.2052083,
+          "y": 0.3388889
+        },
+        {
+          "x": 0.2052083,
+          "y": 0.3731481
+        },
+        {
+          "x": 0.1786458,
+          "y": 0.3731481
+        }
+      ],
+      "vendor": {
+        "startTimeMs": 1000,
+        "endTimeMs": 5000
+      }
+    }
+  ],
+  "series": [
+    {
+      "startTimeMs": 0,
+      "stopTimeMs": 249,
+      "object": {
+        "type": "object",
+        "label": "person",
+        "referenceId": "a41c9d2e-77b1-4c3e-9f28-1d7e6b45a0c9",
+        "boundingPoly": [
+          {
+            "x": 0.1786458,
+            "y": 0.3388889
+          },
+          {
+            "x": 0.2052083,
+            "y": 0.3388889
+          },
+          {
+            "x": 0.2052083,
+            "y": 0.3731481
+          },
+          {
+            "x": 0.1786458,
+            "y": 0.3731481
+          }
+        ]
+      }
+    }
+  ],
+  "embedding": [
+    {
+      "referenceId": "a41c9d2e-77b1-4c3e-9f28-1d7e6b45a0c9",
+      "vector": [
+        0.0269896,
+        0.0373786,
+        0.0476071
+      ],
+      "tags": [
+        {
+          "key": "embedding-model",
+          "value": "vsl/fe_person_reid_256_v17_4"
+        },
+        {
+          "key": "embedding-source",
+          "value": "tracklet"
+        }
+      ]
+    }
+  ]
+}

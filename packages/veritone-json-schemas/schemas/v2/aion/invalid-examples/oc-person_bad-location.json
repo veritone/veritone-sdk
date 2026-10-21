@@ -1,0 +1,19 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_bad-location.json",
+  "$comment": "This person object is invalid because a clothing item has a 'location' ('torso') that is not one of the allowed values: head, upperBody, lowerBody, fullBody, feet.",
+  "object": [
+    {
+      "type": "person",
+      "person": {
+        "clothing": [
+          {
+            "location": "torso",
+            "type": "t-shirt",
+            "color": "red"
+          }
+        ]
+      }
+    }
+  ]
+}

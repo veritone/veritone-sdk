@@ -1,0 +1,12 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/oc-person_no-person.json",
+  "$comment": "This person object is invalid because it does not contain a 'person' property. Use an empty 'person' block when no attributes are known.",
+  "object": [
+    {
+      "type": "person",
+      "label": "person",
+      "confidence": 0.88
+    }
+  ]
+}

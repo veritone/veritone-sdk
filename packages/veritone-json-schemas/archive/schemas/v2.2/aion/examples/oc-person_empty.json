@@ -1,0 +1,14 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2.2/aion/examples/oc-person_empty.json",
+  "$comment": "A person detected with no readable attributes (for example, a distant figure). The 'person' block is required for type 'person' but may be empty.",
+  "object": [
+    {
+      "type": "person",
+      "label": "person",
+      "referenceId": "0b6f3c1e-2d4a-4f7b-9c8e-5a1d2e3f4b6c",
+      "confidence": 0.71,
+      "person": {}
+    }
+  ]
+}
