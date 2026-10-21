@@ -5,6 +5,14 @@ pkgDir=$(dirname "$appDir")
 
 cd "$pkgDir"
 
+# pinned so that validator behaviour (output format, stop-on-failure) doesn't change underneath us
+jsonschemaImage=ghcr.io/sourcemeta/jsonschema:v17.2.1
+
+# per-run directory for the pass/fail counters and the list of validated schemas, so that
+# concurrent runs don't overwrite each other's results
+tmpDir=$(mktemp -d)
+trap 'rm -rf "$tmpDir"' EXIT
+
 usage() {
   cat <<EOT
 USAGE:
@@ -43,29 +51,59 @@ jsValidate() {
     doFast=""
   fi
 
+  # --continue is required: by default the validator stops at the first instance that fails, so a
+  # batch of invalid-examples would only ever check the first file
+
+  local output
   case "$sVer" in
     v1)
-      docker run --interactive --rm --volume "$PWD:/workspace" \
-        ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
+      output=$(docker run --interactive --rm --volume "$PWD:/workspace" \
+        "$jsonschemaImage" validate --verbose --continue $doFast \
         ./schemas/$sVer/$sName/$sName.json \
         -r ./schemas/$sVer/master.json \
         "$@" \
-        2>&1
+        2>&1)
       ;;
     v2)
-      docker run --interactive --rm --volume "$PWD:/workspace" \
-        ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
+      output=$(docker run --interactive --rm --volume "$PWD:/workspace" \
+        "$jsonschemaImage" validate --verbose --continue $doFast \
         ./schemas/$sVer/$sName/schema.json \
         -r ./schemas/$sVer/master.json \
         -r ./schemas/$sVer/contracts.json \
         "$@" \
-        2>&1
+        2>&1)
       ;;
     *)
       echo "Unknown schema version '$sVer'" >&2
       exit 1
       ;;
   esac
+
+  markMissingResults "$output" "$@"
+}
+
+# echoes the validator output, followed by an "abort:" result for every file that the validator did
+# not report on. Even with --continue, the validator stops without reporting the remaining files if
+# it hits a fatal error (a malformed JSON file, a missing file, an unresolvable $ref), and those
+# files must count as failures rather than silently disappearing from the results.
+#  $1 - output of the validator
+#  $2, $3, ... - the files that were passed to the validator
+markMissingResults() {
+  local output="$1"
+  shift
+
+  echo "$output"
+
+  local file
+  for file in "$@"; do
+    file=${file#./}
+    grep -qxF -e "ok: $file" -e "fail: $file" -e "ok: /workspace/$file" -e "fail: /workspace/$file" \
+      <<<"$output" || {
+      echo "abort: $file"
+      echo "error: The validator did not report a result for this file. Validate it on its own with"
+      echo "       --verbose to see why (see also any validator error above)"
+    }
+  done
 }
 
 # validates a single JSON instance file against the v2 AION schema. This is used to validate
@@ -95,15 +133,18 @@ jsAionValidate() {
   # also need to mount the file that we are validating, so that it is accessible in the
   # /workspace/etc directory
 
-  docker run --interactive --rm \
+  local output
+  output=$(docker run --interactive --rm \
     --volume "$PWD:/workspace" \
     --volume "$(dirname "$iPath"):/workspace/etc" \
-    ghcr.io/sourcemeta/jsonschema validate --verbose $doFast \
+    "$jsonschemaImage" validate --verbose --continue $doFast \
     ./schemas/$sVer/$sName/schema.json \
     -r ./schemas/$sVer/master.json \
     -r ./schemas/$sVer/contracts.json \
     "./etc/$(basename "$iPath")" \
-    2>&1
+    2>&1)
+
+  markMissingResults "$output" "./etc/$(basename "$iPath")"
 }
 
 # validates that the schema itself is valid according to it's $schema value. This will validate
@@ -112,7 +153,7 @@ jsAionValidate() {
 #  $2 - schema name: aion, summary, object, etc
 #
 # To keep track of which scehmas have already been validated, we will write them to the tmp file 
-# /tmp/schematest.validated.txt
+# $tmpDir/schematest.validated.txt
 jsMetaValidate() {
   local sVer=$1
   local sName=$2
@@ -147,18 +188,18 @@ jsMetaValidate() {
     }
 
     # already validated?
-    grep -q "$schemaPath" /tmp/schematest.validated.txt && {
+    grep -q "$schemaPath" "$tmpDir/schematest.validated.txt" && {
       # echo "ok: $schemaPath (already validated)"
       continue
     }
 
-    docker run --interactive --rm --volume "$PWD:/workspace" \
-      ghcr.io/sourcemeta/jsonschema metaschema --verbose \
+    markMissingResults "$(docker run --interactive --rm --volume "$PWD:/workspace" \
+      "$jsonschemaImage" metaschema --verbose \
       "$schemaPath" \
-      2>&1
+      2>&1)" "$schemaPath"
 
     # add to the file of validated schemas
-    echo "$schemaPath" >>/tmp/schematest.validated.txt
+    echo "$schemaPath" >>"$tmpDir/schematest.validated.txt"
   done
 }
 
@@ -177,8 +218,8 @@ reportTest() {
 #
 #  $1 expect result of these tests to be valid: true or false
 #  $2 output of the validation code
-#  updates the number of passed tests in /tmp/schematest.pass.txt
-#  updates the number of failed tests in /tmp/schematest.fail.txt
+#  updates the number of passed tests in $tmpDir/schematest.pass.txt
+#  updates the number of failed tests in $tmpDir/schematest.fail.txt
 #  returns 0 if all tests pass, 1 if any test fails
 #
 # Example output from the container that we will be evaluating:
@@ -200,8 +241,8 @@ evaluateTestResults() {
   local expectValid="$1"
   local results="$2"
 
-  local pass=$(< /tmp/schematest.pass.txt)
-  local fail=$(< /tmp/schematest.fail.txt)
+  local pass=$(< "$tmpDir/schematest.pass.txt")
+  local fail=$(< "$tmpDir/schematest.fail.txt")
 
   IFS=$'\n'
   local line
@@ -234,6 +275,13 @@ evaluateTestResults() {
           printLine=$verbose
         fi
         ;;
+      abort:*)
+        # no result from the validator is always a failure, whether or not the file is expected
+        # to be valid
+        reportTest "$testName" fail
+        fail=$(( $fail + 1 ))
+        printLine=true
+        ;;
       *)
         $printLine && printf "       %s\n" "$line"
         ;;
@@ -241,8 +289,8 @@ evaluateTestResults() {
   done
   IFS=$' \t\n'
 
-  echo "${pass:-0}" >/tmp/schematest.pass.txt
-  echo "${fail:-0}" >/tmp/schematest.fail.txt
+  echo "${pass:-0}" >"$tmpDir/schematest.pass.txt"
+  echo "${fail:-0}" >"$tmpDir/schematest.fail.txt"
 
   # return 0 if no failing tests
   [[ $fail -eq 0 ]]
@@ -387,9 +435,9 @@ validateFile() {
 # main
 # Run all the tests, exit with 0 (success) if all pass, or 1 (failure) otherwise
 {
-  echo 0 >/tmp/schematest.pass.txt
-  echo 0 >/tmp/schematest.fail.txt
-  echo "" > /tmp/schematest.validated.txt
+  echo 0 >"$tmpDir/schematest.pass.txt"
+  echo 0 >"$tmpDir/schematest.fail.txt"
+  echo "" > "$tmpDir/schematest.validated.txt"
 
   schemaVersion=v2
   skipVersionValidation=false
@@ -427,8 +475,8 @@ validateFile() {
     validateVersion $schemaVersion
   fi
 
-  pass=$(< /tmp/schematest.pass.txt)
-  fail=$(< /tmp/schematest.fail.txt)
+  pass=$(< "$tmpDir/schematest.pass.txt")
+  fail=$(< "$tmpDir/schematest.fail.txt")
 
   [[ "$fail" -eq 0 ]] && {
     echo "PASS   $pass tests passed"
