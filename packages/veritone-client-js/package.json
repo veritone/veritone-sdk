@@ -39,7 +39,7 @@
     "babili-webpack-plugin": "^0.1.2",
     "case-sensitive-paths-webpack-plugin": "^2.1.1",
     "chai": "^4.0.2",
-    "eslint": "^4.1.1",
+    "eslint": "^9.26.0",
     "eslint-config-prettier": "^2.3.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.21",
