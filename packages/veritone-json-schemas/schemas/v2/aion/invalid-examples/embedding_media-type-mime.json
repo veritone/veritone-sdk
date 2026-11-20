@@ -1,0 +1,13 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/embedding_media-type-mime.json",
+  "$comment": "This embedding is invalid because 'embeddingMediaType' is a MIME type ('image/jpeg'). It must be one of 'video', 'audio', 'image' or 'document'.",
+  "embedding": [
+    {
+      "vector": [0.12, -0.45, 0.88],
+      "embeddingSpace": "siglip2-base-patch16-224-768-raw",
+      "embeddingContentSource": "visual",
+      "embeddingMediaType": "image/jpeg"
+    }
+  ]
+}

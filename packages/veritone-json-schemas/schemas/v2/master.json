@@ -1382,6 +1382,36 @@
           },
           "tags": {
             "$ref": "#/definitions/tags"
+          },
+          "embeddingSpace": {
+            "description": "The vector space this embedding belongs to, and the sole authority on compatibility: two embeddings with the same value may be compared, two with different values must not be. Compared whole, by exact equality; nothing parses it. Use lowercase only (case is not preserved downstream) and a new value for any change that makes vectors incomparable (model, dimension, normalization, pooling). Recommended naming, as guidance rather than a rule: <family>-<version>-<dimension>-<normalization>-<transform>, omitting a 'none' transform.",
+            "type": "string",
+            "minLength": 1,
+            "examples": [
+              "nomic-embed-text-v2-768-l2",
+              "nomic-embed-text-v2-512-l2-matryoshka",
+              "siglip2-base-patch16-224-768-raw"
+            ]
+          },
+          "embeddingContentSource": {
+            "description": "The facet of the asset this embedding represents. An open vocabulary: use a canonical value where one fits; any other value is accepted. Canonical values: transcript, document_text, ocr, description, summary, face, logo, object, speaker, entity, keyword, visual, metadata, motor_vehicle, unknown. 'scene_summary' and 'tracklet' are reserved and not yet defined; do not emit them.",
+            "type": "string",
+            "minLength": 1,
+            "examples": [
+              "transcript",
+              "document_text",
+              "visual"
+            ]
+          },
+          "embeddingMediaType": {
+            "description": "The kind of raw asset this embedding came from. A closed set of exactly four values. This is not a MIME type: 'image/jpeg' is invalid, 'image' is correct.",
+            "type": "string",
+            "enum": [
+              "video",
+              "audio",
+              "image",
+              "document"
+            ]
           }
         },
         "additionalProperties": false

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/invalid-examples/embedding_empty-space.json",
+  "$comment": "This embedding is invalid because 'embeddingSpace' is an empty string. Omit the field rather than leaving it empty.",
+  "embedding": [
+    {
+      "vector": [0.12, -0.45, 0.88],
+      "embeddingSpace": "",
+      "embeddingContentSource": "summary",
+      "embeddingMediaType": "document"
+    }
+  ]
+}

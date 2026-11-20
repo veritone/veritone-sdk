@@ -1,0 +1,28 @@
+{
+  "$schema": "https://get.aiware.com/schemas/v2/aion/schema.json",
+  "$id": "https://get.aiware.com/schemas/v2/aion/examples/embedding_space-source-media.json",
+  "$example": "Embedding: vectors with embedding space, content source and media type",
+  "$comment": "Each embedding names the space it belongs to (only vectors in the same space may be compared), the facet of the asset it represents, and the kind of asset it came from. The vectors are truncated for brevity.",
+  "embedding": [
+    {
+      "referenceId": "3f1c2b7a-8d4e-4a6f-9b2c-1e5d7a9c0b3f",
+      "vector": [0.0123, -0.0456, 0.0789, 0.0234, -0.0567, 0.0891, -0.0345, 0.0678],
+      "embeddingSpace": "siglip2-base-patch16-224-768-raw",
+      "embeddingContentSource": "visual",
+      "embeddingMediaType": "image"
+    },
+    {
+      "referenceId": "7b9e4d2c-1a3f-4c8e-b5d6-2f0a9e8c7d1b",
+      "vector": [0.12, -0.45, 0.88, 0.07, -0.31, 0.25, 0.64, -0.19],
+      "embeddingSpace": "nomic-embed-text-v2-768-l2",
+      "embeddingContentSource": "summary",
+      "embeddingMediaType": "document",
+      "tags": [
+        {
+          "key": "language",
+          "value": "en"
+        }
+      ]
+    }
+  ]
+}
