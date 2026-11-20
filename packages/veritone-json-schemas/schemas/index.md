@@ -8,6 +8,7 @@
 
 ## All Supported Versions
 
+- [v2.3](./v2.3/index.html)
 - [v2.2](./v2.2/index.html)
 - [v2.1](./v2.1/index.html)
 - [v2.0](./v2.0/index.html)

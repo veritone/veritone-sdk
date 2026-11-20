@@ -1,5 +1,24 @@
 # Version history for version 2 schemas
 
+## Version 2.3 - November 20, 2026
+
+- **First-class embedding metadata.** Three optional fields on each `embedding[]` item, beside
+  `vector`, per the
+  [Embedding Space & Source Tagging spec](https://veritone.atlassian.net/wiki/spaces/ENG/pages/4787503125/Embedding+Space+Source+Tagging+for+Vector+Outputs)
+  §3–§6.1.
+  - `schemas/v2/master.json` — added to `definitions.embedding.items.properties`:
+    - `embeddingSpace` — non-empty string. The sole authority on compatibility, compared by exact
+      equality. Lowercase; the `<family>-<version>-<dimension>-<normalization>-<transform>` naming
+      convention is in the description as guidance, not enforced.
+    - `embeddingContentSource` — non-empty string. An open vocabulary, so no enum; the canonical
+      values are listed in the description, and `scene_summary` and `tracklet` are reserved.
+    - `embeddingMediaType` — one of `video`, `audio`, `image`, `document`. Not a MIME type.
+  - `additionalProperties: false` and `tags` are unchanged, and none of the new fields is required.
+  - added `examples/embedding_space-source-media.json` — new +ve example
+  - added `invalid-examples/embedding_media-type-mime.json` and
+    `invalid-examples/embedding_empty-space.json` — new -ve examples
+  - This change is additive only: all v2.2 documents remain valid.
+
 ## Version 2.2 - October 20, 2026
 
 - **New object type `person`** for detected people and their attributes.
